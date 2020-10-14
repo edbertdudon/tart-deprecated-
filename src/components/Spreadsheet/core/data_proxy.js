@@ -335,6 +335,7 @@ export default class DataProxy {
     this.validations = new Validations();
     this.hyperlinks = {};
     this.comments = {};
+    this.type = 'sheet';
     // save data end
 
     // don't save object
@@ -1151,7 +1152,7 @@ export default class DataProxy {
 
   getData() {
     const {
-      name, freeze, styles, merges, rows, cols, validations, autoFilter,
+      name, freeze, styles, merges, rows, cols, validations, autoFilter, type
     } = this;
     return {
       name,
@@ -1162,6 +1163,7 @@ export default class DataProxy {
       cols: cols.getData(),
       validations: validations.getData(),
       autofilter: autoFilter.getData(),
+      type
     };
   }
 }

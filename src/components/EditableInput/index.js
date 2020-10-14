@@ -50,7 +50,7 @@ const EditableInput = ({value, onCommit, styleWrapper, files, classname, rename,
     // backgroundColor: (!readOnly && "#fafafa")
   }
   if (!readOnly) {
-    EDIT_STYLE["backgroundColor"] = "#fafafa"
+    // EDIT_STYLE["backgroundColor"] = "#fafafa"
     EDIT_STYLE["color"] = "black"
   }
 

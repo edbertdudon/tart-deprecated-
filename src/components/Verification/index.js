@@ -5,13 +5,13 @@ import { compose } from 'recompose'
 
 import PasswordResetForm from '../PasswordReset'
 import { withFirebase } from '../Firebase'
-import * as ROUTES from '../../Constants/routes'
+import * as ROUTES from '../../constants/routes'
 
 const Verification = (props) => {
   // const [verified, setVerified] = useState(false)
   const [email, setEmail] = useState('')
   const [error, setError] = useState(null)
-  console.log(error)
+
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search)
     const mode = urlParams.get('mode')
@@ -33,7 +33,6 @@ const Verification = (props) => {
           .catch(err => setError(err))
         break
     }
-
   },[])
 
   const renderSwitch = () => {
@@ -62,7 +61,7 @@ const Verification = (props) => {
         }
     }
   }
-  
+
   return (
     <div className='signin-page'>
       <div className='signin-main'>

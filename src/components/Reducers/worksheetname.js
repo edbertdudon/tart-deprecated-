@@ -4,10 +4,7 @@ const INITIAL_STATE = {
 
 const applySetWorksheetname = (state, action) => ({
   ...state,
-  worksheetname: {
-    ...state.worksheetname,
-    worksheetname: action.worksheetname,
-  },
+  worksheetname: action.worksheetname,
 });
 
 function worksheetnameReducer(state = INITIAL_STATE, action) {

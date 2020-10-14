@@ -135,7 +135,7 @@ const rFormulas = [
 	// },
 	{
 		key: 'weighted.mean',
-		title: tf('formula.weighted.mean'),
+		title: tf('formula.weightedmean'),
 		syntax:'max(values, weights)',
 		description: 'Compute a weighted mean, (values, weights). Values and weights must have the same length.'
 	},

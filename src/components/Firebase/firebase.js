@@ -16,10 +16,21 @@ export const config = {
   measurementId: "G-B2WK4MFZL7",
 };
 
+const fetchG = (func, data, idToken) => {
+  return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + idToken,
+    }
+  })
+}
+
+
 class Firebase {
 	constructor() {
 		app.initializeApp(config)
-
     this.auth = app.auth()
     this.db = app.firestore()
     this.storage = app.storage()
@@ -65,12 +76,10 @@ class Firebase {
           .get()
           .then(doc => {
             const dbUser = doc.data()
-
             // default empty roles
             if (!dbUser.roles) {
               dbUser.roles = {}
             }
-
             // merge auth and db user
             authUser = {
               uid: authUser.uid,
@@ -79,7 +88,6 @@ class Firebase {
               providerData: authUser.providerData,
               ...dbUser,
             }
-
             next(authUser)
           })
       } else {
@@ -101,14 +109,39 @@ class Firebase {
         return fetch(url, {method: 'GET'})
           .then(res => res.json())
           .then(res => { return res })
-          .catch(err => console.log(err))
+          // .catch(err => console.log(err))
       })
       .then(res => { return res })
-      .catch(err => console.log(err))
+      // .catch(err => console.log(err))
   }
 
   doDeleteFile = (uid, filename) =>
     this.storage.ref(`user/${uid}/${filename}`).delete()
+
+	// *** Dataproc API ***
+
+  doRunWorksheet = (authUser, filename, jobFileArgument, jobFileSave, jobFilePath) => {
+    return fetchG('createandsubmit', {
+      authuser: authUser.toLowerCase(),
+      jobFileArgument: jobFileArgument,
+      jobFileSave: jobFileSave,
+      jobFilePath: jobFilePath,
+      worksheet: filename.replace(/\s/g, '').toLowerCase(),
+    }).then(res => res.text())
+  }
+
+  doCancelWorksheet = (jobId, authuser, filename) =>
+    fetchG('canceljob', {
+      jobId: jobId,
+      authuser: authuser.toLowerCase(),
+      filename: filename
+    })
+
+  doListJobs = authUser => {
+    return fetchG('listjobs', {
+			authuser: authUser.toLowerCase()
+		}).then(res => res.json())
+  }
 
 	// *** Jobs Tracker API ***
 

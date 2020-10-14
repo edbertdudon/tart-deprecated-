@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
 import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../Constants/routes';
+import * as ROUTES from '../../constants/routes';
 
 class UserList extends Component {
   constructor(props) {

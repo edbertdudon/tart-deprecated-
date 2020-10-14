@@ -10,7 +10,7 @@ module.exports = {
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
-        use: ["babel-loader", "eslint-loader"]
+        use: ["babel-loader"],
       },
 			{
         test: /\.css$/,
@@ -40,10 +40,15 @@ module.exports = {
           'file-loader',
         ],
       },
+			{
+        test: /\.tsx?$/,
+        use: 'ts-loader',
+        exclude: /node_modules/,
+      },
     ]
   },
   resolve: {
-    extensions: ['*', '.js', 'jsx']
+    extensions: ['*', '.js', 'jsx', 'tsx', 'ts']
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -64,6 +69,7 @@ module.exports = {
     filename: 'bundle.js'
   },
   devServer: {
-    contentBase: './dist'
+    contentBase: './dist',
+		historyApiFallback: true,
   },
 };

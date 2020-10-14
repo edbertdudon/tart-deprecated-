@@ -2,14 +2,14 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
-import { 
-  AuthUserContext, 
+import {
+  AuthUserContext,
   withAuthorization,
   withEmailVerification
 } from '../Session'
 import { PasswordForgetForm } from '../PasswordForget'
 import PasswordChangeForm from '../PasswordChange'
-import HomeHeader from '../Home/Header'
+import Header from '../Home/header'
 
 const AccountPage = ({ authUser }) => (
   <div className='signin-page'>

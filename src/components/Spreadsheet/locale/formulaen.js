@@ -21,7 +21,7 @@ export const formulaen = {
 	mean: 'mean',
 	median: 'median',
 	// quantile(',
-	['weighted.mean']: 'weighted.mean',
+	weightedmean: 'weighted.mean',
 	// rank(',
 	var: 'var',
 	cov: 'cov',

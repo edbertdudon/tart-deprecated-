@@ -97,9 +97,8 @@ export default class Suggest {
   search(word) {
     let { items } = this;
     if (!/^\s*$/.test(word)) {
-      items = items.filter(it => (it.key || it).startsWith(word.toUpperCase()));
+      items = items.filter(it => (it.key || it).startsWith(word.toLowerCase()));
     }
-		console.log(items)
     items = items.map((it) => {
       let { title } = it;
       if (title) {
