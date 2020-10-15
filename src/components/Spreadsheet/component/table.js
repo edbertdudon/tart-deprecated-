@@ -78,8 +78,8 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0) {
   }
   draw.rect(dbox, () => {
     // render text
-		let cellText = rRender(cell.text || '', data, datas)
-    console.log(cellText)
+    let cellText = rRender(cell.text || '', data, datas)
+    // console.log(cellText)
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     if (style.format) {
       // console.log(data.formatm, '>>', cell.format);

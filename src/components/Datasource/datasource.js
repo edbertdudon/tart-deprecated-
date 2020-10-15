@@ -143,7 +143,7 @@ const DataSource = ({ firebase, authUser, color, files, jobs, onSetWorksheetname
 					<OptionWithDropdown
 						text={<Icon path={mdiDotsHorizontal} size={0.9} />}
 						items={DATASOURCE_DROPDOWN}
-						onOpen={handleDropdown}
+						onSelect={handleDropdown}
 						classname='datasource-options'
 						color={OFF_COLOR[color[authUser.uid]]}
 						style={{ left: "13px" }}

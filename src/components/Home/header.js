@@ -21,7 +21,7 @@ const Header = ({ firebase, authUser, color }) => {
 			<UserWithDropdown
 				text={authUser.firstname}
 				items={USER_DROPDOWN}
-				onOpen={handleDropdown}
+				onSelect={handleDropdown}
 				classname='home-header-user'
 				color={OFF_COLOR[color[authUser.uid]]}
 				style={{marginLeft: 'calc(100% - 195px)'}}

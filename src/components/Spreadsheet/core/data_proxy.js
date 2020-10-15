@@ -734,6 +734,7 @@ export default class DataProxy {
   }
 
   autofilter() {
+    console.log('passed autofilter')
     const { autoFilter, selector } = this;
     this.changeData(() => {
       if (autoFilter.active()) {

@@ -4,7 +4,6 @@ import { compose } from 'recompose'
 
 import withDropdown from '../../Dropdown'
 import { OFF_COLOR } from '../../../constants/off-color'
-import { withFirebase } from '../../Firebase'
 
 export const EDIT_DROPDOWN = [
   {key: 'Undo', type: 'item'},
@@ -14,35 +13,38 @@ export const EDIT_DROPDOWN = [
   {key: 'Copy', type: 'item'},
   {key: 'Paste', type: 'item'},
   {type: 'divider'},
-  {key: 'Delete sheet', type: 'item'},
+  {key: 'Delete', type: 'item'},
 ]
 
-const Edit = ({ color, authUser }) => {
+const Edit = ({ color, authUser, slides }) => {
   const handleEdit = key => {
     switch (key) {
-      case 'Undo':
+      case EDIT_DROPDOWN[0].key:
+        slides.data.undo()
         break;
-      case 'Redo':
+      case EDIT_DROPDOWN[1].key:
+        slides.data.redo()
         break;
-      case 'Cut':
+      case EDIT_DROPDOWN[3].key:
+        slides.data.cut()
         break;
-      case 'Copy':
+      case EDIT_DROPDOWN[4].key:
+        slides.data.copy()
         break;
-      case 'Paste':
-        // if (slides[currentSlide].type === "sheet") {
-          let paste = new Event("paste")
-          // document.dispatchEvent(paste)
-        // }
+      case EDIT_DROPDOWN[5].key:
+        slides.data.paste()
         break;
-      case 'Delete sheet':
+      case EDIT_DROPDOWN[7].key:
+        slides.data.deleteCell()
         break;
     }
+    slides.reRender()
   }
 
   return (
     <EditWithDropdown
       items={EDIT_DROPDOWN}
-      onOpen={handleEdit}
+      onSelect={handleEdit}
       classname='worksheet-header-dropdown-header'
       color={OFF_COLOR[color[authUser.uid]]}
     />
@@ -66,11 +68,11 @@ const EditWithDropdown = withDropdown(Header)
 const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+  slides: (state.slidesState.slides || {}),
 })
 
 export default compose(
   connect(
     mapStateToProps,
   ),
-  withFirebase,
 )(Edit)

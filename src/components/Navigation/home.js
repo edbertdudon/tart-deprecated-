@@ -4,6 +4,7 @@ import Icon from '@mdi/react';
 import { mdilTable } from '@mdi/light-js'
 import { mdiDatabase, mdiFile, mdiTable, mdiDelete, mdiClockTimeNine } from '@mdi/js'
 
+import SearchBar from './searchbar'
 import * as ROUTES from '../../constants/routes'
 import { OFF_COLOR } from '../../constants/off-color'
 
@@ -29,7 +30,7 @@ const Home = ({ color, pathname }) => (
 				</h1>
 			</li>
 			<li>
-				{/*<SearchBar />*/}
+				<SearchBar />
 			</li>
 			<Item pathname={pathname} route={ROUTES.HOME} color={color} icon={mdiTable} text='Worksheets'/>
 			<Item pathname={pathname} route={ROUTES.JOBS} color={color} icon={mdiClockTimeNine} text='Jobs'/>

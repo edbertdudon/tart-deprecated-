@@ -9,12 +9,12 @@ import * as ROUTES from '../../../constants/routes'
 import { withFirebase } from '../../Firebase'
 
 export const FILE_DROPDOWN = [
-  {key: 'New worksheet', type: 'item'},
+  {key: 'New Worksheet', type: 'item'},
   {key: 'Save', type: 'item'},
   {key: 'Duplicate', type: 'item'},
-  {key: 'Rename worksheet', type: 'item'},
-  {key: 'Download as xlsx', type: 'item'},
-  {key: 'Move to trash', type: 'link', path: ROUTES.HOME},
+  {key: 'Rename Worksheet', type: 'item'},
+  {key: 'Download as Xlsx', type: 'item'},
+  {key: 'Move to Trash', type: 'link', path: ROUTES.HOME},
   {type: 'divider'},
   {key: 'Connect to MySQL', type: 'item'},
   {key: 'Connect to Microsoft SQL server', type: 'item'},
@@ -23,9 +23,8 @@ export const FILE_DROPDOWN = [
 
 const Files = ({ firebase, authUser, worksheetname, files, onSetWorksheetname, color }) => {
   const handleFile = key => {
-    console.log('passed file')
     switch (key) {
-      case 'New worksheet':
+      case FILE_DROPDOWN[0].key:
         let filename = "Untitled Worksheet " + getMaxNumberFromFiles(files[authUser.uid])
         firebase.doUploadFile(
           authUser.uid,
@@ -40,7 +39,7 @@ const Files = ({ firebase, authUser, worksheetname, files, onSetWorksheetname, c
           window.location.reload()
         })
         break;
-      case 'Save':
+      case FILE_DROPDOWN[1].key:
         // const file = new File (
         // 	[JSON.stringify(slides)],
         // 	worksheet[authUser.uid],
@@ -48,7 +47,7 @@ const Files = ({ firebase, authUser, worksheetname, files, onSetWorksheetname, c
         // )
         // firebase.doUploadFile(authUser.uid, worksheet, file)
         break;
-      case 'Duplicate':
+      case FILE_DROPDOWN[2].key:
         // let worksheetname = worksheet[authUser.uid]
         // if (worksheetname.includes(' copy')) {
         // 	worksheetname = worksheetname.substring(0, worksheetname.indexOf(' copy'))
@@ -67,12 +66,12 @@ const Files = ({ firebase, authUser, worksheetname, files, onSetWorksheetname, c
         // 	})
         // })
         break;
-      case 'Rename worksheet':
+      case FILE_DROPDOWN[3].key:
         break;
-      case 'Download as xlsx':
+      case FILE_DROPDOWN[4].key:
         // xtos(slides, worksheet[authUser.uid])
         break;
-      case 'Move to trash':
+      case FILE_DROPDOWN[5].key:
         let today = new Date().toLocaleDateString()
         firebase.trash(authUser.uid).get().then(doc => {
           if (doc.exists) {
@@ -88,7 +87,7 @@ const Files = ({ firebase, authUser, worksheetname, files, onSetWorksheetname, c
   return (
     <FileWithDropdown
       items={FILE_DROPDOWN}
-      onOpen={handleFile}
+      onSelect={handleFile}
       classname='worksheet-header-dropdown-header'
       color={OFF_COLOR[color[authUser.uid]]}
     />

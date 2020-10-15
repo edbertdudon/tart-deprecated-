@@ -38,7 +38,7 @@ const Insert = ({ color, authUser }) => {
 	return (
     <InsertWithDropdown
     	items={INSERT_DROPDOWN}
-    	onOpen={handleInsert}
+    	onSelect={handleInsert}
     	classname='worksheet-header-dropdown-header'
 			color={OFF_COLOR[color[authUser.uid]]}
     />

@@ -195,7 +195,7 @@ export const rRender = (src, data, datas) => {
       names: JSON.stringify(datas.map(data => data.name)),
     })
     // data.setCellText(ri, ci, text)
-    // return "8";
+    // return src;
   }
   return src;
   // removeMatrix(slides, currentSlide, dispatchSlides, row, column)

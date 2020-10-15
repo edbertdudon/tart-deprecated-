@@ -9,13 +9,14 @@
 import React from 'react'
 import { compose } from 'recompose'
 import Header from '../Home/header'
-// import Content from './content'
+import Content from './content'
 
 import { withAuthorization, withEmailVerification } from '../Session'
-    // <Content />
+
 const Search = () => (
   <div className='home'>
     <Header />
+    <Content />
   </div>
 )
 

@@ -80,7 +80,7 @@ const DataTrash = ({ firebase, authUser, color, filename, onReload, connections 
 					<OptionWithDropdown
 						text={<Icon path={mdiDotsHorizontal} size={0.9} />}
 						items={DATASOURCE_DROPDOWN}
-						onOpen={handleDropdown}
+						onSelect={handleDropdown}
 						classname='datasource-options-only'
 						color={OFF_COLOR[color[authUser.uid]]}
 						style={{ left: "13px" }}

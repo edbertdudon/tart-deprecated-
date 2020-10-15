@@ -7,7 +7,6 @@ import { mdilTable } from '@mdi/light-js'
 import { mdiDatabase, mdiFile, mdiTable, mdiDelete, mdiClockTimeNine } from '@mdi/js'
 import './index.less'
 
-// import SearchBar from '../Search/SearchBar'
 import NonAuth from './nonauth'
 import Home from './home'
 import { withFirebase } from '../Firebase'
@@ -57,14 +56,13 @@ const Navigation = (props) => (
 				[ROUTES.CONNECTIONS]: <Auth authUser={props.authUser} props={props}/>,
 				[ROUTES.INPUTS]: <Auth authUser={props.authUser} props={props}/>,
 				[ROUTES.TRASH]: <Auth authUser={props.authUser} props={props}/>,
+				[ROUTES.SEARCH]: <Auth authUser={props.authUser} props={props}/>,
 			}[props.location.pathname]
 		}
 	</div>
 )
 // [ROUTES.ADMIN_DETAILS]: <Auth authUser={props.authUser} props={props}/>,
 // [ROUTES.ADMIN]: <Auth authUser={props.authUser} props={props}/>,
-
-// [ROUTES.SEARCH]: <Auth authUser={props.authUser} props={props}/>,
 // [ROUTES.JOBS]: <Auth authUser={props.authUser} props={props}/>,
 
 const mapStateToProps = state => ({

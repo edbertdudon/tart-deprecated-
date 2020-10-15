@@ -6,8 +6,8 @@ import './index.less'
 
 import { OFF_COLOR } from '../../constants/off-color'
 
-const Item = ({ text, onOpen }) =>
-	<div className='dropdown-item' onClick={() => onOpen(text)}>
+const Item = ({ text, onSelect }) =>
+	<div className='dropdown-item' onClick={() => onSelect(text)}>
 		{text}
 	</div>
 
@@ -16,9 +16,15 @@ const Redirect = ({ path, text }) =>
 		{text}
 	</Link>
 
-const getDropdownStates = (item, i, onOpen, component) => ({
-	item: <Item text={item.key} onOpen={onOpen} key={item.key}/>,
-	link: <Redirect text={item.key} path={item.path} key={item.key}/>,
+const Toggle = ({ text, onSelect }) =>
+	<div className='dropdown-item' onClick={() => onSelect(text)}>
+		{(isOpen ? 'Hide ' : 'Show ') + text}
+	</div>
+
+const getDropdownStates = (item, i, onSelect, component) => ({
+	item: <Item text={item.key} onSelect={onSelect} key={item.key} />,
+	link: <Redirect text={item.key} path={item.path} key={item.key} />,
+	toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} />,
 	component: <div key={item.key}>{component}</div>,
 	divider: <hr key={i}/>,
 })
@@ -46,6 +52,11 @@ const withDropdown = Component => (props) => {
 	const handleOpen = () => setIsOpen(!isOpen)
 	const handleHover = () => setHover(!hover)
 
+	const handleSelect = (selection) => {
+		setIsOpen(!isOpen)
+		props.onSelect(selection)
+	}
+
 	return (
 		<div className='dropdown' ref={wrapperRef}>
 			<Component
@@ -61,7 +72,7 @@ const withDropdown = Component => (props) => {
 			{isOpen &&
 				<div className='dropdown-content' style={props.style}>
 					{props.items.map((item, i) =>
-						getDropdownStates(item, i, props.onOpen, item.component)[item.type]
+						getDropdownStates(item, i, handleSelect, item.component)[item.type]
 					)}
 				</div>
 			}

@@ -45,7 +45,7 @@ const Header = ({ firebase, authUser, color, worksheetname, files, onSetFiles, o
 				<UserWithDropdown
 					text={authUser.firstname}
 					items={USER_DROPDOWN}
-					onOpen={handleDropdown}
+					onSelect={handleDropdown}
 					style={{right:"15px"}}
 					classname='worksheet-header-dropdown-header'
 					color={OFF_COLOR[color[authUser.uid]]}
