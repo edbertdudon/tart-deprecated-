@@ -2,8 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
-import withDropdown from '../../Dropdown'
-import { OFF_COLOR } from '../../../constants/off-color'
+import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
 
 export const TABLE_DROPDOWN = [
   {key: 'Insert Row', type: 'item'},
@@ -12,13 +12,13 @@ export const TABLE_DROPDOWN = [
   {key: 'Delete Row', type: 'item'},
   {key: 'Delete Column', type: 'item'},
   {type: 'divider'},
-  {key: 'Merge', type: 'item'},
-  {key: 'Unmerge', type: 'item'},
+  {key: 'Merge Cells', type: 'item'},
+  {key: 'Unmerge Cells', type: 'item'},
   {type: 'divider'},
-  {key: 'Freeze', type: 'item'},
-  {key: 'Unfreeze', type: 'item'},
+  {key: 'Freeze Cells', type: 'item'},
+  {key: 'Unfreeze Cells', type: 'item'},
   {type: 'divider'},
-  {key: 'Filter', type: 'item'},
+  {key: 'Filter Cell', type: 'item'},
 ]
 
 const Table = ({ color, authUser, slides }) => {

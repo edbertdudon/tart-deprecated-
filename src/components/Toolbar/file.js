@@ -2,11 +2,11 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
-import { getMaxNumberFromFiles, xtos } from '../../../functions'
-import withDropdown from '../../Dropdown'
-import { OFF_COLOR } from '../../../constants/off-color'
-import * as ROUTES from '../../../constants/routes'
-import { withFirebase } from '../../Firebase'
+import { getMaxNumberFromFiles, xtos } from '../../functions'
+import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
+import * as ROUTES from '../../constants/routes'
+import { withFirebase } from '../Firebase'
 
 export const FILE_DROPDOWN = [
   {key: 'New Worksheet', type: 'item'},
@@ -94,7 +94,7 @@ const Files = ({ firebase, authUser, worksheetname, files, onSetWorksheetname, c
   )
 }
 
-const Header = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
+const Header = ({ classname, hover, onHover, isOpen, onOpen, color }) => (
   <div
     className={classname}
     onClick={onOpen}
@@ -102,7 +102,7 @@ const Header = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
     onMouseLeave={onHover}
     style={{ color: (hover || isOpen) && color }}
   >
-  File
+    File
   </div>
 )
 

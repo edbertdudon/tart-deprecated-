@@ -57,13 +57,13 @@ const Navigation = (props) => (
 				[ROUTES.INPUTS]: <Auth authUser={props.authUser} props={props}/>,
 				[ROUTES.TRASH]: <Auth authUser={props.authUser} props={props}/>,
 				[ROUTES.SEARCH]: <Auth authUser={props.authUser} props={props}/>,
+				[ROUTES.JOBS]: <Auth authUser={props.authUser} props={props}/>,
 			}[props.location.pathname]
 		}
 	</div>
 )
 // [ROUTES.ADMIN_DETAILS]: <Auth authUser={props.authUser} props={props}/>,
 // [ROUTES.ADMIN]: <Auth authUser={props.authUser} props={props}/>,
-// [ROUTES.JOBS]: <Auth authUser={props.authUser} props={props}/>,
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,

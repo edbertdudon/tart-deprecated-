@@ -2,10 +2,10 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
-import withDropdown from '../../Dropdown'
-import { OFF_COLOR } from '../../../constants/off-color'
-import * as ROUTES from '../../../constants/routes'
-import { withFirebase } from '../../Firebase'
+import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
+import * as ROUTES from '../../constants/routes'
+import { withFirebase } from '../Firebase'
 
 export const INSERT_DROPDOWN = [
 	{key: 'Sheet', type: 'item'},

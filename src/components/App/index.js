@@ -16,10 +16,9 @@ import Connections from '../Connections'
 import Inputs from '../Inputs'
 import Trash from '../Trash'
 import Search from '../Search'
+import Jobs from '../Jobs'
 // import About from '../About'
 // import Product from '../About/AboutProduct'
-// import Trash from '../Trash'
-// import Jobs from '../Jobs'
 
 import * as ROUTES from '../../constants/routes';
 import { withAuthentication } from '../Session'
@@ -41,9 +40,9 @@ const App = () => (
       <Route path={ROUTES.INPUTS} component={Inputs} />
       <Route path={ROUTES.TRASH} component={Trash} />
       <Route path={ROUTES.SEARCH} component={Search} />
-		  {/*}<Route path={ROUTES.JOBS} component={Jobs} />
-      <Route exact path={ROUTES.ABOUT__PRODUCT} component={Product}/> */}
-      {/* <Route exact path={ROUTES.ABOUT} component={About} /> */}
+      <Route path={ROUTES.JOBS} component={Jobs} />
+		  {/*<Route exact path={ROUTES.ABOUT__PRODUCT} component={Product}/>
+      <Route exact path={ROUTES.ABOUT} component={About} /> */}
     </div>
   </Router>
 )

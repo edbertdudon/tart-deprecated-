@@ -30,11 +30,11 @@ function tableFixedHeaderStyle() {
   };
 }
 
-function getDrawBox(data, rindex, cindex, yoffset = 0) {
+function getDrawBox(data, rindex, cindex, yoffset = 0, xoffset = 0) {
   const {
     left, top, width, height,
   } = data.cellRect(rindex, cindex);
-  return new DrawBox(left, top + yoffset, width, height, cellPaddingWidth);
+  return new DrawBox(left + xoffset, top + yoffset, width, height, cellPaddingWidth);
 }
 /*
 function renderCellBorders(bboxes, translateFunc) {
@@ -53,7 +53,8 @@ function renderCellBorders(bboxes, translateFunc) {
 }
 */
 
-export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0) {
+// default yoffset = 0
+export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffset = 0) {
   const { sortedRowMap, rows, cols } = data;
   if (rows.isHide(rindex) || cols.isHide(cindex)) return;
   let nrindex = rindex;
@@ -69,7 +70,7 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0) {
   }
 
   const style = data.getCellStyleOrDefault(nrindex, cindex);
-  const dbox = getDrawBox(data, rindex, cindex, yoffset);
+  const dbox = getDrawBox(data, rindex, cindex, yoffset, xoffset);
   dbox.bgcolor = style.bgcolor;
   if (style.border !== undefined) {
     dbox.setBorders(style.border);
@@ -79,7 +80,6 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0) {
   draw.rect(dbox, () => {
     // render text
     let cellText = rRender(cell.text || '', data, datas)
-    // console.log(cellText)
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     if (style.format) {
       // console.log(data.formatm, '>>', cell.format);

@@ -43,6 +43,21 @@ export function getMaxNumberFromFiles(files) {
   }
 }
 
+export function getMaxNumberCustomFile(slides, prefix) {
+  let names = []
+  for (var i=0; i<slides.length; i++) {
+    if (slides[i].name.startsWith(prefix) && /^\d+$/.test(slides[i].name.substring(prefix.length))) {
+      names.push(slides[i].name.substring(prefix.length))
+    }
+  }
+  let max = Math.max(...names)
+  if (max === -Infinity) {
+    return 1
+  } else {
+    return max + 1
+  }
+}
+
 export function xtos(sdata, filename) {
   var out = XLSX.utils.book_new();
   sdata.forEach(function(xws) {

@@ -2,31 +2,36 @@ import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
-import DataSourceSearch from './datasourcesearch'
-import SearchSource from './searchsource'
+import DataSourceJobs from './datasourcejobs'
 import useRecursiveTimeout from '../Home/useRecursiveTimeout.ts'
 import { shouldReloadTimer, getJobId, cancelJob, checkJobChanges } from '../Home/jobs'
 import { withFirebase } from '../Firebase'
 
-const withSearchContentNull = Component => props => (
-	Object.keys(props.search).length === 0
-		?	<div className='home-content-search'>Search your library</div>
-		:	<Component {...props} />
-)
-
-const withSearchContentNoResult = Component => props =>
-	Object.keys(props.search).length === 0 || props.search.filter.length < 1
-		?	<div className='home-content-search'>{'No results found for "' + props.search.input + '"'}</div>
+const withJobsContentNull = Component => props =>
+	props.jobs[0].status === "failed list jobs"
+		?	<div className='home-content-search'>No Jobs Running</div>
 		:	<Component {...props} />
 
-const SearchContentFiltered = ({ search, jobs, onSetJobs, firebase, authUser, isJobsActive, onSetIsJobsActive, onSetFiles, onSetSearch }) => {
-	const [connections, setConnections] = useState([])
+const JobsContentRunning = ({ files, jobs, onSetJobs, firebase, authUser, isJobsActive, onSetIsJobsActive, onSetFiles }) => {
+	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
-		firebase.connection(authUser.uid).get()
-			.then(doc => {
-				if (doc.exists) setConnections(Object.keys(doc.data()))
+		setLoading(true)
+		firebase.doListFiles(authUser.uid).then(res => {
+			let allFiles = res.items
+			firebase.trash(authUser.uid).get().then(doc => {
+				if (doc.exists) {
+					let list = Object.keys(doc.data())
+					let filesLessTrash = allFiles.filter(file => {
+						if (!list.includes(file.name)) {
+							return file.name
+						}
+					})
+					onSetFiles(filesLessTrash, authUser.uid)
+				}
 			})
+		})
+		setLoading(false)
 		firebase.doListJobs(authUser.uid)
 			.then(res => onSetJobs(res))
 			.then(() => onSetIsJobsActive(shouldReloadTimer(jobs)))
@@ -41,7 +46,6 @@ const SearchContentFiltered = ({ search, jobs, onSetJobs, firebase, authUser, is
 				if (checkJobChanges(res)) {
 					firebase.doListFiles(authUser.uid).then(res => {
 						onSetFiles(res.items, authUser.uid)
-						updateSearch(res.items)
 					})
 				}
 				return res
@@ -58,68 +62,56 @@ const SearchContentFiltered = ({ search, jobs, onSetJobs, firebase, authUser, is
 
 	const handleJobCancel = runId => onSetJobs(cancelJob(runId, jobs))
 
-	// *** Background Functions ***
-
-	const updateSearch = (newFiles) => {
-		let input = search.input
-		let library = [...newFiles, ...connections]
-		let filter = library.filter(file =>
-			file.toLowerCase().includes(input.toLowerCase()))
-		if (input.length > 0) {
-			if (filter.length > 0) {
-				onSetSearch({input: input, filter: filter})
-			} else {
-				onSetSearch({input: input, filter: []})
-			}
-		} else {
-			onSetSearch({})
-		}
-	}
-
 	return (
 		<div>
-			{
-				search.filter.map((file, index) => ((/[.]/.exec(file) === null)
-					?	<DataSourceSearch
-							filename={file}
-							connections={connections}
-							runId={getJobId(file.replace(/\s/g, '').toLowerCase(), jobs)}
+			{files[authUser.uid] !== undefined && files[authUser.uid]
+				.filter(file => {
+					let fileLabel = file.name.replace(/\s/g, '').toLowerCase()
+					if (jobs[0].status !== "failed list jobs") {
+						let jobsList = jobs.map(job => {return job.labels.worksheet})
+						if (jobsList.includes(fileLabel)) {
+							return file
+						}
+					}
+				}).map((job, index) => (
+					(/[.]/.exec(job.name) === null) &&
+						<DataSourceJobs
+							filename={job.name}
+							runId={getJobId(job.name.replace(/\s/g, '').toLowerCase(), jobs)}
 							onJobSubmit={handleJobSubmit}
 							onJobCancel={handleJobCancel}
-							key={index}
 						/>
-					:	<SearchSource filename={file} key={index} /> ))
+				))
 			}
 		</div>
 	)
 }
 
 const withConditiionalRenderings = compose(
-	withSearchContentNull,
-	withSearchContentNoResult
+	withJobsContentNull,
 )
 
-const SearchContentWithConditionalRendering = withConditiionalRenderings(SearchContentFiltered)
+const JobsContentWithConditionalRendering = withConditiionalRenderings(JobsContentRunning)
 
-const SearchContent = ({ search, firebase, authUser, jobs, onSetJobs, isJobsActive, onSetIsJobsActive, onSetFiles, onSetSearch }) => (
-	<div className='home-content'>
-		<SearchContentWithConditionalRendering
-				search={search}
+const JobsContent = ({ firebase, authUser, jobs, files, onSetJobs, isJobsActive, onSetIsJobsActive, onSetFiles }) => {
+	return (
+		<div className='home-content'>
+			<JobsContentWithConditionalRendering
 				firebase={firebase}
 				authUser={authUser}
 				jobs={jobs}
+				files={files}
 				onSetJobs={onSetJobs}
 				isJobsActive={isJobsActive}
 				onSetIsJobsActive={onSetIsJobsActive}
 				onSetFiles={onSetFiles}
-				onSetSearch={onSetSearch}
 			/>
-	</div>
-)
+		</div>
+	)
+}
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
-	search: (state.searchState.search || {}),
 	jobs: (state.jobsState.jobs || [{status:'failed list jobs'}]),
 	isJobsActive: (state.isJobsActiveState.isJobsActive || false),
 	files: (state.filesState.files || {}),
@@ -129,7 +121,6 @@ const mapDispatchToProps = dispatch => ({
 	onSetJobs: (jobs) => dispatch({type: 'JOBS_SET', jobs}),
 	onSetIsJobsActive: (isJobsActive) => dispatch({type: 'ISJOBSACTIVE_SET', isJobsActive}),
 	onSetFiles: (files, uid) => dispatch({type: 'FILES_SET', files, uid}),
-	onSetSearch: (search) => dispatch({type: 'SEARCH_SET', search}),
 })
 
 export default compose(
@@ -138,4 +129,4 @@ export default compose(
 		mapStateToProps,
 		mapDispatchToProps,
 	),
-)(SearchContent)
+)(JobsContent)

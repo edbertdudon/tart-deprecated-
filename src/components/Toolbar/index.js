@@ -6,14 +6,14 @@ import Insert from './insert'
 import Table from './table'
 import View from './view'
 
-const Toolbar = () => {
+const Toolbar = ({ rightSidebar, setRightSidebar }) => {
 	return (
 		<div className='worksheet-toolbar'>
 			<Files />
 			<Edit />
 			<Insert />
 			<Table />
-			<View />
+			<View rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 		</div>
 	)
 }

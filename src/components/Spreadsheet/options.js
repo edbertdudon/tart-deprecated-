@@ -4,7 +4,7 @@ export const options = {
   showGrid: true,
   showContextmenu: true,
   view: {
-    height: () => document.documentElement.clientHeight,
+    height: () => document.documentElement.clientHeight-68,
     width: () => document.documentElement.clientWidth,
   },
   row: {

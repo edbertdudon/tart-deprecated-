@@ -16,15 +16,15 @@ const Redirect = ({ path, text }) =>
 		{text}
 	</Link>
 
-const Toggle = ({ text, onSelect }) =>
+const Toggle = ({ text, onSelect, isOpen }) =>
 	<div className='dropdown-item' onClick={() => onSelect(text)}>
 		{(isOpen ? 'Hide ' : 'Show ') + text}
 	</div>
 
-const getDropdownStates = (item, i, onSelect, component) => ({
+const getDropdownStates = (item, i, onSelect, component, isOpen) => ({
 	item: <Item text={item.key} onSelect={onSelect} key={item.key} />,
 	link: <Redirect text={item.key} path={item.path} key={item.key} />,
-	toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} />,
+	toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} isOpen={isOpen} />,
 	component: <div key={item.key}>{component}</div>,
 	divider: <hr key={i}/>,
 })
@@ -72,7 +72,7 @@ const withDropdown = Component => (props) => {
 			{isOpen &&
 				<div className='dropdown-content' style={props.style}>
 					{props.items.map((item, i) =>
-						getDropdownStates(item, i, handleSelect, item.component)[item.type]
+						getDropdownStates(item, i, handleSelect, item.component, item.visibility)[item.type]
 					)}
 				</div>
 			}

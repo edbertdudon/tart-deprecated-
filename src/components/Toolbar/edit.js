@@ -2,8 +2,8 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
-import withDropdown from '../../Dropdown'
-import { OFF_COLOR } from '../../../constants/off-color'
+import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
 
 export const EDIT_DROPDOWN = [
   {key: 'Undo', type: 'item'},
@@ -40,7 +40,7 @@ const Edit = ({ color, authUser, slides }) => {
     }
     slides.reRender()
   }
-
+  
   return (
     <EditWithDropdown
       items={EDIT_DROPDOWN}

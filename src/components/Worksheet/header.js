@@ -34,11 +34,8 @@ const Header = ({ firebase, authUser, color, worksheetname, files, onSetFiles, o
 	const handleDropdown = i => firebase.doSignOut()
 
 	// const handleSetRename = () => setRename(false)
-// value={worksheetname[authUser.uid].replace(/\.[^/.]+$/, "")}
-// rename={rename}
-// onSetRename={handleSetRename}
-// <div>{authUser.firstname}</div>
-
+	// rename={rename}
+	// onSetRename={handleSetRename}
 	return (
 		<div className='worksheet-header'>
 			<div className='worksheet-header-right'>
@@ -46,14 +43,14 @@ const Header = ({ firebase, authUser, color, worksheetname, files, onSetFiles, o
 					text={authUser.firstname}
 					items={USER_DROPDOWN}
 					onSelect={handleDropdown}
-					style={{right:"15px"}}
+					style={{right:"10px"}}
 					classname='worksheet-header-dropdown-header'
 					color={OFF_COLOR[color[authUser.uid]]}
 				/>
 			</div>
 			<div className='worksheet-header-center'>
 				<EditableInput
-					value='asdfasdf'
+					value={worksheetname.replace(/\.[^/.]+$/, "")}
 					onCommit={handleChange}
 					files={files[authUser.uid]}
 					classname='worksheet-header-filename'
@@ -88,8 +85,6 @@ const mapDispatchToProps = dispatch => ({
 	onSetWorksheetname: worksheetname => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
 	onSetFiles: (files, uid) => dispatch({type: 'FILES_SET', files, uid}),
 })
-
-// connect(mapStateToProps)(User)
 
 export default compose(
 	withFirebase,

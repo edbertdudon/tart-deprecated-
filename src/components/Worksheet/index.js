@@ -1,15 +1,21 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import './index.less'
 
-import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
 import Header from './header'
-import Toolbar from './toolbar'
+import Toolbar from '../Toolbar'
+import Formulabar from '../Formulabar'
+import RightSidebar from '../RightSidebar'
+import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
 
 const Worksheet = () => {
+	const [rightSidebar, setRightSidebar] = useState('none')
+
 	return (
  		<div className='worksheet' onContextMenu={e => {e.preventDefault(); return false;}}>
 			<Header />
-			<Toolbar />
+			<Toolbar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
+			<Formulabar />
+			<RightSidebar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<SpreadsheetWrapper />
 		</div>
 	)
