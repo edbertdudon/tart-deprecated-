@@ -89,7 +89,13 @@ const DataTrash = ({ firebase, authUser, color, filename, onReload, connections 
 				<div className='datasource-editabletext'>{filename.replace(/\.[^/.]+$/, "")}</div>
 			</ContextMenuTrigger>
 			<ContextMenuDropdown />
-			<VerifyDeleteWithModal height='140px' filname={filename} onSelect={handleDelete} isOpen={isOpen} setIsOpen={setIsOpen}/>
+			<VerifyDeleteWithModal
+				filename={filename}
+				color={color[authUser.uid]}
+				onSelect={handleDelete}
+				isOpen={isOpen}
+				setIsOpen={setIsOpen}
+			/>
     </div>
 	)
 }
@@ -106,7 +112,7 @@ const Option = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
 	</div>
 )
 
-const VerifyDelete = ({ filename, onDelete, onClose, onSelect }) => (
+const VerifyDelete = ({ filename, color, onDelete, onClose, onSelect }) => (
 	<form className='modal-form'>
 		<h3>{'Are you sure you want to delete "' + filename + '"?'}</h3>
 		<p>This item will be deleted immediately. You can't undo this action.</p>
@@ -121,7 +127,7 @@ const VerifyDelete = ({ filename, onDelete, onClose, onSelect }) => (
 			type="button"
 			value="Cancel"
 			onClick={onClose}
-			style={{color: "#0071e3"}}
+			style={{color: color}}
 		/>
 	</form>
 )

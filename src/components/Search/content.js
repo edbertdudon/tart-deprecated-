@@ -5,7 +5,7 @@ import { compose } from 'recompose'
 import DataSourceSearch from './datasourcesearch'
 import SearchSource from './searchsource'
 import useRecursiveTimeout from '../Home/useRecursiveTimeout.ts'
-import { shouldReloadTimer, getJobId, cancelJob, checkJobChanges } from '../Home/jobs'
+import { shouldReloadTimer, getJobId, cancelJob, checkJobChanges, submitJob } from '../Home/jobs'
 import { withFirebase } from '../Firebase'
 
 const withSearchContentNull = Component => props => (

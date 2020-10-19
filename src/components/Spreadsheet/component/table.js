@@ -77,7 +77,7 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
     // bboxes.push({ ri: rindex, ci: cindex, box: dbox });
     draw.strokeBorders(dbox);
   }
-  draw.rect(dbox, () => {
+  draw.rect(dbox, async () => {
     // render text
     let cellText = rRender(cell.text || '', data, datas)
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
@@ -333,7 +333,7 @@ class Table {
     const { x, y } = data.scroll;
     // 1
     renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
-    renderContent.call(this, viewRange, fw, fh, -x, -y);
+    renderContent.call(this, viewRange, fw, fh, -x, -y)
     renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
     renderFixedLeftTopCell.call(this, fw, fh);
     const [fri, fci] = data.freeze;

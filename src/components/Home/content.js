@@ -23,7 +23,7 @@ import DataSource from '../Datasource/datasource'
 import LoadingDataSource from '../Datasource/loadingdatasource'
 import NewDataSource from '../Datasource/newdatasource'
 import useRecursiveTimeout from './useRecursiveTimeout.ts'
-import { shouldReloadTimer, getJobId, cancelJob, checkJobChanges } from './jobs'
+import { shouldReloadTimer, getJobId, cancelJob, checkJobChanges, submitJob, updateFilesAfterTrash } from './jobs'
 
 import { withFirebase } from '../Firebase'
 

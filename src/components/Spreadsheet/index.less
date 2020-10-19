@@ -1,4 +1,4 @@
-@css-prefix: x-spreadsheet;
+@css-prefix: slide;
 // color
 @red-color: #DB2828;
 @red-hover-color: #d01919;
@@ -80,6 +80,7 @@ body {
 .@{css-prefix}-table {
   // html5 bottom margin bug
   vertical-align: bottom;
+  margin-left: 125px;
 }
 
 .@{css-prefix}-tooltip {
@@ -311,7 +312,7 @@ body {
 /* @{css-prefix}-overlayer */
 .@{css-prefix}-overlayer {
   position: absolute;
-  left: 0;
+  left: 125px;
   top: 0;
   z-index: 10;
   .@{css-prefix}-overlayer-content {
@@ -453,8 +454,8 @@ body {
   }
 }
 
-.x-spreadsheet-item,
-.x-spreadsheet-header,
+.slide-item,
+.slide-header,
 {
 
   &.state {
@@ -559,7 +560,7 @@ body {
   }
 }
 
-.@{css-prefix}-toolbar, .@{css-prefix}-bottombar {
+.@{css-prefix}-toolbar {
   height: 40px;
   padding: 0 30px;
   text-align: left;
@@ -569,16 +570,20 @@ body {
 }
 
 .@{css-prefix}-bottombar {
-  position: relative;
-  border-top: 1px solid #e0e2e4;
+  border-right: 1px solid #d6d6d6;
+  top: 113px;
+  min-width: 124px;
+  max-width: 124px;
+  height: calc(100% - 109px);
+  position: absolute;
+  z-index: 20;
+  background: #fff;
 
   .@{css-prefix}-menu > li {
-    line-height: 40px;
-    height: 40px;
-    padding-top: 0;
-    padding-bottom: 0;
-    vertical-align: middle;
-    border-right: 1px solid #e8eaed;
+    font-weight: 400;
+    font-size: 14px;
+    border: none;
+    width: 93px;
   }
 }
 
@@ -667,6 +672,10 @@ body {
   vertical-align: middle;
   height: 18px;
   margin: 12px 3px 0;
+}
+
+.@{css-prefix}-toolbar-space {
+  // width: calc(100vw - 1067px)
 }
 
 .@{css-prefix}-print {

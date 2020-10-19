@@ -4,6 +4,7 @@ import Charts from './charts'
 import ChartEditor from './charteditor'
 import Statistics from './statistics'
 import StatisticsEdtior from './StatisticsEditor'
+import Formulas from './formulas'
 import './index.less'
 
 const RightSidebar = ({ rightSidebar, setRightSidebar }) => {
@@ -18,7 +19,7 @@ const RightSidebar = ({ rightSidebar, setRightSidebar }) => {
       ? <Statistics setRightSidebar={setRightSidebar} setSelectedAnalysis={setSelectedAnalysis} />
       : <StatisticsEdtior setRightSidebar={setRightSidebar} selectedAnalysis={selectedAnalysis} setSelectedAnalysis={setSelectedAnalysis}/>,
     // optimize: <Optimize />,
-    // formulas: <Formulas />
+    formulas: <Formulas />
   }
 
   return (

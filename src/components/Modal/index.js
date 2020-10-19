@@ -13,7 +13,7 @@ const withModal = Component => (props) => {
     <>
       {props.isOpen &&
           <div className='modal' style={{ height: props.height }}>
-            <Component props={props} onClose={handleClose} onSelect={handleSelect} />
+            <Component {...props} onClose={handleClose} onSelect={handleSelect} />
           </div>
       }
     </>

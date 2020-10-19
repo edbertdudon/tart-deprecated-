@@ -13,9 +13,7 @@ const USER_DROPDOWN = [
 	{key: 'Settings', type: 'link', path: ROUTES.SETTINGS}
 ]
 
-const Header = ({ firebase, authUser, color, worksheetname, files, onSetFiles, onSetWorksheetname }) => {
-	// const {rename, setRename} = useContext(Context)
-
+const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSetFiles, onSetWorksheetname, saving, setSaving }) => {
 	useEffect(() => {
 		if (files[authUser.uid] === undefined) {
 			firebase.doListFiles(authUser.uid).then(res => {
@@ -25,17 +23,18 @@ const Header = ({ firebase, authUser, color, worksheetname, files, onSetFiles, o
 	}, [])
 
 	const handleChange = name => {
-		// const file = new File ([JSON.stringify(slides)], name, {type: "application/json"})
-		// firebase.doUploadFile(authUser.uid, name, file)
-		// firebase.doDeleteFile(authUser.uid, worksheetname[authUser.uid])
-		// onSetWorksheetname(name, authUser.uid)
+		setSaving(true)
+		const file = new File ([JSON.stringify(slides.getData())], name, {type: "application/json"})
+		firebase.doUploadFile(authUser.uid, name, file)
+		firebase.doDeleteFile(authUser.uid, worksheetname)
+			.then(() => {
+				setSaving(false)
+				onSetWorksheetname(name)
+			})
 	}
 
 	const handleDropdown = i => firebase.doSignOut()
 
-	// const handleSetRename = () => setRename(false)
-	// rename={rename}
-	// onSetRename={handleSetRename}
 	return (
 		<div className='worksheet-header'>
 			<div className='worksheet-header-right'>
@@ -48,13 +47,16 @@ const Header = ({ firebase, authUser, color, worksheetname, files, onSetFiles, o
 					color={OFF_COLOR[color[authUser.uid]]}
 				/>
 			</div>
-			<div className='worksheet-header-center'>
-				<EditableInput
-					value={worksheetname.replace(/\.[^/.]+$/, "")}
-					onCommit={handleChange}
-					files={files[authUser.uid]}
-					classname='worksheet-header-filename'
-				/>
+			<div className='worksheet-header-wrapper'>
+				<div className='worksheet-header-center'>
+					<EditableInput
+						value={worksheetname.replace(/\.[^/.]+$/, "")}
+						onCommit={handleChange}
+						files={files[authUser.uid]}
+						classname='worksheet-header-filename'
+					/>
+				</div>
+				{saving && <div className='worksheet-header-save'>- Saving...</div>}
 			</div>
 		</div>
 	)
@@ -79,6 +81,7 @@ const mapStateToProps = state => ({
 	worksheetname: (state.worksheetnameState.worksheetname || ''),
 	files: (state.filesState.files || {}),
 	color: (state.colorState.colors || {}),
+	slides: (state.slidesState.slides || {}),
 });
 
 const mapDispatchToProps = dispatch => ({

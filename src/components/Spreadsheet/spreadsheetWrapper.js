@@ -20,6 +20,7 @@ import React, { useRef, useEffect, useLayoutEffect } from 'react';
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
+import { rRender } from './cloudr'
 import Spreadsheet from './index.js'
 import { options } from './options.js'
 import { withFirebase } from '../Firebase'
@@ -34,7 +35,13 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSl
 		// 	worksheetname
 		// ).then(res => {
 			var s = new Spreadsheet('#spreadsheet', options)
-			// 	.loadData(res)
+				// .loadData(res)
+				// .on('cell-edited', (text, ri, ci) => {
+				// 	rRender(text, s.data, s.datas).then(cellText => {
+				// 		console.log(cellText)
+				// 		s.cellText(ri, ci, cellText).reRender()
+				// 	})
+				// })
 			onSetSlides(s)
 		// 	if (firstUpdate.current) {
 		// 		firstUpdate.current = false;
@@ -51,7 +58,7 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSl
 // 				authUser.uid,
 // 				worksheetname,
 // 				new File (
-// 					[JSON.stringify(slides)],
+// 					[JSON.stringify(slides.getData())],
 // 					worksheetname,
 // 					{type: "application/json"}
 // 				)

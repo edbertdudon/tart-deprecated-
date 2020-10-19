@@ -12,13 +12,20 @@ import './index.less'
 
 const Formulabar = ({ slides }) => {
   useEffect(() => {
-    console.log(slides)
+    // console.log(slides)
+    // try {
+    //   slides.on('cell-edited', (text, ri, ci) => {
+    //     console.log(text)
+    //   })
+    // } catch(e) {
+    //   console.log(e)
+    // }
   }, [])
 
   const handleChange = () => {
 
   }
-// value={slides.data.rows(slides.data.selector.ri, slides.data.selector.ci)}
+// value={slides.data.rows._[slides.data.selector.ri].cells[slides.data.selector.ci].text || ''}
   return (
     <input
 			type="text"

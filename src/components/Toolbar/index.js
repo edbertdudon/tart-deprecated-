@@ -1,4 +1,5 @@
 import React from 'react'
+import './index.less'
 
 import Files from './file'
 import Edit from './edit'
@@ -11,7 +12,7 @@ const Toolbar = ({ rightSidebar, setRightSidebar }) => {
 		<div className='worksheet-toolbar'>
 			<Files />
 			<Edit />
-			<Insert />
+			<Insert rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<Table />
 			<View rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 		</div>

@@ -85,20 +85,21 @@ export default class Bottombar {
     });
     this.contextMenu = new ContextMenu();
     this.contextMenu.itemClick = deleteFunc;
-    this.el = h('div', `${cssPrefix}-bottombar`).children(
+    this.el = h('div', `${cssPrefix}-bottombar`, `${cssPrefix}-bottombar`).children(
       this.contextMenu.el,
-      this.menuEl = h('ul', `${cssPrefix}-menu`).child(
-        h('li', '').children(
-          new Icon('add').on('click', () => {
-            if (this.dataNames.length < 10) {
-              addFunc();
-            } else {
-              xtoast('tip', 'it less than or equal to 10');
-            }
-          }),
-          h('span', '').child(this.moreEl),
-        ),
-      ),
+      this.menuEl = h('ul', `${cssPrefix}-menu`)
+      // .child(
+      //   h('li', '').children(
+          // new Icon('add').on('click', () => {
+          //   if (this.dataNames.length < 10) {
+          //     addFunc();
+          //   } else {
+          //     xtoast('tip', 'it less than or equal to 10');
+          //   }
+          // }),
+          // h('span', '').child(this.moreEl),
+      //   ),
+      // ),
     );
   }
 

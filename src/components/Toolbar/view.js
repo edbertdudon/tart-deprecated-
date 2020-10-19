@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
@@ -6,34 +6,30 @@ import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
 const View = ({ authUser, color, isLoaded, rightSidebar, setRightSidebar }) => {
+  const [navigator, setNavigator] = useState(true)
+
   const VIEW_DROPDOWN = [
-    {key: 'Connections', type: 'toggle', visibility: rightSidebar === 'connections'},
-    {key: 'Charts', type: 'toggle', visibility: rightSidebar === 'charts'},
     {key: 'Chart Editor', type: 'toggle', visibility: rightSidebar === 'charteditor'},
-    {key: 'Statistics', type: 'toggle', visibility: rightSidebar === 'statistics'},
-    {key: 'Optimize', type: 'toggle', visibility: rightSidebar === 'optimize'},
-    {key: 'Formulas', type: 'toggle', visibility: rightSidebar === 'formulas'},
+    {key: 'Navigator', type: 'toggle', visibility: navigator},
+    // {key: 'Optimize', type: 'toggle', visibility: rightSidebar === 'optimize'},
   ]
 
   const handleView = key => {
     switch (key) {
       case VIEW_DROPDOWN[0].key:
-        handleToggle('connections')
-        break;
-      case VIEW_DROPDOWN[1].key:
-        handleToggle('charts')
-        break;
-      case VIEW_DROPDOWN[2].key:
         handleToggle('charteditor')
         break;
-      case VIEW_DROPDOWN[3].key:
-        handleToggle('statistics')
-        break;
-      case VIEW_DROPDOWN[4].key:
-        handleToggle('optimize')
-        break;
-      case VIEW_DROPDOWN[5].key:
-        handleToggle('formulas')
+      case VIEW_DROPDOWN[1].key:
+        setNavigator(!navigator)
+        if (navigator) {
+          document.getElementById('slide-table').style.marginLeft = '0'
+          document.getElementById('slide-overlayer').style.left = '0'
+          document.getElementById('slide-bottombar').style.display = 'none'
+        } else {
+          document.getElementById('slide-table').style.marginLeft = '125px'
+          document.getElementById('slide-overlayer').style.left = '125px'
+          document.getElementById('slide-bottombar').style.display = 'block'
+        }
         break;
     }
   }

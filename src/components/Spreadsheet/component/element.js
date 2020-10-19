@@ -1,10 +1,13 @@
 /* global document */
 /* global window */
 class Element {
-  constructor(tag, className = '') {
+  constructor(tag, className = '', id = '') {
     if (typeof tag === 'string') {
       this.el = document.createElement(tag);
       this.el.className = className;
+      if (id.length > 0) {
+        this.el.setAttribute('id', id)
+      }
     } else {
       this.el = tag;
     }
@@ -267,7 +270,7 @@ class Element {
   }
 }
 
-const h = (tag, className = '') => new Element(tag, className);
+const h = (tag, className = '', id = '') => new Element(tag, className, id);
 
 export {
   Element,

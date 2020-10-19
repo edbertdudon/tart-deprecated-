@@ -15,7 +15,7 @@ import FillColor from './fill_color';
 import FontSize from './font_size';
 import Font from './font';
 import Format from './format';
-import Formula from './formula';
+import Function from './function';
 import Freeze from './freeze';
 import Merge from './merge';
 import Redo from './redo';
@@ -23,6 +23,9 @@ import Undo from './undo';
 import Print from './print';
 import Textwrap from './textwrap';
 import More from './more';
+import Chart from './chart'
+import Statistics from './statistics'
+import Optimize from './optimize'
 
 import { h } from '../element';
 import { cssPrefix } from '../../config';
@@ -30,6 +33,10 @@ import { bind } from '../event';
 
 function buildDivider() {
   return h('div', `${cssPrefix}-toolbar-divider`);
+}
+
+function buildSpace() {
+  return h('div', `${cssPrefix}-toolbar-space`);
 }
 
 function initBtns2() {
@@ -128,9 +135,15 @@ export default class Toolbar {
       [
         this.freezeEl = new Freeze(),
         this.autofilterEl = new Autofilter(),
-        this.formulaEl = new Formula(),
         this.moreEl = new More(),
       ],
+      buildSpace(),
+      [
+        this.functionEl = new Function(),
+        this.chartEl = new Chart(),
+        this.statisticsEl = new Statistics(),
+        this.optimzeEl = new Optimize(),
+      ]
     ];
 
     this.el = h('div', `${cssPrefix}-toolbar`);

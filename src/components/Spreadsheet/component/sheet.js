@@ -280,7 +280,7 @@ function sheetFreeze() {
   selector.resetAreaOffset();
 }
 
-function sheetReset() {
+export function sheetReset() {
   const {
     tableEl,
     overlayerEl,
@@ -433,7 +433,7 @@ function editorSetOffset() {
   editor.setOffset(sOffset, sPosition);
 }
 
-function editorSet() {
+export function editorSet() {
   const { editor, data } = this;
   if (data.settings.mode === 'read') return;
   editorSetOffset.call(this);
@@ -857,7 +857,7 @@ export default class Sheet {
     targetEl.children(this.toolbar.el, this.el, this.print.el);
     this.data = data;
     // table
-    this.tableEl = h('canvas', `${cssPrefix}-table`);
+    this.tableEl = h('canvas', `${cssPrefix}-table`, `${cssPrefix}-table`);
     // resizer
     this.rowResizer = new Resizer(false, data.rows.height);
     this.colResizer = new Resizer(true, data.cols.minWidth);
@@ -881,7 +881,7 @@ export default class Sheet {
         this.editor.el,
         this.selector.el,
       );
-    this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
+    this.overlayerEl = h('div', `${cssPrefix}-overlayer`, `${cssPrefix}-overlayer`)
       .child(this.overlayerCEl);
     // sortFilter
     this.sortFilter = new SortFilter();

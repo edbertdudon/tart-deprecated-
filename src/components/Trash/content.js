@@ -45,13 +45,18 @@ const Content = ({ firebase, authUser }) => {
 
   return (
   	<div className='home-content'>
-      {connections.length < 1
-        ?	<div className='home-content-search'>Trash is empty</div>
-        :	<div>
-            {trash.map((file, index) =>
-              <DataTrash filename={file} onReload={handleUpdateAfterDelete} key={index} connections={connections} />
-            )}
-          </div>
+      {loading
+        ? <LoadingDataSource />
+        : <>
+            {connections.length < 1
+              ?	<div className='home-content-search'>Trash is empty</div>
+              :	<div>
+                  {trash.map((file, index) =>
+                    <DataTrash filename={file} onReload={handleUpdateAfterDelete} key={index} connections={connections} />
+                  )}
+                </div>
+            }
+          </>
       }
   	</div>
   )
