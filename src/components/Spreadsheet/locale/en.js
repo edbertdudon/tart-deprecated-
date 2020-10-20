@@ -45,6 +45,9 @@ export default {
     cellnonprintable: 'Disable export',
     celleditable: 'Enable editing',
     cellnoneditable: 'Disable editing',
+    newSheet: 'New Sheet',
+    rename: 'Rename',
+    duplicate: 'Duplicate',
   },
   print: {
     size: 'Paper size',

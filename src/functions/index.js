@@ -45,11 +45,11 @@ export function getMaxNumberFromFiles(files) {
   }
 }
 
-export function getMaxNumberCustomFile(slides, prefix) {
+export function getMaxNumberCustomFile(dataNames, prefix) {
   let names = []
-  for (var i=0; i<slides.length; i++) {
-    if (slides[i].name.startsWith(prefix) && /^\d+$/.test(slides[i].name.substring(prefix.length))) {
-      names.push(slides[i].name.substring(prefix.length))
+  for (var i=0; i<dataNames.length; i++) {
+    if (dataNames[i].startsWith(prefix) && /^\d+$/.test(dataNames[i].substring(prefix.length))) {
+      names.push(dataNames[i].substring(prefix.length))
     }
   }
   let max = Math.max(...names)
@@ -89,6 +89,7 @@ export function stox(wb) {
     var o = {name:name, rows:{}};
     var ws = wb.Sheets[name];
     var aoa = XLSX.utils.sheet_to_json(ws, {raw: false, header:1});
+    console.log(aoa)
     aoa.forEach(function(r, i) {
       var cells = {};
       r.forEach(function(c, j) { cells[j] = ({ text: c }); });

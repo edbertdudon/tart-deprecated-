@@ -43,18 +43,13 @@ const withLists = Component => (props) => {
 				{props.name}
 			</div>
 			{(showOptions && props.options.length > 0) &&
-				<ul>
-					{props.options.map((option, index) => {
-						if (index === activeOption) {
-							var classNameOptionActive = 'option-active'
-						}
-						return (
-							<li className={classNameOptionActive} key={index} onClick={handleSelectComponent} onMouseEnter={() => toggleHover(index)}>
+				<div className='rightsidebar-dropdown-content'>
+					{props.options.map((option, index) =>
+							<div className='rightsidebar-dropdown-item' key={index} onClick={handleSelectComponent} onMouseEnter={() => toggleHover(index)}>
 								<Component option={option} />
-							</li>
-						)
-					})}
-				</ul>
+							</div>
+					)}
+				</div>
 			}
 		</div>
 	)

@@ -1,13 +1,13 @@
 export const getTableSample = (connector, data, firebase) => {
 	switch (connector) {
 		case 'MySQL':
-			return firebase.doGetTableSampleFromMySql(data)
+			return firebase.doGetTableSample(data, 'getTableSampleMySql')
 			break
 		case 'Microsoft SQL Server':
-			return firebase.doGetTableSampleFromMsSql(data)
+			return firebase.doGetTableSample(data, 'getTableSampleMsSql')
 			break
 		case 'Oracle SQL':
-			return firebase.doGetTableSampleFromOracledb(data)
+			return firebase.doGetTableSample(data, 'getTableSampleOracledb')
 			break
 	}
 }

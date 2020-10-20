@@ -1,3 +1,13 @@
+//
+//  StatisticsEditor
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
+//  Notes:
+//	newOptions doesn't auto update on change
+//
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
@@ -5,6 +15,7 @@ import Icon from '@mdi/react';
 import { mdiLoading } from '@mdi/js'
 
 import statistics from '../statisticsR'
+import { doRegression } from '../../Spreadsheet/cloudr'
 import { setFormula, setSparkData, setStatisticalFunciton, cbindDependents } from './functions'
 import { getMaxNumberCustomFile } from '../../../functions'
 import Anova from './Anova'
@@ -20,7 +31,7 @@ const ALTERNATIVES = ["two.sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
 const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
 
-const StatisticsEditor = ({ firebase, authUser, color, setRightSideBar, selectedAnalysis, setSelectedAnalysis }) => {
+const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, selectedAnalysis, setSelectedAnalysis }) => {
 	const [variables, setVariables] = useState([])
 	const [oneWayAnova, setOneWayAnova] = useState('')
 	const [randomizedBlockDesign, setRandomizedBlockDesign] = useState('')
@@ -54,22 +65,12 @@ const StatisticsEditor = ({ firebase, authUser, color, setRightSideBar, selected
 	const [error, setError] = useState(null)
 	const [loading, setLoading] = useState(false)
 
-	// useEffect(() => {
-	// 	let newOptions = []
-	// 	let slide = slides[currentSlide]
-	// 	if (slide.type !== "chart") {
-	// 		for (var j=0; j<slide.data[0].length; j++) {
-	// 			if (slide.data[0][j].value !== "" && slide.data[0][j].value != null) newOptions.push(slide.data[0][j].value)
-	// 		}
-	// 		setVariables(newOptions)
-	// 	}
-	// }, [slides, currentSlide])
-
-	// useEffect(() => {
-	// 	if (slides[currentSlide].type === "chart") {
-	// 		setVariables([])
-	// 	}
-	// }, [currentSlide])
+	useEffect(() => {
+		if (slides.data.type !== "chart" && !(Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object)) {
+			setVariables(Object.values(slides.data.rows._[0].cells)
+				.map(variable => Object.values(variable)[0]))
+		}
+	}, [])
 
 	const handleBack = () => setSelectedAnalysis(null)
 
@@ -230,9 +231,9 @@ const StatisticsEditor = ({ firebase, authUser, color, setRightSideBar, selected
 			linearRegressionVars2,
 			formulaText,
 			formulaText2,
-			variableX,
-			variableY,
-			variableZ,
+			variables[variableX],
+			variables[variableY],
+			variables[variableZ],
 			groups,
 			blocks,
 			alt,
@@ -241,7 +242,7 @@ const StatisticsEditor = ({ firebase, authUser, color, setRightSideBar, selected
 			confidenceLevel,
 			level,
 			paired,
-			cbindDependents(matrix, variables),
+			matrix.length > 0 ? cbindDependents(matrix, variables) : matrix,
 			corr
 		)
 		if (statisticalFunction.includes("()")) {
@@ -249,25 +250,28 @@ const StatisticsEditor = ({ firebase, authUser, color, setRightSideBar, selected
 			setLoading(false)
 			return
 		}
-		// let formulaData = setFormula(slides, currentSlide, statisticalFunction)
-		// let statName = statistics[selectedAnalysis].name + getMaxNumberFile(slides, statistics[selectedAnalysis].name)
-		// let sparkData = setSparkData(slides, currentSlide, statisticalFunction)
-		// firebase.doRegression(formulaData)
-		// 	.then(res => {
-		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
-		// 			setError(res)
-		// 			setLoading(false)
-		// 		} else {
-		// 			dispatchSlides({function:'REGRESSION', data: res, name: statName, currentSlide: currentSlide, regression: sparkData, type:"regression"})
-		// 	        setCurrentSlide(currentSlide+1)
-		// 	        setRightSideBar('none')
-		// 			setSelectedAnalysis(null)
-		// 			setLoading(false)
-		// 		}
-		//   })
+		let formulaData = setFormula(slides, statisticalFunction)
+		let statName = statistics[selectedAnalysis].name + ' '
+			+ getMaxNumberCustomFile(slides.bottombar.dataNames, statistics[selectedAnalysis].name)
+		let sparkData = setSparkData(slides, statisticalFunction)
+		doRegression(formulaData)
+			.then(res => {
+				if (typeof res[0] === "string" || res[0] instanceof String) {
+					setError(res)
+					setLoading(false)
+				} else {
+					res.name = statName
+					res.type = "regression"
+					res.regression = sparkData
+					slides.loadData(slides.getData().concat([res]))
+	        setRightSidebar('none')
+					setSelectedAnalysis(null)
+					setLoading(false)
+				}
+		  })
 	}
 
-	const isInvalid = trueMeanError !== null || confidenceLevelError !== null
+	const isInvalid = variables.length < 1 || trueMeanError !== null || confidenceLevelError !== null
 
 	return (
     <>
@@ -523,6 +527,7 @@ const StatisticsEditor = ({ firebase, authUser, color, setRightSideBar, selected
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+	slides: (state.slidesState.slides || {}),
 });
 
 

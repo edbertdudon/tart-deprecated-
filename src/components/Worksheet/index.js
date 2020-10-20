@@ -16,7 +16,7 @@ const Worksheet = () => {
 			<Header saving={saving} setSaving={setSaving} />
 			<Toolbar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<Formulabar />
-			<RightSidebar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
+			<RightSidebar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} setSaving={setSaving} />
 			<SpreadsheetWrapper />
 		</div>
 	)

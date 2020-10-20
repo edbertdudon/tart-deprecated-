@@ -28,8 +28,8 @@ const Content = ({ firebase, authUser }) => {
 						}
 					})
 				}
+        setLoading(false)
 			})
-		setLoading(false)
 	}, [])
 
 	const handleReloadAfterDelete = (filename) => {
@@ -50,7 +50,7 @@ const Content = ({ firebase, authUser }) => {
   	<div className='home-content'>
       {connections.length < 1
         ?	<div className='home-content-search'>
-            Your database connections will appear here
+            Your uploaded files will appear here
           </div>
         :	<div>
             {connections.map(host =>

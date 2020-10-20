@@ -1,37 +1,21 @@
 import { spreadsheetToR } from '../../Spreadsheet/cloudr'
 
-export function setFormula(slides, currentSlide, formula) {
-	// let current
-	// if (slides[currentSlide].type === "regression") {
-	// 	let sheetname = slides[currentSlide].data.name
-	// 	current = slides.map(slide => {return slide.name})
-	// 		.indexOf(sheetname)
-	// } else {
-	// 	current = currentSlide
-	// }
-	// let regressionData = {
-	// 	formulatext: formula,
-	// 	name: slides[current].name,
-	// 	slides: JSON.stringify(spreadsheetToR(datas)),
-	// 	names: JSON.stringify(datas.map(data => data.name))
-	// }
-  // return(regressionData)
+export function setFormula(slides, formula) {
+	const current = slides.bottombar.dataNames.indexOf(slides.data.name)
+	return {
+		formulatext: formula,
+		name: slides.datas[current].name,
+		slides: JSON.stringify(spreadsheetToR(slides.datas)),
+		names: JSON.stringify(slides.bottombar.dataNames)
+	}
 }
 
-export function setSparkData(slides, currentSlide, formula) {
-	// let current
-	// if (slides[currentSlide].type === "regression") {
-	// 	let sheetname = slides[currentSlide].data.name
-	// 	current = slides.map(slide => {return slide.name})
-	// 		.indexOf(sheetname)
-	// } else {
-	// 	current = currentSlide
-	// }
-	// let regressionData = {
-	// 	formulatext: formula,
-	// 	name: slides[current].name,
-	// }
-  // return(regressionData)
+export function setSparkData(slides, formula) {
+	const current = slides.bottombar.dataNames.indexOf(slides.data.name)
+	return {
+		formulatext: formula,
+		name: slides.datas[current].name,
+	}
 }
 
 const ALTERNATIVES = ["two.sided", "greater", "less"]
@@ -46,23 +30,22 @@ export function setStatisticalFunciton(
 	) {
 	let isVarEqual = VAR_EQUAL[varEqual] === VAR_EQUAL[1]
 	let statisticalFunction = statistic.function
-
-	if (oneWayAnova != "") statisticalFunction = statisticalFunction + oneWayAnova + ", currentLattitude"
-	if (randomizedBlockDesign != "") statisticalFunction = statisticalFunction + randomizedBlockDesign + ", currentLattitude"
-	if (twoWayAnova != "") statisticalFunction = statisticalFunction + twoWayAnova + ", currentLattitude"
-	if (analysisOfCovariance != "") statisticalFunction = statisticalFunction + analysisOfCovariance + ", currentLattitude"
-	if (oneWayWithin != "") statisticalFunction = statisticalFunction + oneWayWithin + ", currentLattitude"
-	if (twoWayWithin != "") statisticalFunction = statisticalFunction + twoWayWithin + ", currentLattitude"
-	if (twoWayBetween != "") statisticalFunction = statisticalFunction + twoWayBetween + ", currentLattitude"
-	if (linearRegressionVars != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars + ", currentLattitude)"
-	if (linearRegressionVars2 != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars2 + ", currentLattitude)"
-	if (formulaText != "") statisticalFunction = statisticalFunction + "lm(" + formulaText + ", currentLattitude)"
-	if (formulaText2 != "") statisticalFunction = statisticalFunction + "lm(" + formulaText2 + ", currentLattitude)"
+	if (oneWayAnova != "") statisticalFunction = statisticalFunction + oneWayAnova + ",currentLattitude"
+	if (randomizedBlockDesign != "") statisticalFunction = statisticalFunction + randomizedBlockDesign + ",currentLattitude"
+	if (twoWayAnova != "") statisticalFunction = statisticalFunction + twoWayAnova + ",currentLattitude"
+	if (analysisOfCovariance != "") statisticalFunction = statisticalFunction + analysisOfCovariance + ",currentLattitude"
+	if (oneWayWithin != "") statisticalFunction = statisticalFunction + oneWayWithin + ",currentLattitude"
+	if (twoWayWithin != "") statisticalFunction = statisticalFunction + twoWayWithin + ",currentLattitude"
+	if (twoWayBetween != "") statisticalFunction = statisticalFunction + twoWayBetween + ",currentLattitude"
+	if (linearRegressionVars != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars + ",currentLattitude)"
+	if (linearRegressionVars2 != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars2 + ",currentLattitude)"
+	if (formulaText != "") statisticalFunction = statisticalFunction + "lm(" + formulaText + ",currentLattitude)"
+	if (formulaText2 != "") statisticalFunction = statisticalFunction + "lm(" + formulaText2 + ",currentLattitude)"
 
 	// supplemental variables
-	if (variableX != null) statisticalFunction = statisticalFunction + ",x=" + variableX
-	if (variableY != null) statisticalFunction = statisticalFunction + ",y=" + variableY
-	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=" + variableZ
+	if (variableX != null) statisticalFunction = statisticalFunction + ",x=currentLattitude$" + variableX
+	if (variableY != null) statisticalFunction = statisticalFunction + ",y=currentLattitude$" + variableY
+	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=currentLattitude$" + variableZ
 	if (ALTERNATIVES[alt] != "two.sided") statisticalFunction = statisticalFunction + ",alternative=" + ALTERNATIVES[alt]
 	if (isVarEqual != false) statisticalFunction = statisticalFunction + ",var.equal=TRUE"
 	if (trueMean != 0) statisticalFunction = statisticalFunction + ",mu=" + trueMean

@@ -26,7 +26,7 @@ import { options } from './options.js'
 import { withFirebase } from '../Firebase'
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default'
 
-const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSlides }) => {
+const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSlides, setSaving }) => {
 	const firstUpdate = useRef(true)
 
 	useLayoutEffect(() => {
@@ -51,22 +51,19 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSl
 		// return () => unsubscribe
 	}, [])
 
-// useEffect(() => {
-// 	const timer = setTimeout(() => {
-// 		if (firstUpdate.current === false && slides[0].data !== null) {
-// 			props.firebase.doUploadFile(
-// 				authUser.uid,
-// 				worksheetname,
-// 				new File (
-// 					[JSON.stringify(slides.getData())],
-// 					worksheetname,
-// 					{type: "application/json"}
-// 				)
-// 			)
-// 		}
-// 	}, 750)
-// 	return () => clearTimeout(timer)
-// }, [slides])
+	// useEffect(() => {
+	// 	const timer = setTimeout(() => {
+	// 		if (firstUpdate.current === false && slides[0].data !== null) {
+	// 			setSaving(true)
+	// 			props.firebase.doUploadFile(
+	// 				authUser.uid,
+	// 				worksheetname,
+	// 				new File ([JSON.stringify(slides.getData())], worksheetname, {type: "application/json"})
+	// 			).then(() => setSaving(false))
+	// 		}
+	// 	}, 750)
+	// 	return () => clearTimeout(timer)
+	// }, [slides])
 
 	return (
  		<div id="spreadsheet"></div>

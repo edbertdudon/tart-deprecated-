@@ -1,4 +1,4 @@
-//  DataConnection
+//  DataInput
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -9,7 +9,8 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
 import Icon from '@mdi/react';
-import { mdiDatabase, mdiDotsHorizontal } from '@mdi/js'
+import { mdiDotsHorizontal } from '@mdi/js'
+import { mdilFile } from '@mdi/light-js'
 import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color'
 import { withFirebase } from '../Firebase'
@@ -18,9 +19,8 @@ const DATASOURCE_DROPDOWN = [
 	{key: 'Move to trash', type: 'item'},
 ]
 
-const DataConnection = ({ firebase, authUser, color, filename, onReload }) => {
+const DataInput = ({ firebase, authUser, color, filename, onReload }) => {
 	const [hover, setHover] = useState(false)
-	const [hoverDropdown, setHoverDropdown] = useState(false)
 
 	const handleTrash = () => {
 		let today = new Date().toLocaleDateString()
@@ -44,7 +44,7 @@ const DataConnection = ({ firebase, authUser, color, filename, onReload }) => {
 		<div className='datasource-thumbnail'>
 			<ContextMenuTrigger className='datasource-dropdown' id={'right-click' + filename}>
 				<div className='datasource-icon'>
-					<Icon path={mdiDatabase} size={5}/>
+					<Icon path={mdilFile} size={5}/>
 				</div>
 				<div className='datasource-buttons-wrapper'>
 					<OptionWithDropdown
@@ -87,4 +87,4 @@ export default compose(
 	connect(
 		mapStateToProps,
 	),
-)(DataConnection)
+)(DataInput)

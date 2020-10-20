@@ -29,9 +29,9 @@ const JobsContentRunning = ({ files, jobs, onSetJobs, firebase, authUser, isJobs
 					})
 					onSetFiles(filesLessTrash, authUser.uid)
 				}
+				setLoading(false)
 			})
 		})
-		setLoading(false)
 		firebase.doListJobs(authUser.uid)
 			.then(res => onSetJobs(res))
 			.then(() => onSetIsJobsActive(shouldReloadTimer(jobs)))
@@ -87,12 +87,6 @@ const JobsContentRunning = ({ files, jobs, onSetJobs, firebase, authUser, isJobs
 	)
 }
 
-const withConditiionalRenderings = compose(
-	withJobsContentNull,
-)
-
-const JobsContentWithConditionalRendering = withConditiionalRenderings(JobsContentRunning)
-
 const JobsContent = ({ firebase, authUser, jobs, files, onSetJobs, isJobsActive, onSetIsJobsActive, onSetFiles }) => {
 	return (
 		<div className='home-content'>
@@ -109,6 +103,12 @@ const JobsContent = ({ firebase, authUser, jobs, files, onSetJobs, isJobsActive,
 		</div>
 	)
 }
+
+const withConditiionalRenderings = compose(
+	withJobsContentNull,
+)
+
+const JobsContentWithConditionalRendering = withConditiionalRenderings(JobsContentRunning)
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,

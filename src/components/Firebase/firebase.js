@@ -143,6 +143,36 @@ class Firebase {
 		}).then(res => res.json())
   }
 
+  // *** Database Connector API ***
+
+  doConnect = (data, connector) => {
+    return this.auth.currentUser.getIdToken().then(authToken => {
+      return fetchG(connector, data, authToken)
+        .then(res => res.json()).then(res => {return res})
+    })
+  }
+
+  doListDatabases = (data, connector) => {
+    return this.auth.currentUser.getIdToken().then(authToken => {
+      return fetchG(connector, data, authToken)
+        .then(res => res.json()).then(res => {return res})
+    })
+  }
+
+  doListTables = (data, connector) => {
+    return this.auth.currentUser.getIdToken().then(authToken => {
+      return fetchG(connector, data, authToken)
+        .then(res => res.json()).then(res => {return res})
+    })
+  }
+
+  doGetTableSample = (data, connector) => {
+    return this.auth.currentUser.getIdToken().then(authToken => {
+      return fetchG(connector, data, authToken)
+        .then(res => res.json()).then(res => {return res})
+    })
+  }
+
 	// *** Jobs Tracker API ***
 
 	job = uid => this.db.collection('jobs').doc(uid)

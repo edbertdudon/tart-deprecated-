@@ -1,48 +1,46 @@
 import React, { useState, useEffect } from 'react'
+import { connect } from 'react-redux'
+import { compose } from 'recompose'
+
 import charts from './chartsR'
 import withLists from './withLists'
 import withListsDropdown from './withListsDropdown'
-// import { setChart } from '../functions'
+import { setChart } from './charts'
 
-const ChartEditor = ({ selectedCharts, setSelectedCharts }) => {
+const ChartEditor = ({ slides, selectedCharts, setSelectedCharts }) => {
 	const [variables, setVariables] = useState([])
 	const [variableX, setVariableX] = useState(0)
 	const [variableY, setVariableY] = useState(1)
 
-	// useEffect(() => {
-	// 	if (slides[0].data == null) return
-	// 	let current
-	// 	if (slides[currentSlide].type === "chart") {
-	// 		let sheetname = slides[currentSlide].data.name
-	// 		current = slides.map(slide => {return slide.name})
-	// 			.indexOf(sheetname)
-	// 	} else {
-	// 		current = currentSlide
-	// 	}
-	// 	let newOptions = []
-	// 	let slide = slides[current]
-	// 	if (current == -1) {
-	// 		setVariables(newOptions)
-	// 	} else {
-	// 		for (var j=0; j<slide.data[0].length; j++) {
-	// 			if (slide.data[0][j].value !== "" && slide.data[0][j].value != null) newOptions.push(slide.data[0][j].value)
-	// 		}
-	// 		setVariables(newOptions)
-	// 	}
-	// 	if (slides[currentSlide].type === "chart") {
-	// 		let varx = slides[currentSlide].data.variablex
-	// 		let currentVarX = newOptions.map(variable => {return variable})
-	// 			.indexOf(varx)
-	// 		setVariableX(currentVarX)
-	//
-	// 		if ("variabley" in slides[currentSlide].data) {
-	// 			let vary = slides[currentSlide].data.variabley
-	// 			let currentVarY = newOptions.map(variable => {return variable})
-	// 				.indexOf(vary)
-	// 			setVariableY(currentVarY)
-	// 		}
-	// 	}
-	// }, [slides, currentSlide])
+	useEffect(() => {
+		if ((Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) || !("0" in slides.data.rows._)) {
+			return
+		}
+		let current
+		if (slides.data.type === "chart") {
+			current = slides.bottombar.dataNames.indexOf(slides.data.chart.name)
+		} else {
+			current = slides.bottombar.dataNames.indexOf(slides.data.name)
+		}
+		let slide = slides.datas[current]
+		if (!(current == -1)) {
+			setVariables(Object.values(slides.data.rows._[0].cells)
+				.map(variable => Object.values(variable)[0]))
+		}
+		if (slides.data.type === "chart") {
+			let varx = slides.data.chart.variablex
+			let currentVarX = newOptions.map(variable => {return variable})
+				.indexOf(varx)
+			setVariableX(currentVarX)
+
+			if ("variabley" in slides[currentSlide].data) {
+				let vary = slides.data.chart.variabley
+				let currentVarY = newOptions.map(variable => {return variable})
+					.indexOf(vary)
+				setVariableY(currentVarY)
+			}
+		}
+	}, [])
 
 	// useEffect(() => {
 	// 	if (slides[currentSlide].type === "chart") {
@@ -95,6 +93,7 @@ const ChartEditor = ({ selectedCharts, setSelectedCharts }) => {
 								selection={selectedCharts}
 								setSelection={setSelectedCharts}
 								currentSelection={index}
+								key={index}
 							/>
 						))}
 						<ChartsWithLists
@@ -133,4 +132,12 @@ const ChartsWithListsDropdown = withListsDropdown(Charts)
 const ChartsWithLists = withLists(Charts)
 const OptionsWithLists = withLists(Options)
 
-export default ChartEditor
+const mapStateToProps = state => ({
+	slides: (state.slidesState.slides || {}),
+});
+
+export default compose(
+	connect(
+		mapStateToProps,
+	),
+)(ChartEditor)

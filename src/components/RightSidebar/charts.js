@@ -4,15 +4,41 @@ import { compose } from 'recompose'
 import Icon from '@mdi/react'
 import { mdiClose } from '@mdi/js'
 
-// import { setChart } from '../functions'
 import { getMaxNumberCustomFile } from '../../functions'
+import { translateR } from '../Spreadsheet/cloudR'
 import charts from './chartsR'
 
-const Charts = ({ authUser, color, setRightSidebar, setSelectedCharts }) => {
+export function setChart(slides, variables, chartsIndex, variablex, variabley) {
+	let current
+	if (slides.data.type === "chart") {
+		current = slides.bottombar.dataNames.indexOf(slides.data.chart.name)
+	} else {
+		current = slides.bottombar.dataNames.indexOf(slides.data.name)
+	}
+	let chartTypes = []
+	let chartVariables = []
+	for (var i=0; i<chartsIndex.length; i++) {
+		chartTypes.push(charts[chartsIndex[i]].type)
+		chartVariables.push(charts[chartsIndex[i]].variables)
+	}
+	let chartData = {
+		name: slides.datas[current].name,
+		type: chartTypes.join("+"),
+	}
+	if (Math.max(...chartVariables) > 0 && variables.length > 0) {
+		chartData["variablex"] = translateR(variables[variablex], slides.datas[current].name)
+	}
+	if (Math.max(...chartVariables) > 1 && variables.length > 1) {
+		chartData["variabley"] = translateR(variables[variabley], slides.datas[current].name)
+	}
+	return(chartData)
+}
+
+const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts }) => {
 	const [filteredOption, setFilteredOption] = useState(charts)
 
 	const handleSelectChart = chart => {
-		setRightSideBar('charteditor')
+		setRightSidebar('charteditor')
 		let chartNumber
 		for (var i=0; i<charts.length; i++) {
 			if (chart === charts[i].name) {
@@ -21,18 +47,19 @@ const Charts = ({ authUser, color, setRightSidebar, setSelectedCharts }) => {
 			}
 		}
 		setSelectedCharts([chartNumber])
-		let variables = []
-		// if (slides[currentSlide].type !== "chart") {
-		// 	let slide = slides[currentSlide]
-		// 	for (var j=0; j<slide.data[0].length; j++) {
-		// 		if (slide.data[0][j].value !== "" && slide.data[0][j].value != null) {
-		// 			variables.push(slide.data[0][j].value)
-		// 		}
-		// 	}
-		// }
-		// let chartData = setChart(slides, currentSlide, variables, [chartNumber], 0, 1, 2)
-		// dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
-		// setCurrentSlide(currentSlide+1)
+		if (slides.data.type !== "chart") {
+			let variables
+			if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
+				variables = []
+			} else {
+				variables = Object.values(slides.data.rows._[0].cells)
+					.map(variable => Object.values(variable)[0])
+			}
+			let chartData = setChart(slides, variables, [chartNumber], 0, 1, 2)
+			console.log(chartData)
+			// dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
+			// setCurrentSlide(currentSlide+1)
+		}
 	}
 
 	const handleSearch = e => {
@@ -44,7 +71,7 @@ const Charts = ({ authUser, color, setRightSidebar, setSelectedCharts }) => {
 	}
 
 	const handleEditor = () => {
-		setRightSideBar('charteditor')
+		setRightsidebar('charteditor')
 	}
 
 	return (
@@ -72,6 +99,7 @@ const Charts = ({ authUser, color, setRightSidebar, setSelectedCharts }) => {
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
 	color: (state.colorState.colors || {}),
+	slides: (state.slidesState.slides || {}),
 });
 
 export default compose(

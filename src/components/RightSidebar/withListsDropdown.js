@@ -11,7 +11,7 @@ const withListsDropdown = Component => (props) => {
   const [showOptions, setShowOptions] = useState(false)
   const [activeOption, setActiveOption] = useState(null)
   const wrapperRef = useRef(null)
-
+	
   const useOutsideAlerter = (ref) => {
     const handleOutsideClick = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
@@ -34,8 +34,6 @@ const withListsDropdown = Component => (props) => {
   }
   useOutsideAlerter(wrapperRef)
 
-  const toggleComponent = () => setShowOptions(!showOptions)
-
   const handleSelectComponent = () => {
     setShowOptions(false)
     let newSelection = props.selection.map((selected, j) => {
@@ -51,6 +49,7 @@ const withListsDropdown = Component => (props) => {
   }
 
   const handleDelete = () => {
+		setShowOptions(false)
     if (props.selection.length > 1) {
       let newSelection = props.selection.filter((selected, j) => props.currentSelection !== j)
       props.setSelection(newSelection)
@@ -60,36 +59,33 @@ const withListsDropdown = Component => (props) => {
 
   const toggleHover = (index) => setActiveOption(index)
 
+	const toggleComponent = () => setShowOptions(false)
+
   return (
     <div ref={wrapperRef}>
-      <ContextMenuTrigger id='withListsDropdown-rightclick'>
+      <ContextMenuTrigger id='withlistsdropdown-rightclick'>
         <div className='rightsidebar-dropdown' onClick={toggleComponent}>
           {props.name}
-          <OptionsDropdown
+          <OptionsWithDropdown
             text='...'
-  					items={USER_DROPDOWN}
+  					items={OPTIONS_DROPDOWN}
   					onSelect={handleDelete}
-  					style={{left:"-50px"}}
+  					style={{marginLeft:"76px", marginTop: "10px"}}
   					classname='rightsidebar-dropdown-rightclick'
           />
         </div>
       </ContextMenuTrigger>
-      <ContextMenu id='withListsDropdown-rightclick' className='rightsidebar-dropdown-contextmenu'>
+      <ContextMenu id='withlistsdropdown-rightclick' className='rightsidebar-dropdown-contextmenu'>
         <MenuItem>Delete</MenuItem>
       </ContextMenu>
       {(showOptions && props.options.length) &&
-        <ul>
-          {props.options.map((option, index) => {
-            if (index === activeOption) {
-              var classNameOptionActive = 'option-active'
-            }
-            return (
-              <li className={classNameOptionActive} key={index} onClick={() => handleSelectComponent(index)} onMouseEnter={() => toggleHover(index)}>
-                <Component option={option} />
-              </li>
-            )
-          })}
-        </ul>
+        <div className='rightsidebar-dropdown-content'>
+          {props.options.map((option, index) =>
+            <div className='rightsidebar-dropdown-item' key={index} onClick={() => handleSelectComponent(index)} onMouseEnter={() => toggleHover(index)}>
+              <Component option={option} />
+            </div>
+					)}
+        </div>
       }
     </div>
   )

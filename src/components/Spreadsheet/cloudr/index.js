@@ -155,8 +155,20 @@ export function spreadsheetToR(datas) {
     })
     return newData
   });
-  if (newDatas.length <= 1) return(newDatas[0])
   return newDatas
+}
+
+function rToSpreadsheet(tibble) {
+  let slide = JSON.parse(tibble[0])
+  let aoa = slide.map(row => {return Object.values(row)})
+  aoa = [Object.keys(slide[0]), ...aoa]
+  let o = {rows:{}};
+  aoa.forEach(function(r, i) {
+    var cells = {};
+    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
+    o.rows[i] = { cells: cells };
+  })
+  return o
 }
 
 const fetchR = (data, func) => {
@@ -185,6 +197,18 @@ const doParse = data => {
       return '#ERROR!'
     // removeMatrix(slides, currentSlide, dispatchSlides, row, column)
   })
+}
+
+export const doRegression = data => {
+  return fetchR(data, "regression")
+		.then(res => res.json())
+		.then(res => {
+			if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
+				return(res)
+			} else {
+				return rToSpreadsheet(res)
+			}
+		})
 }
 
 export const rRender = (src, data, datas) => {

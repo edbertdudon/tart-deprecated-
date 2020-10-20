@@ -17,7 +17,7 @@ const RightSidebar = ({ rightSidebar, setRightSidebar }) => {
     charteditor: <ChartEditor setRightSidebar={setRightSidebar} selectedCharts={selectedCharts} setSelectedCharts={setSelectedCharts} />,
     statistics: selectedAnalysis === null
       ? <Statistics setRightSidebar={setRightSidebar} setSelectedAnalysis={setSelectedAnalysis} />
-      : <StatisticsEdtior setRightSidebar={setRightSidebar} selectedAnalysis={selectedAnalysis} setSelectedAnalysis={setSelectedAnalysis}/>,
+      : <StatisticsEdtior setRightSidebar={setRightSidebar} selectedAnalysis={selectedAnalysis} setSelectedAnalysis={setSelectedAnalysis} />,
     // optimize: <Optimize />,
     formulas: <Formulas />
   }
