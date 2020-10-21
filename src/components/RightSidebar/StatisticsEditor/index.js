@@ -17,7 +17,7 @@ import { mdiLoading } from '@mdi/js'
 import statistics from '../statisticsR'
 import { doRegression } from '../../Spreadsheet/cloudr'
 import { setFormula, setSparkData, setStatisticalFunciton, cbindDependents } from './functions'
-import { getMaxNumberCustomFile } from '../../../functions'
+import { getMaxNumberCustomSheet } from '../../../functions'
 import Anova from './Anova'
 import Manova from './Manova'
 import Number from './Number'
@@ -252,7 +252,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 		}
 		let formulaData = setFormula(slides, statisticalFunction)
 		let statName = statistics[selectedAnalysis].name + ' '
-			+ getMaxNumberCustomFile(slides.bottombar.dataNames, statistics[selectedAnalysis].name)
+			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[selectedAnalysis].name)
 		let sparkData = setSparkData(slides, statisticalFunction)
 		doRegression(formulaData)
 			.then(res => {

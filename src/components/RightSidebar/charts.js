@@ -4,7 +4,6 @@ import { compose } from 'recompose'
 import Icon from '@mdi/react'
 import { mdiClose } from '@mdi/js'
 
-import { getMaxNumberCustomFile } from '../../functions'
 import { translateR } from '../Spreadsheet/cloudR'
 import charts from './chartsR'
 

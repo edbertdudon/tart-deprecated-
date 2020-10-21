@@ -54,6 +54,7 @@
     "@mdi/light-js": "^0.2.63",
     "@mdi/react": "^1.4.0",
     "lodash": "^4.17.19",
+    "papaparse": "^5.3.0",
     "react": "^16.13.1",
     "react-contextmenu": "^2.14.0",
     "react-dom": "^16.13.1",

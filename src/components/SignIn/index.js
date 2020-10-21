@@ -79,7 +79,7 @@ class SignInFormBase extends Component {
             type="text"
             placeholder="Tart ID"
           />
-          <hr style={{marginLeft: "-7px", border: "none", borderTop: "1px solid #d6d6d6", width: "430px"}}/>
+          <hr className='signin-form-hr' />
           <input
             name="password"
             value={password}

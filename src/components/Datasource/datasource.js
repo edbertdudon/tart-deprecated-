@@ -53,29 +53,28 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 				document.getElementById(`link-app-${filename}`).click()
 				break;
 			case DATASOURCE_DROPDOWN[1].key:
-				// let worksheet = filename
-				// if (worksheet.includes(' copy')) {
-				// 	worksheet = worksheet.substring(0, worksheet.indexOf(' copy'))
-				// }
-				// // Can we persist files deeper than one level instead?
-				// firebase.doListFiles(authUser.uid).then(res => {
-				// 	firebase.doDownloadFile(authUser.uid, filename).then(slides => {
-				// 		const file = new File (
-				// 			[JSON.stringify(slides)],
-				// 			worksheet + ' copy ' + getMaxNumberFile(res.items, worksheet),
-				// 			{type: "application/json"}
-				// 		)
-				// 		var uploadTask = firebase.doUploadFile(authUser.uid, filename, file)
-				// 		uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
-				// 			onSetWorksheetname(filename)
-				// 			// Reload home files
-				// 		})
-				// 	})
-				// })
+				let worksheet = filename
+				if (worksheet.includes(' copy')) {
+					worksheet = worksheet.substring(0, worksheet.indexOf(' copy'))
+				}
+				// Can we persist files deeper than one level instead?
+				firebase.doListFiles(authUser.uid).then(res => {
+					firebase.doDownloadFile(authUser.uid, filename).then(slides => {
+						const file = new File (
+							[JSON.stringify(slides.getData())],
+							worksheet + ' copy ' + getMaxNumberFile(res.items, worksheet),
+							{type: "application/json"}
+						)
+						var uploadTask = firebase.doUploadFile(authUser.uid, filename, file)
+						uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
+							// Reload home files
+						})
+					})
+				})
 				break;
 			case DATASOURCE_DROPDOWN[2].key:
-				// document.getElementById('datasource-editabletext-' + filename).readOnly = false
-				// document.getElementById('datasource-editabletext-' + filename).focus()
+				document.getElementById('datasource-editabletext-' + filename).readOnly = false
+				document.getElementById('datasource-editabletext-' + filename).focus()
 				break;
 			case DATASOURCE_DROPDOWN[3].key:
 				firebase.doDownloadFile(authUser.uid, filename)

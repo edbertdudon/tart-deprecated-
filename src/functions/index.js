@@ -45,7 +45,7 @@ export function getMaxNumberFromFiles(files) {
   }
 }
 
-export function getMaxNumberCustomFile(dataNames, prefix) {
+export function getMaxNumberCustomSheet(dataNames, prefix) {
   let names = []
   for (var i=0; i<dataNames.length; i++) {
     if (dataNames[i].startsWith(prefix) && /^\d+$/.test(dataNames[i].substring(prefix.length))) {
@@ -86,6 +86,7 @@ export function xtos(sdata, filename) {
 export function stox(wb) {
   var out = [];
   wb.SheetNames.forEach(function(name) {
+    // var o = {name:name, rows:{}, type:"input"};
     var o = {name:name, rows:{}};
     var ws = wb.Sheets[name];
     var aoa = XLSX.utils.sheet_to_json(ws, {raw: false, header:1});

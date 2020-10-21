@@ -43,6 +43,7 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSl
 				// 	})
 				// })
 			onSetSlides(s)
+			console.log(s)
 		// 	if (firstUpdate.current) {
 		// 		firstUpdate.current = false;
 		// 		return;

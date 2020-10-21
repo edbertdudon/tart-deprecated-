@@ -8,14 +8,37 @@ import { mdiLoading } from '@mdi/js'
 import { databaseList } from '../Connectors/databaseList'
 import { tablesList } from '../Connectors/tablesList'
 import { getTableSample } from '../Connectors/getTableSample'
-// import { dispatchTableSample } from '../../../Connectors/dispatchTableSample'
+import { getMaxNumberCustomSheet } from '../../functions'
 import { withFirebase } from '../Firebase'
+
+function aoaToSpreadsheet(aoa) {
+	let o = {rows:{}, type:"input"};
+  aoa.forEach(function(r, i) {
+    var cells = {};
+    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
+    o.rows[i] = { cells: cells };
+  })
+  return o
+}
+
+// from [{x: 1, y: 'a'},{x: 2, y: 'b'}]
+function mysqlToSpreadsheet(data) {
+	let aoa = data.map(row => {return Object.values(row).map(value => value.toString())})
+  aoa = [Object.keys(data[0]), ...aoa]
+	return aoaToSpreadsheet(aoa)
+}
+
+// from {headers: [{name: 'DATE_'}, {name: 'RATING_X'}], rows: [['31-Dec-98', 0.0806], ['31-Dec-99', 0.2635]]}
+export function oracledbToSpreadsheet(data) {
+	let aoa = [data.headers.map(header => header.name),...data.rows]
+	return aoaToSpreadsheet(aoa)
+}
 
 const LEVELS_STATES = [
 	'connections', 'databases', 'tables'
 ]
 
-const ImportConnection = ({ firebase, authUser, color, onClose, onSelect }) => {
+const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, onSelect }) => {
 	const [loading, setLoading] = useState(false)
 	const [level, setLevel] = useState(0)
 	const [connections, setConnections] = useState({})
@@ -139,40 +162,64 @@ const ImportConnection = ({ firebase, authUser, color, onClose, onSelect }) => {
 	}
 
 	const handleSelectTable = table => {
-		if (level === 2) {
-			setLoading(true)
-			let data = {...config, table: table}
-			getTableSample(config.connector, data, firebase)
-				.then(res => {
-					if ('status' in res) {
-						if (res.status === 'ERROR') {
-							setError('Unable to connect')
-							setLoading(false)
-							return
-						}
-					}
-					let connector = config.connector
-					let host = config.host + "." + config.port
-
-					// dispatchTableSample(
-					// 	connector,
-					// 	host,
-					// 	config.database,
-					// 	table,
-					// 	res,
-					// 	dispatchSlides,
-					// 	setCurrentSlide,
-					// 	currentSlide
-					// )
-					onSelect()
-					handleClose()
-					setLevel(0)
+		if (level !== 2) return
+		setLoading(true)
+		let data = {...config, table: table}
+		getTableSample(config.connector, data, firebase).then(res => {
+			if ('status' in res) {
+				if (res.status === 'ERROR') {
+					setError('Unable to connect')
 					setLoading(false)
-				})
-		}
+					return
+				}
+			}
+			let tablenumber = getMaxNumberCustomSheet(files[authUser.uid].map(file => file.name), table)
+			if (tablenumber === 1) {
+				tablenumber = ""
+			} else {
+				tablenumber = " " + tablenumber
+			}
+			if (config.connector === 'MySQL') {
+				let out = mysqlToSpreadsheet(res)
+				out.delimiter = "mySQL"
+				out.connection = config.host + "." + config.port
+				out.database = config.database
+				out.fileName = table
+				out.name = table.split('.').slice(0, -1).join('.') + tablenumber
+				slides.loadData(slides.getData().concat([out]))
+			} else if (config.connector === 'Microsoft SQL Server') {
+				let out = mysqlToSpreadsheet(res)
+				out.delimiter = "SQLServer"
+				out.connection = config.host + "." + config.port
+				out.database = config.database
+				out.fileName = table
+				out.name = table.split('.').slice(0, -1).join('.') + tablenumber
+				slides.loadData(slides.getData().concat([out]))
+			} else if (config.connector === 'Oracle SQL') {
+				let out = oracledbToSpreadsheet(res)
+				out.delimiter = "OracleDB"
+				out.connection = config.host + "." + config.port
+				out.database = config.database
+				out.fileName = table
+				out.name = table.split('.').slice(0, -1).join('.') + tablenumber
+				slides.loadData(slides.getData().concat([out]))
+			}
+			onSelect()
+			handleClose()
+			setLevel(0)
+			setLoading(false)
+		})
 	}
 
-	const isInvalid = false
+	// const isInvalid = false
+	// <input
+	// 	disabled={isInvalid}
+	// 	className='modal-button'
+	// 	type="button"
+	// 	value="Open"
+	// 	onClick={handleSelectTable}
+	// 	style={{color: isInvalid ? "rgb(0, 0, 0, 0.5)" : color}}
+	// />
 
 	return (
 		<>
@@ -201,14 +248,6 @@ const ImportConnection = ({ firebase, authUser, color, onClose, onSelect }) => {
 				onSelectTable={handleSelectTable}
 			/>
 			<br />
-			<input
-				disabled={isInvalid}
-				className='modal-button'
-				type="button"
-				value="Open"
-				onClick={handleSelectTable}
-				style={{color: isInvalid ? "rgb(0, 0, 0, 0.5)" : color}}
-			/>
 			<input
 				className='modal-button'
 				type="button"
@@ -245,6 +284,8 @@ const Levels = ({ level, filteredOption, onSelectConnection, onSelectDatabase, o
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
 	color: (state.colorState.colors || {}),
+	slides: (state.slidesState.slides || {}),
+	files: (state.filesState.files || {}),
 })
 
 export default compose(

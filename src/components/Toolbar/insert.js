@@ -11,6 +11,20 @@ import withDropdown from '../Dropdown'
 import withModal from '../Modal'
 import { withFirebase } from '../Firebase'
 
+const Papa = require('papaparse/papaparse.min.js');
+
+var re = /(?:\.([^.]+))?$/;
+
+function papaToSpreadsheet(csv) {
+  let o = {rows:{}};
+  csv.forEach(function(r, i) {
+    var cells = {};
+    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
+    o.rows[i] = { cells: cells };
+  })
+  return o
+}
+
 const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const uploadRef = useRef(null)
@@ -60,13 +74,32 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
 
 	const handleUpload = e => {
 	  var files = e.target.files, f = files[0];
-	  var reader = new FileReader();
-	  reader.onload = function(e) {
-	    var data = new Uint8Array(e.target.result);
-	    var wb = XLSX.read(data, {type: 'array'});
-			slides.loadData(slides.getData().concat(stox(wb)))
-	  };
-	  reader.readAsArrayBuffer(f);
+		switch(re.exec(f.name)[1]) {
+			case 'csv':
+				Papa.parse(e.target.files[0], {
+          worker: true,
+					complete: function(results, file) {
+						let o = papaToSpreadsheet(results.data)
+			    	// o.delimiter = results.meta.delimiter
+            o.name = f.name
+            // o.filename = e.target.files[0].name
+            slides.loadData(slides.getData().concat([o]))
+						// firebase.doUploadFile(authUser.uid, fileObj.name, file)
+					}
+				});
+				break;
+			case 'xls':
+			case 'xlsx':
+				var reader = new FileReader();
+				reader.onload = function(e) {
+				  var data = new Uint8Array(e.target.result);
+				  var wb = XLSX.read(data, {type: 'array'});
+					slides.loadData(slides.getData().concat(stox(wb)))
+				};
+				reader.readAsArrayBuffer(f);
+        // firebase.doUploadFile(authUser.uid, fileObj.name, file)
+				break;
+		}
 	}
 
 	return (
