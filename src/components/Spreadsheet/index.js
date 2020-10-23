@@ -5,6 +5,7 @@ import Sheet from './component/sheet';
 import Bottombar from './component/bottombar';
 import { cssPrefix } from './config';
 import { locale } from './locale/locale';
+import { getMaxNumberCustomSheet } from '../../functions'
 import './index.less';
 
 
@@ -27,6 +28,11 @@ class Spreadsheet {
       this.deleteSheet();
     }, (index, value) => {
       this.datas[index].name = value;
+    }, () => {
+      this.copySheet();
+    }, (copyIndex, pasteIndex) => {
+      const d = this.datas[copyIndex]
+      this.pasteSheet(d, pasteIndex);
     });
     this.data = this.addSheet();
     const rootEl = h('div', `${cssPrefix}`)
@@ -45,7 +51,7 @@ class Spreadsheet {
     };
     this.datas.push(d);
     // console.log('d:', n, d, this.datas);
-    this.bottombar.addItem(n, active);
+    this.bottombar.addItem(n, active, this.options.style.offcolor);
     this.sheetIndex += 1;
     return d;
   }
@@ -56,6 +62,22 @@ class Spreadsheet {
       this.datas.splice(oldIndex, 1);
       if (nindex >= 0) this.sheet.resetData(this.datas[nindex]);
     }
+  }
+
+  copySheet() {
+    this.bottombar.copyItem();
+  }
+
+  pasteSheet(data, index, active = true) {
+    let d = new DataProxy(data.name + ' ' + (getMaxNumberCustomSheet(this.bottombar.dataNames, data.name)+1), this.options)
+    // d.rows = JSON.parse(JSON.stringify(data.rows));
+    // d.cols = JSON.parse(JSON.stringify(data.cols));
+    // d.styles = [...data.styles]
+    console.log(data.rows)
+    this.datas.splice(index+1, 0, d)
+    this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
+    this.sheetIndex = index += 1
+    this.sheet.resetData(d)
   }
 
   loadData(data) {

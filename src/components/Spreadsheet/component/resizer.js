@@ -2,6 +2,7 @@
 import { h } from './element';
 import { mouseMoveUp } from './event';
 import { cssPrefix } from '../config';
+import { options } from '../options'
 
 export default class Resizer {
   constructor(vertical = false, minDistance) {
@@ -44,7 +45,7 @@ export default class Resizer {
       left, top, width, height,
     } = rect;
     el.offset({
-      left: vertical ? left + width - 5 : left,
+      left: (vertical ? left + width - 5 : left) + (options.showNavigator ? 125 : 0),
       top: vertical ? top : top + height - 5,
     }).show();
     hoverEl.offset({
@@ -56,7 +57,7 @@ export default class Resizer {
       height: vertical ? line.height : 0,
     });
     unhideHoverEl.offset({
-      left: vertical ? 5 - width : left,
+      left: (vertical ? 5 - width : left) + (options.showNavigator ? 125 : 0),
       top: vertical ? top : 5 - height,
       width: vertical ? 5 : width,
       height: vertical ? height : 5,
@@ -90,7 +91,7 @@ export default class Resizer {
         if (vertical) {
           distance += e.movementX;
           if (distance > minDistance) {
-            el.css('left', `${cRect.left + distance}px`);
+            el.css('left', `${cRect.left + distance + (options.showNavigator ? 125 : 0)}px`);
           }
         } else {
           distance += e.movementY;

@@ -2,6 +2,7 @@ import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
+import { sheetReset } from '../Spreadsheet/component/sheet'
 import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
@@ -21,18 +22,30 @@ const Edit = ({ color, authUser, slides }) => {
     switch (key) {
       case EDIT_DROPDOWN[0].key:
         slides.data.undo()
+        sheetReset.call(slides.sheet)
         break;
       case EDIT_DROPDOWN[1].key:
         slides.data.redo()
+        sheetReset.call(slides.sheet)
         break;
       case EDIT_DROPDOWN[3].key:
         slides.data.cut()
+        slides.sheet.selector.showClipboard();
         break;
       case EDIT_DROPDOWN[4].key:
         slides.data.copy()
+        slides.sheet.selector.showClipboard();
         break;
       case EDIT_DROPDOWN[5].key:
         slides.data.paste()
+        // if (slides.data.settings.mode === 'read') return;
+        // if (slides.data.paste('all', msg => xtoast('Tip', msg))) {
+        //   sheetReset.call(slides.sheet);
+        // } else if (evt) {
+        //   const cdata = evt.clipboardData.getData('text/plain');
+        //   slides.data.pasteFromText(cdata);
+        //   sheetReset.call(slides.sheet);
+        // }
         break;
       case EDIT_DROPDOWN[7].key:
         slides.data.deleteCell()
@@ -40,7 +53,7 @@ const Edit = ({ color, authUser, slides }) => {
     }
     slides.reRender()
   }
-  
+
   return (
     <EditWithDropdown
       items={EDIT_DROPDOWN}

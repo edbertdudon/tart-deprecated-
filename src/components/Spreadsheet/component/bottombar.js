@@ -4,6 +4,7 @@ import { cssPrefix } from '../config';
 import Icon from './icon';
 import FormInput from './form_input';
 import Dropdown from './dropdown';
+import Clipboard from '../core/clipboard';
 import { xtoast } from './message';
 import { tf } from '../locale/locale';
 
@@ -32,6 +33,7 @@ class DropdownMore extends Dropdown {
 const menuItems = [
   { key: 'new-sheet', title: tf('contextmenu.newSheet') },
   { key: 'rename', title: tf('contextmenu.rename') },
+  // { key: 'divider' },
   { key: 'cut', title: tf('contextmenu.cut') },
   { key: 'copy', title: tf('contextmenu.copy') },
   { key: 'paste', title: tf('contextmenu.paste') },
@@ -53,14 +55,12 @@ function buildMenu() {
 }
 
 class ContextMenu {
-  constructor(viewFn, isHide = false) {
+  constructor() {
     this.el = h('div', `${cssPrefix}-contextmenu`)
       .css('width', '160px')
       .children(...buildMenu.call(this))
       .hide();
-    this.viewFn = viewFn;
     this.itemClick = () => {};
-    this.isHide = isHide;
   }
 
   hide() {
@@ -75,39 +75,18 @@ class ContextMenu {
     el.show();
     bindClickoutside(el);
   }
-
-  setPosition(x, y) {
-    if (this.isHide) return;
-    const { el } = this;
-    const { width } = el.show().offset();
-    const view = this.viewFn();
-    const vhf = view.height / 2;
-    let left = x;
-    if (view.width - x <= width) {
-      left -= width;
-    }
-    console.log(left, y)
-    el.css('left', `${left}px`);
-    if (y > vhf) {
-      el.css('bottom', `${view.height - y}px`)
-        .css('max-height', `${y}px`)
-        .css('top', 'auto');
-    } else {
-      el.css('top', `${y}px`)
-        .css('max-height', `${view.height - y}px`)
-        .css('bottom', 'auto');
-    }
-    bindClickoutside(el);
-  }
 }
 
 export default class Bottombar {
   constructor(addFunc = () => {},
     swapFunc = () => {},
     deleteFunc = () => {},
-    updateFunc = () => {}) {
+    updateFunc = () => {},
+    copyFunc = () => {},
+    pasteFunc = () => {}) {
     this.swapFunc = swapFunc;
     this.updateFunc = updateFunc;
+    this.pasteFunc = pasteFunc;
     this.dataNames = [];
     this.activeEl = null;
     this.deleteEl = null;
@@ -115,18 +94,25 @@ export default class Bottombar {
     this.moreEl = new DropdownMore((i) => {
       this.clickSwap2(this.items[i]);
     });
-    this.contextMenu = new ContextMenu({width: 121, height: 39});
-    this.contextMenu.itemClick = (type) => {
+    this.clipboard = new Clipboard()
+    this.contextMenu = new ContextMenu();
+    this.contextMenu.itemClick = type => {
       if (type === 'new-sheet') {
         addFunc.call()
       } else if (type === 'rename') {
-
+        const event = new MouseEvent('dblclick', {
+          'view': window,
+          'bubbles': true,
+          'cancelable': true
+        })
+        this.activeEl.el.dispatchEvent(event)
       } else if (type === 'copy') {
-        // copy.call(this);
+        copyFunc.call()
       } else if (type === 'cut') {
-        // cut.call(this);
+        deleteFunc.call()
       } else if (type === 'paste') {
-        // paste.call(this, 'all');
+        const index = this.items.findIndex(it => it === this.deleteEl);
+        this.pasteFunc(this.clipboard.range, index)
       } else if (type === 'delete') {
         deleteFunc.call()
       } else if (type === 'duplicate') {
@@ -138,22 +124,31 @@ export default class Bottombar {
       .children(
         this.contextMenu.el,
         this.menuEl = h('ul', `${cssPrefix}-menu`)
-          .on('dragover', (e) => {
-            e.preventDefault()
-          })
-          .on('drop', (e) => {
-            const id = e.dataTransfer.getData("text/plain")
-            e.target.appendChild(document.getElementById(id))
-            e.dataTransfer.clearData()
-            const value = e.target.firstChild.lastChild.data;
-            const nindex = this.dataNames.findIndex(it => it === value);
-            const v = this.dataNames[nindex]
-            this.renameItem(nindex, value);
-            console.log(this.items)
-            // this.items.push(item);
-            // this.menuEl.child(item);
-            // this.moreEl.reset(this.dataNames);
-          })
+          // .on('dragover', (e) => {
+          //   e.preventDefault()
+          // })
+          // .on('drop', (e) => {
+          //   const id = e.dataTransfer.getData("text/plain")
+          //   e.target.appendChild(document.getElementById(id))
+          //   e.dataTransfer.clearData()
+          //   const nindex = this.items.findIndex(item => item.el.id === id)
+          //   console.log(this.dataNames)
+          //   // this.dataNames = this.dataNames.splice(nindex, 1)
+          //   // const value = e.target.firstChild.lastChild.data;
+          //   // const nindex = this.dataNames.findIndex(it => it === value);
+          //   // console.log(value)
+          //   // console.log(nindex)
+          //   // console.log(this.dataNames)
+          //   // const v = this.dataNames[nindex]
+          //   // this.dataNames =
+          //   // this.renameItem(nindex, value);
+          //   // this.dataNames = []
+          //   // console.log(this.items)
+          //   // console.log(this.moreEl)
+          //   // this.items.push(item);
+          //   // this.menuEl.child(item);
+          //   // this.moreEl.reset(this.dataNames);
+          // })
         // .child(
         //   h('li', '').children(
             // new Icon('add').on('click', () => {
@@ -170,20 +165,21 @@ export default class Bottombar {
     // this.el.setAttribute('ondragover', "onDragOver(event)")
   }
 
-  addItem(name, active) {
+  addItem(name, active, offcolor) {
     this.dataNames.push(name);
-    const item = h('li', active ? 'active' : '', 'slide' + this.dataNames.length)
+    const item = h('li', active ? 'active' : '')
       .children(
         this.numberEl = h('div', `${cssPrefix}-slidenumber`).child(this.dataNames.length.toString()),
         name
       );
     item.el.setAttribute('draggable', "true")
+    var dragSrcEl = null;
     item.on('click', () => {
-      this.clickSwap2(item);
+      this.clickSwap2(item, offcolor);
     }).on('contextmenu', (evt) => {
       const { offsetLeft, offsetHeight } = evt.target;
-      this.contextMenu.setOffset({ left: offsetLeft, bottom: offsetHeight + 1 });
-      // this.contextMenu.setPosition(evt.offsetX, evt.offsetY);
+      // this.contextMenu.setOffset({ left: offsetLeft, bottom: offsetHeight + 1 });
+      this.contextMenu.setOffset({ left: evt.offsetX, top: evt.offsetY });
       this.deleteEl = item;
     }).on('dblclick', () => {
       const v = name;
@@ -191,7 +187,6 @@ export default class Bottombar {
       input.val(v);
       input.input.on('blur', ({ target }) => {
         const { value } = target;
-        console.log(value)
         const nindex = this.dataNames.findIndex(it => it === v);
         this.renameItem(nindex, value);
         /*
@@ -204,12 +199,42 @@ export default class Bottombar {
       item.html('').child(input.el);
       input.focus();
     }).on('dragstart', (e) => {
-      e.dataTransfer.setData("text/plain", e.target.id)
+      dragSrcEl = item.el;
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", item.el)
+      item.el.classList.add("dragElem");
+    }).on('dragenter', (e) => {
+    }).on('dragover', (e) => {
+      if (e.preventDefault) {
+        e.preventDefault();
+      }
+      item.el.classList.add("over");
+      e.dataTransfer.dropEffect = "move";
+      return false;
+    }).on('dragleave', (e) => {
+      item.el.classList.remove("over");
     }).on('drop', (e) => {
-      e.stopPropagation()
+      if (e.stopPropagation) {
+        e.stopPropagation()
+      }
+      if (dragSrcEl != this) {
+        item.el.parentNode.removeChild(dragSrcEl);
+        var dropHTML = e.dataTransfer.getData("text/html");
+        // e.target.appendChild(document.getElementById(id))
+        // e.dataTransfer.clearData()
+        item.el.insertAdjacentHTML("beforebegin", dropHTML);
+        console.log(item.el)
+        // var dropElem = item.el.previousSibling;
+        // addDnDHandlers(dropElem);
+      }
+      item.el.classList.remove("over");
+      return false;
+    }).on('dragend', (e) => {
+      item.el.classList.remove("over");
     });
     if (active) {
       this.clickSwap(item);
+      this.changeColor(item, offcolor)
     }
     this.items.push(item);
     this.menuEl.child(item);
@@ -255,11 +280,57 @@ export default class Bottombar {
     return [-1];
   }
 
-  clickSwap2(item) {
+  copyItem() {
+    const { deleteEl } = this;
+    const index = this.items.findIndex(it => it === deleteEl);
+    this.clipboard.copy(index)
+  }
+
+  pasteItem(name, active, offcolor) {
+    const { clipboard, deleteEl } = this;
+    if (clipboard.isClear()) return false;
+    const index = this.items.findIndex(it => it === deleteEl);
+    this.dataNames.splice(index+1, 0, name)
+    const item = h('li', active ? 'active' : '')
+      .children(
+        this.numberEl = h('div', `${cssPrefix}-slidenumber`).child((index+2).toString()),
+        name
+      );
+    item.el.setAttribute('draggable', "true")
+    item.on('click', () => {
+      this.clickSwap2(item, offcolor);
+    }).on('contextmenu', (evt) => {
+      const { offsetLeft, offsetHeight } = evt.target;
+      this.contextMenu.setOffset({ left: evt.offsetX, top: evt.offsetY });
+      this.deleteEl = item;
+    }).on('dblclick', () => {
+      const v = name;
+      const input = new FormInput('97px', '');
+      input.val(v);
+      input.input.on('blur', ({ target }) => {
+        const { value } = target;
+        const nindex = this.dataNames.findIndex(it => it === v);
+        this.renameItem(nindex, value);
+      });
+      item.html('').child(input.el);
+      input.focus();
+    })
+    if (active) {
+      this.clickSwap(item);
+      this.changeColor(item, offcolor)
+    }
+    this.items.splice(index+1, 0, item)
+    this.menuEl.childAtIndex(item, index+1)
+    // this.moreEl.reset(this.dataNames);
+
+  }
+
+  clickSwap2(item, offcolor) {
     const index = this.items.findIndex(it => it === item);
     this.clickSwap(item);
     this.activeEl.toggle();
     this.swapFunc(index);
+    this.changeColor(item, offcolor)
   }
 
   clickSwap(item) {
@@ -267,5 +338,14 @@ export default class Bottombar {
       this.activeEl.toggle();
     }
     this.activeEl = item;
+  }
+
+  changeColor(item, offcolor) {
+    for (var i=0; i<this.items.length; i++) {
+      if (this.items[i] !== item) {
+        this.items[i].el.style.backgroundColor = "#fff"
+      }
+    }
+    this.activeEl.el.style.backgroundColor = offcolor
   }
 }

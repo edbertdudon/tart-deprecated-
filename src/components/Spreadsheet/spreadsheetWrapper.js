@@ -1,5 +1,5 @@
 //
-//  spreadsheetWrapper.js
+//  spreadsheetWrapper
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -15,7 +15,6 @@
 //  Headers within headers? Drilldown
 //  hover shade selected formula after "=..."
 //
-
 import React, { useRef, useEffect, useLayoutEffect } from 'react';
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
@@ -25,8 +24,9 @@ import Spreadsheet from './index.js'
 import { options } from './options.js'
 import { withFirebase } from '../Firebase'
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default'
+import { OFF_COLOR } from '../../constants/off-color'
 
-const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSlides, setSaving }) => {
+const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, onSetSlides, setSaving }) => {
 	const firstUpdate = useRef(true)
 
 	useLayoutEffect(() => {
@@ -34,6 +34,7 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, onSetSl
 		// 	authUser.uid,
 		// 	worksheetname
 		// ).then(res => {
+			options.style.offcolor = OFF_COLOR[color[authUser.uid]]
 			var s = new Spreadsheet('#spreadsheet', options)
 				// .loadData(res)
 				// .on('cell-edited', (text, ri, ci) => {
@@ -75,6 +76,7 @@ const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
 	slides: (state.slidesState.slides || {}),
 	worksheetname: (state.worksheetnameState.worksheetname || ''),
+	color: (state.colorState.colors || {}),
 });
 
 const mapDispatchToProps = dispatch => ({

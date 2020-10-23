@@ -583,7 +583,7 @@ body {
     font-weight: 400;
     font-size: 14px;
     border: none;
-    width: 93px;
+    width: 97px;
 
     .@{css-prefix}-slidenumber {
       font-size: 12px;
@@ -616,10 +616,13 @@ body {
   cursor: pointer;
   transition: all .3s;
   font-weight: bold;
+  background-color: #fff;
 
   &.active {
-    background-color: #fff;
-    color: rgba(0, 0, 0, .65);
+    // background-color: #fff;
+    // color: rgba(0, 0, 0, .65);
+    color: #fff;
+
   }
 
   .@{css-prefix}-icon {
@@ -1263,4 +1266,14 @@ form fieldset {
       top: -3 * @icon-size;
     }
   }
+}
+
+[draggable] {
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  /* Required to make elements draggable in old WebKit */
+  -khtml-user-drag: element;
+  -webkit-user-drag: element;
 }

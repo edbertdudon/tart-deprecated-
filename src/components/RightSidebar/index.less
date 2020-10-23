@@ -15,11 +15,12 @@
   cursor: default;
 }
 #rightsidebar.slidein {
-  /* transform: translateX(0); */
+  // transform: translateX(0);
   transform: translateX(-100%);
 }
 #rightsidebar.slideout {
   transform: translateX(0);
+  transition: transform ease-out 0.4s;
 }
 .rightsidebar-heading {
   font-size: 1.17em;

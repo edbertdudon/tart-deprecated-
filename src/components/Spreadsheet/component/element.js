@@ -140,6 +140,17 @@ class Element {
     return this;
   }
 
+  childAtIndex(arg, index) {
+    let ele = arg;
+    if (typeof arg === 'string') {
+      ele = document.createTextNode(arg);
+    } else if (arg instanceof Element) {
+      ele = arg.el;
+    }
+    this.el.insertBefore(ele, this.el.children[index])
+    return this;
+  }
+
   contains(ele) {
     return this.el.contains(ele);
   }

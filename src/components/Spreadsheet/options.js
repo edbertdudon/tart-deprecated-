@@ -3,6 +3,7 @@ export const options = {
   showToolbar: true,
   showGrid: true,
   showContextmenu: true,
+  showNavigator: true,
   view: {
     height: () => document.documentElement.clientHeight-27,
     width: () => document.documentElement.clientWidth,

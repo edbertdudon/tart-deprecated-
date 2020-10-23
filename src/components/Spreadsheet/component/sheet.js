@@ -552,10 +552,10 @@ function toolbarChange(type, value) {
     }
   } else {
     data.setSelectedCellAttr(type, value);
-    if (type === 'formula' && !data.selector.multiple()) {
-      editorSet.call(this);
-    }
-    sheetReset.call(this);
+    // if (type === 'formula' && !data.selector.multiple()) {
+      // editorSet.call(this);
+    // }
+    // sheetReset.call(this);
   }
 }
 
@@ -590,7 +590,6 @@ function sheetInitEvents() {
       // the left mouse button: mousedown → mouseup → click
       // the right mouse button: mousedown → contenxtmenu → mouseup
       if (evt.buttons === 2) {
-        console.log(evt)
         if (this.data.xyInSelectedRect(evt.offsetX, evt.offsetY)) {
           contextMenu.setPosition(evt.offsetX, evt.offsetY);
         } else {

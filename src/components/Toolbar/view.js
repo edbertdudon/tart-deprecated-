@@ -5,7 +5,7 @@ import { compose } from 'recompose'
 import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const View = ({ authUser, color, isLoaded, rightSidebar, setRightSidebar }) => {
+const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar }) => {
   const [navigator, setNavigator] = useState(true)
 
   const VIEW_DROPDOWN = [
@@ -25,10 +25,12 @@ const View = ({ authUser, color, isLoaded, rightSidebar, setRightSidebar }) => {
           document.getElementById('slide-table').style.marginLeft = '0'
           document.getElementById('slide-overlayer').style.left = '0'
           document.getElementById('slide-bottombar').style.display = 'none'
+          slides.options.showNavigator = false
         } else {
           document.getElementById('slide-table').style.marginLeft = '125px'
           document.getElementById('slide-overlayer').style.left = '125px'
           document.getElementById('slide-bottombar').style.display = 'block'
+          slides.options.showNavigator = true
         }
         break;
     }
@@ -69,6 +71,7 @@ const ViewWithDropdown = withDropdown(Header)
 const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+  slides: (state.slidesState.slides || {}),
 })
 
 export default compose(
