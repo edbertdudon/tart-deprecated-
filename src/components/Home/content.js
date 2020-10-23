@@ -15,7 +15,6 @@
 //  - useRecursiveTimeout is inefficient. Listing Files even if theres no change
 //  - clicking RUN repetitively sometimes set loading indicator off -- runId gets rerendered a second time.
 //
-
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
@@ -32,21 +31,7 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 
 	useEffect(() => {
 		setLoading(true)
-		firebase.doListFiles(authUser.uid).then(res => {
-			let allFiles = res.items
-			firebase.trash(authUser.uid).get().then(doc => {
-				if (doc.exists) {
-					let list = Object.keys(doc.data())
-					let filesLessTrash = allFiles.filter(file => {
-						if (!list.includes(file.name)) {
-							return file.name
-						}
-					})
-					onSetFiles(filesLessTrash, authUser.uid)
-					setLoading(false)
-				}
-			})
-		})
+		listFilesLessTrash()
 		firebase.doListJobs(authUser.uid)
 			.then(res => {
 				if (!("error" in res)) {
@@ -63,9 +48,10 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 		firebase.doListJobs(authUser.uid)
 			.then(res => {
 				if (checkJobChanges(res)) {
-					firebase.doListFiles(authUser.uid).then(res => {
-						onSetFiles(res.items, authUser.uid)
-					})
+					// firebase.doListFiles(authUser.uid).then(res => {
+					// 	onSetFiles(res.items, authUser.uid)
+					// })
+					listFilesLessTrash()
 				}
 				return res
 			})
@@ -87,6 +73,24 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 
 	const handleJobCancel = runId => onSetJobs(cancelJob(runId, jobs))
 
+	const listFilesLessTrash = () => {
+		firebase.doListFiles(authUser.uid).then(res => {
+			let allFiles = res.items
+			firebase.trash(authUser.uid).get().then(doc => {
+				if (doc.exists) {
+					let list = Object.keys(doc.data())
+					let filesLessTrash = allFiles.filter(file => {
+						if (!list.includes(file.name)) {
+							return file.name
+						}
+					})
+					onSetFiles(filesLessTrash, authUser.uid)
+					setLoading(false)
+				}
+			})
+		})
+	}
+
 	const Files = () => {
 		if (files[authUser.uid] === undefined) return null
 		return (
@@ -100,6 +104,7 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 							onJobSubmit={handleJobSubmit}
 							onJobCancel={handleJobCancel}
 							key={file.name}
+							onListFilesLessTrash={listFilesLessTrash}
 						/>
 				))}
 			</>

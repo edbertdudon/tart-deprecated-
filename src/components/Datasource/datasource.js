@@ -42,7 +42,7 @@ const ContextMenuDropdown = ({ filename, onDropdown }) => (
 )
 
 const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorksheetname, onSetJobs,
-	onJobSubmit, onJobCancel, onReload, filename, index, runId }) => {
+	filename, onReload, runId,onJobSubmit, onJobCancel, onListFilesLessTrash }) => {
 	const [hover, setHover] = useState(false)
 	const [hoverDropdown, setHoverDropdown] = useState(false)
 
@@ -67,7 +67,7 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 						)
 						var uploadTask = firebase.doUploadFile(authUser.uid, filename, file)
 						uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
-							// Reload home files
+							onListFilesLessTrash()
 						})
 					})
 				})
@@ -119,18 +119,21 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 	}
 
 	const handleHeader = name => {
-		// firebase.doDownloadFile(authUser.uid, filename)
-		// 	.then(slides => {
-		// 		firebase.doUploadFile(
-		// 			authUser.uid,
-		// 			name,
-		// 			new File ([JSON.stringify(slides)], name, {type: "application/json"})
-		// 		)
-		// 		firebase.doDeleteFile(authUser.uid, filename)
-		// 		onSetWorksheetname(name, authUser.uid)
-		// 	})
-
-		// Name reverts back but is already changed in firebase
+		firebase.doDownloadFile(authUser.uid, filename)
+			.then(slides => {
+				firebase.doUploadFile(
+					authUser.uid,
+					name,
+					new File ([JSON.stringify(slides)], name, {type: "application/json"})
+				).then(() => {
+					firebase.doDeleteFile(authUser.uid, filename)
+						.then(() => {
+							onListFilesLessTrash()
+						})
+				})
+				onSetWorksheetname(name, authUser.uid)
+			})
+		// Name reverts back temporarily
 	}
 
 	const handleOpen = () => onSetWorksheetname(filename, authUser.uid)
@@ -140,10 +143,10 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 			?	<button
 					className='datasource-button'
 					onClick={handleRun}
-					style={{backgroundColor: hover && color[authUser.uid]}}
+					style={{backgroundColor: hover && OFF_COLOR[color[authUser.uid]]}}
 					onMouseEnter={() => setHover(!hover)} onMouseLeave={() => setHover(!hover)}
 				>RUN</button>
-			:	<button className='datasource-button' onClick={handleCancel} style={{backgroundColor:color[authUser.uid]}}>
+			:	<button className='datasource-button' onClick={handleCancel} style={{backgroundColor: OFF_COLOR[color[authUser.uid]]}}>
 					<Icon path={mdiStop} size={1} />
 				</button>
 	)
@@ -175,7 +178,7 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 					/>
 				</div>
 				<EditableInput
-					value={filename.replace(/\.[^/.]+$/, "")}
+					value={filename}
 					onCommit={handleHeader}
 					files={files[authUser.uid]}
 					classname='datasource-editabletext'
