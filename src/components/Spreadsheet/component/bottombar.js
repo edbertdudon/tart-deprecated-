@@ -8,6 +8,34 @@ import Clipboard from '../core/clipboard';
 import { xtoast } from './message';
 import { tf } from '../locale/locale';
 
+// let selected = null
+
+// function dragOver(e) {
+//   if (isBefore(_el, e.target)) {
+//     e.target.parentNode.insertBefore(selected, e.target);
+//   } else {
+//     e.target.parentNode.insertBefore(selected, e.target.nextSibling);
+//   }
+// }
+//
+// function dragEnd() {
+//   selected = null
+// }
+//
+// function dragStart(e) {
+//   e.dataTransfer.effectAllowed = 'move'
+//   e.dataTransfer.setData('text/plain', null)
+//   selected = e.target
+// }
+
+function isBefore(el1, el2) {
+  if (el2.parentNode === el1.parentNode)
+    for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
+      if (cur === el2)
+        return true;
+  return false;
+}
+
 class DropdownMore extends Dropdown {
   constructor(click) {
     const icon = new Icon('ellipsis');
@@ -116,10 +144,10 @@ export default class Bottombar {
       } else if (type === 'delete') {
         deleteFunc.call()
       } else if (type === 'duplicate') {
-        // paste.call(this, 'format');
+        const index = this.items.findIndex(it => it === this.deleteEl);
+        this.pasteFunc(index, index)
       }
     };
-    // this.contextMenu.itemClick = deleteFunc
     this.el = h('div', `${cssPrefix}-bottombar`, `${cssPrefix}-bottombar`)
       .children(
         this.contextMenu.el,
@@ -161,7 +189,12 @@ export default class Bottombar {
             // h('span', '').child(this.moreEl),
         //   ),
         // ),
-      );
+      ).on('contextmenu', (evt) => {
+        const { offsetLeft, offsetHeight } = evt.target;
+        // this.contextMenu.setOffset({ left: offsetLeft, bottom: offsetHeight + 1 });
+        this.contextMenu.setOffset({ left: evt.offsetX, top: evt.offsetY });
+        this.deleteEl = item;
+      });
     // this.el.setAttribute('ondragover', "onDragOver(event)")
   }
 
@@ -173,7 +206,9 @@ export default class Bottombar {
         name
       );
     item.el.setAttribute('draggable', "true")
-    var dragSrcEl = null;
+    // item.el.setAttribute('ondragend', "dragEnd()")
+    // item.el.setAttribute('ondragover', "dragOver(event)")
+    // item.el.setAttribute('ondragstart', "dragStart(event)")
     item.on('click', () => {
       this.clickSwap2(item, offcolor);
     }).on('contextmenu', (evt) => {
@@ -198,40 +233,22 @@ export default class Bottombar {
       });
       item.html('').child(input.el);
       input.focus();
-    }).on('dragstart', (e) => {
-      dragSrcEl = item.el;
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", item.el)
-      item.el.classList.add("dragElem");
-    }).on('dragenter', (e) => {
-    }).on('dragover', (e) => {
-      if (e.preventDefault) {
-        e.preventDefault();
-      }
-      item.el.classList.add("over");
-      e.dataTransfer.dropEffect = "move";
-      return false;
-    }).on('dragleave', (e) => {
-      item.el.classList.remove("over");
-    }).on('drop', (e) => {
-      if (e.stopPropagation) {
-        e.stopPropagation()
-      }
-      if (dragSrcEl != this) {
-        item.el.parentNode.removeChild(dragSrcEl);
-        var dropHTML = e.dataTransfer.getData("text/html");
-        // e.target.appendChild(document.getElementById(id))
-        // e.dataTransfer.clearData()
-        item.el.insertAdjacentHTML("beforebegin", dropHTML);
-        console.log(item.el)
-        // var dropElem = item.el.previousSibling;
-        // addDnDHandlers(dropElem);
-      }
-      item.el.classList.remove("over");
-      return false;
-    }).on('dragend', (e) => {
-      item.el.classList.remove("over");
+    // }).on('dragstart', (e) => {
+    //   e.dataTransfer.effectAllowed = "move";
+    //   e.dataTransfer.setData("text/plain", null);
+    //   _el = e.target;
+    // }).on('dragover', (e) => {
+    //   if (isBefore(_el, e.target)) {
+    //     e.target.parentNode.insertBefore(_el, e.target);
+    //   } else {
+    //     e.target.parentNode.insertBefore(_el, e.target.nextSibling);
+    //   }
+    // }).on('dragend', () => {
+    //   _el = null
     });
+
+
+
     if (active) {
       this.clickSwap(item);
       this.changeColor(item, offcolor)
@@ -288,7 +305,7 @@ export default class Bottombar {
 
   pasteItem(name, active, offcolor) {
     const { clipboard, deleteEl } = this;
-    if (clipboard.isClear()) return false;
+    // if (clipboard.isClear()) return false;
     const index = this.items.findIndex(it => it === deleteEl);
     this.dataNames.splice(index+1, 0, name)
     const item = h('li', active ? 'active' : '')
@@ -315,6 +332,7 @@ export default class Bottombar {
       item.html('').child(input.el);
       input.focus();
     })
+    console.log(item)
     if (active) {
       this.clickSwap(item);
       this.changeColor(item, offcolor)
@@ -322,7 +340,6 @@ export default class Bottombar {
     this.items.splice(index+1, 0, item)
     this.menuEl.childAtIndex(item, index+1)
     // this.moreEl.reset(this.dataNames);
-
   }
 
   clickSwap2(item, offcolor) {

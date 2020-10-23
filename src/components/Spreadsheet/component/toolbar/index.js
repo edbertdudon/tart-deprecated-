@@ -137,13 +137,13 @@ export default class Toolbar {
         this.autofilterEl = new Autofilter(),
         this.moreEl = new More(),
       ],
-      buildSpace(),
-      [
-        this.functionEl = new Function(),
-        this.chartEl = new Chart(),
-        this.statisticsEl = new Statistics(),
-        this.optimzeEl = new Optimize(),
-      ]
+      // buildSpace(),
+      // [
+      //   this.functionEl = new Function(),
+      //   this.chartEl = new Chart(),
+      //   this.statisticsEl = new Statistics(),
+      //   this.optimzeEl = new Optimize(),
+      // ]
     ];
 
     this.el = h('div', `${cssPrefix}-toolbar`);

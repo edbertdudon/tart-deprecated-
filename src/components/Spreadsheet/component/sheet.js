@@ -550,12 +550,14 @@ function toolbarChange(type, value) {
     } else {
       this.freeze(0, 0);
     }
+  } else if (type === 'formula') {
+    // formula
   } else {
     data.setSelectedCellAttr(type, value);
     // if (type === 'formula' && !data.selector.multiple()) {
       // editorSet.call(this);
     // }
-    // sheetReset.call(this);
+    sheetReset.call(this);
   }
 }
 

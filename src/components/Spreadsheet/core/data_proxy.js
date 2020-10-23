@@ -391,6 +391,7 @@ export default class DataProxy {
 
   undo() {
     this.history.undo(this.getData(), (d) => {
+      console.log(d)
       this.setData(d);
     });
   }

@@ -3,6 +3,7 @@ import './index.less'
 
 import Header from './header'
 import Toolbar from '../Toolbar'
+import Toggle from '../Toggle'
 import Formulabar from '../Formulabar'
 import RightSidebar from '../RightSidebar'
 import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
@@ -16,6 +17,7 @@ const Worksheet = () => {
 			<Header saving={saving} setSaving={setSaving} />
 			<Toolbar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<Formulabar />
+			<Toggle rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<RightSidebar rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} setSaving={setSaving} />
 			<SpreadsheetWrapper />
 		</div>

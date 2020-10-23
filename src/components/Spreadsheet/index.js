@@ -8,7 +8,6 @@ import { locale } from './locale/locale';
 import { getMaxNumberCustomSheet } from '../../functions'
 import './index.less';
 
-
 class Spreadsheet {
   constructor(selectors, options = {}) {
     let targetEl = selectors;
@@ -69,11 +68,9 @@ class Spreadsheet {
   }
 
   pasteSheet(data, index, active = true) {
-    let d = new DataProxy(data.name + ' ' + (getMaxNumberCustomSheet(this.bottombar.dataNames, data.name)+1), this.options)
-    // d.rows = JSON.parse(JSON.stringify(data.rows));
-    // d.cols = JSON.parse(JSON.stringify(data.cols));
-    // d.styles = [...data.styles]
-    console.log(data.rows)
+    let d = new DataProxy('temp', this.options)
+    d.setData(data.getData())
+    d.name = data.name + ' ' + (getMaxNumberCustomSheet(this.bottombar.dataNames, data.name)+1)
     this.datas.splice(index+1, 0, d)
     this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
     this.sheetIndex = index += 1
