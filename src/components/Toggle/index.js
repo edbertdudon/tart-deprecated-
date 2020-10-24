@@ -1,6 +1,6 @@
 import React from 'react'
 import Icon from '@mdi/react';
-import { mdilChartHistogram, mdilBriefcase, mdilChartLine } from '@mdi/light-js'
+import { mdiMathIntegral, mdiMagnify, mdiChartLineVariant } from '@mdi/js'
 import './index.less'
 
 const Button = ({ isSelected, onToggle, icon }) => {
@@ -26,9 +26,9 @@ const Toggle = ({ rightSidebar, setRightSidebar }) => {
 
 	return (
 		<div className='worksheet-toggle'>
-      <Button isSelected={rightSidebar === 'formulas'} onToggle={() => handleToggle('formulas')} icon={mdilBriefcase} />
-      <Button isSelected={rightSidebar === 'charts'} onToggle={() => handleToggle('charts')} icon={mdilChartHistogram} />
-      <Button isSelected={rightSidebar === 'statistics'} onToggle={() => handleToggle('statistics')} icon={mdilChartLine} />
+      <Button isSelected={rightSidebar === 'formulas'} onToggle={() => handleToggle('formulas')} icon={mdiMathIntegral} />
+      <Button isSelected={rightSidebar === 'charts'} onToggle={() => handleToggle('charts')} icon={mdiChartLineVariant} />
+      <Button isSelected={rightSidebar === 'statistics'} onToggle={() => handleToggle('statistics')} icon={mdiMagnify} />
 		</div>
 	)
 }

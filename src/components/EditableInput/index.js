@@ -36,7 +36,6 @@ const EditableInput = ({ value, onCommit, files, classname, style }) => {
   }
 
   const useOutsideAlerter = (ref) => {
-
     const handleOutsideClick = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         checkIllegalChange()
@@ -56,7 +55,6 @@ const EditableInput = ({ value, onCommit, files, classname, style }) => {
       }
     })
   }
-
   useOutsideAlerter(wrapperRef, readOnly)
 
   const handleReadonly = () => setReadOnly(false)

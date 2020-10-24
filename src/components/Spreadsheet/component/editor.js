@@ -55,6 +55,8 @@ function keydownEventHandler(evt) {
   if (keyCode === 13 && !altKey) evt.preventDefault();
 }
 
+const OPERATORS_REGEX = /\+|\-|\*|\/|\~|\,/g
+
 function inputEventHandler(evt) {
   const v = evt.target.value;
   // console.log(evt, 'v:', v);
@@ -72,7 +74,9 @@ function inputEventHandler(evt) {
       } else {
         const start = v.lastIndexOf('=');
         if (start !== -1) {
-          suggest.search(v.substring(start + 1));
+          let nv = v.substring(start + 1).split(OPERATORS_REGEX)
+          suggest.search(nv[nv.length-1]);
+          // suggest.search(v.substring(start + 1));
         } else {
           suggest.hide();
         }
@@ -94,7 +98,9 @@ function inputEventHandler(evt) {
     } else {
       const start = v.lastIndexOf('=');
       if (start !== -1) {
-        suggest.search(v.substring(start + 1));
+        let nv = v.substring(start + 1).split(OPERATORS_REGEX)
+        suggest.search(nv[nv.length-1]);
+        // suggest.search(v.substring(start + 1));
       } else {
         suggest.hide();
       }
@@ -138,10 +144,17 @@ function suggestItemClick(it) {
     } else {
       eit = '';
     }
-    this.inputText = `${sit + it.key}(`;
-    // console.log('inputText:', this.inputText);
-    position = this.inputText.length;
-    this.inputText += `)${eit}`;
+    if (eit.length < 1) {
+      this.inputText = `${sit + it.key}(`;
+      position = this.inputText.length;
+      this.inputText += `)${eit}`;
+    } else {
+      let nv = this.inputText.substring(start + 1).split(OPERATORS_REGEX)
+      let [l] = nv.slice(nv.length-1)
+      this.inputText = this.inputText.slice(0, this.inputText.length - l.length) + `${it.key}(`;
+      position = this.inputText.length;
+      this.inputText += ')';
+    }
   }
   setText.call(this, this.inputText, position);
 }

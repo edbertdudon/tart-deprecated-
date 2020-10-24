@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Connections from './connections'
 import Charts from './charts'
 import ChartEditor from './charteditor'
@@ -10,6 +10,23 @@ import './index.less'
 const RightSidebar = ({ rightSidebar, setRightSidebar }) => {
   const [selectedCharts, setSelectedCharts] = useState([])
   const [selectedAnalysis, setSelectedAnalysis] = useState(null)
+  const rightSidebarRef = useRef(null)
+
+  // const handleListen = e => {
+  //   if (e.target === rightSidebarRef) {
+  //     rightSidebarRef.current.setAttribute('hidden', true)
+  //   }
+  // }
+  // useEffect(() => {
+  //   if (rightSidebarRef.current !== null) {
+  //     rightSidebarRef.current.addEventListener('transitionend', handleListen)
+  //   }
+  //   return () => {
+  //     if (rightSidebarRef.current !== null) {
+  //       rightSidebarRef.current.removeEventListener('transitionend', handleListen)
+  //     }
+  //   }
+  // }, [])
 
   const RIGHTSIDEBAR_STATES = {
     connections: <Connections />,
@@ -23,9 +40,13 @@ const RightSidebar = ({ rightSidebar, setRightSidebar }) => {
   }
 
   return (
-    <div id='rightsidebar' className={(rightSidebar === 'none') ? 'slideout' : 'slidein'}>
-      {RIGHTSIDEBAR_STATES[rightSidebar]}
-    </div>
+    <>
+    {rightSidebar !== 'none' &&
+      <div id='rightsidebar' className={(rightSidebar === 'none') ? 'slideout' : 'slidein'} ref={rightSidebarRef}>
+        {RIGHTSIDEBAR_STATES[rightSidebar]}
+      </div>
+    }
+    </>
   )
 }
 export default RightSidebar;

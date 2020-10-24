@@ -1,5 +1,5 @@
 //
-//  spreadsheetWrapper
+//  SpreadsheetWrapper
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -11,7 +11,7 @@
 //  3. npm run build
 //  4. firebase deploy
 //
-//  Known Limitations:
+//  Limitations:
 //  Headers within headers? Drilldown
 //  hover shade selected formula after "=..."
 //
@@ -26,7 +26,7 @@ import { withFirebase } from '../Firebase'
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, onSetSlides, setSaving }) => {
+const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, onSetSlides, setSaving, setText }) => {
 	const firstUpdate = useRef(true)
 
 	useLayoutEffect(() => {
@@ -37,14 +37,15 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, 
 			options.style.offcolor = OFF_COLOR[color[authUser.uid]]
 			var s = new Spreadsheet('#spreadsheet', options)
 				// .loadData(res)
-				// .on('cell-edited', (text, ri, ci) => {
-				// 	rRender(text, s.data, s.datas).then(cellText => {
-				// 		console.log(cellText)
-				// 		s.cellText(ri, ci, cellText).reRender()
-				// 	})
-				// })
+				.on('cell-edited', (text, ri, ci) => setText(text))
+				.on('cell-selected', (text, ri, ci) => {
+					if (text === null) {
+						setText('')
+					} else {
+						setText(text.text)
+					}
+				})
 			onSetSlides(s)
-			console.log(s)
 		// 	if (firstUpdate.current) {
 		// 		firstUpdate.current = false;
 		// 		return;
