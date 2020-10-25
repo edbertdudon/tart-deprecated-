@@ -73,7 +73,7 @@ function inputEventHandler(evt) {
         }
       } else {
         const start = v.lastIndexOf('=');
-        if (start !== -1) {
+        if (start !== -1 && v.length > 1) {
           let nv = v.substring(start + 1).split(OPERATORS_REGEX)
           suggest.search(nv[nv.length-1]);
           // suggest.search(v.substring(start + 1));
@@ -97,7 +97,7 @@ function inputEventHandler(evt) {
       }
     } else {
       const start = v.lastIndexOf('=');
-      if (start !== -1) {
+      if (start !== -1 && v.length > 1) {
         let nv = v.substring(start + 1).split(OPERATORS_REGEX)
         suggest.search(nv[nv.length-1]);
         // suggest.search(v.substring(start + 1));

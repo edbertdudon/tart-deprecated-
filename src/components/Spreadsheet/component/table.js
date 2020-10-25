@@ -79,7 +79,7 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
   }
   draw.rect(dbox, async () => {
     // render text
-    let cellText = rRender(cell.text || '', data, datas)
+    let cellText = await rRender(cell.text || '', data, datas)
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     if (style.format) {
       // console.log(data.formatm, '>>', cell.format);
@@ -88,7 +88,7 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
     const font = Object.assign({}, style.font);
     font.size = getFontSizePxByPt(font.size);
     // console.log('style:', style);
-    draw.text(await cellText, dbox, {
+    draw.text(cellText, dbox, {
       align: style.align,
       valign: style.valign,
       font,
@@ -123,7 +123,7 @@ function renderAutofilter(viewRange) {
   }
 }
 
-function renderContent(viewRange, fw, fh, tx, ty) {
+async function renderContent(viewRange, fw, fh, tx, ty) {
   const { draw, data, datas } = this;
   draw.save();
   draw.translate(fw, fh)

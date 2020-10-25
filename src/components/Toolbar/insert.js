@@ -46,7 +46,7 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
         slides.sheet.resetData(d);
 				break;
 			case INSERT_DROPDOWN[1].key:
-				handleToggle('charts')
+				// handleToggle('charts')
 				break;
 			case INSERT_DROPDOWN[2].key:
 				handleToggle('statistics')

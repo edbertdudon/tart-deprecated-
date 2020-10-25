@@ -98,9 +98,9 @@ export default class Toolbar {
       [
         this.undoEl = new Undo(),
         this.redoEl = new Redo(),
-        new Print(),
-        this.paintformatEl = new Paintformat(),
-        this.clearformatEl = new Clearformat(),
+        // new Print(),
+        // this.paintformatEl = new Paintformat(),
+        // this.clearformatEl = new Clearformat(),
       ],
       buildDivider(),
       [
@@ -135,8 +135,12 @@ export default class Toolbar {
       [
         this.freezeEl = new Freeze(),
         this.autofilterEl = new Autofilter(),
-        this.moreEl = new More(),
+        // this.moreEl = new More(),
       ],
+      buildDivider(),
+      [
+        this.moreEl = new More(),
+      ]
       // buildSpace(),
       // [
       //   this.functionEl = new Function(),
@@ -177,13 +181,13 @@ export default class Toolbar {
     }
   }
 
-  paintformatActive() {
-    return this.paintformatEl.active();
-  }
-
-  paintformatToggle() {
-    this.paintformatEl.toggle();
-  }
+  // paintformatActive() {
+  //   return this.paintformatEl.active();
+  // }
+  //
+  // paintformatToggle() {
+  //   this.paintformatEl.toggle();
+  // }
 
   trigger(type) {
     this[`${type}El`].click();

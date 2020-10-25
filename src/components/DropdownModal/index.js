@@ -27,11 +27,8 @@ const withDropdownModal = Component => (props) => {
   const handleOpen = () => setIsOpen(!isOpen)
 
   const handleSearch = e => {
-    let filter = props.items.filter(item => {
-      if (item.category === category) {
-        item.name.toLowerCase().includes(e.target.value.toLowerCase())
-      }
-    })
+    let filter = props.items.filter(item => item.category === category)
+      .filter(item => item.name.toLowerCase().includes(e.target.value.toLowerCase()))
     setFilteredOption(filter)
   }
 
@@ -44,18 +41,10 @@ const withDropdownModal = Component => (props) => {
     setCategory(i)
     setFilteredOption(props.items.filter(item => item.category === i))
   }
-  // <div className='dropdownmodal-item' onClick={() => handleSelect(item.name)} key={i}>
-  //   {item.name}
-  // </div>
+
   return (
     <div ref={wrapperRef}>
-      <button
-        className='dropdownmodal-button'
-        onClick={handleOpen}
-        style={{backgroundColor: isOpen ? "#ebebeb": "#fff" }}
-      >
-        <Icon path={icon} size={0.8}/>
-      </button>
+      <Component onToggle={handleOpen} isSelected={isOpen} {...props} />
       {isOpen &&
         <div className='dropdownmodal-content'>
           <input
@@ -65,14 +54,28 @@ const withDropdownModal = Component => (props) => {
             placeholder="Search"
             onChange={handleSearch}
           />
-          {props.categories.map((category, i) => (
-            <div className='dropdownmodal-category' onClick={() => handleSelectCateogry(i)} key={i}>
-              {category}
-            </div>
-          ))}
-          {filteredOption.map((item, i) => (
-            <Component item={item} onSelect={handleSelect} index={i} />
-    			))}
+          <div className='dropdownmodal-category'>
+            {props.categories.map((cat, i) => (
+              <div
+                className='dropdownmodal-item'
+                onClick={() => handleSelectCateogry(i)}
+                key={i}
+                style={{
+                  backgroundColor: i === category ? props.color : "#ebebeb",
+                  color: i === category ? "#fff" : "#000000"
+                }}
+              >
+                {cat}
+              </div>
+            ))}
+          </div>
+          <div className='dropdownmodal-selection'>
+            {filteredOption.map((item, i) => (
+              <div className='dropdownmodal-item' onClick={() => handleSelect(item.name)} key={i} >
+                {item.name}
+              </div>
+      			))}
+          </div>
         </div>
       }
     </div>

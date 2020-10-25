@@ -20,10 +20,10 @@ export default class Item {
   element() {
     const { tip } = this;
     return h('div', `${cssPrefix}-toolbar-btn`)
-      .on('mouseenter', (evt) => {
-        tooltip(tip, evt.target);
-      })
-      .attr('data-tooltip', tip);
+      // .on('mouseenter', (evt) => {
+      //   tooltip(tip, evt.target);
+      // })
+      // .attr('data-tooltip', tip);
   }
 
   setState() {}
