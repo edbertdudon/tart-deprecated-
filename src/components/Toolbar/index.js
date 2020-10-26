@@ -13,7 +13,7 @@ const Toolbar = ({ rightSidebar, setRightSidebar }) => {
 			<Files />
 			<Edit />
 			<Insert rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
-			<Table />
+			<Table rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<View rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 		</div>
 	)

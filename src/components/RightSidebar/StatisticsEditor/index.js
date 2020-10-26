@@ -12,7 +12,7 @@ import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
-import { mdiLoading } from '@mdi/js'
+import { mdiLoading, mdiClose } from '@mdi/js'
 
 import statistics from '../statisticsR'
 import { doRegression } from '../../Spreadsheet/cloudr'
@@ -31,7 +31,7 @@ const ALTERNATIVES = ["two.sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
 const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
 
-const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, selectedAnalysis, setSelectedAnalysis }) => {
+const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, statistic, setStatistic }) => {
 	const [variables, setVariables] = useState([])
 	const [oneWayAnova, setOneWayAnova] = useState('')
 	const [randomizedBlockDesign, setRandomizedBlockDesign] = useState('')
@@ -71,8 +71,6 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 				.map(variable => Object.values(variable)[0]))
 		}
 	}, [])
-
-	const handleBack = () => setSelectedAnalysis(null)
 
 	const handleSetOneWayAnova = (dependent, independent) =>
 		setOneWayAnova('`' + variables[dependent] + '`~`' + variables[independent] + '`')
@@ -218,7 +216,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 	const handleSubmit = () => {
 		setLoading(true)
 		let statisticalFunction = setStatisticalFunciton(
-			statistics[selectedAnalysis],
+			statistics[statistic],
 			oneWayAnova,
 			randomizedBlockDesign,
 			twoWayAnova,
@@ -251,8 +249,8 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 			return
 		}
 		let formulaData = setFormula(slides, statisticalFunction)
-		let statName = statistics[selectedAnalysis].name + ' '
-			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[selectedAnalysis].name)
+		let statName = statistics[statistic].name + ' '
+			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[statistic].name)
 		let sparkData = setSparkData(slides, statisticalFunction)
 		doRegression(formulaData)
 			.then(res => {
@@ -265,57 +263,65 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 					res.regression = sparkData
 					slides.loadData(slides.getData().concat([res]))
 	        setRightSidebar('none')
-					setSelectedAnalysis(null)
+					setStatistic(null)
 					setLoading(false)
 				}
 		  })
+	}
+
+	const handleClose = () => {
+		setRightSidebar('none')
+		setStatistic(null)
+		setLoading(false)
 	}
 
 	const isInvalid = variables.length < 1 || trueMeanError !== null || confidenceLevelError !== null
 
 	return (
     <>
+			<button className='rightsidebar-close' onClick={handleClose}>
+				<Icon path={mdiClose} size={1}/>
+			</button>
 			<div className='rightsidebar-heading'>
-				{statistics[selectedAnalysis].name}
-				<div className='rightsidebar-back' style={{color: color[authUser.uid]}} onClick={handleBack}>Back</div>
+				{statistics[statistic].name}
 			</div>
-			{statistics[selectedAnalysis].arguments.includes("oneWayAnova") &&
+			{statistics[statistic].arguments.includes("oneWayAnova") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetOneWayAnova}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("randomizedBlockDesign") &&
+			{statistics[statistic].arguments.includes("randomizedBlockDesign") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetRandomizedBlockDesign}
 					hasBlocks={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("twoWayAnova") &&
+			{statistics[statistic].arguments.includes("twoWayAnova") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetTwoWayAnova}
 					hasIndependent2={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("analysisOfCovariance") &&
+			{statistics[statistic].arguments.includes("analysisOfCovariance") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetAnalysisOfCovariance}
 					hasCovariate={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("oneWayWithin") &&
+			{statistics[statistic].arguments.includes("oneWayWithin") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetOneWayWithin}
 					hasSubject={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("twoWayWithin") &&
+			{statistics[statistic].arguments.includes("twoWayWithin") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetTwoWayWithin}
 					hasIndependent2={true}
 					hasSubject={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("twoWayBetween") &&
+			{statistics[statistic].arguments.includes("twoWayBetween") &&
 				<Anova
 					variables={variables}
 					onChange={handleSetTwoWayBetween}
@@ -323,43 +329,43 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 					hasSubject={true}
 					hasBetween={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("oneWayManova") &&
+			{statistics[statistic].arguments.includes("oneWayManova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetOneWayManova}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("randomizedBlockDesignManova") &&
+			{statistics[statistic].arguments.includes("randomizedBlockDesignManova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetRandomizedBlockDesignManova}
 					hasBlocks={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("twoWayManova") &&
+			{statistics[statistic].arguments.includes("twoWayManova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetTwoWayManova}
 					hasIndependent2={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("mancova") &&
+			{statistics[statistic].arguments.includes("mancova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetAncova}
 					hasCovariate={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("oneWayWithinManova") &&
+			{statistics[statistic].arguments.includes("oneWayWithinManova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetOneWayWithinManova}
 					hasSubject={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("twoWayWithinManova") &&
+			{statistics[statistic].arguments.includes("twoWayWithinManova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetTwoWayWithinManova}
 					hasIndependent2={true}
 					hasSubject={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("twoWayBetweenManova") &&
+			{statistics[statistic].arguments.includes("twoWayBetweenManova") &&
 				<Manova
 					variables={variables}
 					onChange={handleSetTwoWayBetweenManova}
@@ -367,82 +373,82 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 					hasSubject={true}
 					hasBetween={true}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("multipleLinearRegression") && <>
+			{statistics[statistic].arguments.includes("multipleLinearRegression") && <>
 				<h5>Linear model</h5>
 				<MultipleLinearRegression
 					variables={variables}
 					onChange={handleSetMultipleLinearRegressionVars}
 				/></>}
-			{statistics[selectedAnalysis].arguments.includes("multipleLinearRegression2") && <>
+			{statistics[statistic].arguments.includes("multipleLinearRegression2") && <>
 				<h5>Linear model 2</h5>
 				<MultipleLinearRegression
 					variables={variables}
 					onChange={handleSetMultipleLinearRegressionVars2}
 				/></>}
-	        {statistics[selectedAnalysis].arguments.includes("formula") &&
+	        {statistics[statistic].arguments.includes("formula") &&
 	        	<Formula
 					formulaText={formulaText}
 					variables={variables}
 					onSetFormula={handleSetFormula}
 					formulaError={formulaError}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("formula2") &&
+			{statistics[statistic].arguments.includes("formula2") &&
 				<Formula
 					formulaText={formulaText2}
 					variables={variables}
 					onSetFormula={handleSetFormula2}
 					formulaError={formulaError2}
 				/>}
-	        {statistics[selectedAnalysis].arguments.includes("xvariable") &&
+	        {statistics[statistic].arguments.includes("xvariable") &&
 				<Variable
 					label="X variable"
 					onChange={handleUpdateVariableX}
 					options={variables}
 					name={variables[variableX]}
 				/>}
-	        {statistics[selectedAnalysis].arguments.includes("yvariable") &&
+	        {statistics[statistic].arguments.includes("yvariable") &&
 	        	<Variable
 					label="Y variable"
 					onChange={handleUpdateVariableY}
 					options={variables}
 					name={variables[variableY]}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("zvariable") &&
+			{statistics[statistic].arguments.includes("zvariable") &&
 				<Variable
 					label="Z variable"
 					onChange={handleUpdateVariableZ}
 					options={variables}
 					name={variables[variableZ]}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("groups") &&
+			{statistics[statistic].arguments.includes("groups") &&
 	        	<Variable
 					label="Grouping factor"
 					onChange={handleUpdateGroups}
 					options={variables}
 					name={variables[groups]}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("blocks") &&
+			{statistics[statistic].arguments.includes("blocks") &&
 			 	<Variable
 					label="Blocking factor"
 					onChange={handleUpdateBlocks}
 					options={variables}
 					name={variables[blocks]}
 				/>}
-	        {statistics[selectedAnalysis].arguments.includes("varEqual") &&
+	        {statistics[statistic].arguments.includes("varEqual") &&
 				<Variable
 					label="Equal variance or pooled variance"
 					onChange={handleChangeVarEqual}
 					options={VAR_EQUAL}
 					name={VAR_EQUAL[varEqual]}
 				/>}
-	        {statistics[selectedAnalysis].arguments.includes("alt") &&
+	        {statistics[statistic].arguments.includes("alt") &&
 	        	<Variable
 					label="Alternative"
 					onChange={handleUpdateAlt}
 					options={ALTERNATIVES.map(alternative => {return alternative.replace(".", " ")})}
 					name={ALTERNATIVES[alt]}
 				/>}
-	        {statistics[selectedAnalysis].arguments.includes("mu") &&
+	        {statistics[statistic].arguments.includes("mu") &&
 				<div>
 					<div className='rightsidebar-label'>
 						True value of the mean (or difference in means)
@@ -458,14 +464,14 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 						{trueMeanError && <p>{trueMeanError}</p>}
 					</div>
 				</div>}
-	        {/*{statistics[selectedAnalysis].arguments.includes("paired") &&
+	        {/*{statistics[statistic].arguments.includes("paired") &&
 	        	<input
 					type="checkbox"
 					name="paired"
 					value={paired}
 					onChange={handleChangePaired}
 				/>}*/}
-	        {statistics[selectedAnalysis].arguments.includes("conf") &&
+	        {statistics[statistic].arguments.includes("conf") &&
 				<div>
 					<div className='rightsidebar-label'>Confidence level</div>
 					<div className='rightsidebar-variable'>
@@ -479,7 +485,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 						{confidenceLevelError && <p>{confidenceLevelError}</p>}
 					</div>
 				</div>}
-			{statistics[selectedAnalysis].arguments.includes("level") &&
+			{statistics[statistic].arguments.includes("level") &&
 				<div>
 					<div className='rightsidebar-label'>Confidence level</div>
 					<div className='rightsidebar-variable'>
@@ -493,13 +499,13 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 						{confidenceLevelError && <p>{confidenceLevelError}</p>}
 					</div>
 				</div>}
-			{statistics[selectedAnalysis].arguments.includes("matrix") &&
+			{statistics[statistic].arguments.includes("matrix") &&
 				<Matrix
 					variables={variables}
 					selectedVariables={matrix}
 					setSelectedVariables={handleUpdateMatrix}
 				/>}
-			{statistics[selectedAnalysis].arguments.includes("corr") &&
+			{statistics[statistic].arguments.includes("corr") &&
 				<Variable
 					label="Type of correlation"
 					onChange={handleUpdateCorr}
@@ -507,7 +513,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 					name={CORRELATION_TYPE[corr]}
 				/>}
 			<div className='rightsidebar-text'>
-				{"description" in statistics[selectedAnalysis] && <p>{statistics[selectedAnalysis].description}</p>}
+				{"description" in statistics[statistic] && <p>{statistics[statistic].description}</p>}
 				{error && <p>{error}</p>}
 			</div>
 			{loading

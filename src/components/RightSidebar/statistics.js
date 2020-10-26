@@ -1,7 +1,9 @@
 import React, { useState } from 'react'
 import statistics from './statisticsR'
+import Icon from '@mdi/react';
+import { mdiClose } from '@mdi/js'
 
-const Statistics = ({ setRightSideBar, setSelectedAnalysis }) => {
+const Statistics = ({ setRightSidebar, setSelectedAnalysis }) => {
 	const [filteredOption, setFilteredOption] = useState(statistics)
 
 	const handleSelectStatistic = (statistic) => {
@@ -32,12 +34,14 @@ const Statistics = ({ setRightSideBar, setSelectedAnalysis }) => {
 		setFilteredOption(filter)
 	}
 
-	const handleEditor = () => {
-		setRightSideBar('charteditor')
-	}
+	const handleEditor = () => setRightSidebar('charteditor')
+	const handleClose = () => setRightSidebar('none')
 
 	return (
 		<div>
+			<button className='rightsidebar-close' onClick={handleClose}>
+				<Icon path={mdiClose} size={1}/>
+			</button>
 			<div className='rightsidebar-heading'>Statistics</div>
 			<input
 				type="text"

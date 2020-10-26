@@ -68,7 +68,6 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
   if ('editable' in cell && cell.editable === false) {
     frozen = true;
   }
-
   const style = data.getCellStyleOrDefault(nrindex, cindex);
   const dbox = getDrawBox(data, rindex, cindex, yoffset, xoffset);
   dbox.bgcolor = style.bgcolor;
@@ -79,7 +78,8 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
   }
   draw.rect(dbox, async () => {
     // render text
-    let cellText = await rRender(cell.text || '', data, datas)
+    let cellText = rRender(cell.text || '', data, datas)
+    // if (cellText.status )
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     if (style.format) {
       // console.log(data.formatm, '>>', cell.format);
@@ -88,7 +88,7 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
     const font = Object.assign({}, style.font);
     font.size = getFontSizePxByPt(font.size);
     // console.log('style:', style);
-    draw.text(cellText, dbox, {
+    draw.text(await cellText, dbox, {
       align: style.align,
       valign: style.valign,
       font,

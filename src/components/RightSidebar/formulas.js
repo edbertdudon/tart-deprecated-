@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
+import Icon from '@mdi/react';
+import { mdiClose } from '@mdi/js'
+
 import { formulas } from '../Spreadsheet/cloudr/formula'
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet'
 
-const Formulas = ({ setRightSideBar, slides }) => {
+const Formulas = ({ setRightSidebar, slides }) => {
 	const [filteredOption, setFilteredOption] = useState(formulas)
 
 	const handleSelectFunction = formula => {
@@ -21,8 +24,13 @@ const Formulas = ({ setRightSideBar, slides }) => {
 		setFilteredOption(filter)
 	}
 
+	const handleClose = () => setRightSidebar('none')
+
 	return (
 		<>
+			<button className='rightsidebar-close' onClick={handleClose}>
+				<Icon path={mdiClose} size={1}/>
+			</button>
 			<div className='rightsidebar-heading'>Formulas</div>
 			<input
 				type="text"

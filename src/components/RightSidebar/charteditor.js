@@ -7,7 +7,7 @@ import withLists from './withLists'
 import withListsDropdown from './withListsDropdown'
 import { setChart } from './charts'
 
-const ChartEditor = ({ slides, selectedCharts, setSelectedCharts }) => {
+const ChartEditor = ({ slides, schart, setSchart }) => {
 	const [variables, setVariables] = useState([])
 	const [variableX, setVariableX] = useState(0)
 	const [variableY, setVariableY] = useState(1)
@@ -51,7 +51,7 @@ const ChartEditor = ({ slides, selectedCharts, setSelectedCharts }) => {
 	// 		for (var i=0; i<chartTypes.length; i++) {
 	// 			chartIndex.push(types.indexOf(chartTypes[i]))
 	// 		}
-	// 		setSelectedCharts(chartIndex)
+	// 		setSchart(chartIndex)
 	// 	}
 	// }, [currentSlide])
 
@@ -62,43 +62,43 @@ const ChartEditor = ({ slides, selectedCharts, setSelectedCharts }) => {
 
 	const handleUpdateVariableX = (activeOption) => {
 		setVariableX(activeOption)
-		let chartData = setChart(slides, currentSlide, variables, selectedCharts, activeOption, variableY)
+		let chartData = setChart(slides, currentSlide, variables, schart, activeOption, variableY)
 		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
 
 	const handleUpdateVariableY = (activeOption) => {
 		setVariableY(activeOption)
-		let chartData = setChart(slides, currentSlide, variables, selectedCharts, variableX, activeOption)
+		let chartData = setChart(slides, currentSlide, variables, schart, variableX, activeOption)
 		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
 
 	const handleAddChart = (activeOption) => {
-		let newSelectedCharts = [...selectedCharts, activeOption]
-		setSelectedCharts(newSelectedCharts)
+		let newSelectedCharts = [...schart, activeOption]
+		setSchart(newSelectedCharts)
 		let chartData = setChart(slides, currentSlide, variables, newSelectedCharts, variableX, variableY)
 		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
 
 	return (
 		<>
-			{(selectedCharts.length < 1)
+			{(schart.length < 1)
 				? <div className='rightsidebar-none'>No chart selected</div>
 				: <>
 						<div className='rightsidebar-label'>Chart Type</div>
-						{selectedCharts.map((selected, index) => (
+						{schart.map((selected, index) => (
 							<ChartsWithListsDropdown
 								onChange={handleUpdateChart}
 								options={charts}
 								name={charts[selected].name}
-								selection={selectedCharts}
-								setSelection={setSelectedCharts}
+								selection={schart}
+								setSelection={setSchart}
 								currentSelection={index}
 								key={index}
 							/>
 						))}
 						<ChartsWithLists
 							onChange={handleAddChart}
-							options={charts.filter(chart => charts[selectedCharts[0]].variables === chart.variables)}
+							options={charts.filter(item => charts[schart[0]].variables === item.variables)}
 							name='Add Additonal Chart'
 							styles={{color: "#aaa"}}
 						/>
@@ -108,7 +108,7 @@ const ChartEditor = ({ slides, selectedCharts, setSelectedCharts }) => {
 							options={variables}
 							name={variables[variableX]}
 						/>
-						{(charts[selectedCharts[0]].variables > 1) &&
+						{(charts[schart[0]].variables > 1) &&
 							<>
 								<div className='rightsidebar-label'>Y-Axis</div>
 								<OptionsWithLists

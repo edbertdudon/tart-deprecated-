@@ -8,9 +8,10 @@ import { mdiMagnify, mdiBrush } from '@mdi/js'
 import { OFF_COLOR } from '../../constants/off-color'
 import withDropdownModal from '../DropdownModal'
 import charts from '../RightSidebar/chartsR'
+import statistics from '../RightSidebar/statisticsR'
 import './index.less'
 
-const categories = [
+const CHART_CATEGORIES = [
   'One Variable',
   'Two continous variables',
   'One discrete, one continous',
@@ -19,19 +20,31 @@ const categories = [
   'Continous function',
 ]
 
-const Button = ({ isSelected, onToggle, icon }) => {
+const STATISTICS_CATEGORIES = [
+  'Frequency table',
+  'Tests of Independence',
+  't-tests',
+  'Correlations',
+  'Nonparametric Tests of Group Differences',
+  'Multiple (Linear) Regression',
+  'ANOVA',
+  'MANOVA',
+]
+
+const Button = ({ isSelected, onToggle, icon, name }) => {
   return (
 		<button
       className='worksheet-toggle-button'
       onClick={onToggle}
       style={{ backgroundColor: isSelected ? "#ebebeb": "#fff" }}
+      id={ name + "toggle"}
     >
 			<Icon path={icon} size={0.8}/>
 		</button>
   )
 }
 
-const Toggle = ({ color, authUser, rightSidebar, setRightSidebar }) => {
+const Toggle = ({ color, authUser, rightSidebar, setRightSidebar, setStatistic, setSchart }) => {
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       setRightSidebar(select)
@@ -39,15 +52,16 @@ const Toggle = ({ color, authUser, rightSidebar, setRightSidebar }) => {
       setRightSidebar('none')
     }
   }
-  const handleSelect = () => {
-    // let chartNumber
-    // for (var i=0; i<charts.length; i++) {
-    //   if (chart === charts[i].name) {
-    //     chartNumber = i
-    //     break;
-    //   }
-    // }
-    // setSelectedCharts([chartNumber])
+  const handleChart = chart => {
+    setRightSidebar('charteditor')
+    let chartNumber
+    for (var i=0; i<charts.length; i++) {
+      if (chart === charts[i].name) {
+        chartNumber = i
+        break;
+      }
+    }
+    setSchart([chartNumber])
     // if (slides.data.type !== "chart") {
     //   let variables
     //   if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
@@ -61,21 +75,45 @@ const Toggle = ({ color, authUser, rightSidebar, setRightSidebar }) => {
     // }
   }
 
+  const handleStatistics = statistic => {
+    setRightSidebar('statistics')
+    let statisticNumber
+		for (var i=0; i<statistics.length; i++) {
+			if (statistic === statistics[i].name) {
+				statisticNumber = i
+				break;
+			}
+		}
+		setStatistic(statisticNumber)
+  }
+
   // <Button isSelected={rightSidebar === 'formulas'} onToggle={() => handleToggle('formulas')} icon={mdiMathIntegral} />
+  // <Button isSelected={rightSidebar === 'statistics'} onToggle={() => handleToggle('statistics')} icon={mdiMagnify} />
 	return (
     <>
       <div className='worksheet-buttons'>
         <ButtonWithDropdownModal
-          onSelect={handleSelect}
+          onSelect={handleChart}
           icon={mdilChartHistogram}
           items={charts}
-          categories={categories}
+          categories={CHART_CATEGORIES}
           color={OFF_COLOR[color[authUser.uid]]}
+          height={232}
+          name="charts"
+        />
+        <ButtonWithDropdownModal
+          onSelect={handleStatistics}
+          icon={mdiMagnify}
+          items={statistics}
+          categories={STATISTICS_CATEGORIES}
+          color={OFF_COLOR[color[authUser.uid]]}
+          style={{marginLeft: "30px"}}
+          height={296}
+          name="statistics"
         />
       </div>
   		<div className='worksheet-toggle'>
         <Button isSelected={rightSidebar === 'charteditor'} onToggle={() => handleToggle('charts')} icon={mdiBrush} />
-        <Button isSelected={rightSidebar === 'statistics'} onToggle={() => handleToggle('statistics')} icon={mdiMagnify} />
   		</div>
     </>
 	)

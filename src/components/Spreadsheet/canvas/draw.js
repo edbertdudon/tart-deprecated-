@@ -378,7 +378,7 @@ class Draw {
     ctx.restore();
   }
 
-  rect(box, dtextcb) {
+  async rect(box, dtextcb) {
     const { ctx } = this;
     const {
       x, y, width, height, bgcolor,
@@ -387,10 +387,10 @@ class Draw {
     ctx.beginPath();
     ctx.fillStyle = bgcolor || '#fff';
     ctx.rect(npxLine(x + 1), npxLine(y + 1), npx(width - 2), npx(height - 2));
+    // await dtextcb();
     ctx.clip();
     ctx.fill();
     dtextcb();
-    // await dtextcb();
     ctx.restore();
   }
 }

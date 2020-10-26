@@ -19,9 +19,11 @@ export const TABLE_DROPDOWN = [
   {key: 'Unfreeze Cells', type: 'item'},
   {type: 'divider'},
   {key: 'Filter Cell', type: 'item'},
+  {type: 'divider'},
+  {key: 'Optimize', type: 'item'},
 ]
 
-const Table = ({ color, authUser, slides }) => {
+const Table = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
   const handleTable = key => {
     switch (key) {
       case TABLE_DROPDOWN[0].key:
@@ -52,8 +54,19 @@ const Table = ({ color, authUser, slides }) => {
       case TABLE_DROPDOWN[12].key:
         slides.data.autofilter()
         break;
+      case TABLE_DROPDOWN[14].key:
+        handleToggle('optimize')
+        break;
     }
     slides.reRender()
+  }
+
+  const handleToggle = (select) => {
+    if (rightSidebar !== select) {
+      setRightSidebar(select)
+    } else {
+      setRightSidebar('none')
+    }
   }
 
   return (
