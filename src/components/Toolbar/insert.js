@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import XLSX from 'xlsx'
 
+import { getMaxNumberCustomSheet } from '../../functions'
 import ImportConnection from './importconnection'
 import { stox } from '../../functions'
 import { OFF_COLOR } from '../../constants/off-color'
@@ -25,7 +26,7 @@ function papaToSpreadsheet(csv) {
   return o
 }
 
-const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
+const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNames, setDataNames, setCurrent }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const uploadRef = useRef(null)
 
@@ -42,8 +43,11 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
 	const handleInsert = key => {
 		switch(key) {
 			case INSERT_DROPDOWN[0].key:
+        setDataNames([...dataNames, "sheet" + slides.sheetIndex])
+        setCurrent(dataNames.length)
 				const d = slides.addSheet();
         slides.sheet.resetData(d);
+        slides.data = d
 				break;
 			case INSERT_DROPDOWN[1].key:
 			  document.getElementById("chartstoggle").click()

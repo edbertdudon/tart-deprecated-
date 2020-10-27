@@ -10,11 +10,8 @@ import './index.less'
 
 const RightSidebar = ({ rightSidebar, setRightSidebar, statistic, setStatistic, schart, setSchart }) => {
   const RIGHTSIDEBAR_STATES = {
-    // connections: <Connections />,
-    // charts: <Charts setRightSidebar={setRightSidebar} setSelectedCharts={setSelectedCharts}/>,
     charteditor: <ChartEditor setRightSidebar={setRightSidebar} schart={schart} setSchart={setSchart}/>,
     statistics: <StatisticsEdtior setRightSidebar={setRightSidebar} statistic={statistic} setStatistic={setStatistic}/>,
-      // selectedAnalysis === null ? <Statistics setRightSidebar={setRightSidebar} setSelectedAnalysis={setSelectedAnalysis}/>
     optimize: <Optimize setRightSidebar={setRightSidebar}/>,
     formulas: <Formulas setRightSidebar={setRightSidebar}/>
   }

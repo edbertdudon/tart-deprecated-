@@ -1,5 +1,5 @@
 //
-//  EditableInput
+//  Editable
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -10,14 +10,14 @@
 //
 import React, {useState, useEffect, useRef} from 'react'
 
-const EditableInput = ({ value, onCommit, files, classname, style, reference, inputId }) => {
+const Editable = ({ value, onCommit, files, classname, style, reference, inputId }) => {
   const [text, setText] = useState(value)
-  const [readOnly, setReadOnly] = useState(true)
+  const [show, setShow] = useState(false)
   const wrapperRef = useRef(null)
 
   const checkIllegalChange = () => {
-    if (readOnly === false) {
-      setReadOnly(true)
+    if (show === true) {
+      setShow(false)
       for (var i=0; i<files.length; i++) {
         if (files[i].name === text) {
           var doesExist = true
@@ -54,25 +54,29 @@ const EditableInput = ({ value, onCommit, files, classname, style, reference, in
       }
     })
   }
-  useOutsideAlerter(wrapperRef, readOnly)
-
-  const handleReadonly = () => setReadOnly(false)
+  useOutsideAlerter(wrapperRef, show)
 
   const handleChange = e => setText(e.target.value)
 
+  const handleShow = () => setShow(true)
+
   return (
-    <input
-      type="text"
-      onChange={handleChange}
-      className={classname}
-      value={text}
-      readOnly={readOnly}
-      onDoubleClick={handleReadonly}
-      style={style}
-      ref={wrapperRef}
-      id={inputId}
-    />
+    <>
+      { show &&
+        <input
+          type="text"
+          onChange={handleChange}
+          className='leftsidebar-input'
+          value={text}
+          ref={wrapperRef}
+          id={inputId}
+        />
+      }
+      <div className='leftsidebar-text' style={style} onDoubleClick={handleShow}>
+        {text}
+      </div>
+    </>
   )
 }
 
-export default EditableInput
+export default Editable

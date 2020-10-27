@@ -88,7 +88,7 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
     const font = Object.assign({}, style.font);
     font.size = getFontSizePxByPt(font.size);
     // console.log('style:', style);
-    draw.text(await cellText, dbox, {
+    draw.text(cellText, dbox, {
       align: style.align,
       valign: style.valign,
       font,

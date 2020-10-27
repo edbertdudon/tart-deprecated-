@@ -106,6 +106,9 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			slides: JSON.stringify(spreadsheetToR(slides.datas)),
 			names: JSON.stringify(slides.datas.map(data => data.name))
 		}
+		console.log(sparkData)
+		console.log(JSON.stringify(slides.datas.map(data => data.name)))
+		console.log(JSON.stringify(spreadsheetToR(slides.datas)))
 		// firebase.doOptimization(optimizationData)
 		// 	.then(res => {
 		// 		if (typeof res[0] === "string" || res[0] instanceof String) {

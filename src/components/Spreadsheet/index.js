@@ -2,7 +2,8 @@
 import { h } from './component/element';
 import DataProxy from './core/data_proxy';
 import Sheet from './component/sheet';
-import Bottombar from './component/bottombar';
+// import Bottombar from './component/bottombar';
+import Clipboard from './core/clipboard';
 import { cssPrefix } from './config';
 import { locale } from './locale/locale';
 import { getMaxNumberCustomSheet } from '../../functions'
@@ -17,29 +18,30 @@ class Spreadsheet {
     if (typeof selectors === 'string') {
       targetEl = document.querySelector(selectors);
     }
-    this.bottombar = new Bottombar(() => {
-      const d = this.addSheet();
-      this.sheet.resetData(d);
-    }, (index) => {
-      const d = this.datas[index];
-      this.sheet.resetData(d);
-    }, () => {
-      this.deleteSheet();
-    }, (index, value) => {
-      this.datas[index].name = value;
-    }, () => {
-      this.copySheet();
-    }, (copyIndex, pasteIndex) => {
-      const d = this.datas[copyIndex]
-      this.pasteSheet(d, pasteIndex);
-    });
+    // this.bottombar = new Bottombar(() => {
+    //   const d = this.addSheet();
+    //   this.sheet.resetData(d);
+    // }, (index) => {
+    //   const d = this.datas[index];
+    //   this.sheet.resetData(d);
+    // }, () => {
+    //   this.deleteSheet();
+    // }, (index, value) => {
+    //   this.datas[index].name = value;
+    // }, () => {
+    //   this.copySheet();
+    // }, (copyIndex, pasteIndex) => {
+    //   const d = this.datas[copyIndex]
+    //   this.pasteSheet(d, pasteIndex);
+    // });
     this.data = this.addSheet();
     const rootEl = h('div', `${cssPrefix}`)
       .on('contextmenu', evt => evt.preventDefault());
     // create canvas element
     targetEl.appendChild(rootEl.el);
     this.sheet = new Sheet(rootEl, this.data, this.datas);
-    rootEl.child(this.bottombar.el);
+    this.clipboard = new Clipboard()
+    // rootEl.child(this.bottombar.el);
   }
 
   addSheet(name, active = true) {
@@ -50,36 +52,43 @@ class Spreadsheet {
     };
     this.datas.push(d);
     // console.log('d:', n, d, this.datas);
-    this.bottombar.addItem(n, active, this.options.style.offcolor);
+    // this.bottombar.addItem(n, active, this.options.style.offcolor);
     this.sheetIndex += 1;
     return d;
   }
 
-  deleteSheet() {
-    const [oldIndex, nindex] = this.bottombar.deleteItem();
+  deleteSheet(oldIndex, nindex) {
+    // const [oldIndex, nindex] = this.bottombar.deleteItem();
     if (oldIndex >= 0) {
       this.datas.splice(oldIndex, 1);
       if (nindex >= 0) this.sheet.resetData(this.datas[nindex]);
     }
   }
 
-  copySheet() {
-    this.bottombar.copyItem();
+  copySheet(index) {
+    this.clipboard.copy(index)
   }
 
-  pasteSheet(data, index, active = true) {
+  pasteSheet(dataNames, index, isDuplicate, active = true) {
+    let data
+    if (isDuplicate) {
+      data = this.datas[index]
+    } else {
+      data = this.datas[this.clipboard.range]
+    }
     let d = new DataProxy('temp', this.options)
     d.setData(data.getData())
-    d.name = data.name + ' ' + (getMaxNumberCustomSheet(this.bottombar.dataNames, data.name)+1)
+    d.name = data.name + ' ' + (getMaxNumberCustomSheet(dataNames, data.name)+1)
     this.datas.splice(index+1, 0, d)
-    this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
-    this.sheetIndex = index += 1
+    // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
+    this.sheetIndex = index + 1
     this.sheet.resetData(d)
+    return d
   }
 
   loadData(data) {
     const ds = Array.isArray(data) ? data : [data];
-    this.bottombar.clear();
+    // this.bottombar.clear();
     this.datas = [];
     if (ds.length > 0) {
       for (let i = 0; i < ds.length; i += 1) {

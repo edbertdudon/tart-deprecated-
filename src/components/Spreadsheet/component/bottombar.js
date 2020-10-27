@@ -8,26 +8,6 @@ import Clipboard from '../core/clipboard';
 import { xtoast } from './message';
 import { tf } from '../locale/locale';
 
-// let selected = null
-
-// function dragOver(e) {
-//   if (isBefore(_el, e.target)) {
-//     e.target.parentNode.insertBefore(selected, e.target);
-//   } else {
-//     e.target.parentNode.insertBefore(selected, e.target.nextSibling);
-//   }
-// }
-//
-// function dragEnd() {
-//   selected = null
-// }
-//
-// function dragStart(e) {
-//   e.dataTransfer.effectAllowed = 'move'
-//   e.dataTransfer.setData('text/plain', null)
-//   selected = e.target
-// }
-
 function isBefore(el1, el2) {
   if (el2.parentNode === el1.parentNode)
     for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
@@ -152,31 +132,6 @@ export default class Bottombar {
       .children(
         this.contextMenu.el,
         this.menuEl = h('ul', `${cssPrefix}-menu`)
-          // .on('dragover', (e) => {
-          //   e.preventDefault()
-          // })
-          // .on('drop', (e) => {
-          //   const id = e.dataTransfer.getData("text/plain")
-          //   e.target.appendChild(document.getElementById(id))
-          //   e.dataTransfer.clearData()
-          //   const nindex = this.items.findIndex(item => item.el.id === id)
-          //   console.log(this.dataNames)
-          //   // this.dataNames = this.dataNames.splice(nindex, 1)
-          //   // const value = e.target.firstChild.lastChild.data;
-          //   // const nindex = this.dataNames.findIndex(it => it === value);
-          //   // console.log(value)
-          //   // console.log(nindex)
-          //   // console.log(this.dataNames)
-          //   // const v = this.dataNames[nindex]
-          //   // this.dataNames =
-          //   // this.renameItem(nindex, value);
-          //   // this.dataNames = []
-          //   // console.log(this.items)
-          //   // console.log(this.moreEl)
-          //   // this.items.push(item);
-          //   // this.menuEl.child(item);
-          //   // this.moreEl.reset(this.dataNames);
-          // })
         // .child(
         //   h('li', '').children(
             // new Icon('add').on('click', () => {
@@ -195,7 +150,6 @@ export default class Bottombar {
         this.contextMenu.setOffset({ left: evt.offsetX, top: evt.offsetY });
         this.deleteEl = item;
       });
-    // this.el.setAttribute('ondragover', "onDragOver(event)")
   }
 
   addItem(name, active, offcolor) {
@@ -205,10 +159,6 @@ export default class Bottombar {
         this.numberEl = h('div', `${cssPrefix}-slidenumber`).child(this.dataNames.length.toString()),
         name
       );
-    item.el.setAttribute('draggable', "true")
-    // item.el.setAttribute('ondragend', "dragEnd()")
-    // item.el.setAttribute('ondragover', "dragOver(event)")
-    // item.el.setAttribute('ondragstart', "dragStart(event)")
     item.on('click', () => {
       this.clickSwap2(item, offcolor);
     }).on('contextmenu', (evt) => {
@@ -233,22 +183,7 @@ export default class Bottombar {
       });
       item.html('').child(input.el);
       input.focus();
-    // }).on('dragstart', (e) => {
-    //   e.dataTransfer.effectAllowed = "move";
-    //   e.dataTransfer.setData("text/plain", null);
-    //   _el = e.target;
-    // }).on('dragover', (e) => {
-    //   if (isBefore(_el, e.target)) {
-    //     e.target.parentNode.insertBefore(_el, e.target);
-    //   } else {
-    //     e.target.parentNode.insertBefore(_el, e.target.nextSibling);
-    //   }
-    // }).on('dragend', () => {
-    //   _el = null
     });
-
-
-
     if (active) {
       this.clickSwap(item);
       this.changeColor(item, offcolor)
@@ -313,7 +248,6 @@ export default class Bottombar {
         this.numberEl = h('div', `${cssPrefix}-slidenumber`).child((index+2).toString()),
         name
       );
-    item.el.setAttribute('draggable', "true")
     item.on('click', () => {
       this.clickSwap2(item, offcolor);
     }).on('contextmenu', (evt) => {
@@ -332,7 +266,6 @@ export default class Bottombar {
       item.html('').child(input.el);
       input.focus();
     })
-    console.log(item)
     if (active) {
       this.clickSwap(item);
       this.changeColor(item, offcolor)
