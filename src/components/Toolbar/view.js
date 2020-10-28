@@ -5,13 +5,10 @@ import { compose } from 'recompose'
 import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar }) => {
-  const [navigator, setNavigator] = useState(true)
-
+const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar, navigator, setNavigator }) => {
   const VIEW_DROPDOWN = [
-    {key: 'Chart Editor', type: 'toggle', visibility: rightSidebar === 'charteditor'},
     {key: 'Navigator', type: 'toggle', visibility: navigator},
-    // {key: 'Optimize', type: 'toggle', visibility: rightSidebar === 'optimize'},
+    {key: 'Chart Editor', type: 'toggle', visibility: rightSidebar === 'charteditor'},
   ]
 
   const handleView = key => {
@@ -31,6 +28,7 @@ const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar
           document.getElementById('slide-overlayer').style.left = '125px'
           document.getElementById('slide-bottombar').style.display = 'block'
           slides.options.showNavigator = true
+
         }
         break;
     }

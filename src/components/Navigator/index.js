@@ -1,5 +1,5 @@
 //
-//  LeftSidebar
+//  Navigator
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -16,7 +16,7 @@ import Editable from './editable'
 import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color'
 
-const LEFTSIDEBAR_DROPDOWN = [
+const NAVIGATOR_DROPDOWN = [
 	{key: 'New sheet', type: 'item'},
 	{key: 'Rename', type: 'item'},
 	{type: 'divider'},
@@ -29,13 +29,13 @@ const LEFTSIDEBAR_DROPDOWN = [
 
 const ContextMenuDropdown = ({ slide, handleDropdown }) => (
 	<ContextMenu id={'right-click' + slide}>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[0].key)}>{LEFTSIDEBAR_DROPDOWN[0].key}</MenuItem>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[1].key)}>{LEFTSIDEBAR_DROPDOWN[1].key}</MenuItem>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[3].key)}>{LEFTSIDEBAR_DROPDOWN[3].key}</MenuItem>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[4].key)}>{LEFTSIDEBAR_DROPDOWN[4].key}</MenuItem>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[5].key)}>{LEFTSIDEBAR_DROPDOWN[5].key}</MenuItem>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[6].key)}>{LEFTSIDEBAR_DROPDOWN[6].key}</MenuItem>
-		<MenuItem onClick={() => handleDropdown(LEFTSIDEBAR_DROPDOWN[7].key)}>{LEFTSIDEBAR_DROPDOWN[7].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[0].key)}>{NAVIGATOR_DROPDOWN[0].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[1].key)}>{NAVIGATOR_DROPDOWN[1].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[3].key)}>{NAVIGATOR_DROPDOWN[3].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[4].key)}>{NAVIGATOR_DROPDOWN[4].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[5].key)}>{NAVIGATOR_DROPDOWN[5].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[6].key)}>{NAVIGATOR_DROPDOWN[6].key}</MenuItem>
+		<MenuItem onClick={() => handleDropdown(NAVIGATOR_DROPDOWN[7].key)}>{NAVIGATOR_DROPDOWN[7].key}</MenuItem>
 	</ContextMenu>
 )
 
@@ -46,34 +46,34 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const LeftSidebar = ({ slides, color, authUser, dataNames, setDataNames, current, setCurrent }) => {
+const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, setCurrent }) => {
 	const handleDropdown = (key, index) => {
 		switch(key) {
-			case LEFTSIDEBAR_DROPDOWN[0].key:
+			case NAVIGATOR_DROPDOWN[0].key:
 				setDataNames([...dataNames, "sheet" + slides.sheetIndex])
 				setCurrent(dataNames.length)
 				var d = slides.addSheet();
 				slides.sheet.resetData(d);
 				slides.data = d
 				break;
-			case LEFTSIDEBAR_DROPDOWN[1].key:
-				document.getElementById('leftsidebar-text-' + index).readOnly = false
-				document.getElementById('leftsidebar-text-' + index).focus()
+			case NAVIGATOR_DROPDOWN[1].key:
+				document.getElementById('navigator-text-' + index).readOnly = false
+				document.getElementById('navigator-text-' + index).focus()
 				break;
-			case LEFTSIDEBAR_DROPDOWN[3].key:
+			case NAVIGATOR_DROPDOWN[3].key:
 				handleDelete(index)
 				break;
-			case LEFTSIDEBAR_DROPDOWN[4].key:
+			case NAVIGATOR_DROPDOWN[4].key:
 				slides.copySheet(index)
 				break;
-			case LEFTSIDEBAR_DROPDOWN[5].key:
+			case NAVIGATOR_DROPDOWN[5].key:
 				var d = slides.pasteSheet(dataNames, index, false)
 				handlePaste(d, index)
 				break;
-			case LEFTSIDEBAR_DROPDOWN[6].key:
+			case NAVIGATOR_DROPDOWN[6].key:
 				handleDelete(index)
 				break;
-			case LEFTSIDEBAR_DROPDOWN[7].key:
+			case NAVIGATOR_DROPDOWN[7].key:
 				var d = slides.pasteSheet(dataNames, index, true)
 				handlePaste(d, index)
 				break;
@@ -151,26 +151,26 @@ const LeftSidebar = ({ slides, color, authUser, dataNames, setDataNames, current
 	}
 
 	const Item = ({ name, index}) => (
-		<div className='leftsidebar-slide' onClick={() => handleSelect(index)} style={backgroundColor(index)}>
-			<div className='leftsidebar-number' style={whiteText(index)}>{index+1}</div>
+		<div className='navigator-slide' onClick={() => handleSelect(index)} style={backgroundColor(index)}>
+			<div className='navigator-number' style={whiteText(index)}>{index+1}</div>
 			<Editable
 				value={name}
 				onCommit={name => handleSlidename(name, index)}
 				files={dataNames}
 				style={{...backgroundColor(index), ...whiteText(index)}}
 				key={name}
-				inputId={'leftsidebar-text-' + index}
+				inputId={'navigator-text-' + index}
 			/>
 		</div>
 	)
 
 	const List = () => {
 		return dataNames.map((name, index) => (
-			<div key={'leftsidebar-item-' + index}>
+			<div key={'navigator-item-' + index}>
 				<ContextMenuTrigger id={'right-click' + name}>
 					<Draggable key={'draggable-' + index} draggableId={'draggable-' + index} index={index}>
 						{provided => (
-							<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className='leftsidebar-slidewrapper'>
+							<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className='navigator-slidewrapper'>
 								<Item name={name} index={index} />
 							</div>
 						)}
@@ -185,7 +185,7 @@ const LeftSidebar = ({ slides, color, authUser, dataNames, setDataNames, current
 		<DragDropContext onDragEnd={handleDragEnd}>
 			<Droppable droppableId="list">
 				{provided => (
-			    <div className='leftsidebar' ref={provided.innerRef} {...provided.droppableProps}>
+			    <div className='navigator' ref={provided.innerRef} {...provided.droppableProps}>
 						<List />
 			    </div>
 				)}
@@ -204,4 +204,4 @@ export default compose(
   connect(
     mapStateToProps,
   ),
-)(LeftSidebar)
+)(Navigator)

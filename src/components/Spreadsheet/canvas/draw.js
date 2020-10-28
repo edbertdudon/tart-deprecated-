@@ -378,7 +378,7 @@ class Draw {
     ctx.restore();
   }
 
-  async rect(box, dtextcb) {
+  rect(box, dtextcb) {
     const { ctx } = this;
     const {
       x, y, width, height, bgcolor,

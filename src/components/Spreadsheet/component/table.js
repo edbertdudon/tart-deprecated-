@@ -54,7 +54,7 @@ function renderCellBorders(bboxes, translateFunc) {
 */
 
 // default yoffset = 0
-export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffset = 0) {
+export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffset = 0) {
   const { sortedRowMap, rows, cols } = data;
   if (rows.isHide(rindex) || cols.isHide(cindex)) return;
   let nrindex = rindex;
@@ -64,6 +64,9 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
 
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
+  let cellText = await rRender(cell.text || '', data, datas)
+  yoffset = 25
+  xoffset = 60
   let frozen = false;
   if ('editable' in cell && cell.editable === false) {
     frozen = true;
@@ -76,9 +79,9 @@ export function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffs
     // bboxes.push({ ri: rindex, ci: cindex, box: dbox });
     draw.strokeBorders(dbox);
   }
-  draw.rect(dbox, async () => {
+  draw.rect(dbox, () => {
     // render text
-    let cellText = rRender(cell.text || '', data, datas)
+    // let cellText = rRender(cell.text || '', data, datas)
     // if (cellText.status )
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     if (style.format) {
@@ -123,7 +126,7 @@ function renderAutofilter(viewRange) {
   }
 }
 
-async function renderContent(viewRange, fw, fh, tx, ty) {
+function renderContent(viewRange, fw, fh, tx, ty) {
   const { draw, data, datas } = this;
   draw.save();
   draw.translate(fw, fh)
@@ -144,8 +147,8 @@ async function renderContent(viewRange, fw, fh, tx, ty) {
   // 1 render cell
   draw.save();
   draw.translate(0, -exceptRowTotalHeight);
-  viewRange.each((ri, ci) => {
-    renderCell(draw, data, datas, ri, ci);
+  viewRange.each(async (ri, ci) => {
+    await renderCell(draw, data, datas, ri, ci);
   }, ri => filteredTranslateFunc(ri));
   draw.restore();
 

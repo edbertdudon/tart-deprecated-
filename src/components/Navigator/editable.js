@@ -66,13 +66,13 @@ const Editable = ({ value, onCommit, files, classname, style, reference, inputId
         <input
           type="text"
           onChange={handleChange}
-          className='leftsidebar-input'
+          className='navigator-input'
           value={text}
           ref={wrapperRef}
           id={inputId}
         />
       }
-      <div className='leftsidebar-text' style={style} onDoubleClick={handleShow}>
+      <div className='navigator-text' style={style} onDoubleClick={handleShow}>
         {text}
       </div>
     </>

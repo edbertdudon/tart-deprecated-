@@ -12,7 +12,7 @@ import Header from './header'
 import Toolbar from '../Toolbar'
 import Toggle from '../Toggle'
 import Formulabar from '../Formulabar'
-import LeftSidebar from '../LeftSidebar'
+import Navigator from '../Navigator'
 import RightSidebar from '../RightSidebar'
 import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
 
@@ -21,6 +21,7 @@ const Worksheet = () => {
 	const [current, setCurrent] = useState(0)
 	const [text, setText] = useState('')
 	const [saving, setSaving] = useState(false)
+	const [navigator, setNavigator] = useState(true)
 	const [rightSidebar, setRightSidebar] = useState('none')
 	const [statistic, setStatistic] = useState(null)
 	const [schart, setSchart] = useState([])
@@ -31,13 +32,17 @@ const Worksheet = () => {
 			<Toolbar
 				rightSidebar={rightSidebar}
 				setRightSidebar={setRightSidebar}
+				navigator={navigator}
+				setNavigator={setNavigator}
 				dataNames={dataNames}
 				setDataNames={setDataNames}
 				setCurrent={setCurrent}
 			/>
 			<Formulabar text={text} />
 			<Toggle rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} setStatistic={setStatistic} setSchart={setSchart} />
-			<LeftSidebar dataNames={dataNames} setDataNames={setDataNames} current={current} setCurrent={setCurrent} />
+			{navigator &&
+				<Navigator dataNames={dataNames} setDataNames={setDataNames} current={current} setCurrent={setCurrent} />
+			}
 			<RightSidebar
 				rightSidebar={rightSidebar}
 				setRightSidebar={setRightSidebar}
