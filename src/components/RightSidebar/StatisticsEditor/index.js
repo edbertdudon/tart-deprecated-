@@ -249,8 +249,8 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 			return
 		}
 		let formulaData = setFormula(slides, statisticalFunction)
-		let statName = statistics[statistic].name + ' '
-			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[statistic].name)
+		let statName = statistics[statistic].key + ' '
+			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[statistic].key)
 		let sparkData = setSparkData(slides, statisticalFunction)
 		doRegression(formulaData)
 			.then(res => {
@@ -283,7 +283,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 				<Icon path={mdiClose} size={1}/>
 			</button>
 			<div className='rightsidebar-heading'>
-				{statistics[statistic].name}
+				{statistics[statistic].key}
 			</div>
 			{statistics[statistic].arguments.includes("oneWayAnova") &&
 				<Anova

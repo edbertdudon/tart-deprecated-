@@ -41,6 +41,8 @@
 //
 import rFormulas from './formula'
 import { createEmptyMatrix } from '../../../functions'
+import { CellRange } from '../core/cell_range';
+
 var FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
 var LETTERS_REFERENCE = /\$?[A-Z]+/g;
 var NUMBERS_REFERENCE = /\$?[0-9]+/g;
@@ -180,22 +182,32 @@ const fetchR = (data, func) => {
   })
 }
 
-const doParse = data => {
-  return fetchR(data, "cloudR")
+const removeMatrix = (data, ri, ci) => {
+  if (data.matrices._.length > 0) {
+    let cr = data.matrices._.find(cr => cr.sri === ri && cr.sci === ci)
+    if (cr !== undefined) {
+      data.removeMatrix(cr)
+    }
+  }
+}
+
+const doParse = (obj, data, ri, ci) => {
+  return fetchR(obj, "cloudR")
     .then(res => res.json())
     .then(res => {
       let result = JSON.parse(res[0])
       if (result.length > 1) {
+        let cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
+        data.addMatrix(cr, result)
         return result[0][0].toString().replace(/['"]+/g, '')
-      // addMatrix(result, slides, currentSlide, dispatchSlides, row, column)
       } else {
+        removeMatrix(data, ri, ci)
         return result[0].toString().replace(/['"]+/g, '')
-      // removeMatrix(slides, currentSlide, dispatchSlides, row, column)
       }
     })
     .catch(err => {
+      removeMatrix(data, ri, ci)
       return '#ERROR!'
-    // removeMatrix(slides, currentSlide, dispatchSlides, row, column)
   })
 }
 
@@ -211,16 +223,14 @@ export const doRegression = data => {
 		})
 }
 
-export const rRender = (src, data, datas) => {
+export const rRender = (src, data, datas, ri, ci) => {
   if (src[0] === '=') {
     return doParse({
       cell: translateR(src.slice(1), data.name),
       slides: JSON.stringify(spreadsheetToR(datas)),
       names: JSON.stringify(datas.map(data => data.name)),
-    })
-    // data.setCellText(ri, ci, text)
-    // return src;
+    }, data, ri, ci)
   }
+  removeMatrix(data, ri, ci)
   return src;
-  // removeMatrix(slides, currentSlide, dispatchSlides, row, column)
 };

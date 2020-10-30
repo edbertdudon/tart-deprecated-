@@ -89,7 +89,7 @@ const ChartEditor = ({ slides, schart, setSchart }) => {
 							<ChartsWithListsDropdown
 								onChange={handleUpdateChart}
 								options={charts}
-								name={charts[selected].name}
+								name={charts[selected].key}
 								selection={schart}
 								setSelection={setSchart}
 								currentSelection={index}
@@ -125,7 +125,7 @@ const ChartEditor = ({ slides, schart, setSchart }) => {
 }
 
 
-const Charts = ({ option }) => option.name
+const Charts = ({ option }) => option.key
 const Options = ({ option }) => option
 
 const ChartsWithListsDropdown = withListsDropdown(Charts)

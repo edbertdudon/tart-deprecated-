@@ -34,7 +34,7 @@ const withDropdownModal = Component => (props) => {
       setIsSearching(true)
       setFilteredOption(
         props.items.filter(item =>
-          item.name.toLowerCase().includes(e.target.value.toLowerCase())
+          item.key.toLowerCase().includes(e.target.value.toLowerCase())
         )
       )
     } else {
@@ -85,8 +85,8 @@ const withDropdownModal = Component => (props) => {
           </div>
           <div className='dropdownmodal-selection' style={{height: props.height - 40 + "px"}}>
             {filteredOption.map((item, i) => (
-              <div className='dropdownmodal-item' onClick={() => handleSelect(item.name)} key={i} >
-                {item.name}
+              <div className='dropdownmodal-item' onClick={() => handleSelect(item.key)} key={i} >
+                {item.key}
               </div>
       			))}
           </div>

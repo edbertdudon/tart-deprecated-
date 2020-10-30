@@ -40,7 +40,7 @@ const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts })
 		setRightSidebar('charteditor')
 		let chartNumber
 		for (var i=0; i<charts.length; i++) {
-			if (chart === charts[i].name) {
+			if (chart === charts[i].key) {
 				chartNumber = i
 				break;
 			}
@@ -64,7 +64,7 @@ const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts })
 	const handleSearch = e => {
 		let input = e.target.value
 		let filter = charts.filter(chart =>
-			chart.name.toLowerCase().includes(input.toLowerCase())
+			chart.key.toLowerCase().includes(input.toLowerCase())
 		)
 		setFilteredOption(filter)
 	}
@@ -87,8 +87,8 @@ const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts })
 				onChange={handleSearch}
 			/>
 			{filteredOption.map((chart, index) => (
-				<div className='rightsidebar-item' onClick={() => handleSelectChart(chart.name)} key={index}>
-					{chart.name}
+				<div className='rightsidebar-item' onClick={() => handleSelectChart(chart.key)} key={index}>
+					{chart.key}
 				</div>
 			))}
 		</>

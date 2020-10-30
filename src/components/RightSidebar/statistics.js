@@ -9,7 +9,7 @@ const Statistics = ({ setRightSidebar, setSelectedAnalysis }) => {
 	const handleSelectStatistic = (statistic) => {
 		let statisticNumber
 		for (var i=0; i<statistics.length; i++) {
-			if (statistic === statistics[i].name) {
+			if (statistic === statistics[i].key) {
 				statisticNumber = i
 				break;
 			}
@@ -21,13 +21,13 @@ const Statistics = ({ setRightSidebar, setSelectedAnalysis }) => {
 		let input = e.target.value
 		let filter
 		if (input.length < 1) {
-			filter = statistics.filter(statistic => statistic.name
+			filter = statistics.filter(statistic => statistic.key
 				.toLowerCase()
 				.includes(input.toLowerCase()))
 		} else {
 			filter = statistics
 				.filter(statistic => statistic.hasOwnProperty('function'))
-				.filter(statistic => statistic.name
+				.filter(statistic => statistic.key
 					.toLowerCase()
 					.includes(input.toLowerCase()))
 		}
@@ -51,10 +51,10 @@ const Statistics = ({ setRightSidebar, setSelectedAnalysis }) => {
 				onChange={handleSearch}
 			/>
 			{filteredOption.map((statistic, index) => ("function" in statistic)
-				?	<div className='rightsidebar-item' onClick={() => handleSelectStatistic(statistic.name)} key={index}>
-						{statistic.name}
+				?	<div className='rightsidebar-item' onClick={() => handleSelectStatistic(statistic.key)} key={index}>
+						{statistic.key}
 					</div>
-				:	<div className='rightsidebar-item-header' key={index}>{statistic.name}</div>
+				:	<div className='rightsidebar-item-header' key={index}>{statistic.key}</div>
 			)}
 		</div>
 	)

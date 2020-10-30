@@ -13,7 +13,7 @@ import { withFirebase } from '../Firebase'
 const OBJECTIVE_CLASS = [
 	"General nonlinear optimization",
 	"Linear programming",
-	// "Quadratic programming",
+	"Quadratic programming",
 ]
 
 const OPTIMIZATION_METHODS = [

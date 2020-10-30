@@ -109,6 +109,19 @@ class Rows {
     cell.text = text;
   }
 
+  setMatrix(ri, ci, aoa) {
+    let rows = this
+    let row;
+    aoa.forEach(function(r, i) {
+      row = rows.getOrNew(ri+i);
+      r.forEach((c, j) => {
+        if (!(i === 0 && j === 0)) {
+          row.cells[ci+j] = {text: c}
+        }
+      });
+    })
+  }
+
   // what: all | format | text
   copyPaste(srcCellRange, dstCellRange, what, autofill = false, cb = () => {}) {
     const {
@@ -286,6 +299,15 @@ class Rows {
     cellRange.each((i, j) => {
       this.deleteCell(i, j, what);
     });
+  }
+
+  deleteCellsExceptFirst(cellRange, what = 'all') {
+    const { sri, sci } = cellRange
+    cellRange.each((i, j) => {
+      if (!(i === sri && j === sci)) {
+        this.deleteCell(i, j, what)
+      }
+    })
   }
 
   // what: all | text | format | merge

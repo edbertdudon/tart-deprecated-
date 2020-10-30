@@ -3,12 +3,13 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdilChartHistogram } from '@mdi/light-js'
-import { mdiMagnify, mdiBrush } from '@mdi/js'
+import { mdiMagnify, mdiBrush, mdiMathIntegral } from '@mdi/js'
 
 import { OFF_COLOR } from '../../constants/off-color'
 import withDropdownModal from '../DropdownModal'
 import charts from '../RightSidebar/chartsR'
 import statistics from '../RightSidebar/statisticsR'
+import formulas from '../Spreadsheet/cloudr/formula'
 import './index.less'
 
 const CHART_CATEGORIES = [
@@ -31,6 +32,12 @@ const STATISTICS_CATEGORIES = [
   'MANOVA',
 ]
 
+const FORMULA_CATEGORIES = [
+  'Math',
+  'Matrix',
+  'Distribution'
+]
+
 const Button = ({ isSelected, onToggle, icon, name }) => {
   return (
 		<button
@@ -45,13 +52,14 @@ const Button = ({ isSelected, onToggle, icon, name }) => {
 }
 
 const Toggle = ({ color, authUser, rightSidebar, setRightSidebar, setStatistic, setSchart }) => {
-  const handleToggle = (select) => {
+  const handleToggle = select => {
     if (rightSidebar !== select) {
       setRightSidebar(select)
     } else {
       setRightSidebar('none')
     }
   }
+
   const handleChart = chart => {
     setRightSidebar('charteditor')
     let chartNumber
@@ -87,17 +95,34 @@ const Toggle = ({ color, authUser, rightSidebar, setRightSidebar, setStatistic, 
 		setStatistic(statisticNumber)
   }
 
+  const handleFormulas = formula => {
+    slides.data.setSelectedCellAttr('formula', formula)
+		if (!slides.data.selector.multiple()) {
+			editorSet.call(slides.sheet);
+		}
+		sheetReset.call(slides.sheet);
+  }
+
   // <Button isSelected={rightSidebar === 'formulas'} onToggle={() => handleToggle('formulas')} icon={mdiMathIntegral} />
-  // <Button isSelected={rightSidebar === 'statistics'} onToggle={() => handleToggle('statistics')} icon={mdiMagnify} />
 	return (
     <>
       <div className='worksheet-buttons'>
+        <ButtonWithDropdownModal
+          onSelect={handleFormulas}
+          icon={mdiMathIntegral}
+          items={formulas}
+          categories={FORMULA_CATEGORIES}
+          color={OFF_COLOR[color[authUser.uid]]}
+          height={296}
+          name="formulas"
+        />
         <ButtonWithDropdownModal
           onSelect={handleChart}
           icon={mdilChartHistogram}
           items={charts}
           categories={CHART_CATEGORIES}
           color={OFF_COLOR[color[authUser.uid]]}
+          style={{marginLeft: "30px"}}
           height={232}
           name="charts"
         />
@@ -107,13 +132,18 @@ const Toggle = ({ color, authUser, rightSidebar, setRightSidebar, setStatistic, 
           items={statistics}
           categories={STATISTICS_CATEGORIES}
           color={OFF_COLOR[color[authUser.uid]]}
-          style={{marginLeft: "30px"}}
+          style={{marginLeft: "60px"}}
           height={296}
           name="statistics"
         />
       </div>
   		<div className='worksheet-toggle'>
-        <Button isSelected={rightSidebar === 'charteditor'} onToggle={() => handleToggle('charts')} icon={mdiBrush} />
+        <Button
+          isSelected={rightSidebar === 'charteditor'}
+          onToggle={() => handleToggle('charteditor')}
+          icon={mdiBrush}
+          name={'charteditor'}
+        />
   		</div>
     </>
 	)

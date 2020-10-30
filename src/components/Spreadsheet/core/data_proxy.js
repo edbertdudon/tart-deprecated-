@@ -6,6 +6,7 @@ import History from './history';
 import Clipboard from './clipboard';
 import AutoFilter from './auto_filter';
 import { Merges } from './merge';
+import { Matrices } from './matrices'
 import helper from './helper';
 import { Rows } from './row';
 import { Cols } from './col';
@@ -330,6 +331,7 @@ export default class DataProxy {
     this.freeze = [0, 0];
     this.styles = []; // Array<Style>
     this.merges = new Merges(); // [CellRange, ...]
+    this.matrices = new Matrices();
     this.rows = new Rows(this.settings.row);
     this.cols = new Cols(this.settings.col);
     this.validations = new Validations();
@@ -730,12 +732,24 @@ export default class DataProxy {
     });
   }
 
+  addMatrix(cellRange, aoa) {
+    const { sri, sci } = cellRange
+    this.matrices.add(cellRange)
+    // this.rows.deleteCells(cr)
+    this.rows.setMatrix(sri, sci, aoa)
+  }
+
+  removeMatrix(cellRange) {
+    const { sri, sci } = cellRange
+    this.rows.deleteCellsExceptFirst(cellRange)
+    this.matrices.deleteWithin(cellRange)
+  }
+
   canAutofilter() {
     return !this.autoFilter.active();
   }
 
   autofilter() {
-    console.log('passed autofilter')
     const { autoFilter, selector } = this;
     this.changeData(() => {
       if (autoFilter.active()) {

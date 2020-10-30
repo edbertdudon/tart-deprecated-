@@ -14,22 +14,24 @@ const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar
   const handleView = key => {
     switch (key) {
       case VIEW_DROPDOWN[0].key:
-        handleToggle('charteditor')
-        break;
-      case VIEW_DROPDOWN[1].key:
         setNavigator(!navigator)
         if (navigator) {
           document.getElementById('slide-table').style.marginLeft = '0'
           document.getElementById('slide-overlayer').style.left = '0'
-          document.getElementById('slide-bottombar').style.display = 'none'
+          document.getElementById('slide-scrollbar-horizontal').style.left = '0'
+          // document.getElementById('slide-bottombar').style.display = 'none'
           slides.options.showNavigator = false
         } else {
           document.getElementById('slide-table').style.marginLeft = '125px'
           document.getElementById('slide-overlayer').style.left = '125px'
-          document.getElementById('slide-bottombar').style.display = 'block'
+          document.getElementById('slide-scrollbar-horizontal').style.left = '125px'
+          // document.getElementById('slide-bottombar').style.display = 'block'
           slides.options.showNavigator = true
 
         }
+        break;
+      case VIEW_DROPDOWN[1].key:
+        handleToggle('charteditor')
         break;
     }
   }
