@@ -85,7 +85,13 @@ const rFormulas = [
 		description: 'binary (i.e., base 2) logarithms',
     category: 0
 	},
-	// log1p
+  {
+    key: 'log1p',
+    title: tf('formula.log1p'),
+    syntax:'log1p(value)',
+    description: 'computes log(1+x)',
+    category: 0
+  },
 	{
 		key: 'exp',
 		title: tf('formula.exp'),
@@ -93,7 +99,13 @@ const rFormulas = [
 		description: 'exponent',
     category: 0
 	},
-	// expm1
+  {
+    key: 'expm1',
+    title: tf('formula.expm1'),
+    syntax:'expm1(value)',
+    description: 'computes exp(x) - 1',
+    category: 0
+  },
 	{
 		key: 'max',
 		title: tf('formula.max'),
@@ -108,14 +120,17 @@ const rFormulas = [
 		description: 'minimum of the elements',
     category: 0
 	},
-	// // {
-	// 	key: 'range',
-	// 	description: ''
-	// },
+	{
+		key: 'range',
+    title: tf('formula.range'),
+    syntax:'range(range)',
+		description: 'the minimum and maximum of all the given arguments',
+    category: 0
+	},
 	{
 		key: 'sum',
 		title: tf('formula.sum'),
-		syntax:'max(value1, [value2, ...])',
+		syntax:'sum(value1, [value2, ...])',
 		description: 'sum of the elements',
     category: 0
 	},
@@ -147,10 +162,12 @@ const rFormulas = [
 		description: 'median of the elements',
     category: 0
   },
-	// // {
-	// 	key: 'quantile',
-	// 	description: 'sample quantiles corresponding to the given probabilities (defaults to 0,.25,.5,.75,1)'
-	// },
+	{
+		key: 'quantile',
+    syntax:'median(range)',
+		description: 'sample quantiles corresponding to the given probabilities (defaults to 0,.25,.5,.75,1)',
+    category: 0
+	},
 	{
 		key: 'weighted.mean',
 		title: tf('formula.weightedmean'),
@@ -158,10 +175,12 @@ const rFormulas = [
 		description: 'Compute a weighted mean, (values, weights). Values and weights must have the same length.',
     category: 0
   },
-	// // {
-	// 	key: 'rank',
-	// 	description: 'ranks of the elements'
-	// },
+	{
+		key: 'rank',
+    title: tf('formula.rank'),
+		description: 'ranks of the elements',
+    category: 0
+	},
 	{
 		key: 'var',
 		title: tf('formula.var'),
@@ -197,10 +216,13 @@ const rFormulas = [
 		description: 'rounds the elements to n decimals',
     category: 0
   },
-	// // {
-	// 	key: 'scale',
-	// 	description: ''
-	// },
+	{
+		key: 'scale',
+    title: tf('formula.scale'),
+    syntax:'scale(range)',
+		description: 'centers and reduces the data',
+    category: 0
+	},
 	{
 		key: 'pmin',
 		title: tf('formula.pmin'),
@@ -215,77 +237,145 @@ const rFormulas = [
 		description: 'a vector which ith element is the maximum',
     category: 0
   },
-	// // {
-	// 	key: 'cumsum',
-	// 	description: ''
-	// },
-	// // {
-	// 	key: 'cummin',
-	// 	description: ''
-	// },
-	// // {
-	// 	key: 'cumax',
-	// 	description: ''
-	// },
-	// // {
-	// 	key: 'union',
-	// 	description: ''
-	// },
-	// // {
-	// 	key: 'intersect',
-	// 	description: ''
-	// },
-	// // {
-	// 	key: 'setdiff',
-	// 	description: ''
-	// },
-	// // {
-	// 	key: 'setequal',
-	// 	description: ''
-	// },
-	// // {
+	{
+		key: 'cumsum',
+    title: tf('formula.cumsum'),
+    syntax:'cumsum(range)',
+		description: 'a vector whose elements are the cumulative sums of the elements',
+    category: 0
+	},
+  {
+    key: 'cumprod',
+    title: tf('formula.cumprod'),
+    syntax:'cumprod(range)',
+    description: 'a vector whose elements are the cumulative products of the elements',
+    category: 0
+  },
+  {
+    key: 'cummax',
+    title: tf('formula.cummax'),
+    syntax:'cummax(range)',
+    description: 'a vector whose elements are the cumulative maxima of the elements',
+    category: 0
+  },
+	{
+		key: 'cummin',
+    title: tf('formula.cummin'),
+    syntax:'cummin(range)',
+		description: 'a vector whose elements are the cumulative minima of the elements',
+    category: 0
+	},
+	{
+		key: 'union',
+    title: tf('formula.union'),
+    syntax:'union(range, range)',
+		description: 'set union',
+    category: 0
+	},
+	{
+		key: 'intersect',
+    title: tf('formula.intersect'),
+    syntax:'intersect(range, range)',
+		description: 'set intersection',
+    category: 0
+	},
+	{
+		key: 'setdiff',
+    title: tf('formula.setdiff'),
+    syntax:'setdiff(range, range)',
+		description: 'set (asymmetric!) difference',
+    category: 0
+	},
+	{
+		key: 'setequal',
+    title: tf('formula.setequal'),
+    syntax:'setequal(range, range)',
+		description: 'set equality',
+    category: 0
+	},
+	// {
 	// 	key: 'is.element',
-	// 	description: ''
+  //   title: tf('formula.iselement'),
+  //   syntax:'is.element(range, range)',
+	// 	description: 'set membership',
+  //   category: 0
 	// },
-	// // {
-	// 	key: 'Re',
-	// 	description: 'real part of a complex number'
-	// },
-	// // {
-	// 	key: 'Im',
-	// 	description: 'imaginary part of a complex number'
-	// },
-	// // {
-	// 	key: 'Mod',
-	// 	description: 'modulus'
-	// },
-	// // {
-	// 	key: 'abs',
-	// 	description: 'modulus'
-	// },
-	// // {
-	// 	key: 'Arg',
-	// 	description: 'angle in radians of the complex number'
-	// },
-	// // {
-	// 	key: 'Conj',
-	// 	description: 'complex conjugate'
-	// },
-	// // {
-	// 	key: 'convolve',
-	// 	description: 'compute the several kinds of convolutions of two sequences, convolve(x,y)'
-	// },
-	// // {
-	// 	key: 'fft',
-	// 	description: 'Fast Fourier Transform of an array'
-	// },
-	// // {
-	// 	key: 'mvfft',
-	// 	description: 'Fast Fourier Transform of each column of a matrix'
-	// },
-	// // {
+  {
+    key: 'complex',
+    title: tf('formula.complex'),
+    syntax:'complex(length, real, imaginary, modulus, argument)',
+    description: 'create complex number(s)',
+    category: 0
+  },
+	{
+		key: 'Re',
+    title: tf('formula.Re'),
+    syntax:'Re(complex)',
+		description: 'real part of a complex number',
+    category: 0
+	},
+	{
+		key: 'Im',
+    title: tf('formula.Im'),
+    syntax:'Im(complex)',
+		description: 'imaginary part of a complex number',
+    category: 0
+	},
+	{
+		key: 'Mod',
+    title: tf('formula.Mod'),
+    syntax:'Mod(complex)',
+		description: 'modulus of a complex number',
+    category: 0
+	},
+	{
+		key: 'abs',
+    title: tf('formula.abs'),
+    syntax:'abs(complex)',
+		description: 'modulus of a complex number',
+    category: 0
+	},
+	{
+		key: 'Arg',
+    title: tf('formula.Arg'),
+    syntax:'Arg(complex)',
+		description: 'angle in radians of the complex number',
+    category: 0
+	},
+	{
+		key: 'Conj',
+    title: tf('formula.Conj'),
+    syntax:'Conj(complex)',
+		description: 'complex conjugate of a complex number',
+    category: 0
+	},
+	{
+		key: 'convolve',
+    title: tf('formula.convolve'),
+    syntax:'convolve(range, range)',
+		description: 'Fast Fourier Transform to compute the several kinds of convolutions of two sequences',
+    category: 0
+	},
+	{
+		key: 'fft',
+    title: tf('formula.fft'),
+    syntax:'fft(range)',
+		description: 'Fast Fourier Transform of an array',
+    category: 0
+	},
+	{
+		key: 'mvfft',
+    title: tf('formula.mvfft'),
+    syntax:'mvfft(range)',
+		description: 'Fast Fourier Transform of each column of a matrix',
+    category: 0
+	},
+	// {
 	// 	key: 'filter',
-	// 	description: 'applies linear filtering to a univariate time series or to each series separately of a multivariate time series, filter(x,filter)'
+  //   title: tf('formula.filter'),
+  //   syntax:'filter()',
+	// 	description: 'applies linear filtering to a univariate time series or to each series separately of a multivariate time series',
+  //   category: 0
 	// },
 
 	// Matrices
@@ -313,17 +403,17 @@ const rFormulas = [
 	{
 		key: 'solve',
 		title: tf('formula.solve'),
-		syntax:'solve(range, range2)',
-		description: 'Solves equation range %*% x = range2',
+		syntax:'solve(range, [range2])',
+		description: 'Solves equation range %*% x = range2. Supply one argument to get the inverse matrix.',
     category: 1
   },
-	{
-		key: 'solve',
-		title: tf('formula.solve'),
-		syntax:'solve(range)',
-		description: 'Inverse matrix',
-    category: 1
-  },
+	// {
+	// 	key: 'solve',
+	// 	title: tf('formula.solve'),
+	// 	syntax:'solve(range)',
+	// 	description: 'Inverse matrix',
+  //   category: 1
+  // },
 	{
 		key: 'rowSums',
 		title: tf('formula.rowSums'),
@@ -845,6 +935,77 @@ const rFormulas = [
 		description: 'Random generation for the distribution of the Wilcoxon rank sum statistic',
 		addStart: '1,',
     category: 2
+  },
+  // Data
+	{
+		key: 'c',
+		title: tf('formula.c'),
+		syntax:'c(range, [range])',
+		description: 'a generic function which combines its arguments',
+    category: 3
+	},
+  {
+    key: 'seq',
+    title: tf('formula.seq'),
+    syntax:'seq(from, to)',
+    description: 'generates a sequence',
+    category: 3
+  },
+  {
+    key: 'rep',
+    title: tf('formula.rep'),
+    syntax:'rep(value, times)',
+    description: 'replicates value',
+    category: 3
+  },
+  {
+    key: 'list',
+    title: tf('formula.list'),
+    syntax:'list(range, [range])',
+    description: 'create a list',
+    category: 3
+  },
+  {
+    key: 'array',
+    title: tf('formula.array'),
+    syntax:'array(range, dimension)',
+    description: 'array',
+    category: 3
+  },
+  {
+    key: 'matrix',
+    title: tf('formula.matrix'),
+    syntax:'matrix(range, rows, columns)',
+    description: 'matrix',
+    category: 3
+  },
+  // {
+  //   key: 'factor',
+  //   title: tf('formula.factor'),
+  //   syntax:'factor(range, levels)',
+  //   description: 'generates a factor',
+  //   category: 3
+  // },
+  {
+    key: 'gl',
+    title: tf('formula.gl'),
+    syntax:'gl(replications, levels, length, labels)',
+    description: 'generates levels (factors) by specifying the pattern of their levels',
+    category: 3
+  },
+  {
+    key: 'rbind',
+    title: tf('formula.rbind'),
+    syntax:'rbind(range, [range])',
+    description: 'combine arguments by rows',
+    category: 3
+  },
+  {
+    key: 'cbind',
+    title: tf('formula.cbind'),
+    syntax:'cbind(range, [range])',
+    description: 'combine arguments by columns',
+    category: 3
   },
 ];
 

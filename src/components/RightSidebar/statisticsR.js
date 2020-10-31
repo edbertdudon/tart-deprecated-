@@ -1,11 +1,4 @@
 const statistics = [
-	// Optimization and model fitting
-	// {key: "Optimization", function: "optimx(", arguments: ["optim"], category: 0},
-	// {key: "Linear model fitting", function: "summary()", arguments: ["formula"], category: 0},
-	// {key: "Generalized linear model fit", function: "glm()", options: ["binomial, gaussian, Gamma, inverse.gaussian, poisson, quasi, quasibinomial, quasipoisson"], category: 0},
-	// {key: "Local polynomial regression fitting", function: "loess()", category: 0},
-	// {key: "Nonlinear least-squares", function: "nls()", category: 0},
-
 	// Frequency tables
 	{key: "Frequency Tables", category: 0},
 	{key: "Two-Way frequency table", function: "ftable(", arguments: ["xvariable", "yvariable"], category: 0},

@@ -1,3 +1,10 @@
+//
+//  Toggle
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
@@ -10,6 +17,7 @@ import withDropdownModal from '../DropdownModal'
 import charts from '../RightSidebar/chartsR'
 import statistics from '../RightSidebar/statisticsR'
 import formulas from '../Spreadsheet/cloudr/formula'
+import { editorSet, sheetReset } from '../Spreadsheet/component/sheet'
 import './index.less'
 
 const CHART_CATEGORIES = [
@@ -35,7 +43,8 @@ const STATISTICS_CATEGORIES = [
 const FORMULA_CATEGORIES = [
   'Math',
   'Matrix',
-  'Distribution'
+  'Distribution',
+  'Data'
 ]
 
 const Button = ({ isSelected, onToggle, icon, name }) => {
@@ -51,7 +60,7 @@ const Button = ({ isSelected, onToggle, icon, name }) => {
   )
 }
 
-const Toggle = ({ color, authUser, rightSidebar, setRightSidebar, setStatistic, setSchart }) => {
+const Toggle = ({ color, authUser, slides, rightSidebar, setRightSidebar, setStatistic, setSchart }) => {
   const handleToggle = select => {
     if (rightSidebar !== select) {
       setRightSidebar(select)
@@ -154,6 +163,7 @@ const ButtonWithDropdownModal = withDropdownModal(Button)
 const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+  slides: (state.slidesState.slides || {}),
 })
 
 export default compose(

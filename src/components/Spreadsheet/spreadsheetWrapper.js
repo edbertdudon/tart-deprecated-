@@ -37,12 +37,14 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, 
 			options.style.offcolor = OFF_COLOR[color[authUser.uid]]
 			var s = new Spreadsheet('#spreadsheet', options)
 				// .loadData(res)
-				.on('cell-edited', (text, ri, ci) => setText(text))
+				.on('cell-edited', (text, ri, ci) => {
+          setText({ text: text, ri: ri, ci: ci })
+        })
 				.on('cell-selected', (text, ri, ci) => {
 					if (text === null) {
-						setText('')
+						setText({ text: '', ri: ri, ci: ci })
 					} else {
-						setText(text.text)
+						setText({ text: text.text, ri: ri, ci: ci })
 					}
 				})
 			onSetSlides(s)

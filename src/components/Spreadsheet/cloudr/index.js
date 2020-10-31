@@ -70,7 +70,7 @@ const optionsFilterAdd = rFormulas.filter(formula => "addStart" in formula || "a
 function addPrefixToFunction(cell) {
   let optionsInCell = []
   for (var i=0; i<optionsFilterAdd.length; i++) {
-    if (cell.includes(optionsFilterAdd[i].key.slice(1))) {
+    if (cell.includes(optionsFilterAdd[i].key + '(')) {
       optionsInCell.push(optionsFilterAdd[i])
     }
   }
@@ -197,6 +197,9 @@ const doParse = (obj, data, ri, ci) => {
     .then(res => {
       let result = JSON.parse(res[0])
       if (result.length > 1) {
+        if (!Array.isArray(result[0])) {
+          result = [result]
+        }
         let cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
         data.addMatrix(cr, result)
         return result[0][0].toString().replace(/['"]+/g, '')
@@ -206,6 +209,7 @@ const doParse = (obj, data, ri, ci) => {
       }
     })
     .catch(err => {
+      console.log(err)
       removeMatrix(data, ri, ci)
       return '#ERROR!'
   })

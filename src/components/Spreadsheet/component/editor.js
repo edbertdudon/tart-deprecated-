@@ -139,18 +139,14 @@ function suggestItemClick(it) {
     const start = inputText.lastIndexOf('=');
     const sit = inputText.substring(0, start + 1);
     let eit = inputText.substring(start + 1);
-    if (eit.indexOf(')') !== -1) {
-      eit = eit.substring(eit.indexOf(')'));
-    } else {
-      eit = '';
-    }
+    let nv = eit.split(OPERATORS_REGEX);
+    let [l] = nv.slice(nv.length-1);
+    eit = l;
     if (eit.length < 1) {
       this.inputText = `${sit + it.key}(`;
       position = this.inputText.length;
       this.inputText += `)${eit}`;
     } else {
-      let nv = this.inputText.substring(start + 1).split(OPERATORS_REGEX)
-      let [l] = nv.slice(nv.length-1)
       this.inputText = this.inputText.slice(0, this.inputText.length - l.length) + `${it.key}(`;
       position = this.inputText.length;
       this.inputText += ')';

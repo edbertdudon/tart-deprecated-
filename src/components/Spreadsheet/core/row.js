@@ -116,7 +116,11 @@ class Rows {
       row = rows.getOrNew(ri+i);
       r.forEach((c, j) => {
         if (!(i === 0 && j === 0)) {
-          row.cells[ci+j] = {text: c}
+          if (c === 0) {
+            row.cells[ci+j] = {text: c.toString()}
+          } else {
+            row.cells[ci+j] = {text: c}
+          }
         }
       });
     })

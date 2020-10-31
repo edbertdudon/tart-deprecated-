@@ -27,6 +27,22 @@ function inputMoveNext(evt) {
   filterItems[this.itemIndex].toggle();
 }
 
+function inputMouseEnter(index, description) {
+  const { filterItems } = this;
+  if (filterItems.length <= 0) return;
+  if (this.itemIndex >= 0) {
+    filterItems[this.itemIndex].toggle();
+    filterItems[this.itemIndex].css('height', '26px')
+  }
+  this.itemIndex = index;
+  filterItems[this.itemIndex].toggle();
+  if (description.length > 53) {
+    filterItems[this.itemIndex].css('height', '54px')
+  } else {
+    filterItems[this.itemIndex].css('height', '40px')
+  }
+}
+
 function inputEnter(evt) {
   evt.preventDefault();
   const { filterItems } = this;
@@ -68,12 +84,12 @@ function inputKeydownHandler(evt) {
 }
 
 export default class Suggest {
-  constructor(items, itemClick, width = '200px') {
+  constructor(items, itemClick, width = '300px') {
     this.filterItems = [];
     this.items = items;
     this.el = h('div', `${cssPrefix}-suggest`).css('width', width).hide();
     this.itemClick = itemClick;
-    this.itemIndex = -1;
+    this.itemIndex = 0;
   }
 
   setOffset(v) {
@@ -84,7 +100,7 @@ export default class Suggest {
   hide() {
     const { el } = this;
     this.filterItems = [];
-    this.itemIndex = -1;
+    this.itemIndex = 0;
     el.hide();
     unbindClickoutside(this.el.parent());
   }
@@ -99,8 +115,8 @@ export default class Suggest {
     if (!/^\s*$/.test(word)) {
       items = items.filter(it => (it.key || it).startsWith(word.toLowerCase()));
     }
-    items = items.map((it) => {
-      let { title } = it;
+    items = items.map((it, index) => {
+      let { title, description } = it;
       if (title) {
         if (typeof title === 'function') {
           title = title();
@@ -108,14 +124,23 @@ export default class Suggest {
       } else {
         title = it;
       }
+      const desc = h('div', `${cssPrefix}-description`)
+        .child(description)
       const item = h('div', `${cssPrefix}-item`)
-        .child(title)
+        // .child(title)
+        .children(title, desc)
         .on('click.stop', () => {
           this.itemClick(it);
           this.hide();
+        })
+        .on('mouseenter', (evt) => {
+          inputMouseEnter.call(this, index, description)
         });
       if (it.label) {
         item.child(h('div', 'label').html(it.label));
+      }
+      if (items.length === 1 && description.length > 53) {
+        item.css('height', '54px')
       }
       return item;
     });
@@ -124,7 +149,7 @@ export default class Suggest {
       return;
     }
     const { el } = this;
-    // items[0].toggle();
+    items[0].toggle();
     el.html('').children(...items).show();
     bindClickoutside(el.parent(), () => { this.hide(); });
   }

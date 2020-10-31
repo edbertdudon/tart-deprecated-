@@ -437,7 +437,7 @@ body {
   }
 
   // &.active {
-    ////   background: #89aef53d;
+  //   //   background: #89aef53d;
   // }
 
   &.divider {
@@ -530,8 +530,25 @@ body {
 }
 
 .@{css-prefix}-suggest {
-  width: 200px;
   max-height: 300px;
+
+  .@{css-prefix}-item {
+    &:hover, &.active {
+      height: 40px;
+      background: rgba(0, 0, 0, .05);
+
+      .@{css-prefix}-description {
+        position: absolute;
+        font-size: 12px;
+        color: rgb(102,102,102);
+        width: calc(100% - 22px);
+        margin-left: -11px;
+        margin-top: -4px;
+        padding: 0 11px;
+        line-height: 1.1;
+      }
+    }
+  }
 }
 
 .@{css-prefix}-filter {

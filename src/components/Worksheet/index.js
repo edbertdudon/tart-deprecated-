@@ -19,7 +19,7 @@ import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
 const Worksheet = () => {
 	const [dataNames, setDataNames] = useState(["sheet1"])
 	const [current, setCurrent] = useState(0)
-	const [text, setText] = useState('')
+	const [text, setText] = useState({ text: '', ri: 0, ci: 0 })
 	const [saving, setSaving] = useState(false)
 	const [navigator, setNavigator] = useState(true)
 	const [rightSidebar, setRightSidebar] = useState('none')
