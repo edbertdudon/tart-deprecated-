@@ -146,6 +146,7 @@ export default class Suggest {
     });
     this.filterItems = items;
     if (items.length <= 0) {
+      this.hide()
       return;
     }
     const { el } = this;

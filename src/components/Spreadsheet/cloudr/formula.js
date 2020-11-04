@@ -209,11 +209,39 @@ const rFormulas = [
 		description: 'compute the correlation',
     category: 0
   },
+  {
+    key: 'ceiling',
+    title: tf('formula.ceiling'),
+    syntax:'ceiling(value)',
+    description: 'the smallest integers not less than the corresponding elements',
+    category: 0
+  },
+  {
+    key: 'floor',
+    title: tf('formula.floor'),
+    syntax:'floor(value)',
+    description: 'the largest integers not greater than the corresponding elements',
+    category: 0
+  },
+  {
+    key: 'trunc',
+    title: tf('formula.trunc'),
+    syntax:'trunc(value)',
+    description: 'the integers formed by truncating the values toward 0',
+    category: 0
+  },
 	{
 		key: 'round',
 		title: tf('formula.round'),
 		syntax:'round(value, digits)',
-		description: 'rounds the elements to n decimals',
+		description: 'rounds the values in its first argument to the specified number of decimal places',
+    category: 0
+  },
+  {
+    key: 'signif',
+    title: tf('formula.signif'),
+    syntax:'signif(value, digits)',
+    description: 'rounds the values in its first argument to the specified number of significant digits',
     category: 0
   },
 	{

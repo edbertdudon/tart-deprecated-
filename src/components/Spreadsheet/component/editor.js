@@ -3,6 +3,7 @@ import { h } from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import { cssPrefix } from '../config';
+import { selectorMove } from './sheet'
 // import { mouseMoveUp } from '../event';
 
 function resetTextareaSize() {
@@ -45,6 +46,8 @@ function insertText({ target }, itxt) {
   resetTextareaSize.call(this);
 }
 
+const OPERATORS_REGEX = /\+|\-|\*|\/|\~/g
+
 function keydownEventHandler(evt) {
   const { keyCode, altKey } = evt;
   if (keyCode !== 13 && keyCode !== 9) evt.stopPropagation();
@@ -52,10 +55,20 @@ function keydownEventHandler(evt) {
     insertText.call(this, evt, '\n');
     evt.stopPropagation();
   }
-  if (keyCode === 13 && !altKey) evt.preventDefault();
+  if ((keyCode === 13 || keyCode === 9) && !altKey) {
+    const v = evt.target.value
+    const start = v.lastIndexOf('=');
+    if (start !== -1 && v.length > 1) {
+      const nv = v.substring(start + 1).split(OPERATORS_REGEX)
+      const begin = nv[nv.length-1].lastIndexOf('(')
+      const end = nv[nv.length-1].lastIndexOf(')')
+      if (end === -1 && begin !== -1) {
+        insertText.call(this, evt, ')')
+      }
+    }
+    evt.preventDefault();
+  }
 }
-
-const OPERATORS_REGEX = /\+|\-|\*|\/|\~|\,/g
 
 function inputEventHandler(evt) {
   const v = evt.target.value;
@@ -149,7 +162,7 @@ function suggestItemClick(it) {
     } else {
       this.inputText = this.inputText.slice(0, this.inputText.length - l.length) + `${it.key}(`;
       position = this.inputText.length;
-      this.inputText += ')';
+      // this.inputText += ')';
     }
   }
   setText.call(this, this.inputText, position);

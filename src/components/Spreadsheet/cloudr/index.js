@@ -150,7 +150,12 @@ export function spreadsheetToR(datas) {
     let newData = createEmptyMatrix(rows.len, cols.len)
     newData = mapSpreadsheet(newData, (ri, ci) => {
       if (rows._.[ri] != undefined && rows._.[ri].cells[ci] != undefined) {
-        return rows._.[ri].cells[ci].text
+        const cell = rows._.[ri].cells[ci].text
+        if ((typeof cell === 'string' || cell instanceof String) && cell.startsWith("=") && cell != "=") {
+          return translateR(cell.slice(1), data.name)
+        } else {
+          return cell
+        }
       } else {
         return ''
       }
@@ -196,7 +201,7 @@ const doParse = (obj, data, ri, ci) => {
     .then(res => res.json())
     .then(res => {
       let result = JSON.parse(res[0])
-      if (result.length > 1) {
+      if (result.length > 1 || result[0].length > 1) {
         if (!Array.isArray(result[0])) {
           result = [result]
         }
@@ -209,7 +214,7 @@ const doParse = (obj, data, ri, ci) => {
       }
     })
     .catch(err => {
-      console.log(err)
+      "[[-193.86,-93.22]]"
       removeMatrix(data, ri, ci)
       return '#ERROR!'
   })

@@ -15,6 +15,7 @@ import { xtoast } from './message';
 import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula'
+import { columnToLetter } from '../cloudr'
 
 /**
  * @desc throttle fn
@@ -85,7 +86,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
 
 // multiple: boolean
 // direction: left | right | up | down | row-first | row-last | col-first | col-last
-function selectorMove(multiple, direction) {
+export function selectorMove(multiple, direction) {
   const {
     selector, data,
   } = this;
@@ -383,7 +384,6 @@ function overlayerMousedown(evt) {
       return;
     }
   }
-
   // console.log('ri:', ri, ', ci:', ci);
   if (!evt.shiftKey) {
     // console.log('selectorSetStart:::');
@@ -567,6 +567,27 @@ function sortFilterChange(ci, order, operator, value) {
   sheetReset.call(this);
 }
 
+const REFERENCE_REGEX = /\+|\-|\*|\/|\~|\,|\(/g
+
+function setCellTextReference(lastRef) {
+  const { editor, selector } = this;
+  const nv = editor.inputText.split(REFERENCE_REGEX)
+  let inputTextLessRef = editor.inputText
+  if (nv[nv.length-1] !== "=" && nv[nv.length-1].length !== 0) {
+    inputTextLessRef = inputTextLessRef.slice(0, -lastRef.length)
+  }
+  const {
+    sri, sci, eri, eci,
+  } = selector.range;
+  if (sri === eri && sci === eci) {
+    const reference = columnToLetter(sci+1) + (sri+1)
+    editor.setText(inputTextLessRef + reference);
+  } else {
+    const reference = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
+    editor.setText(inputTextLessRef + reference);
+  }
+}
+
 function sheetInitEvents() {
   const {
     selector,
@@ -587,7 +608,21 @@ function sheetInitEvents() {
       overlayerMousemove.call(this, evt);
     })
     .on('mousedown', (evt) => {
-      editor.clear();
+      // const v = editor.inputText
+      // const start = v.lastIndexOf('=');
+      // if (start !== -1 && v.length >= 1) {
+      //   const nv = v.substring(start + 1).split(REFERENCE_REGEX)
+      //   const {
+      //     sri, sci, eri, eci,
+      //   } = selector.range;
+      //   if (sri === eri && sci === eci) {
+      //     var lastRef = columnToLetter(sci+1) + (sri+1)
+      //   } else {
+      //     var lastRef = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
+      //   }
+      // } else {
+        editor.clear();
+      // }
       contextMenu.hide();
       // the left mouse button: mousedown → mouseup → click
       // the right mouse button: mousedown → contenxtmenu → mouseup
@@ -603,6 +638,12 @@ function sheetInitEvents() {
         editorSet.call(this);
       } else {
         overlayerMousedown.call(this, evt);
+        // if (start !== -1 && v.length >= 1) {
+        //   const nv = v.substring(start + 1).split(REFERENCE_REGEX)
+        //   if (nv[nv.length-1].length === 0 || nv[nv.length-1] === lastRef) {
+        //     setCellTextReference.call(this, lastRef);
+        //   }
+        // }
       }
     })
     .on('mousewheel.stop', (evt) => {
