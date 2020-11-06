@@ -14,11 +14,14 @@ import { mdiLoading, mdiClose } from '@mdi/js'
 import General from './general'
 import Linear from './linear'
 import Quadratic from './quadratic'
-import Constraints from './constraints'
+import Fconstraint from './fconstraint'
+import Cconstraint from './cconstraint'
+import Qconstraint from './qconstraint'
+import Lconstraint from './lconstraint'
 import Variable from '../StatisticsEditor/Variable'
 import withListsDropdown from '../withListsDropdown'
 import withLists from '../withLists'
-import { columnToLetter, spreadsheetToR, translateR } from '../../Spreadsheet/cloudr'
+import { letterToColumn, columnToLetter, spreadsheetToR, translateR } from '../../Spreadsheet/cloudr'
 import { withFirebase } from '../../Firebase'
 
 const OBJECTIVE_CLASS = [
@@ -44,10 +47,108 @@ const OPTIMIZATION_METHODS = [
 	'Rvmmin'
 ]
 
+const CONSTRAINTS_TYPE = [
+	"General form constraints",
+	"Quadratic constraints",
+	"Linear constraints",
+	"Zero cone",
+	"Linear cone",
+	"Second-order cone",
+	"Exponential cone",
+	"3-dimensional primal power cone",
+	"2-dimensional primal power cone",
+	"Positive semidefinite cone",
+]
+
 const MIN_MAX = [
 	"minimum",
 	"maximum"
 ]
+
+const CONES_TYPE = [
+  "K_zero",
+  "K_lin",
+  "K_soc",
+  "K_expp",
+  "K_powp",
+	"K_powd",
+	"K_psd",
+]
+
+var RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g
+var FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
+var LETTERS_REFERENCE = /\$?[A-Z]+/g;
+var NUMBERS_REFERENCE = /\$?[0-9]+/g;
+
+export const validateCell = (v) => {
+	const mc = v.match(FORMULA_CELL_REFERENCES)
+  if (mc === null) {
+    return("Invalid cell.")
+  }
+  const mr = v.match(RANGE_REFERENCES)
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
+    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
+    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length !== 1 || mn.length !== 1) {
+      return("Invalid range.")
+    }
+  }
+  return(null)
+}
+
+export const validateRange = (v) => {
+	const mc = v.match(FORMULA_CELL_REFERENCES)
+  if (mc === null) {
+    return("Invalid cell.")
+  }
+  const mr = v.match(RANGE_REFERENCES)
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
+    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
+    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length !== 2 || mn.length !== 2) {
+      return("Invalid range.")
+    }
+  }
+  return(null)
+}
+
+export const validateCellRange = (v) => {
+	const mc = v.match(FORMULA_CELL_REFERENCES)
+  if (mc === null) {
+    return("Invalid cell.")
+  }
+  const mr = v.match(RANGE_REFERENCES)
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
+    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
+    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length > 2 || mn.length > 2) {
+      return("Invalid range.")
+    }
+  }
+  return(null)
+}
+
+export const validateCellText = (v, slides, check) => {
+  const mc = v.match(FORMULA_CELL_REFERENCES)
+  if (mc === null) {
+    return("Invalid cell.")
+  }
+  const mr = v.match(RANGE_REFERENCES)
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
+    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
+    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length > 2 || mn.length > 2) {
+      return("Invalid range.")
+    }
+    for (var i=mn[0]-1; i<mn[1]; i++) {
+      for (var j=ml[0]-1; j<ml[1]; j++) {
+        const cellText = slides.data.getCellTextOrDefault(i,j)
+        return(check(cellText))
+      }
+    }
+  }
+  return(null)
+}
 
 const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const [objective, setObjective] = useState('')
@@ -58,10 +159,49 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const [minMax, setMinMax] = useState(0)
 	const [objectiveClass, setObjectiveClass] = useState(0)
 	const [decision, setDecision] = useState('')
-	const [lhs, setLhs] = useState('')
-	const [dir, setDir] = useState('')
-	const [rhs, setRhs] = useState('')
+	const [constraints, setConstraints] = useState(CONSTRAINTS_TYPE)
+	// General constraints
+	const [flhs, setFlhs] = useState('')
+	const [fdir, setFdir] = useState('')
+	const [frhs, setFrhs] = useState('')
 	const [jacobian, setJacobian] = useState('')
+	// Quadratic constraints
+	const [qquad, setQquad] = useState('')
+	const [qlin, setQlin] = useState('')
+	const [qdir, setQdir] = useState('')
+	const [qrhs, setQrhs] = useState('')
+	// Linear constraints
+	const [llin, setLlin] = useState('')
+	const [ldir, setLdir] = useState('')
+	const [lrhs, setLrhs] = useState('')
+	// Zero cone
+	const [c0lhs, setC0lhs] = useState('')
+	const [c0cone, setC0cone] = useState(1)
+	const [c0rhs, setC0rhs] = useState('')
+	// Linear cone
+	const [cllhs, setCllhs] = useState('')
+	const [lcone, setlcone] = useState(1)
+	const [clrhs, setClrhs] = useState('')
+	// Second-order cone
+	const [csolhs, setCsolhs] = useState('')
+	const [socone, setSocone] = useState(1)
+	const [csorhs, setCsorhs] = useState('')
+	// Exponential cone
+	const [cexlhs, setCexlhs] = useState('')
+	const [excone, setExcone] = useState(1)
+	const [cexrhs, setCexrhs] = useState('')
+	// Power 3d cone
+	const [cpplhs, setCpplhs] = useState('')
+	const [ppcone, setPpcone] = useState(1)
+	const [cpprhs, setCpprhs] = useState('')
+	// Power 2d cone
+	const [cpdlhs, setCpdlhs] = useState('')
+	const [pdcone, setPdcone] = useState(1)
+	const [cpdrhs, setCpdrhs] = useState('')
+	// Positive semidefinite cone
+	const [cpsdlhs, setCpsdlhs] = useState('')
+	const [psdcone, setPsdcone] = useState(1)
+	const [cpsdrhs, setCpsdrhs] = useState('')
 	const [loading, setLoading] = useState(false)
 	const [error, setError] = useState(null)
 
@@ -75,21 +215,63 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 
 	const handleMaximize = () => setMinMax(1)
 
+	const handleAddConstraint = i =>
+		setConstraints(constraints.filter(constraint => constraint !== constraints[i]))
+
+	const handleRemoveConstraint = index =>
+		setConstraints(
+			constraints.map(c => CONSTRAINTS_TYPE.indexOf(c))
+				.concat(index)
+				.sort()
+				.map(c => CONSTRAINTS_TYPE[c])
+		)
+
 	const handleSubmit = () => {
 		setLoading(true)
 		let name = slides.data.name
 		let sparkData = {
 			objective: translateR(objective || 'na', name),
-			parametersString: translateR(decision || 'na', name),
 			quadratic: translateR(quadratic || 'na', name),
 			linear: translateR(linear || 'na', name),
 			gradient: translateR(gradient || 'na', name),
 			hessian: translateR(hessian || 'na', name),
-			objectiveClass: OBJECTIVE_CLASS[objectiveClass],
-			lhs: translateR(lhs || 'na', name),
-			dir: translateR(dir || 'na', name),
-			rhs: translateR(rhs || 'na', name),
 			isMaximum: MIN_MAX[minMax],
+			objectiveClass: OBJECTIVE_CLASS[objectiveClass],
+			decision: translateR(decision || 'na', name),
+			constraints: CONSTRAINTS_TYPE.filter((constraint) =>
+				constraints.every(c => constraint !== c)),
+			flhs: translateR(flhs || 'na', name),
+			fdir: translateR(fdir || 'na', name),
+			frhs: translateR(frhs || 'na', name),
+			jacobian: translateR(jacobian || 'na', name),
+			qquad: translateR(qquad || 'na', name),
+			qlin: translateR(qlin || 'na', name),
+			qdir: translateR(qdir || 'na', name),
+			qrhs: translateR(qrhs || 'na', name),
+			llin: translateR(llin || 'na', name),
+			ldir: translateR(ldir || 'na', name),
+			lrhs: translateR(lrhs || 'na', name),
+			c0lhs: translateR(c0lhs || 'na', name),
+			c0cone: CONES_TYPE[0] + '(' + c0cone + ')',
+			c0rhs: translateR(c0rhs || 'na', name),
+			cllhs: translateR(cllhs || 'na', name),
+			lcone: CONES_TYPE[0] + '(' + lcone + ')',
+			clrhs: translateR(clrhs || 'na', name),
+			csolhs: translateR(csolhs || 'na', name),
+			socone: CONES_TYPE[0] + '(' + socone + ')',
+			csorhs: translateR(csorhs || 'na', name),
+			cexlhs: translateR(cexlhs || 'na', name),
+			excone: CONES_TYPE[0] + '(' + excone + ')',
+			cexrhs: translateR(cexrhs || 'na', name),
+			cpplhs: translateR(cpplhs || 'na', name),
+			ppcone: CONES_TYPE[0] + '(' + ppcone + ')',
+			cpprhs: translateR(cpprhs || 'na', name),
+			cpdlhs: translateR(cpdlhs || 'na', name),
+			pdcone: CONES_TYPE[0] + '(' + pdcone + ')',
+			cpdrhs: translateR(cpdrhs || 'na', name),
+			cpsdlhs: translateR(cpsdlhs || 'na', name),
+			psdcone: CONES_TYPE[0] + '(' + psdcone + ')',
+			cpsdrhs: translateR(cpsdrhs || 'na', name),
 		}
 		let optimizationData = {
 			...sparkData,
@@ -167,7 +349,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 				style={{
 					backgroundColor: minMax === 0 && color[authUser.uid],
 					boxShadow: minMax === 0 ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: minMax === 0 ? '1px solid '+ color[authUser.uid] : 'none'
+          border: minMax === 0 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
 				}}
 				onClick={handleMinimize}
 			></button>
@@ -177,22 +359,138 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 				style={{
 					backgroundColor: minMax === 1 && color[authUser.uid],
 					boxShadow: minMax === 1 ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: minMax === 1 ? '1px solid '+ color[authUser.uid] : 'none'
+          border: minMax === 1 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
 				}}
 				onClick={handleMaximize}
 			></button>
 			<div className='rightsidebar-buttontext'>Maximum</div>
-			<Constraints
-				lhs={lhs}
-				setLhs={setLhs}
-				dir={dir}
-				setDir={setDir}
-				rhs={rhs}
-				setRhs={setRhs}
-				jacobian={jacobian}
-				setJacobian={setJacobian}
-			/>
-			<div className='rightsidebar-text'>{error && <p>{error}</p>}</div>
+			<div className='rightsidebar-label'>Constraints</div>
+			{!constraints.includes(CONSTRAINTS_TYPE[0]) &&
+				<Fconstraint
+					lhs={flhs}
+					setLhs={setFlhs}
+					dir={fdir}
+					setDir={setFdir}
+					rhs={frhs}
+					setRhs={setFrhs}
+					jacobian={jacobian}
+					setJacobian={setJacobian}
+					onClose={handleRemoveConstraint}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[1]) &&
+				<Qconstraint
+					quadratic={qquad}
+					setQuadratic={setQquad}
+					linear={qlin}
+					setLinear={setQlin}
+					dir={qdir}
+					setDir={setQdir}
+					rhs={qrhs}
+					setRhs={setQrhs}
+					onClose={handleRemoveConstraint}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[2]) &&
+				<Lconstraint
+					lhs={llin}
+					setLhs={setLlin}
+					dir={ldir}
+					setDir={setLdir}
+					rhs={lrhs}
+					setRhs={setLrhs}
+					onClose={handleRemoveConstraint}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[3]) &&
+				<Cconstraint
+					lhs={c0lhs}
+					setLhs={setC0lhs}
+					cone={c0cone}
+					setCone={setC0cone}
+					rhs={c0rhs}
+					setRhs={setC0rhs}
+					type={CONSTRAINTS_TYPE[3]}
+					onClose={() => handleRemoveConstraint(3)}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[4]) &&
+				<Cconstraint
+					lhs={cllhs}
+					setLhs={setCllhs}
+					cone={lcone}
+					setCone={setlcone}
+					rhs={clrhs}
+					setRhs={setClrhs}
+					type={CONSTRAINTS_TYPE[4]}
+					onClose={() => handleRemoveConstraint(4)}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[5]) &&
+				<Cconstraint
+					lhs={csolhs}
+					setLhs={setCsolhs}
+					cone={socone}
+					setCone={setSocone}
+					rhs={csorhs}
+					setRhs={setCsorhs}
+					type={CONSTRAINTS_TYPE[5]}
+					onClose={() => handleRemoveConstraint(5)}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[6]) &&
+				<Cconstraint
+					lhs={cexlhs}
+					setLhs={setCexlhs}
+					cone={excone}
+					setCone={setExcone}
+					rhs={cexrhs}
+					setRhs={setCexrhs}
+					type={CONSTRAINTS_TYPE[6]}
+					onClose={() => handleRemoveConstraint(6)}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[7]) &&
+				<Cconstraint
+					lhs={cpplhs}
+					setLhs={setCpplhs}
+					cone={ppcone}
+					setCone={setPpcone}
+					rhs={cpprhs}
+					setRhs={setCpprhs}
+					type={CONSTRAINTS_TYPE[7]}
+					onClose={() => handleRemoveConstraint(7)}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[8]) &&
+				<Cconstraint
+					lhs={cpdlhs}
+					setLhs={setCpdlhs}
+					cone={pdcone}
+					setCone={setPdcone}
+					rhs={cpdrhs}
+					setRhs={setCpdrhs}
+					type={CONSTRAINTS_TYPE[8]}
+					onClose={() => handleRemoveConstraint(8)}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[9]) &&
+				<Cconstraint
+					lhs={cpsdlhs}
+					setLhs={setCpsdlhs}
+					cone={psdcone}
+					setCone={setPsdcone}
+					rhs={cpsdrhs}
+					setRhs={setCpsdrhs}
+					type={CONSTRAINTS_TYPE[9]}
+					onClose={() => handleRemoveConstraint(9)}
+				/>
+			}
+			{constraints.length > 0 &&
+				<OptionsWithLists onChange={handleAddConstraint} options={constraints} name='Add constraints type' />}
+			<div className='rightsidebar-text'>
+        {error && <div className='rightsidebar-error'>{error}</div>}
+      </div>
 			{loading
 				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin/></div>
 				: <input

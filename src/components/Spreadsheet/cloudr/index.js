@@ -214,7 +214,6 @@ const doParse = (obj, data, ri, ci) => {
       }
     })
     .catch(err => {
-      "[[-193.86,-93.22]]"
       removeMatrix(data, ri, ci)
       return '#ERROR!'
   })

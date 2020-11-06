@@ -1,39 +1,36 @@
 //
-//  Quadratic
+//  Linear Objective
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState } from 'react'
-
-var FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
-var RANGE_CELL_REFERENCE = /\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
+import { validateCellRange } from './index'
 
 const Linear = ({ linear, setLinear }) => {
-  const [errorLinear, setErrorLinear] = useState(null)
+  const [error, setError] = useState(null)
 
   const handleUpdateLinear = e => {
     const v = e.target.value
-    const match = v.match(FORMULA_CELL_REFERENCES)
-    const range = v.match(RANGE_CELL_REFERENCE)
     setLinear(v)
-    if (match === null || range.length > 1) {
-      setErrorLinear('Invalid cell or range')
-    }
+    setError(validateCellRange(v))
   }
 
   return (
     <>
-      <div className='rightsidebar-label'>Linear portion in matrix form</div>
+      <div className='rightsidebar-label'>Linear objective</div>
+      <div className='rightsidebar-input-text-1part1'>Linear matrix</div>
       <input
         type="text"
-        className='rightsidebar-input'
+        className='rightsidebar-input-1part1'
         onChange={handleUpdateLinear}
         value={linear}
-        placeholder='Select cell or range'
+        placeholder="A1:A2"
       />
-      <div className='rightsidebar-text'>{errorLinear && <p>{errorLinear}</p>}</div>
+      <div className='rightsidebar-text'>
+        {error && <div className='rightsidebar-error'>{error}</div>}
+      </div>
     </>
   )
 }

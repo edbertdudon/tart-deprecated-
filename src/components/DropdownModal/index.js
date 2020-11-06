@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import './index.less'
@@ -11,7 +11,7 @@ const withDropdownModal = Component => (props) => {
   const [filteredOption, setFilteredOption] = useState(props.items.filter(item => item.category === 0))
   const wrapperRef = useRef(null)
 
-  const useOutsideAlerter = ref => {
+  const useOutsideAlerter = (ref) => {
     const handleOutsideClick = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
         setIsOpen(false)
@@ -22,11 +22,13 @@ const withDropdownModal = Component => (props) => {
       return () => {
         document.removeEventListener("mousedown", handleOutsideClick)
       }
-    })
+    }, [])
   }
   useOutsideAlerter(wrapperRef)
 
-  const handleOpen = () => setIsOpen(!isOpen)
+  const handleOpen = () => {
+    setIsOpen(!isOpen)
+  }
 
   const handleSearch = e => {
     setSearch(e.target.value)
