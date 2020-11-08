@@ -45,10 +45,12 @@ const Lconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, 
     )
   }
 
+  const handleClose = () => onClose(2)
+
   return (
     <>
       <div className='rightsidebar-label'>Linear constraints</div>
-      <button className='rightsidebar-label-close' onClick={() => onClose(2)}>
+      <button className='rightsidebar-label-close' onClick={handleClose}>
         <Icon path={mdiClose} size={0.8}/>
       </button>
       <div className='rightsidebar-input-text-3part1'>Linear matrix</div>

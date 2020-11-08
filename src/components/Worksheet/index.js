@@ -38,11 +38,9 @@ const Worksheet = () => {
 				setDataNames={setDataNames}
 				setCurrent={setCurrent}
 			/>
-			<Formulabar text={text} />
 			<Toggle rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} setStatistic={setStatistic} setSchart={setSchart} />
-			{navigator &&
-				<Navigator dataNames={dataNames} setDataNames={setDataNames} current={current} setCurrent={setCurrent} />
-			}
+			<Formulabar text={text} />
+			{navigator && <Navigator dataNames={dataNames} setDataNames={setDataNames} current={current} setCurrent={setCurrent} />}
 			<RightSidebar
 				rightSidebar={rightSidebar}
 				setRightSidebar={setRightSidebar}
@@ -55,4 +53,5 @@ const Worksheet = () => {
 		</div>
 	)
 }
+
 export default Worksheet;

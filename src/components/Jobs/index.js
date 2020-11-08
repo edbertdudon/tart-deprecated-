@@ -14,7 +14,7 @@ import Content from './content'
 import { withAuthorization, withEmailVerification } from '../Session'
 
 const Jobs = () => (
-  <div className='home-screen'>
+  <div className='home'>
     <Header />
     <Content />
   </div>

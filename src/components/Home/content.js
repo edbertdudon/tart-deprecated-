@@ -7,7 +7,7 @@
 //
 //  Notes:
 //  - Jobs must persist to stay as loading -- use redux-persist
-//  - Jobs is fetched every 3 minutes if there are jobs -- isJobsActive to track
+//  - Jobs is fetched every minute if there are jobs -- isJobsActive to track
 //  - listJobs waits for cluster to be active, use job_filler as replacement in case cluster is not yet active
 //
 //  Known Issues:
@@ -18,15 +18,105 @@
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
+
 import DataSource from '../Datasource/datasource'
 import LoadingDataSource from '../Datasource/loadingdatasource'
 import NewDataSource from '../Datasource/newdatasource'
 import useRecursiveTimeout from './useRecursiveTimeout.ts'
-import { shouldReloadTimer, getJobId, cancelJob, checkJobChanges, submitJob, updateFilesAfterTrash } from './jobs'
-
 import { withFirebase } from '../Firebase'
 
-const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive }) => {
+const terminalStates = new Set(['DONE', 'ERROR', 'CANCELLED']);
+const queueStates = new Set(['PENDING', 'SETUP_DONE', 'RUNNING'])
+
+export const shouldReloadTimer = (jobs) => {
+  if (jobs[0].status === "failed list jobs") {
+    return(false)
+  } else {
+    let shouldReload = false
+    for (var i=0; i<jobs.length; i++) {
+      if (!terminalStates.has(jobs[i].status.state)) {
+        shouldReload = true
+      }
+    }
+    return(shouldReload)
+  }
+}
+
+export const getJobId = (filename, jobs) => {
+  if (jobs[0].status !== "failed list jobs") {
+    for (var i=0; i<jobs.length; i++) {
+      if (filename === jobs[i].labels.worksheet) {
+        if (queueStates.has(jobs[i].status.state)) {
+          return jobs[i].reference.jobId
+        }
+      }
+    }
+  }
+}
+
+// Checks for changes in job before downloading new files created
+export const checkJobChanges = (res) => {
+  let isChanged = false
+  for (var i=0; i<res.length; i++ ) {
+    if (terminalStates.has(res[i].status.state)) {
+      isChanged = true
+    }
+  }
+  return isChanged
+}
+
+// Set Temporary Job and then useRecursiveTimeout runs listJobs -- waits for cluster to be active in server
+export const submitJob = (filename, jobs) => {
+  let fillerJobs = []
+  if (jobs[0].status !== 'failed list jobs') {
+    for (var i=0; i<jobs.length; i++) {
+      if (jobs[i].reference.jobId.startsWith('filler job')) fillerJobs.push(jobs[i])
+    }
+  }
+  const job_filler = {
+    status: {state:"PENDING"},
+    labels: {worksheet: filename.replace(/\s/g, '').toLowerCase()},
+    reference: {jobId: "filler job " + (fillerJobs.length+1)}
+  }
+  if (jobs[0].status === 'failed list jobs') {
+    return([job_filler])
+  } else {
+    return([...jobs, job_filler])
+  }
+}
+
+// Deletes temporary Job and then list Jobs then useRecursiveTimeout will be called once more (unless theres different jobs running)
+export const cancelJob = (runid, jobs) => {
+  let currentJob
+  for (var i=0; i<jobs.length; i++) {
+    if (jobs[i].reference.jobId === runId ) {
+      currentJob = i
+    }
+  }
+  let newJobs = [
+    ...jobs.slice(0, currentJob),
+    ...jobs.slice(currentJob+1)
+  ]
+  if (newJobs.length < 1) newJobs = [{status:'failed list jobs'}]
+  return newJobs
+}
+
+export const updateFilesAfterTrash = (filename, files) => {
+  let newFile
+  for (var i=0; i<files.length; i++) {
+    if (files[i].name === filename) {
+      newFile = [
+        ...files.slice(0,i),
+        ...files.slice(i+1)
+      ]
+      break
+    }
+  }
+  return newFile
+}
+
+const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive,
+	notifications, setNotifications }) => {
 	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
@@ -48,9 +138,6 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 		firebase.doListJobs(authUser.uid)
 			.then(res => {
 				if (checkJobChanges(res)) {
-					// firebase.doListFiles(authUser.uid).then(res => {
-					// 	onSetFiles(res.items, authUser.uid)
-					// })
 					listFilesLessTrash()
 				}
 				return res
@@ -69,9 +156,13 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 	const handleJobSubmit = filename => {
 		onSetIsJobsActive(true)
 		onSetJobs(submitJob(filename, jobs))
+		setNotifications(notifications.concat({key: 'Job started: ' + filename, type: 'notification'}))
 	}
 
-	const handleJobCancel = runId => onSetJobs(cancelJob(runId, jobs))
+	const handleJobCancel = runId => {
+		onSetJobs(cancelJob(runId, jobs))
+		setNotifications(notifications.concat({key: 'Job cancelled: ' + filename, type: 'notification'}))
+	}
 
 	const listFilesLessTrash = () => {
 		firebase.doListFiles(authUser.uid).then(res => {

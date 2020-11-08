@@ -1,10 +1,10 @@
 #rightsidebar {
-  top: 113px;
+  top: 108px;
   left: 100%;
   min-width: 270px;
   max-width: 270px;
   padding: 15px;
-  height: calc(100% - 134px);
+  height: calc(100% - 129px);
   position: fixed;
   z-index: 20;
   background: #fff;
@@ -62,6 +62,12 @@
 .rightsidebar-text {
   height: 24px;
   width: 270px;
+  font-size: 12px;
+}
+.rightsidebar-subtext {
+  width: 270px;
+  font-size: 12px;
+  color: #aaa;
 }
 .rightsidebar-text-margin {
   height: 24px;
@@ -134,6 +140,45 @@
   border-radius: 4px;
   position: absolute;
 }
+.rightsidebar-input-2part1 {
+  border: 1px solid #d6d6d6;
+  border-radius: 7px;
+  background-color: #fff;
+  display: inline-block;
+  padding: 8px;
+  margin: 0 4px 0 0;
+  width: 133px;
+  min-height: 36px;
+  font-size: 14px;
+  letter-spacing: -.021em;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: top;
+  color: #333;
+  text-align: left;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+}
+.rightsidebar-input-2part2 {
+  position: absolute;
+  border: 1px solid #d6d6d6;
+  border-radius: 7px;
+  background-color: #fff;
+  display: inline-block;
+  padding: 8px;
+  margin: 0;
+  width: 133px;
+  min-height: 36px;
+  font-size: 14px;
+  letter-spacing: -.021em;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: top;
+  color: #333;
+  text-align: left;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+}
 .rightsidebar-input-3part1 {
   border: 1px solid #d6d6d6;
   border-radius: 7px;
@@ -192,14 +237,14 @@
   border: 1px solid #d6d6d6;
   border-radius: 4px;
 }
-.rightsidebar-input-2part1 {
+.rightsidebar-input-3Spart1 {
   border: 1px solid #d6d6d6;
   border-radius: 7px;
   background-color: #fff;
   display: inline-block;
   padding: 8px;
-  margin: 0 4px 0 0;
-  width: 133px;
+  margin: 0;
+  width: 79px;
   min-height: 36px;
   font-size: 14px;
   letter-spacing: -.021em;
@@ -211,7 +256,26 @@
   border: 1px solid #d6d6d6;
   border-radius: 4px;
 }
-.rightsidebar-input-2part2 {
+.rightsidebar-input-3Spart2 {
+  border: 1px solid #d6d6d6;
+  border-radius: 7px;
+  background-color: #fff;
+  display: inline-block;
+  padding: 8px;
+  margin: 0;
+  width: 79px;
+  min-height: 36px;
+  font-size: 14px;
+  letter-spacing: -.021em;
+  display: inline-block;
+  box-sizing: border-box;
+  vertical-align: top;
+  color: #333;
+  text-align: left;
+  border: 1px solid #d6d6d6;
+  border-radius: 4px;
+}
+.rightsidebar-input-3Spart3 {
   position: absolute;
   border: 1px solid #d6d6d6;
   border-radius: 7px;
@@ -219,7 +283,7 @@
   display: inline-block;
   padding: 8px;
   margin: 0;
-  width: 133px;
+  width: 79px;
   min-height: 36px;
   font-size: 14px;
   letter-spacing: -.021em;
@@ -236,19 +300,38 @@
   margin: 8px 0px 0 0;
 }
 .rightsidebar-input-text-3part1 {
-  width: 88px;
+  width: 78px;
   font-size: 12px;
   display: inline-block;
-  margin: 8px 3px 0 0;
+  margin: 8px 18px 0 0;
 }
 .rightsidebar-input-text-3part2 {
-  width: 88px;
+  width: 78px;
   font-size: 12px;
   display: inline-block;
-  margin: 8px 3px 0 0;
+  margin: 8px 18px 0 0;
 }
 .rightsidebar-input-text-3part3 {
-  width: 88px;
+  width: 78px;
+  font-size: 12px;
+  display: inline-block;
+  margin: 8px 0 0 0;
+  position: absolute;
+}
+.rightsidebar-input-text-3Spart1 {
+  width: 79px;
+  font-size: 12px;
+  display: inline-block;
+  margin: 8px 18px 0 0;
+}
+.rightsidebar-input-text-3Spart2 {
+  width: 79px;
+  font-size: 12px;
+  display: inline-block;
+  margin: 8px 18px 0 0;
+}
+.rightsidebar-input-text-3Spart3 {
+  width: 79px;
   font-size: 12px;
   display: inline-block;
   margin: 8px 0 0 0;
@@ -266,6 +349,11 @@
   display: inline-block;
   margin: 8px 0 0 0;
   position: absolute;
+}
+.rightsidebar-divider {
+  width: max-content;
+  display: inline-block;
+  margin: 8px 0 0 0;
 }
 .rightsidebar-variable {
 	height: 63px;
@@ -391,9 +479,6 @@
 .rightsidebar-formula {
   height: 160px;
 }
-.rightsidebar-subtext {
-  color: #aaa;
-}
 .rightsidebar-submit {
   float: right;
   border: none;
@@ -421,6 +506,8 @@
   margin: 4px 4px;
 }
 .rightsidebar-error {
+  height: 24px;
+  width: 270px;
   font-size: 12px;
   color: red;
   padding: 5px 0;

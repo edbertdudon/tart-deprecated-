@@ -409,7 +409,7 @@ function overlayerMousedown(evt) {
         }
       }
       selector.hideAutofill();
-      toolbarChangePaintformatPaste.call(this);
+      // toolbarChangePaintformatPaste.call(this);
     });
   }
 

@@ -1,5 +1,6 @@
-.dropdown-content {
-	width: 180px;
+.notification-content {
+	width: 300px;
+  min-height: 350px;
 	display: block;
 	position: absolute;
 	z-index: 200;
@@ -8,24 +9,32 @@
 	font-size: 13px;
 	border-radius: 5px;
 }
-.dropdown-content hr {
+.notification-content hr {
 	border: none;
 	border-top: 1px solid rgb(224,226,228);
 }
-.dropdown-item {
+.notification-header {
+	padding: 15px 0 5px 0;
+  font-size: 14px;
+	margin: 0 15px;
+	border-bottom: 1px solid #d6d6d6;
+}
+.notification-clear {
+	display: inline-block;
+	margin-left: 161px;
+	cursor: default;
+}
+.notification-item {
 	border: 1px solid transparent;
 	outline: none;
 	height: 26px;
 	color: rgba(0, 0, 0, 0.9);
 	line-height: 26px;
 	list-style: none;
-	padding: 2px 10px;
+	padding: 5px 15px;
 	cursor: default;
 	text-align: left;
 	overflow: hidden;
 	text-decoration: none;
 	display: block;
-}
-.dropdown-item:hover {
-	background: rgba(0, 0, 0, 0.05);
 }

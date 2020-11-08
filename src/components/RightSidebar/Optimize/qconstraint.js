@@ -51,10 +51,12 @@ const Qconstraint = ({ slides, quadratic, setQuadratic, linear, setLinear, dir, 
     )
   }
 
+  const handleClose = () => onClose(3)
+
   return (
     <>
       <div className='rightsidebar-label'>Quadratic constraints</div>
-      <button className='rightsidebar-label-close' onClick={() => onClose(1)}>
+      <button className='rightsidebar-label-close' onClick={handleClose}>
         <Icon path={mdiClose} size={0.8}/>
       </button>
       <div className='rightsidebar-input-text-2part1'>Quadratic matrix</div>

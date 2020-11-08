@@ -51,10 +51,12 @@ const Fconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, 
     setError(validateCell(v))
   }
 
+  const handleClose = () => onClose(1)
+
   return (
     <>
       <div className='rightsidebar-label'>General form constraints</div>
-      <button className='rightsidebar-label-close' onClick={() => onClose(0)}>
+      <button className='rightsidebar-label-close' onClick={handleClose}>
         <Icon path={mdiClose} size={0.8}/>
       </button>
       <div className='rightsidebar-input-text-3part1'>Cell range</div>

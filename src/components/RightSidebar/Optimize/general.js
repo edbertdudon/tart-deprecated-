@@ -70,9 +70,7 @@ const General = ({ objective, setObjective, decision, setDecision, gradient, set
         value={hessian}
         placeholder="D1"
       />
-      <div className='rightsidebar-text'>
-        {error && <div className='rightsidebar-error'>{error}</div>}
-      </div>
+    {error && <div className='rightsidebar-error'>{error}</div>}
     </>
   )
 }
