@@ -68,14 +68,14 @@ const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, 
 				break;
 			case NAVIGATOR_DROPDOWN[5].key:
 				var d = slides.pasteSheet(dataNames, index, false)
-				handlePaste(d, index)
+				paste(d, index)
 				break;
 			case NAVIGATOR_DROPDOWN[6].key:
 				handleDelete(index)
 				break;
 			case NAVIGATOR_DROPDOWN[7].key:
 				var d = slides.pasteSheet(dataNames, index, true)
-				handlePaste(d, index)
+				paste(d, index)
 				break;
 		}
 	}
@@ -94,7 +94,7 @@ const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, 
 		}
 	}
 
-	const handlePaste = (d, index) => {
+	const paste = (d, index) => {
 		setDataNames([
 			...dataNames.slice(0,index+1),
 			d.name,

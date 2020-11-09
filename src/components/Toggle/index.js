@@ -70,38 +70,27 @@ const Toggle = ({ color, authUser, slides, rightSidebar, setRightSidebar, setSta
   }
 
   const handleChart = chart => {
-    setRightSidebar('charteditor')
-    let chartNumber
-    for (var i=0; i<charts.length; i++) {
-      if (chart === charts[i].name) {
-        chartNumber = i
-        break;
-      }
+    // setRightSidebar('charteditor')
+    // const i = statistics.findIndex(item => item.key === chart)
+    // setSchart([i])
+    if (slides.data.type === "sheet" || slides.data.type === "input") {
+      console.log(Object.keys(slides.data.rows._))
+      // let variables
+      // if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
+      //   variables = []
+      // } else {
+      //   variables = Object.values(slides.data.rows._[0].cells)
+      //     .map(variable => Object.values(variable)[0])
+      // }
+      // let chartData = setChart(slides, variables, [chartNumber], 0, 1, 2)
+      // dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
     }
-    setSchart([chartNumber])
-    // if (slides.data.type !== "chart") {
-    //   let variables
-    //   if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
-    //     variables = []
-    //   } else {
-    //     variables = Object.values(slides.data.rows._[0].cells)
-    //       .map(variable => Object.values(variable)[0])
-    //   }
-    //   let chartData = setChart(slides, variables, [chartNumber], 0, 1, 2)
-    //   // dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
-    // }
   }
 
   const handleStatistics = statistic => {
     setRightSidebar('statistics')
-    let statisticNumber
-		for (var i=0; i<statistics.length; i++) {
-			if (statistic === statistics[i].name) {
-				statisticNumber = i
-				break;
-			}
-		}
-		setStatistic(statisticNumber)
+    const i = statistics.findIndex(item => item.key === statistic)
+		setStatistic(i)
   }
 
   const handleFormulas = formula => {

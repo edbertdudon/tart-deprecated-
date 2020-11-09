@@ -20,7 +20,7 @@ const Bounds = ({ slides, lower, setLower, decision, setDecision, upper, setUppe
     setLower(v)
     setError(
       validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText) || cellText !== "Inf") {
+        if (isNaN(cellText) || cellText !== "-Inf" || cellText !== "-inf") {
           return("Range must be numeric.")
         }
       })
@@ -38,7 +38,7 @@ const Bounds = ({ slides, lower, setLower, decision, setDecision, upper, setUppe
     setUpper(v)
     setError(
       validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText) || cellText !== "Inf") {
+        if (isNaN(cellText) || cellText !== "Inf" || cellText !== "-inf") {
           return("Range must be numeric.")
         }
       })
@@ -83,6 +83,9 @@ const Bounds = ({ slides, lower, setLower, decision, setDecision, upper, setUppe
         value={upper}
         placeholder="C1:C2"
       />
+      <div className='rightsidebar-subtext'>
+        Use -Inf or Inf for infinity.
+      </div>
       <div className='rightsidebar-text'>
         {error && <div className='rightsidebar-error'>{error}</div>}
       </div>

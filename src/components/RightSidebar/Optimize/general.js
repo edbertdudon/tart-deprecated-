@@ -5,7 +5,7 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { validateCell, validateCellRange } from './index'
 
 const General = ({ objective, setObjective, decision, setDecision, gradient, setGradient, hessian, setHessian }) => {

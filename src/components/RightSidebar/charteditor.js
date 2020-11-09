@@ -78,6 +78,7 @@ const ChartEditor = ({ slides, schart, setSchart }) => {
 		let chartData = setChart(slides, currentSlide, variables, newSelectedCharts, variableX, variableY)
 		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
+	// {(schart.length < 1)
 
 	return (
 		<>

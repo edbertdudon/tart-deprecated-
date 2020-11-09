@@ -78,9 +78,23 @@ class Spreadsheet {
     }
     let d = new DataProxy('temp', this.options)
     d.setData(data.getData())
-    d.name = data.name + ' ' + (getMaxNumberCustomSheet(dataNames, data.name)+1)
+    d.name = data.name + ' ' + getMaxNumberCustomSheet(dataNames, data.name)
     this.datas.splice(index+1, 0, d)
     // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
+    this.sheetIndex = index + 1
+    this.sheet.resetData(d)
+    return d
+  }
+
+  insertData(dataNames, index, o, name) {
+    let d = new DataProxy('temp', this.options)
+    d.setData(o)
+    let n = getMaxNumberCustomSheet(dataNames, name)
+    if (n !== 1) {
+      name = name + ' ' + n
+    }
+    d.name = name
+    this.datas.splice(index+1, 0, d)
     this.sheetIndex = index + 1
     this.sheet.resetData(d)
     return d

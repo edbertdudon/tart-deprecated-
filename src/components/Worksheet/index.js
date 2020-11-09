@@ -36,6 +36,7 @@ const Worksheet = () => {
 				setNavigator={setNavigator}
 				dataNames={dataNames}
 				setDataNames={setDataNames}
+				current={current}
 				setCurrent={setCurrent}
 			/>
 			<Toggle rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} setStatistic={setStatistic} setSchart={setSchart} />

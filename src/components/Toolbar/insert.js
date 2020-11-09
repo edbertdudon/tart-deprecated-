@@ -26,7 +26,7 @@ function papaToSpreadsheet(csv) {
   return o
 }
 
-const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNames, setDataNames, setCurrent }) => {
+const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNames, setDataNames, current, setCurrent }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const uploadRef = useRef(null)
 
@@ -81,15 +81,12 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNa
 	  var files = e.target.files, f = files[0];
 		switch(re.exec(f.name)[1]) {
 			case 'csv':
-				Papa.parse(e.target.files[0], {
+				Papa.parse(f, {
           worker: true,
 					complete: function(results, file) {
 						let o = papaToSpreadsheet(results.data)
-			    	// o.delimiter = results.meta.delimiter
-            o.name = f.name
-            // o.filename = e.target.files[0].name
-            slides.loadData(slides.getData().concat([o]))
-						// firebase.doUploadFile(authUser.uid, fileObj.name, file)
+            insert(o, f.name, results.meta.delimiter, f.name)
+            firebase.doUploadFile(authUser.uid, f.name, file)
 					}
 				});
 				break;
@@ -99,13 +96,28 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNa
 				reader.onload = function(e) {
 				  var data = new Uint8Array(e.target.result);
 				  var wb = XLSX.read(data, {type: 'array'});
-					slides.loadData(slides.getData().concat(stox(wb)))
+          stox(wb).forEach(o => insert(o, o.name, ",", f.name + "_" + o.name));
+          wb.SheetNames.forEach(function(name) {
+            var ws = wb.Sheets[name];
+            var aoa = XLSX.utils.sheet_to_csv(ws);
+            firebase.doUploadFile(authUser.uid, f.name + "_" + name, aoa)
+          });
 				};
 				reader.readAsArrayBuffer(f);
-        // firebase.doUploadFile(authUser.uid, fileObj.name, file)
 				break;
 		}
+    uploadRef.current.value = '';
 	}
+
+  const insert = (o, name, delimiter, filename) => {
+    let n = getMaxNumberCustomSheet(dataNames, name)
+    o.delimiter = delimiter
+    o.filename = filename
+    const d = slides.insertData(dataNames, current, o, name)
+    setDataNames([...dataNames, d.name])
+    setCurrent(current+1)
+    slides.data = d
+  }
 
 	return (
 		<>

@@ -14,7 +14,7 @@ import { withFirebase } from '../Firebase'
 export const FILE_DROPDOWN = [
   {key: 'New Worksheet', type: 'item'},
   {key: 'Save', type: 'item'},
-  {key: 'Duplicate', type: 'item'},
+  {key: 'Duplicate Worksheet', type: 'item'},
   {key: 'Rename Worksheet', type: 'item'},
   {key: 'Download as Xlsx', type: 'item'},
   {key: 'Move to Trash', type: 'link', path: ROUTES.HOME},

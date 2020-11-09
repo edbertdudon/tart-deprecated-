@@ -7,7 +7,7 @@ import Insert from './insert'
 import Table from './table'
 import View from './view'
 
-const Toolbar = ({ rightSidebar, setRightSidebar, navigator, setNavigator, dataNames, setDataNames, setCurrent }) => {
+const Toolbar = ({ rightSidebar, setRightSidebar, navigator, setNavigator, dataNames, setDataNames, current, setCurrent }) => {
 	return (
 		<div className='worksheet-toolbar'>
 			<Files />
@@ -17,6 +17,7 @@ const Toolbar = ({ rightSidebar, setRightSidebar, navigator, setNavigator, dataN
 				setRightSidebar={setRightSidebar}
 				dataNames={dataNames}
 				setDataNames={setDataNames}
+				current={current}
 				setCurrent={setCurrent}
 			/>
 			<Table rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />

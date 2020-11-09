@@ -46,18 +46,21 @@ export function getMaxNumberFromFiles(files) {
 }
 
 export function getMaxNumberCustomSheet(dataNames, prefix) {
-  let names = []
-  for (var i=0; i<dataNames.length; i++) {
-    if (dataNames[i].startsWith(prefix) && /^\d+$/.test(dataNames[i].substring(prefix.length))) {
-      names.push(dataNames[i].substring(prefix.length))
-    }
-  }
-  let max = Math.max(...names)
-  if (max === -Infinity) {
-    return 1
-  } else {
-    return max + 1
-  }
+  // /^\d+$/ contains no space when prefix = sheetname but contains space after. Will always return false
+  const v = dataNames.filter(name => name.startsWith(prefix))
+  return(v.length+1)
+  // let names = []
+  // for (var i=0; i<dataNames.length; i++) {
+  //   if (dataNames[i].startsWith(prefix) && /^\d+$/.test(dataNames[i].substring(prefix.length))) {
+  //     names.push(dataNames[i].substring(prefix.length))
+  //   }
+  // }
+  // let max = Math.max(...names)
+  // if (max === -Infinity) {
+  //   return 1
+  // } else {
+  //   return max + 1
+  // }
 }
 
 export function xtos(sdata, filename) {

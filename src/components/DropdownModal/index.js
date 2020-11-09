@@ -47,7 +47,7 @@ const withDropdownModal = Component => (props) => {
 
   const handleSelect = (item) => {
     setIsOpen(!isOpen)
-    props.onSelect(item)
+    props.onSelect(v)
   }
 
   const handleSelectCateogry = i => {

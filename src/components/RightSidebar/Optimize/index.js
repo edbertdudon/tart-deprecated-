@@ -62,11 +62,6 @@ const CONSTRAINTS_TYPE = [
 	"Positive semidefinite cone",
 ]
 
-const MIN_MAX = [
-	"minimum",
-	"maximum"
-]
-
 const CONES_TYPE = [
   "K_zero",
   "K_lin",
@@ -75,6 +70,17 @@ const CONES_TYPE = [
   "K_powp",
 	"K_powd",
 	"K_psd",
+]
+
+const SOLVER_STATES = [
+	// General
+	["optimx", "nloptr"],
+	// Linear
+	["lpSolve"],
+	// Quadratic
+	["quadprog", "qpoases"],
+	// Conic
+	[],
 ]
 
 var RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g
@@ -208,14 +214,16 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const [cpsdlhs, setCpsdlhs] = useState('')
 	// const [psdcone, setPsdcone] = useState(1)
 	const [cpsdrhs, setCpsdrhs] = useState('')
+	const [solver, setSolver] = useState(0)
 	const [loading, setLoading] = useState(false)
+	const [isValid, setIsValid] = useState(true)
 	const [error, setError] = useState(null)
 
 	// useEffect(() => {
 	// 	setObjective(columnToLetter(slides.data.selector.ci+1) + (slides.data.selector.ri+1))
 	// }, [])
 
-	const handleUpdateObjectiveClass = activeOption => setObjectiveClass(activeOption)
+	const handleUpdateObjectiveClass = i => setObjectiveClass(i)
 
 	const handleMinimize = () => setMinMax(0)
 
@@ -232,6 +240,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 				.map(c => CONSTRAINTS_TYPE[c])
 		)
 
+	const handleUpdateSolver = i => setSolver(i)
+
 	const handleSubmit = () => {
 		setLoading(true)
 		let name = slides.data.name
@@ -241,11 +251,14 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			linear: translateR(linear || 'na', name),
 			gradient: translateR(gradient || 'na', name),
 			hessian: translateR(hessian || 'na', name),
-			isMaximum: MIN_MAX[minMax],
+			isMaximum: minMax === 0 ? "minimum" : "maximum",
 			objectiveClass: OBJECTIVE_CLASS[objectiveClass],
 			decision: translateR(decision || 'na', name),
 			constraints: CONSTRAINTS_TYPE.filter((constraint) =>
 				constraints.every(c => constraint !== c)),
+			lower: translateR(lower || 'na', name),
+			select: translateR(select || 'na', name),
+			upper: translateR(upper || 'na', name),
 			flhs: translateR(flhs || 'na', name),
 			fdir: translateR(fdir || 'na', name),
 			frhs: translateR(frhs || 'na', name),
@@ -278,6 +291,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			cpsdlhs: translateR(cpsdlhs || 'na', name),
 			// psdcone: CONES_TYPE[6],
 			cpsdrhs: translateR(cpsdrhs || 'na', name),
+			solver: SOLVER_STATES[objectiveClass][solver],
 		}
 		let optimizationData = {
 			...sparkData,
@@ -285,7 +299,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			names: JSON.stringify(slides.datas.map(data => data.name))
 		}
 		console.log(sparkData)
-		console.log(JSON.stringify(spreadsheetToR(slides.datas)))
+		// console.log(JSON.stringify(spreadsheetToR(slides.datas)))
 		// firebase.doOptimization(optimizationData)
 		// 	.then(res => {
 		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
@@ -303,12 +317,6 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const handleClose = () => {
 		setRightSidebar('none')
 		setLoading(false)
-	}
-
-	const isInvalid = {
-		0: objective === '' || decision === '',
-		1: quadratic === '',
-		2: linear === '',
 	}
 
 	const OBJECTIVE_STATES = {
@@ -332,6 +340,12 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			linear={linear}
 			setLinear={setLinear}
 		/>
+	}
+
+	const isEmptyObjective = {
+		0: objective === '' || decision === '',
+		1: quadratic === '',
+		2: linear === '',
 	}
 
 	return (
@@ -504,18 +518,24 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			}
 			{constraints.length > 0 &&
 				<OptionsWithLists onChange={handleAddConstraint} options={constraints} name='Add constraint' />}
+			<Variable
+				label="Solver"
+				onChange={handleUpdateSolver}
+				options={SOLVER_STATES[objectiveClass]}
+				name={SOLVER_STATES[objectiveClass][solver]}
+			/>
 			<div className='rightsidebar-text'>
         {error && <div className='rightsidebar-error'>{error}</div>}
       </div>
 			<div className='rightsidebar-subtext'>
-				Each cell reference reprsents a single value in a matrix. A 1x3 matrix with values (1,2,3) can be referenced with cells (A1,A2,A3)
+				Each cell reference reprsents a single value in a matrix. A 1x3 matrix with values (1,2,3) in cells (A1,A2,A3) has cell reference: A1:A3 or A1:A2,A3.
 			</div>
 			{loading
 				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin/></div>
 				: <input
-						disabled={isInvalid[objectiveClass]}
+						disabled={false}
 						type="submit"
-						style={{ color : isInvalid[objectiveClass] ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
+						style={{ color : isEmptyObjective[objectiveClass] ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
 						onClick={handleSubmit}
 						className='rightsidebar-submit'
 					/>
@@ -523,6 +543,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 		</>
 	)
 }
+// disabled={isEmptyObjective || !isValid}
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
