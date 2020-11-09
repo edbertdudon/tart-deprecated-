@@ -5,15 +5,13 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React from 'react'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
 import { validateCellRange, validateCellText } from './index'
 import withListsXS from './withListsXS'
 
-const Cconstraint = ({ lhs, setLhs, rhs, setRhs, type, onClose }) => {
-  const [error, setError] = useState(null)
-
+const Cconstraint = ({ lhs, setLhs, rhs, setRhs, type, onClose, error, setError }) => {
   const handleUpdateLhs = e => {
     const v = e.target.value
     setLhs(v)

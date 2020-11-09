@@ -5,16 +5,14 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
 import { validateRange, validateCellRange, validateCellText } from './index'
 
-const Qconstraint = ({ slides, quadratic, setQuadratic, linear, setLinear, dir, setDir, rhs, setRhs, onClose }) => {
-  const [error, setError] = useState(null)
-
+const Qconstraint = ({ slides, quadratic, setQuadratic, linear, setLinear, dir, setDir, rhs, setRhs, onClose, error, setError }) => {
   const handleUpdateQuadratic = e => {
     const v = e.target.value
     setQuadratic(v)

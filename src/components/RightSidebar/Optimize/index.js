@@ -216,12 +216,30 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const [cpsdrhs, setCpsdrhs] = useState('')
 	const [solver, setSolver] = useState(0)
 	const [loading, setLoading] = useState(false)
-	const [isValid, setIsValid] = useState(true)
+	// Errors
 	const [error, setError] = useState(null)
+	const [errorGeneral, setErrorGeneral] = useState(null)
+	const [errorQuadratic, setErrorQuadratic] = useState(null)
+	const [errorLinear, setErrorLinear] = useState(null)
+	const [errorBounds, setErrorBounds] = useState(null)
+	const [errorGconstraint, setErrorGconstraint] = useState(null)
+	const [errorQconstraint, setErrorQconstraint] = useState(null)
+	const [errorLconstraint, setErrorLconstraint] = useState(null)
+	const [error0cone, setError0cone] = useState(null)
+	const [errorLcone, setErrorLcone] = useState(null)
+	const [errorSocone, setErrorSocone] = useState(null)
+	const [errorEcone, setErrorEcone] = useState(null)
+	const [error3cone, setError3cone] = useState(null)
+	const [error2cone, setError2cone] = useState(null)
+	const [errorPsdcone, setErrorPsdcone] = useState(null)
 
-	// useEffect(() => {
-	// 	setObjective(columnToLetter(slides.data.selector.ci+1) + (slides.data.selector.ri+1))
-	// }, [])
+	useEffect(() => {
+		const { selector } = slides.sheet
+		const {
+			sri, sci, eri, eci,
+		} = selector.range;
+		setObjective(columnToLetter(sci+1) + (sri+1))
+	}, [])
 
 	const handleUpdateObjectiveClass = i => setObjectiveClass(i)
 
@@ -329,16 +347,22 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			setGradient={setGradient}
 			hessian={hessian}
 			setHessian={setHessian}
+			error={errorGeneral}
+			setError={setErrorGeneral}
 		/>,
 		1: <Linear
 			linear={linear}
 			setLinear={setLinear}
+			error={errorLinear}
+			setError={setErrorLinear}
 		/>,
 		2: <Quadratic
 			quadratic={quadratic}
 			setQuadratic={setQuadratic}
 			linear={linear}
 			setLinear={setLinear}
+			error={errorQuadratic}
+			setError={setErrorQuadratic}
 		/>
 	}
 
@@ -347,6 +371,21 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 		1: quadratic === '',
 		2: linear === '',
 	}
+
+	const isError = errorGeneral !== null
+		|| errorQuadratic !== null
+		|| errorLinear !== null
+		|| errorBounds !== null
+		|| errorGconstraint !== null
+		|| errorQconstraint !== null
+		|| errorLconstraint !== null
+		|| error0cone !== null
+		|| errorLcone !== null
+		|| errorSocone !== null
+		|| errorEcone !== null
+		|| error3cone !== null
+		|| error2cone !== null
+		|| errorPsdcone !== null
 
 	return (
 		<>
@@ -393,6 +432,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					upper={upper}
 					setUpper={setUpper}
 					onClose={handleRemoveConstraint}
+					error={errorBounds}
+					setError={setErrorBounds}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[1]) &&
@@ -406,6 +447,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					jacobian={jacobian}
 					setJacobian={setJacobian}
 					onClose={handleRemoveConstraint}
+					error={errorGconstraint}
+					setError={setErrorGconstraint}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[2]) &&
@@ -417,6 +460,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					rhs={lrhs}
 					setRhs={setLrhs}
 					onClose={handleRemoveConstraint}
+					error={errorLconstraint}
+					setError={setErrorLconstraint}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[3]) &&
@@ -430,6 +475,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					rhs={qrhs}
 					setRhs={setQrhs}
 					onClose={handleRemoveConstraint}
+					error={errorQconstraint}
+					setError={setErrorQconstraint}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[4]) &&
@@ -442,6 +489,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setC0rhs}
 					type={CONSTRAINTS_TYPE[3]}
 					onClose={() => handleRemoveConstraint(4)}
+					error={error0cone}
+					setError={setError0cone}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[5]) &&
@@ -454,6 +503,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setClrhs}
 					type={CONSTRAINTS_TYPE[4]}
 					onClose={() => handleRemoveConstraint(5)}
+					error={errorLcone}
+					setError={setErrorLcone}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[6]) &&
@@ -466,6 +517,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setCsorhs}
 					type={CONSTRAINTS_TYPE[5]}
 					onClose={() => handleRemoveConstraint(6)}
+					error={errorSocone}
+					setError={setErrorSocone}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[7]) &&
@@ -478,6 +531,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setCexrhs}
 					type={CONSTRAINTS_TYPE[6]}
 					onClose={() => handleRemoveConstraint(7)}
+					error={errorEcone}
+					setError={setErrorEcone}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[8]) &&
@@ -490,6 +545,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setCpprhs}
 					type={CONSTRAINTS_TYPE[7]}
 					onClose={() => handleRemoveConstraint(8)}
+					error={error3cone}
+					setError={setError3cone}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[9]) &&
@@ -502,6 +559,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setCpdrhs}
 					type={CONSTRAINTS_TYPE[8]}
 					onClose={() => handleRemoveConstraint(9)}
+					error={error2cone}
+					setError={setError2cone}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[10]) &&
@@ -514,6 +573,8 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					setRhs={setCpsdrhs}
 					type={CONSTRAINTS_TYPE[9]}
 					onClose={() => handleRemoveConstraint(10)}
+					error={errorPsdcone}
+					setError={setErrorPsdcone}
 				/>
 			}
 			{constraints.length > 0 &&
@@ -533,7 +594,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			{loading
 				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin/></div>
 				: <input
-						disabled={false}
+						disabled={isEmptyObjective || isError}
 						type="submit"
 						style={{ color : isEmptyObjective[objectiveClass] ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
 						onClick={handleSubmit}
@@ -543,7 +604,6 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 		</>
 	)
 }
-// disabled={isEmptyObjective || !isValid}
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,

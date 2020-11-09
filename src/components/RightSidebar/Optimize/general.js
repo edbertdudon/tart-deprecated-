@@ -5,12 +5,10 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { validateCell, validateCellRange } from './index'
 
-const General = ({ objective, setObjective, decision, setDecision, gradient, setGradient, hessian, setHessian }) => {
-  const [error, setError] = useState(null)
-
+const General = ({ objective, setObjective, decision, setDecision, gradient, setGradient, hessian, setHessian, error, setError }) => {
   const handleUpdateObjective = e => {
     const v = e.target.value
     setObjective(v)

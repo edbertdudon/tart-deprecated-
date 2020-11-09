@@ -5,7 +5,7 @@ import { compose } from 'recompose'
 import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar, navigator, setNavigator }) => {
+const View = ({ authUser, color, slides, rightSidebar, setRightSidebar, navigator, setNavigator }) => {
   const VIEW_DROPDOWN = [
     {key: 'Navigator', type: 'toggle', visibility: navigator},
     {key: 'Chart Editor', type: 'toggle', visibility: rightSidebar === 'charteditor'},
@@ -27,7 +27,6 @@ const View = ({ authUser, color, slides, isLoaded, rightSidebar, setRightSidebar
           document.getElementById('slide-scrollbar-horizontal').style.left = '125px'
           // document.getElementById('slide-bottombar').style.display = 'block'
           slides.options.showNavigator = true
-
         }
         break;
       case VIEW_DROPDOWN[1].key:

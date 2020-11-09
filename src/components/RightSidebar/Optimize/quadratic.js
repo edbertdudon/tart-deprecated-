@@ -5,12 +5,10 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React from 'react'
 import { validateRange, validateCellRange } from './index'
 
-const Quadratic = ({ quadratic, setQuadratic, linear, setLinear }) => {
-  const [error, setError] = useState(null)
-
+const Quadratic = ({ quadratic, setQuadratic, linear, setLinear, error, setError }) => {
   const handleUpdateQuadratic = e => {
     const v = e.target.value
     setQuadratic(v)

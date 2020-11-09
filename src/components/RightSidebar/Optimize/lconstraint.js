@@ -5,16 +5,14 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
 import { validateCellRange, validateCellText } from './index'
 
-const Lconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, setJacobian, onClose }) => {
-  const [error, setError] = useState(null)
-
+const Lconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, setJacobian, onClose, error, setError }) => {
   const handleUpdateLhs = e => {
     const v = e.target.value
     setLhs(v)

@@ -5,12 +5,10 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React from 'react'
 import { validateCellRange } from './index'
 
-const Linear = ({ linear, setLinear }) => {
-  const [error, setError] = useState(null)
-
+const Linear = ({ linear, setLinear, error, setError }) => {
   const handleUpdateLinear = e => {
     const v = e.target.value
     setLinear(v)

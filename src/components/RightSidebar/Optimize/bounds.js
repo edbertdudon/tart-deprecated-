@@ -5,16 +5,14 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose, mdiLessThanOrEqual } from '@mdi/js'
 import { validateCellRange, validateCellText } from './index'
 
-const Bounds = ({ slides, lower, setLower, decision, setDecision, upper, setUpper, onClose }) => {
-  const [error, setError] = useState(null)
-
+const Bounds = ({ slides, lower, setLower, decision, setDecision, upper, setUpper, onClose, error, setError }) => {
   const handleUpdateLower = e => {
     const v = e.target.value
     setLower(v)

@@ -11,14 +11,16 @@ import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdilChartHistogram } from '@mdi/light-js'
 import { mdiMagnify, mdiBrush, mdiMathIntegral } from '@mdi/js'
+import './index.less'
 
 import { OFF_COLOR } from '../../constants/off-color'
 import withDropdownModal from '../DropdownModal'
 import charts from '../RightSidebar/chartsR'
 import statistics from '../RightSidebar/statisticsR'
+import { columnToLetter } from '../Spreadsheet/cloudr'
 import formulas from '../Spreadsheet/cloudr/formula'
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet'
-import './index.less'
+
 
 const CHART_CATEGORIES = [
   'One Variable',
@@ -71,19 +73,18 @@ const Toggle = ({ color, authUser, slides, rightSidebar, setRightSidebar, setSta
 
   const handleChart = chart => {
     // setRightSidebar('charteditor')
-    // const i = statistics.findIndex(item => item.key === chart)
+    const i = charts.findIndex(item => item.key === chart)
     // setSchart([i])
     if (slides.data.type === "sheet" || slides.data.type === "input") {
-      console.log(Object.keys(slides.data.rows._))
-      // let variables
-      // if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
-      //   variables = []
-      // } else {
-      //   variables = Object.values(slides.data.rows._[0].cells)
-      //     .map(variable => Object.values(variable)[0])
-      // }
-      // let chartData = setChart(slides, variables, [chartNumber], 0, 1, 2)
-      // dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
+      const { selector } = slides.sheet
+      const {
+        sri, sci, eri, eci,
+      } = selector.range;
+      const data = {
+        name: slides.data.name,
+        type: charts[i].type,
+        variablex: columnToLetter(sci) + sri + ":" + columnToLetter(eci) + eri
+      }
     }
   }
 
@@ -101,7 +102,6 @@ const Toggle = ({ color, authUser, slides, rightSidebar, setRightSidebar, setSta
 		sheetReset.call(slides.sheet);
   }
 
-  // <Button isSelected={rightSidebar === 'formulas'} onToggle={() => handleToggle('formulas')} icon={mdiMathIntegral} />
 	return (
     <>
       <div className='worksheet-buttons'>

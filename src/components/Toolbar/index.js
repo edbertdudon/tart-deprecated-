@@ -5,6 +5,7 @@ import Files from './file'
 import Edit from './edit'
 import Insert from './insert'
 import Table from './table'
+import Format from './format'
 import View from './view'
 
 const Toolbar = ({ rightSidebar, setRightSidebar, navigator, setNavigator, dataNames, setDataNames, current, setCurrent }) => {
@@ -21,6 +22,7 @@ const Toolbar = ({ rightSidebar, setRightSidebar, navigator, setNavigator, dataN
 				setCurrent={setCurrent}
 			/>
 			<Table rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
+			<Format />
 			<View rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} navigator={navigator} setNavigator={setNavigator} />
 		</div>
 	)
