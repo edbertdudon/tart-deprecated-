@@ -86,6 +86,10 @@ class Spreadsheet {
     return d
   }
 
+  addChart() {
+
+  }
+
   insertData(dataNames, index, o, name) {
     let d = new DataProxy('temp', this.options)
     d.setData(o)

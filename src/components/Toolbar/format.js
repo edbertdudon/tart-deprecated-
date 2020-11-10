@@ -16,16 +16,35 @@ const Format = ({ authUser, color, slides, rightSidebar, setRightSidebar }) => {
     {type: 'divider'},
     {key: 'Font size', type: 'item'},
     {key: 'Align', type: 'item'},
-    {key: 'Merge cells', type: 'item'},
     {key: 'Text wrapping', type: 'item'},
   ]
 
   const handleFormat = key => {
     switch (key) {
       case FORMAT_DROPDOWN[0].key:
+        slides.data.setSelectedCellAttr('font-bold', true);
+        break;
+      case FORMAT_DROPDOWN[1].key:
+        slides.data.setSelectedCellAttr('font-italic', true);
+        break;
+      case FORMAT_DROPDOWN[2].key:
+        slides.data.setSelectedCellAttr('font-underline', true);
+        break;
+      case FORMAT_DROPDOWN[3].key:
+        slides.data.setSelectedCellAttr('strike', true);
         break;
       case FORMAT_DROPDOWN[5].key:
         setRightSidebar('charteditor')
+        break;
+      case FORMAT_DROPDOWN[7].key:
+        slides.data.setSelectedCellAttr('font-size', 8);
+        break;
+      case FORMAT_DROPDOWN[8].key:
+        slides.data.setSelectedCellAttr('valign', "top");
+        slides.data.setSelectedCellAttr('halign', "");
+        break;
+      case FORMAT_DROPDOWN[9].key:
+        slides.data.setSelectedCellAttr('textwrap', true);
         break;
     }
   }

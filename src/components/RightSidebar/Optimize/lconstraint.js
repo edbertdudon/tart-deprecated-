@@ -24,7 +24,7 @@ const Lconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, 
     setDir(v)
     setError(
       validateCellText(v, slides, (cellText) => {
-        if (cellText !== "=" || cellText !== "<=" || cellText !== ">=") {
+        if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
           return("Direction must be =, <= or >=.")
         }
       })

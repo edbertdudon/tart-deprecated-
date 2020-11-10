@@ -553,6 +553,7 @@ function toolbarChange(type, value) {
   } else if (type === 'formula') {
     // formula
   } else {
+    console.log(type, value)
     data.setSelectedCellAttr(type, value);
     // if (type === 'formula' && !data.selector.multiple()) {
       // editorSet.call(this);

@@ -49,8 +49,8 @@ const OPTIMIZATION_METHODS = [
 ]
 
 const CONSTRAINTS_TYPE = [
+	"General form constraints (default)",
 	"Bounds",
-	"General form constraints",
 	"Linear constraints",
 	"Quadratic constraints",
 	"Zero cone",
@@ -150,8 +150,10 @@ export const validateCellText = (v, slides, check) => {
     }
     for (var i=mn[0]-1; i<mn[1]; i++) {
       for (var j=ml[0]-1; j<ml[1]; j++) {
-        const cellText = slides.data.getCellTextOrDefault(i,j)
-        return(check(cellText))
+        const cellText = check(slides.data.getCellTextOrDefault(i,j))
+				if (cellText != undefined) {
+	        return(cellText)
+				}
       }
     }
   }
@@ -168,15 +170,21 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const [objectiveClass, setObjectiveClass] = useState(0)
 	const [decision, setDecision] = useState('')
 	const [constraints, setConstraints] = useState(CONSTRAINTS_TYPE)
-	// Bounds
-	const [lower, setLower] = useState('')
-	const [select, setSelect] = useState('')
-	const [upper, setUpper] = useState('')
 	// General constraints
 	const [flhs, setFlhs] = useState('')
 	const [fdir, setFdir] = useState('')
 	const [frhs, setFrhs] = useState('')
 	const [jacobian, setJacobian] = useState('')
+	// Bounds
+	const [blhs, setBlhs] = useState('')
+	const [bdir, setBdir] = useState('')
+	const [brhs, setBrhs] = useState('')
+	const [li, setLi] = useState('')
+	const [lb, setLb] = useState('')
+	const [ui, setUi] = useState('')
+	const [ub, setUb] = useState('')
+	const [ld, setLd] = useState('')
+	const [ud, setUd] = useState('')
 	// Quadratic constraints
 	const [qquad, setQquad] = useState('')
 	const [qlin, setQlin] = useState('')
@@ -270,17 +278,23 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			gradient: translateR(gradient || 'na', name),
 			hessian: translateR(hessian || 'na', name),
 			isMaximum: minMax === 0 ? "minimum" : "maximum",
-			objectiveClass: OBJECTIVE_CLASS[objectiveClass],
+			objectiveClass: objectiveClass,
 			decision: translateR(decision || 'na', name),
 			constraints: CONSTRAINTS_TYPE.filter((constraint) =>
 				constraints.every(c => constraint !== c)),
-			lower: translateR(lower || 'na', name),
-			select: translateR(select || 'na', name),
-			upper: translateR(upper || 'na', name),
 			flhs: translateR(flhs || 'na', name),
 			fdir: translateR(fdir || 'na', name),
 			frhs: translateR(frhs || 'na', name),
 			jacobian: translateR(jacobian || 'na', name),
+			blhs: translateR(lower || 'na', name),
+			bdir: translateR(select || 'na', name),
+			brhs: translateR(upper || 'na', name),
+			lowerindex: translateR(li || 'na', name),
+			lowerbound: translateR(lb || 'na', name),
+			upperindex: translateR(ui || 'na', name),
+			upperbound: translateR(ub || 'na', name),
+			lowerlimit: translateR(ld || 'na', name),
+			upperlimit: translateR(ud || 'na', name),
 			qquad: translateR(qquad || 'na', name),
 			qlin: translateR(qlin || 'na', name),
 			qdir: translateR(qdir || 'na', name),
@@ -423,20 +437,6 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			<div className='rightsidebar-buttontext'>Maximum</div>
 			<div className='rightsidebar-label'>Constraints</div>
 			{!constraints.includes(CONSTRAINTS_TYPE[0]) &&
-				<Bounds
-					objectiveClass={objectiveClass}
-					lower={lower}
-					setLower={setLower}
-					decision={select}
-					setDecision={setSelect}
-					upper={upper}
-					setUpper={setUpper}
-					onClose={handleRemoveConstraint}
-					error={errorBounds}
-					setError={setErrorBounds}
-				/>
-			}
-			{!constraints.includes(CONSTRAINTS_TYPE[1]) &&
 				<Fconstraint
 					lhs={flhs}
 					setLhs={setFlhs}
@@ -449,6 +449,23 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					onClose={handleRemoveConstraint}
 					error={errorGconstraint}
 					setError={setErrorGconstraint}
+				/>
+			}
+			{!constraints.includes(CONSTRAINTS_TYPE[1]) &&
+				<Bounds
+					objectiveClass={objectiveClass}
+					lhs={blhs} setLhs={setBlhs}
+					dir={bdir} setDir={setBdir}
+					rhs={brhs} setRhs={setBrhs}
+					li={li} setLi={setli}
+					lb={lb} setLb={setLb}
+					ui={ui} setUi={setUi}
+					ub={ub} setUb={setUb}
+					ld={ld} setUb={setLd}
+					ud={ud} setUb={setUd}
+					onClose={handleRemoveConstraint}
+					error={errorBounds}
+					setError={setErrorBounds}
 				/>
 			}
 			{!constraints.includes(CONSTRAINTS_TYPE[2]) &&

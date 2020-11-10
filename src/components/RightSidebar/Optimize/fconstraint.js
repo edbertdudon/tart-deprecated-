@@ -24,7 +24,7 @@ const Fconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, 
     setDir(v)
     setError(
       validateCellText(v, slides, (cellText) => {
-        if (cellText !== "=" || cellText !== "<=" || cellText !== ">=") {
+        if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
           return("Direction must be =, <= or >=.")
         }
       })
@@ -49,7 +49,7 @@ const Fconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, 
     setError(validateCell(v))
   }
 
-  const handleClose = () => onClose(1)
+  const handleClose = () => onClose(0)
 
   return (
     <>
@@ -58,7 +58,7 @@ const Fconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, 
         <Icon path={mdiClose} size={0.8}/>
       </button>
       <div className='rightsidebar-input-text-3part1'>Cell range</div>
-      <div className='rightsidebar-input-text-3part2'>direction range</div>
+      <div className='rightsidebar-input-text-3part2'>Direction range</div>
       <div className='rightsidebar-input-text-3part3'>Numeric range</div>
       <input
         type="text"

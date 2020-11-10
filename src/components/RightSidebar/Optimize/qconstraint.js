@@ -30,7 +30,7 @@ const Qconstraint = ({ slides, quadratic, setQuadratic, linear, setLinear, dir, 
     setDir(v)
     setError(
       validateCellText(v, slides, (cellText) => {
-        if (cellText !== "=" || cellText !== "<=" || cellText !== ">=") {
+        if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
           return("Direction must be =, <= or >=.")
         }
       })
