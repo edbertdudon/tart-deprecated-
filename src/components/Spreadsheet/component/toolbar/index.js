@@ -149,7 +149,6 @@ export default class Toolbar {
       //   this.optimzeEl = new Optimize(),
       // ]
     ];
-
     this.el = h('div', `${cssPrefix}-toolbar`);
     this.btns = h('div', `${cssPrefix}-toolbar-btns`);
 

@@ -12,21 +12,20 @@ const View = ({ authUser, color, slides, rightSidebar, setRightSidebar, navigato
   ]
 
   const handleView = key => {
+    const { sheet, options } = slides;
     switch (key) {
       case VIEW_DROPDOWN[0].key:
         setNavigator(!navigator)
         if (navigator) {
-          document.getElementById('slide-table').style.marginLeft = '0'
-          document.getElementById('slide-overlayer').style.left = '0'
-          document.getElementById('slide-scrollbar-horizontal').style.left = '0'
-          // document.getElementById('slide-bottombar').style.display = 'none'
-          slides.options.showNavigator = false
+          sheet.table.el.style.marginLeft = '0'
+          sheet.overlayerEl.el.style.left = '0'
+          sheet.horizontalScrollbar.el.el.style.left = '0'
+          options.showNavigator = false
         } else {
-          document.getElementById('slide-table').style.marginLeft = '125px'
-          document.getElementById('slide-overlayer').style.left = '125px'
-          document.getElementById('slide-scrollbar-horizontal').style.left = '125px'
-          // document.getElementById('slide-bottombar').style.display = 'block'
-          slides.options.showNavigator = true
+          sheet.table.el.style.marginLeft = '125px'
+          sheet.overlayerEl.el.style.left = '125px'
+          sheet.horizontalScrollbar.el.el.style.left = '125px'
+          options.showNavigator = true
         }
         break;
       case VIEW_DROPDOWN[1].key:

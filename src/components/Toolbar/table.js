@@ -25,34 +25,35 @@ export const TABLE_DROPDOWN = [
 
 const Table = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
   const handleTable = key => {
+    const { data } = slides
     switch (key) {
       case TABLE_DROPDOWN[0].key:
-        slides.data.insert('row')
+        data.insert('row')
         break;
       case TABLE_DROPDOWN[1].key:
-        slides.data.insert('column')
+        data.insert('column')
         break;
       case TABLE_DROPDOWN[3].key:
-        slides.data.delete('row')
+        data.delete('row')
         break;
       case TABLE_DROPDOWN[4].key:
-        slides.data.delete('column')
+        data.delete('column')
         break;
       case TABLE_DROPDOWN[6].key:
-        slides.data.merge()
+        data.merge()
         break;
       case TABLE_DROPDOWN[7].key:
-        slides.data.unmerge()
+        data.unmerge()
         break;
       case TABLE_DROPDOWN[9].key:
-        const { ri, ci } = slides.data.selector
-        slides.data.setFreeze(ri, ci)
+        const { ri, ci } = data.selector
+        data.setFreeze(ri, ci)
         break;
       case TABLE_DROPDOWN[10].key:
-        slides.data.setFreeze(0, 0)
+        data.setFreeze(0, 0)
         break;
       case TABLE_DROPDOWN[12].key:
-        slides.data.autofilter()
+        data.autofilter()
         break;
       case TABLE_DROPDOWN[14].key:
         handleToggle('optimize')

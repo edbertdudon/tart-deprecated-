@@ -41,13 +41,14 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNa
 	]
 
 	const handleInsert = key => {
+    const { data, sheet, sheetIndex } = slides
 		switch(key) {
 			case INSERT_DROPDOWN[0].key:
-        setDataNames([...dataNames, "sheet" + slides.sheetIndex])
+        setDataNames([...dataNames, "sheet" + sheetIndex])
         setCurrent(dataNames.length)
 				const d = slides.addSheet();
-        slides.sheet.resetData(d);
-        slides.data = d
+        sheet.resetData(d);
+        data = d
 				break;
 			case INSERT_DROPDOWN[1].key:
 			  document.getElementById("chartstoggle").click()

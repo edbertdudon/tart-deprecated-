@@ -22,7 +22,7 @@ const Toolbar = ({ rightSidebar, setRightSidebar, navigator, setNavigator, dataN
 				setCurrent={setCurrent}
 			/>
 			<Table rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
-			<Format />
+			<Format rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} />
 			<View rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} navigator={navigator} setNavigator={setNavigator} />
 		</div>
 	)

@@ -19,36 +19,37 @@ export const EDIT_DROPDOWN = [
 
 const Edit = ({ color, authUser, slides }) => {
   const handleEdit = key => {
+    const { data, sheet } = slides
     switch (key) {
       case EDIT_DROPDOWN[0].key:
-        slides.data.undo()
-        sheetReset.call(slides.sheet)
+        data.undo()
+        sheetReset.call(sheet)
         break;
       case EDIT_DROPDOWN[1].key:
-        slides.data.redo()
-        sheetReset.call(slides.sheet)
+        data.redo()
+        sheetReset.call(sheet)
         break;
       case EDIT_DROPDOWN[3].key:
-        slides.data.cut()
-        slides.sheet.selector.showClipboard();
+        data.cut()
+        sheet.selector.showClipboard();
         break;
       case EDIT_DROPDOWN[4].key:
-        slides.data.copy()
-        slides.sheet.selector.showClipboard();
+        data.copy()
+        sheet.selector.showClipboard();
         break;
       case EDIT_DROPDOWN[5].key:
-        slides.data.paste()
-        // if (slides.data.settings.mode === 'read') return;
-        // if (slides.data.paste('all', msg => xtoast('Tip', msg))) {
-        //   sheetReset.call(slides.sheet);
+        data.paste()
+        // if (data.settings.mode === 'read') return;
+        // if (data.paste('all', msg => xtoast('Tip', msg))) {
+        //   sheetReset.call(sheet);
         // } else if (evt) {
         //   const cdata = evt.clipboardData.getData('text/plain');
-        //   slides.data.pasteFromText(cdata);
-        //   sheetReset.call(slides.sheet);
+        //   data.pasteFromText(cdata);
+        //   sheetReset.call(sheet);
         // }
         break;
       case EDIT_DROPDOWN[7].key:
-        slides.data.deleteCell()
+        data.deleteCell()
         break;
     }
     slides.reRender()

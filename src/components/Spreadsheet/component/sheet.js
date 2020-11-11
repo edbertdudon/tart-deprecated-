@@ -901,7 +901,7 @@ export default class Sheet {
     targetEl.children(this.toolbar.el, this.el, this.print.el);
     this.data = data;
     // table
-    this.tableEl = h('canvas', `${cssPrefix}-table`, `${cssPrefix}-table`);
+    this.tableEl = h('canvas', `${cssPrefix}-table`);
     // resizer
     this.rowResizer = new Resizer(false, data.rows.height);
     this.colResizer = new Resizer(true, data.cols.minWidth);
@@ -925,7 +925,7 @@ export default class Sheet {
         this.editor.el,
         this.selector.el,
       );
-    this.overlayerEl = h('div', `${cssPrefix}-overlayer`, `${cssPrefix}-overlayer`)
+    this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
       .child(this.overlayerCEl);
     // sortFilter
     this.sortFilter = new SortFilter();

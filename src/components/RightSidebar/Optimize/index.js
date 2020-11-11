@@ -25,28 +25,7 @@ import withLists from '../withLists'
 import { letterToColumn, columnToLetter, spreadsheetToR, translateR } from '../../Spreadsheet/cloudr'
 import { withFirebase } from '../../Firebase'
 
-const OBJECTIVE_CLASS = [
-	"General nonlinear optimization",
-	"Linear programming",
-	"Quadratic programming",
-]
-
-const OPTIMIZATION_METHODS = [
-	'Nelder-mead',
-	'L-BFGS-B',
-	'BFGS',
-	'CG',
-	'nlm',
-	'nlminb',
-	'spg',
-	'ucminf',
-	'newuoa',
-	'bobyqa',
-	'nmkb',
-	'hjkb',
-	'Rcgmin',
-	'Rvmmin'
-]
+const OBJECTIVE_CLASS = ["General nonlinear optimization", "Linear programming", "Quadratic programming"]
 
 const CONSTRAINTS_TYPE = [
 	"General form constraints (default)",
@@ -62,15 +41,7 @@ const CONSTRAINTS_TYPE = [
 	"Positive semidefinite cone",
 ]
 
-const CONES_TYPE = [
-  "K_zero",
-  "K_lin",
-  "K_soc",
-  "K_expp",
-  "K_powp",
-	"K_powd",
-	"K_psd",
-]
+const CONES_TYPE = ["K_zero", "K_lin", "K_soc", "K_expp", "K_powp", "K_powd", "K_psd"]
 
 const SOLVER_STATES = [
 	// General
@@ -81,6 +52,11 @@ const SOLVER_STATES = [
 	["quadprog", "qpoases"],
 	// Conic
 	[],
+]
+
+
+const OPTIMX_METHODS = [
+  'Nelder-mead', 'L-BFGS-B', 'BFGS', 'CG', 'nlm', 'nlminb', 'spg', 'ucminf', 'newuoa', 'bobyqa', 'nmkb', 'hjkb', 'Rcgmin', 'Rvmmin'
 ]
 
 var RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g

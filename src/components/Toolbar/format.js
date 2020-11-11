@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
+import { fontSizes } from '../Spreadsheet/core/font'
 import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
@@ -14,37 +15,62 @@ const Format = ({ authUser, color, slides, rightSidebar, setRightSidebar }) => {
     {type: 'divider'},
     {key: 'Edit Chart Data...', type: 'item'},
     {type: 'divider'},
-    {key: 'Font size', type: 'item'},
-    {key: 'Align', type: 'item'},
+    {key: 'Font size', type: 'secondarymenu', options: fontSizes, style:{width: "50px"}},
+    {type: 'divider'},
+    {key: 'Horizontal Align Left', type: 'item'},
+    {key: 'Horizontal Aign Center', type: 'item'},
+    {key: 'Horizontal Align Right', type: 'item'},
+    {type: 'divider'},
+    {key: 'Vertical Align Top', type: 'item'},
+    {key: 'Vertical Align Middle', type: 'item'},
+    {key: 'Vertical Align Bottom', type: 'item'},
+    {type: 'divider'},
     {key: 'Text wrapping', type: 'item'},
   ]
 
-  const handleFormat = key => {
+  const handleFormat = (key, second) => {
+    const { data, sheet } = slides
+    const { toolbar } = slides.sheet
     switch (key) {
       case FORMAT_DROPDOWN[0].key:
-        slides.data.setSelectedCellAttr('font-bold', true);
+        data.setSelectedCellAttr('font-bold', toolbar.boldEl.toggle());
         break;
       case FORMAT_DROPDOWN[1].key:
-        slides.data.setSelectedCellAttr('font-italic', true);
+        data.setSelectedCellAttr('font-italic', toolbar.italicEl.toggle());
         break;
       case FORMAT_DROPDOWN[2].key:
-        slides.data.setSelectedCellAttr('font-underline', true);
+        data.setSelectedCellAttr('font-underline', toolbar.underlineEl.toggle());
         break;
       case FORMAT_DROPDOWN[3].key:
-        slides.data.setSelectedCellAttr('strike', true);
+        data.setSelectedCellAttr('strike', toolbar.strikeEl.toggle());
         break;
       case FORMAT_DROPDOWN[5].key:
-        setRightSidebar('charteditor')
+        handleToggle('charteditor')
         break;
       case FORMAT_DROPDOWN[7].key:
-        slides.data.setSelectedCellAttr('font-size', 8);
-        break;
-      case FORMAT_DROPDOWN[8].key:
-        slides.data.setSelectedCellAttr('valign', "top");
-        slides.data.setSelectedCellAttr('halign', "");
+        toolbar.fontSizeEl.setState(second)
+        data.setSelectedCellAttr('font-size', second);
         break;
       case FORMAT_DROPDOWN[9].key:
-        slides.data.setSelectedCellAttr('textwrap', true);
+        data.setSelectedCellAttr('align', "left");
+        break;
+      case FORMAT_DROPDOWN[10].key:
+        data.setSelectedCellAttr('align', "center");
+        break;
+      case FORMAT_DROPDOWN[11].key:
+        data.setSelectedCellAttr('align', "right");
+        break;
+      case FORMAT_DROPDOWN[13].key:
+        data.setSelectedCellAttr('valign', "top");
+        break;
+      case FORMAT_DROPDOWN[14].key:
+        data.setSelectedCellAttr('valign', "middle");
+        break;
+      case FORMAT_DROPDOWN[14].key:
+        data.setSelectedCellAttr('valign', "bottom");
+        break;
+      case FORMAT_DROPDOWN[17].key:
+        data.setSelectedCellAttr('textwrap', toolbar.textwrapEl.toggle());
         break;
     }
   }
@@ -73,9 +99,7 @@ const Header = ({ hover, onHover, isOpen, onOpen, color }) => (
     onMouseEnter={onHover}
     onMouseLeave={onHover}
     style={{ color: (hover || isOpen) && color }}
-  >
-    Format
-  </div>
+  >Format</div>
 )
 
 const FormatWithDropdown = withDropdown(Header)

@@ -2,6 +2,9 @@ import React, { useState, useRef, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { Link } from 'react-router-dom'
+import Icon from '@mdi/react';
+import { mdilChevronRight } from '@mdi/light-js'
+// import { mdiMagnify, mdiBrush, mdiMathIntegral } from '@mdi/js'
 import './index.less'
 
 import { OFF_COLOR } from '../../constants/off-color'
@@ -21,10 +24,35 @@ const Toggle = ({ text, onSelect, isOpen }) =>
 		{(isOpen ? 'Hide ' : 'Show ') + text}
 	</div>
 
+const SecondaryMenu = ({ text, items, style, onSelect }) => {
+	const [hover, setHover] = useState(false)
+
+	const handleHover = () => setHover(!hover)
+
+	return (
+		<div className='dropdown'>
+			<div className='dropdown-item' onMouseEnter={handleHover} onMouseLeave={handleHover}>
+				{text}
+				<div className='dropdown-item-arrow'>
+					<Icon path={mdilChevronRight} size={0.9}/>
+				</div>
+			</div>
+			{hover &&
+				<div className='dropdown-content-second' style={style}>
+					{items.map((item, i) =>
+						<Item text={item.pt} onSelect={() => onSelect(text, item.pt)} key={item.pt} />
+					)}
+				</div>
+			}
+		</div>
+	)
+}
+
 const getDropdownStates = (item, i, onSelect, component, isOpen) => ({
 	item: <Item text={item.key} onSelect={onSelect} key={item.key} />,
 	link: <Redirect text={item.key} path={item.path} key={item.key} />,
 	toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} isOpen={isOpen} />,
+	secondarymenu: <SecondaryMenu text={item.key} items={item.options} style={item.style} onSelect={onSelect} key={item.key} />,
 	component: <div key={item.key}>{component}</div>,
 	divider: <hr key={i}/>,
 })
@@ -52,9 +80,9 @@ const withDropdown = Component => (props) => {
 	const handleOpen = () => setIsOpen(!isOpen)
 	const handleHover = () => setHover(!hover)
 
-	const handleSelect = (selection) => {
+	const handleSelect = (selection, second) => {
 		setIsOpen(!isOpen)
-		props.onSelect(selection)
+		props.onSelect(selection, second)
 	}
 
 	return (
@@ -65,6 +93,7 @@ const withDropdown = Component => (props) => {
 				hover={hover}
 				onHover={handleHover}
 				isOpen={isOpen}
+				setIsOpen={setIsOpen}
 				onOpen={handleOpen}
 				color={props.color}
 				style={props.style}
