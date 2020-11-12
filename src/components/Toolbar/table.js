@@ -23,7 +23,7 @@ export const TABLE_DROPDOWN = [
   {key: 'Optimize', type: 'item'},
 ]
 
-const Table = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
+const Table = ({ color, authUser, slides, rightSidebar, onSetRightSidebar }) => {
   const handleTable = key => {
     const { data } = slides
     switch (key) {
@@ -64,9 +64,9 @@ const Table = ({ color, authUser, slides, rightSidebar, setRightSidebar }) => {
 
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
-      setRightSidebar(select)
+      onSetRightSidebar(select)
     } else {
-      setRightSidebar('none')
+      onSetRightSidebar('none')
     }
   }
 
@@ -98,10 +98,16 @@ const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
+  rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+})
+
+const mapDispatchToProps = dispatch => ({
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 })
 
 export default compose(
   connect(
     mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Table)

@@ -17,10 +17,9 @@ import { OFF_COLOR } from '../../constants/off-color'
 import withDropdownModal from '../DropdownModal'
 import charts from '../RightSidebar/chartsR'
 import statistics from '../RightSidebar/statisticsR'
-import { columnToLetter } from '../Spreadsheet/cloudr'
+import { columnToLetter, translateR } from '../Spreadsheet/cloudr'
 import formulas from '../Spreadsheet/cloudr/formula'
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet'
-
 
 const CHART_CATEGORIES = [
   'One Variable',
@@ -62,34 +61,39 @@ const Button = ({ isSelected, onToggle, icon, name }) => {
   )
 }
 
-const Toggle = ({ color, authUser, slides, rightSidebar, setRightSidebar, setStatistic, setSchart }) => {
+const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
+  onSetDataNames, onSetCurrent, onSetRightSidebar, setStatistic, setSchart }) => {
   const handleToggle = select => {
     if (rightSidebar !== select) {
-      setRightSidebar(select)
+      onSetRightSidebar(select)
     } else {
-      setRightSidebar('none')
+      onSetRightSidebar('none')
     }
   }
 
   const handleChart = chart => {
-    // setRightSidebar('charteditor')
+    // onSetRightSidebar('charteditor')
     const i = charts.findIndex(item => item.key === chart)
     // setSchart([i])
     if (slides.data.type === "sheet" || slides.data.type === "input") {
+      const { name } = slides.data
       const { selector } = slides.sheet
       const {
         sri, sci, eri, eci,
       } = selector.range;
       const data = {
-        name: slides.data.name,
-        type: charts[i].type,
-        variablex: columnToLetter(sci) + sri + ":" + columnToLetter(eci) + eri
+        chart: [charts[i].type],
+        datarange: translateR(columnToLetter(sci) + sri + ":" + columnToLetter(eci) + eri, name)
       }
+      const d = slides.insertChart(dataNames, current, data, name)
+      onSetDataNames([...dataNames, d.name])
+      onSetCurrent(current+1)
+      slides.data = d
     }
   }
 
   const handleStatistics = statistic => {
-    setRightSidebar('statistics')
+    onSetRightSidebar('statistics')
     const i = statistics.findIndex(item => item.key === statistic)
 		setStatistic(i)
   }
@@ -153,10 +157,20 @@ const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
+  dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+  current: (state.currentState.current || 0),
+  rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+})
+
+const mapDispatchToProps = dispatch => ({
+  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 })
 
 export default compose(
   connect(
     mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Toggle)

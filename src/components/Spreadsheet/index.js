@@ -86,8 +86,8 @@ class Spreadsheet {
     return d
   }
 
-  addChart() {
-
+  insertChart() {
+    let d = new Chart()
   }
 
   insertData(dataNames, index, o, name) {

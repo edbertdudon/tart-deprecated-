@@ -31,7 +31,8 @@ const ALTERNATIVES = ["two.sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
 const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
 
-const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, statistic, setStatistic }) => {
+const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, current,
+	onSetDataNames, onSetCurrent, onSetRightSidebar, statistic, setStatistic }) => {
 	const [variables, setVariables] = useState([])
 	const [oneWayAnova, setOneWayAnova] = useState('')
 	const [randomizedBlockDesign, setRandomizedBlockDesign] = useState('')
@@ -261,8 +262,11 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 					res.name = statName
 					res.type = "regression"
 					res.regression = sparkData
-					slides.loadData(slides.getData().concat([res]))
-	        setRightSidebar('none')
+					const d = slides.insertData(dataNames, current, res, name)
+					onSetDataNames([...dataNames, d.name])
+					onSetCurrent(current+1)
+					slides.data = d
+					onSetRightSidebar('none')
 					setStatistic(null)
 					setLoading(false)
 				}
@@ -270,7 +274,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, setRightSidebar, 
 	}
 
 	const handleClose = () => {
-		setRightSidebar('none')
+		onSetRightSidebar('none')
 		setStatistic(null)
 		setLoading(false)
 	}
@@ -534,12 +538,21 @@ const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
 	slides: (state.slidesState.slides || {}),
+	dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+	current: (state.currentState.current || 0),
+	rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
 });
 
+const mapDispatchToProps = dispatch => ({
+  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
+})
 
 export default compose(
 	withFirebase,
 	connect(
 		mapStateToProps,
+		mapDispatchToProps,
 	),
 )(StatisticsEditor)

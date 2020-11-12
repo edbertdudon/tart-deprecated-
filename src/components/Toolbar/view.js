@@ -5,7 +5,7 @@ import { compose } from 'recompose'
 import withDropdown from '../Dropdown'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const View = ({ authUser, color, slides, rightSidebar, setRightSidebar, navigator, setNavigator }) => {
+const View = ({ authUser, color, slides, rightSidebar, onSetRightSidebar, navigator, setNavigator }) => {
   const VIEW_DROPDOWN = [
     {key: 'Navigator', type: 'toggle', visibility: navigator},
     {key: 'Chart Editor', type: 'toggle', visibility: rightSidebar === 'charteditor'},
@@ -36,9 +36,9 @@ const View = ({ authUser, color, slides, rightSidebar, setRightSidebar, navigato
 
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
-      setRightSidebar(select)
+      onSetRightSidebar(select)
     } else {
-      setRightSidebar('none')
+      onSetRightSidebar('none')
     }
   }
 
@@ -70,10 +70,16 @@ const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
+  rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+})
+
+const mapDispatchToProps = dispatch => ({
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 })
 
 export default compose(
   connect(
     mapStateToProps,
+    mapDispatchToProps,
   ),
 )(View)

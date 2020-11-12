@@ -26,7 +26,8 @@ import { withFirebase } from '../Firebase'
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, onSetSlides, setSaving, setText }) => {
+const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color,
+	onSetSlides, onSetDataNames, onSetCurrent, setSaving, setText }) => {
 	const firstUpdate = useRef(true)
 
 	useLayoutEffect(() => {
@@ -48,6 +49,9 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color, 
 					}
 				})
 			onSetSlides(s)
+			const dataNames = s.datas.map(data => data.name)
+			onSetDataNames([...dataNames])
+			onSetCurrent(0)
 			console.log(s)
 		// 	if (firstUpdate.current) {
 		// 		firstUpdate.current = false;
@@ -81,10 +85,14 @@ const mapStateToProps = state => ({
 	slides: (state.slidesState.slides || {}),
 	worksheetname: (state.worksheetnameState.worksheetname || ''),
 	color: (state.colorState.colors || {}),
+	dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+	current: (state.currentState.current || 0),
 });
 
 const mapDispatchToProps = dispatch => ({
 	onSetSlides: slides => dispatch({ type: 'SLIDES_SET', slides }),
+	onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+	onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
 })
 
 export default compose(

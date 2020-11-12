@@ -3,7 +3,6 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import XLSX from 'xlsx'
 
-import { getMaxNumberCustomSheet } from '../../functions'
 import ImportConnection from './importconnection'
 import { stox } from '../../functions'
 import { OFF_COLOR } from '../../constants/off-color'
@@ -26,7 +25,7 @@ function papaToSpreadsheet(csv) {
   return o
 }
 
-const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNames, setDataNames, current, setCurrent }) => {
+const Insert = ({ color, authUser, slides, rightSidebar, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar }) => {
 	const [isOpen, setIsOpen] = useState(false)
 	const uploadRef = useRef(null)
 
@@ -41,14 +40,13 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNa
 	]
 
 	const handleInsert = key => {
-    const { data, sheet, sheetIndex } = slides
 		switch(key) {
 			case INSERT_DROPDOWN[0].key:
-        setDataNames([...dataNames, "sheet" + sheetIndex])
-        setCurrent(dataNames.length)
+        onSetDataNames([...dataNames, "sheet" + slides.sheetIndex])
+        onSetCurrent(dataNames.length)
 				const d = slides.addSheet();
-        sheet.resetData(d);
-        data = d
+        slides.sheet.resetData(d);
+        slides.data = d
 				break;
 			case INSERT_DROPDOWN[1].key:
 			  document.getElementById("chartstoggle").click()
@@ -70,9 +68,9 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNa
 
 	const handleToggle = (select) => {
 		if (rightSidebar !== select) {
-			setRightSidebar(select)
+			onSetRightSidebar(select)
 		} else {
-			setRightSidebar('none')
+			onSetRightSidebar('none')
 		}
 	}
 
@@ -111,12 +109,11 @@ const Insert = ({ color, authUser, slides, rightSidebar, setRightSidebar, dataNa
 	}
 
   const insert = (o, name, delimiter, filename) => {
-    let n = getMaxNumberCustomSheet(dataNames, name)
     o.delimiter = delimiter
     o.filename = filename
     const d = slides.insertData(dataNames, current, o, name)
-    setDataNames([...dataNames, d.name])
-    setCurrent(current+1)
+    onSetDataNames([...dataNames, d.name])
+    onSetCurrent(current+1)
     slides.data = d
   }
 
@@ -153,11 +150,21 @@ const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
 	color: (state.colorState.colors || {}),
 	slides: (state.slidesState.slides || {}),
+  dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+  current: (state.currentState.current || 0),
+  rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+})
+
+const mapDispatchToProps = dispatch => ({
+  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 })
 
 export default compose(
 	connect(
 		mapStateToProps,
+    mapDispatchToProps,
 	),
 	withFirebase,
 )(Insert)

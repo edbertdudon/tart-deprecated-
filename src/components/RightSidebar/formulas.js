@@ -7,7 +7,7 @@ import { mdiClose } from '@mdi/js'
 import { formulas } from '../Spreadsheet/cloudr/formula'
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet'
 
-const Formulas = ({ setRightSidebar, slides }) => {
+const Formulas = ({ slides, onSetRightSidebar }) => {
 	const [filteredOption, setFilteredOption] = useState(formulas)
 
 	const handleSelectFunction = formula => {
@@ -24,7 +24,7 @@ const Formulas = ({ setRightSidebar, slides }) => {
 		setFilteredOption(filter)
 	}
 
-	const handleClose = () => setRightSidebar('none')
+	const handleClose = () => onSetRightSidebar('none')
 
 	return (
 		<>
@@ -50,10 +50,16 @@ const Formulas = ({ setRightSidebar, slides }) => {
 
 const mapStateToProps = state => ({
 	slides: (state.slidesState.slides || {}),
+	rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
 });
+
+const mapDispatchToProps = dispatch => ({
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
+})
 
 export default compose(
 	connect(
 		mapStateToProps,
+		mapDispatchToProps,
 	),
 )(Formulas)

@@ -231,6 +231,18 @@ export const doRegression = data => {
 		})
 }
 
+export const doOptimization = data => {
+  return fetchR(data, "optimization")
+    .then(res => res.json())
+    .then(res => {
+      if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
+        return(res)
+      } else {
+        return rToSpreadsheet(res)
+      }
+    })
+}
+
 export const rRender = (src, data, datas, ri, ci) => {
   if (src[0] === '=') {
     return doParse({

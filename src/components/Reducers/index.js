@@ -3,6 +3,9 @@ import sessionReducer from './session'
 import worksheetnameReducer from './worksheetname'
 import filesReducer from './files'
 import slidesReducer from './slides'
+import dataNamesReducer from './datanames'
+import currentReducer from './current'
+import rightSidebarReducer from './rightsidebar'
 import colorReducer from './color'
 import jobsReducer from './jobs'
 import isJobsActiveReducer from './isJobsActive'
@@ -13,6 +16,9 @@ const rootReducer = combineReducers({
   worksheetnameState: worksheetnameReducer,
   filesState: filesReducer,
 	slidesState: slidesReducer,
+  dataNamesState: dataNamesReducer,
+  currentState: currentReducer,
+  rightSidebarState: rightSidebarReducer,
 	colorState: colorReducer,
 	jobsState: jobsReducer,
 	isJobsActiveState: isJobsActiveReducer,

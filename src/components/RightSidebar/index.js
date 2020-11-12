@@ -1,4 +1,8 @@
 import React from 'react';
+import { connect } from 'react-redux'
+import { compose } from 'recompose'
+import './index.less'
+
 import Connections from './connections'
 import Charts from './charts'
 import ChartEditor from './charteditor'
@@ -6,14 +10,13 @@ import Statistics from './statistics'
 import StatisticsEdtior from './StatisticsEditor'
 import Optimize from './Optimize'
 import Formulas from './formulas'
-import './index.less'
 
-const RightSidebar = ({ rightSidebar, setRightSidebar, statistic, setStatistic, schart, setSchart }) => {
+const RightSidebar = ({ rightSidebar, statistic, setStatistic, schart, setSchart }) => {
   const RIGHTSIDEBAR_STATES = {
-    charteditor: <ChartEditor setRightSidebar={setRightSidebar} schart={schart} setSchart={setSchart} />,
-    statistics: <StatisticsEdtior setRightSidebar={setRightSidebar} statistic={statistic} setStatistic={setStatistic} />,
-    optimize: <Optimize setRightSidebar={setRightSidebar} />,
-    formulas: <Formulas setRightSidebar={setRightSidebar} />
+    charteditor: <ChartEditor schart={schart} setSchart={setSchart} />,
+    statistics: <StatisticsEdtior statistic={statistic} setStatistic={setStatistic} />,
+    optimize: <Optimize />,
+    formulas: <Formulas />
   }
 
   return (
@@ -22,4 +25,14 @@ const RightSidebar = ({ rightSidebar, setRightSidebar, statistic, setStatistic, 
     </div>
   )
 }
-export default RightSidebar;
+
+const mapStateToProps = state => ({
+  rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+})
+
+
+export default compose(
+	connect(
+		mapStateToProps,
+	),
+)(RightSidebar)

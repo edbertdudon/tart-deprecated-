@@ -22,7 +22,7 @@ import Lconstraint from './lconstraint'
 import Variable from '../StatisticsEditor/Variable'
 import withListsDropdown from '../withListsDropdown'
 import withLists from '../withLists'
-import { letterToColumn, columnToLetter, spreadsheetToR, translateR } from '../../Spreadsheet/cloudr'
+import { letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR } from '../../Spreadsheet/cloudr'
 import { withFirebase } from '../../Firebase'
 
 const OBJECTIVE_CLASS = ["General nonlinear optimization", "Linear programming", "Quadratic programming"]
@@ -47,13 +47,35 @@ const SOLVER_STATES = [
 	// General
 	["optimx", "nloptr"],
 	// Linear
-	["lpSolve"],
+	["lpsolve", "glpk"],
 	// Quadratic
 	["quadprog", "qpoases"],
-	// Conic
-	[],
 ]
 
+const SOLVER_CONSTRAINTS = [
+	// General
+	["nloptr"],
+	// Bound
+	["optimx"],
+	// Linear
+	["lpsolve", "glpk", "quadprog", "qpoases"],
+	// Qudaratic
+	[],
+	// Zero cone
+	[],
+	// Linear cone
+	[],
+	// Second-order cone
+	[],
+	// Exponential cone
+	[],
+	// 3-dimensional primal power cone
+	[],
+	// 2-dimensional primal power cone
+	[],
+	// Positive semidefinite cone
+	[],
+]
 
 const OPTIMX_METHODS = [
   'Nelder-mead', 'L-BFGS-B', 'BFGS', 'CG', 'nlm', 'nlminb', 'spg', 'ucminf', 'newuoa', 'bobyqa', 'nmkb', 'hjkb', 'Rcgmin', 'Rvmmin'
@@ -136,7 +158,7 @@ export const validateCellText = (v, slides, check) => {
   return(null)
 }
 
-const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
+const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar }) => {
 	const [objective, setObjective] = useState('')
 	const [quadratic, setQuadratic] = useState('')
 	const [linear, setLinear] = useState('')
@@ -234,19 +256,18 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	const handleAddConstraint = i =>
 		setConstraints(constraints.filter(constraint => constraint !== constraints[i]))
 
-	const handleRemoveConstraint = index =>
-		setConstraints(
-			constraints.map(c => CONSTRAINTS_TYPE.indexOf(c))
-				.concat(index)
-				.sort()
-				.map(c => CONSTRAINTS_TYPE[c])
-		)
+	const handleRemoveConstraint = index => setConstraints(
+		constraints.map(c => CONSTRAINTS_TYPE.indexOf(c))
+			.concat(index)
+			.sort((a,b) => a-b)
+			.map(c => CONSTRAINTS_TYPE[c])
+	)
 
 	const handleUpdateSolver = i => setSolver(i)
 
 	const handleSubmit = () => {
 		setLoading(true)
-		let name = slides.data.name
+		const { name } = slides.data
 		let sparkData = {
 			objective: translateR(objective || 'na', name),
 			quadratic: translateR(quadratic || 'na', name),
@@ -256,15 +277,13 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			isMaximum: minMax === 0 ? "minimum" : "maximum",
 			objectiveClass: objectiveClass,
 			decision: translateR(decision || 'na', name),
-			constraints: CONSTRAINTS_TYPE.filter((constraint) =>
-				constraints.every(c => constraint !== c)),
 			flhs: translateR(flhs || 'na', name),
 			fdir: translateR(fdir || 'na', name),
 			frhs: translateR(frhs || 'na', name),
 			jacobian: translateR(jacobian || 'na', name),
-			blhs: translateR(lower || 'na', name),
-			bdir: translateR(select || 'na', name),
-			brhs: translateR(upper || 'na', name),
+			blhs: translateR(blhs || 'na', name),
+			bdir: translateR(bdir || 'na', name),
+			brhs: translateR(brhs || 'na', name),
 			lowerindex: translateR(li || 'na', name),
 			lowerbound: translateR(lb || 'na', name),
 			upperindex: translateR(ui || 'na', name),
@@ -307,23 +326,27 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			names: JSON.stringify(slides.datas.map(data => data.name))
 		}
 		console.log(sparkData)
-		// console.log(JSON.stringify(spreadsheetToR(slides.datas)))
-		// firebase.doOptimization(optimizationData)
-		// 	.then(res => {
-		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
-		// 			setError(res)
-		// 			setLoading(false)
-		// 		} else {
-		// 			dispatchSlides({function:'OPTIMIZE', data: jsonToSlides(res), optimization: sparkData, type:"optimize"})
-		// 	        setCurrentSlide(currentSlide+1)
-		// 			setRightSidebar('none')
-		// 			setLoading(false)
-		// 		}
-		// 	})
+		console.log(JSON.stringify(spreadsheetToR(slides.datas)))
+		doOptimization(optimizationData)
+			.then(res => {
+				if (typeof res[0] === "string" || res[0] instanceof String) {
+					setError(res)
+					setLoading(false)
+				} else {
+					res.type = "optimize"
+					res.optimization = sparkData
+					const d = slides.insertData(dataNames, current, res, name)
+					onSetDataNames([...dataNames, d.name])
+					onSetCurrent(current+1)
+					slides.data = d
+					onSetRightSidebar('none')
+					setLoading(false)
+				}
+			})
 	}
 
 	const handleClose = () => {
-		setRightSidebar('none')
+		onSetRightSidebar('none')
 		setLoading(false)
 	}
 
@@ -355,6 +378,18 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			setError={setErrorQuadratic}
 		/>
 	}
+
+	const filteredOptions = SOLVER_STATES[objectiveClass].filter(option => {
+		const list = CONSTRAINTS_TYPE.filter(c => !constraints.includes(c))
+			.map(c => CONSTRAINTS_TYPE.indexOf(c))
+
+		for (let i=0; i<list.length; i++) {
+			if (SOLVER_CONSTRAINTS[list[i]].includes(option)) {
+				console.log(option)
+				return option
+			}
+		}
+	})
 
 	const isEmptyObjective = {
 		0: objective === '' || decision === '',
@@ -433,7 +468,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					lhs={blhs} setLhs={setBlhs}
 					dir={bdir} setDir={setBdir}
 					rhs={brhs} setRhs={setBrhs}
-					li={li} setLi={setli}
+					li={li} setLi={setLi}
 					lb={lb} setLb={setLb}
 					ui={ui} setUi={setUi}
 					ub={ub} setUb={setUb}
@@ -480,7 +515,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setC0cone}
 					rhs={c0rhs}
 					setRhs={setC0rhs}
-					type={CONSTRAINTS_TYPE[3]}
+					type={CONSTRAINTS_TYPE[4]}
 					onClose={() => handleRemoveConstraint(4)}
 					error={error0cone}
 					setError={setError0cone}
@@ -494,7 +529,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setlcone}
 					rhs={clrhs}
 					setRhs={setClrhs}
-					type={CONSTRAINTS_TYPE[4]}
+					type={CONSTRAINTS_TYPE[5]}
 					onClose={() => handleRemoveConstraint(5)}
 					error={errorLcone}
 					setError={setErrorLcone}
@@ -508,7 +543,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setSocone}
 					rhs={csorhs}
 					setRhs={setCsorhs}
-					type={CONSTRAINTS_TYPE[5]}
+					type={CONSTRAINTS_TYPE[6]}
 					onClose={() => handleRemoveConstraint(6)}
 					error={errorSocone}
 					setError={setErrorSocone}
@@ -522,7 +557,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setExcone}
 					rhs={cexrhs}
 					setRhs={setCexrhs}
-					type={CONSTRAINTS_TYPE[6]}
+					type={CONSTRAINTS_TYPE[7]}
 					onClose={() => handleRemoveConstraint(7)}
 					error={errorEcone}
 					setError={setErrorEcone}
@@ -536,7 +571,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setPpcone}
 					rhs={cpprhs}
 					setRhs={setCpprhs}
-					type={CONSTRAINTS_TYPE[7]}
+					type={CONSTRAINTS_TYPE[8]}
 					onClose={() => handleRemoveConstraint(8)}
 					error={error3cone}
 					setError={setError3cone}
@@ -550,7 +585,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setPdcone}
 					rhs={cpdrhs}
 					setRhs={setCpdrhs}
-					type={CONSTRAINTS_TYPE[8]}
+					type={CONSTRAINTS_TYPE[9]}
 					onClose={() => handleRemoveConstraint(9)}
 					error={error2cone}
 					setError={setError2cone}
@@ -564,7 +599,7 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 					// setCone={setPsdcone}
 					rhs={cpsdrhs}
 					setRhs={setCpsdrhs}
-					type={CONSTRAINTS_TYPE[9]}
+					type={CONSTRAINTS_TYPE[10]}
 					onClose={() => handleRemoveConstraint(10)}
 					error={errorPsdcone}
 					setError={setErrorPsdcone}
@@ -575,21 +610,21 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 			<Variable
 				label="Solver"
 				onChange={handleUpdateSolver}
-				options={SOLVER_STATES[objectiveClass]}
-				name={SOLVER_STATES[objectiveClass][solver]}
+				options={filteredOptions}
+				name={filteredOptions[0]}
 			/>
 			<div className='rightsidebar-text'>
         {error && <div className='rightsidebar-error'>{error}</div>}
       </div>
 			<div className='rightsidebar-subtext'>
-				Each cell reference reprsents a single value in a matrix. A 1x3 matrix with values (1,2,3) in cells (A1,A2,A3) has cell reference: A1:A3 or A1:A2,A3.
+				Each cell reference reprsents a single value in a matrix. A 1x3 matrix with values (1,2,3) in cells (A1,A2,A3) has cell reference: A1:A3.
 			</div>
 			{loading
 				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin/></div>
 				: <input
-						disabled={isEmptyObjective || isError}
+						disabled={isEmptyObjective[objectiveClass] || isError}
 						type="submit"
-						style={{ color : isEmptyObjective[objectiveClass] ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
+						style={{ color : isEmptyObjective[objectiveClass] || isError ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
 						onClick={handleSubmit}
 						className='rightsidebar-submit'
 					/>
@@ -598,19 +633,29 @@ const Optimize = ({ firebase, slides, authUser, color, setRightSidebar }) => {
 	)
 }
 
+const Options = ({ option }) => option
+const OptionsWithLists = withLists(Options)
+const OptionsWithListsDropdown = withListsDropdown(Options)
+
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
 	slides: (state.slidesState.slides || {}),
 	color: (state.colorState.colors || {}),
+	dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+	current: (state.currentState.current || 0),
+	rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
 });
 
-const Options = ({ option }) => option
-const OptionsWithLists = withLists(Options)
-const OptionsWithListsDropdown = withListsDropdown(Options)
+const mapDispatchToProps = dispatch => ({
+  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
+  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
+})
 
 export default compose(
 	withFirebase,
 	connect(
 		mapStateToProps,
+		mapDispatchToProps,
 	),
 )(Optimize)

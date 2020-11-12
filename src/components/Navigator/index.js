@@ -46,12 +46,12 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, setCurrent }) => {
+const Navigator = ({ slides, color, authUser, dataNames, current, onSetDataNames, onSetCurrent }) => {
 	const handleDropdown = (key, index) => {
 		switch(key) {
 			case NAVIGATOR_DROPDOWN[0].key:
-				setDataNames([...dataNames, "sheet" + slides.sheetIndex])
-				setCurrent(dataNames.length)
+				onSetDataNames([...dataNames, "sheet" + slides.sheetIndex])
+				onSetCurrent(dataNames.length)
 				var d = slides.addSheet();
 				slides.sheet.resetData(d);
 				slides.data = d
@@ -82,9 +82,9 @@ const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, 
 
 	const handleDelete = index => {
 		if (dataNames.length > 1) {
-			setDataNames(dataNames.filter((n,i) => index !== i))
+			onSetDataNames(dataNames.filter((n,i) => index !== i))
 			if (current === index) {
-				setCurrent(current-1)
+				onSetCurrent(current-1)
 				const d = slides.datas[index-1];
 				slides.data = d
 				slides.deleteSheet(index, index-1)
@@ -95,12 +95,12 @@ const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, 
 	}
 
 	const paste = (d, index) => {
-		setDataNames([
+		onSetDataNames([
 			...dataNames.slice(0,index+1),
 			d.name,
 			...dataNames.slice(index+1,dataNames.length)
 		])
-		setCurrent(index+1)
+		onSetCurrent(index+1)
 		slides.data = d
 	}
 
@@ -109,13 +109,13 @@ const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, 
 			const d = slides.datas[index];
 			slides.sheet.resetData(d);
 			slides.data = d
-			setCurrent(index)
+			onSetCurrent(index)
 		}
 	}
 
 	const handleSlidename = (name, index) => {
 		slides.datas[index].name = name;
-		setDataNames(dataNames.map((item, index) => {
+		onSetDataNames(dataNames.map((item, index) => {
       if (index === current) {
         return name
       } else {
@@ -132,11 +132,11 @@ const Navigator = ({ slides, color, authUser, dataNames, setDataNames, current, 
 			result.source.index,
 			result.destination.index
 		);
-		setDataNames(dn)
+		onSetDataNames(dn)
 		if (result.source.index === current) {
-			setCurrent(result.destination.index)
+			onSetCurrent(result.destination.index)
 		} else {
-			setCurrent(result.source.index)
+			onSetCurrent(result.source.index)
 		}
 	}
 
@@ -198,10 +198,19 @@ const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
   slides: (state.slidesState.slides || {}),
 	color: (state.colorState.colors || {}),
+	dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+	current: (state.currentState.current || 0),
 })
+
+const mapDispatchToProps = dispatch => ({
+  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
+})
+
 
 export default compose(
   connect(
     mapStateToProps,
+		mapDispatchToProps,
   ),
 )(Navigator)

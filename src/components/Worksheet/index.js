@@ -17,39 +17,20 @@ import RightSidebar from '../RightSidebar'
 import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
 
 const Worksheet = () => {
-	const [dataNames, setDataNames] = useState(["sheet1"])
-	const [current, setCurrent] = useState(0)
 	const [text, setText] = useState({ text: '', ri: 0, ci: 0 })
 	const [saving, setSaving] = useState(false)
 	const [navigator, setNavigator] = useState(true)
-	const [rightSidebar, setRightSidebar] = useState('none')
 	const [statistic, setStatistic] = useState(null)
 	const [schart, setSchart] = useState([])
 
 	return (
  		<div className='worksheet' onContextMenu={e => {e.preventDefault(); return false;}}>
 			<Header saving={saving} setSaving={setSaving} />
-			<Toolbar
-				rightSidebar={rightSidebar}
-				setRightSidebar={setRightSidebar}
-				navigator={navigator}
-				setNavigator={setNavigator}
-				dataNames={dataNames}
-				setDataNames={setDataNames}
-				current={current}
-				setCurrent={setCurrent}
-			/>
-			<Toggle rightSidebar={rightSidebar} setRightSidebar={setRightSidebar} setStatistic={setStatistic} setSchart={setSchart} />
+			<Toolbar navigator={navigator} setNavigator={setNavigator} />
+			<Toggle setStatistic={setStatistic} setSchart={setSchart} />
 			<Formulabar text={text} />
-			{navigator && <Navigator dataNames={dataNames} setDataNames={setDataNames} current={current} setCurrent={setCurrent} />}
-			<RightSidebar
-				rightSidebar={rightSidebar}
-				setRightSidebar={setRightSidebar}
-				statistic={statistic}
-				setStatistic={setStatistic}
-				schart={schart}
-				setSchart={setSchart}
-			/>
+			{navigator && <Navigator />}
+			<RightSidebar statistic={statistic} setStatistic={setStatistic} schart={schart} setSchart={setSchart} />
 			<SpreadsheetWrapper setSaving={setSaving} setText={setText} />
 		</div>
 	)

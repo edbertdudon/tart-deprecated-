@@ -38,7 +38,8 @@ const LEVELS_STATES = [
 	'connections', 'databases', 'tables'
 ]
 
-const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, onSelect }) => {
+const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, onSelect,
+ 	dataNames, current, onSetDataNames, onSetCurrent }) => {
 	const [loading, setLoading] = useState(false)
 	const [level, setLevel] = useState(0)
 	const [connections, setConnections] = useState({})
@@ -185,30 +186,37 @@ const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, o
 				out.connection = config.host + "." + config.port
 				out.database = config.database
 				out.fileName = table
-				out.name = table.split('.').slice(0, -1).join('.') + tablenumber
-				slides.loadData(slides.getData().concat([out]))
+				const name = table.split('.').slice(0, -1).join('.') + tablenumber
+				insert(out, name)
 			} else if (config.connector === 'Microsoft SQL Server') {
 				let out = mysqlToSpreadsheet(res)
 				out.delimiter = "SQLServer"
 				out.connection = config.host + "." + config.port
 				out.database = config.database
 				out.fileName = table
-				out.name = table.split('.').slice(0, -1).join('.') + tablenumber
-				slides.loadData(slides.getData().concat([out]))
+				const name = table.split('.').slice(0, -1).join('.') + tablenumber
+				insert(out, name)
 			} else if (config.connector === 'Oracle SQL') {
 				let out = oracledbToSpreadsheet(res)
 				out.delimiter = "OracleDB"
 				out.connection = config.host + "." + config.port
 				out.database = config.database
 				out.fileName = table
-				out.name = table.split('.').slice(0, -1).join('.') + tablenumber
-				slides.loadData(slides.getData().concat([out]))
+				const name = table.split('.').slice(0, -1).join('.') + tablenumber
+				insert(out, name)
 			}
 			onSelect()
 			handleClose()
 			setLevel(0)
 			setLoading(false)
 		})
+	}
+
+	const insert = (out, name) => {
+		const d = slides.insertData(dataNames, current, out, name)
+		onSetDataNames([...dataNames, d.name])
+		onSetCurrent(current+1)
+		slides.data = d
 	}
 
 	// const isInvalid = false
@@ -286,11 +294,19 @@ const mapStateToProps = state => ({
 	color: (state.colorState.colors || {}),
 	slides: (state.slidesState.slides || {}),
 	files: (state.filesState.files || {}),
+	dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+	current: (state.currentState.current || 0),
+})
+
+const mapDispatchToProps = dispatch => ({
+  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
 })
 
 export default compose(
 	withFirebase,
 	connect(
 		mapStateToProps,
+		mapDispatchToProps,
 	)
 )(ImportConnection)
