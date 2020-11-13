@@ -219,6 +219,16 @@ const doParse = (obj, data, ri, ci) => {
   })
 }
 
+export const doChart = data => {
+  return fetchR(data, "plot")
+    .then(res => res.arrayBuffer())
+    .then(buffer => {
+      var base64Flag = 'data:image/jpeg;base64,';
+      var imageStr = arrayBufferToBase64(buffer);
+      return(base64Flag + imageStr)
+    })
+}
+
 export const doRegression = data => {
   return fetchR(data, "regression")
 		.then(res => res.json())

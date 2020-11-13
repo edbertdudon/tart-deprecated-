@@ -214,8 +214,12 @@ const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, o
 
 	const insert = (out, name) => {
 		const d = slides.insertData(dataNames, current, out, name)
-		onSetDataNames([...dataNames, d.name])
-		onSetCurrent(current+1)
+    onSetDataNames([
+      ...dataNames.slice(0, current+1),
+      d.name,
+      ...dataNames.slice(current+1)
+    ])
+    onSetCurrent(current+1)
 		slides.data = d
 	}
 

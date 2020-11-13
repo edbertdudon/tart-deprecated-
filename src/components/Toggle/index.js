@@ -82,11 +82,15 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
         sri, sci, eri, eci,
       } = selector.range;
       const data = {
-        chart: [charts[i].type],
+        charts: [charts[i].type],
         datarange: translateR(columnToLetter(sci) + sri + ":" + columnToLetter(eci) + eri, name)
       }
       const d = slides.insertChart(dataNames, current, data, name)
-      onSetDataNames([...dataNames, d.name])
+      onSetDataNames([
+        ...dataNames.slice(0, current+1),
+        d.name,
+        ...dataNames.slice(current+1)
+      ])
       onSetCurrent(current+1)
       slides.data = d
     }

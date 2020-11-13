@@ -263,7 +263,11 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					res.type = "regression"
 					res.regression = sparkData
 					const d = slides.insertData(dataNames, current, res, name)
-					onSetDataNames([...dataNames, d.name])
+					onSetDataNames([
+			      ...dataNames.slice(0, current+1),
+			      d.name,
+			      ...dataNames.slice(current+1)
+			    ])
 					onSetCurrent(current+1)
 					slides.data = d
 					onSetRightSidebar('none')

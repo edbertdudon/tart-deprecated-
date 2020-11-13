@@ -44,13 +44,17 @@ class Spreadsheet {
     // rootEl.child(this.bottombar.el);
   }
 
-  addSheet(name, active = true) {
+  addSheet(name, active = true, current) {
     const n = name || `sheet${this.sheetIndex}`;
     const d = new DataProxy(n, this.options);
     d.change = (...args) => {
       this.sheet.trigger('change', ...args);
     };
-    this.datas.push(d);
+    if (current == undefined) {
+      this.datas.push(d);
+    } else {
+      this.datas.splice(current+1, 0, d)
+    }
     // console.log('d:', n, d, this.datas);
     // this.bottombar.addItem(n, active, this.options.style.offcolor);
     this.sheetIndex += 1;
@@ -86,11 +90,20 @@ class Spreadsheet {
     return d
   }
 
-  insertChart() {
-    let d = new Chart()
+  insertChart(dataNames, current, o, name) {
+    let n = getMaxNumberCustomSheet(dataNames, name)
+    if (n !== 1) {
+      name = name + ' ' + n
+    }
+    let d = new Chart(name)
+    d.setData(o)
+    this.datas.splice(current+1, 0, d)
+    this.sheetIndex = current + 1
+    this.sheet.resetData(d)
+    return d
   }
 
-  insertData(dataNames, index, o, name) {
+  insertData(dataNames, current, o, name) {
     let d = new DataProxy('temp', this.options)
     d.setData(o)
     let n = getMaxNumberCustomSheet(dataNames, name)
@@ -98,8 +111,8 @@ class Spreadsheet {
       name = name + ' ' + n
     }
     d.name = name
-    this.datas.splice(index+1, 0, d)
-    this.sheetIndex = index + 1
+    this.datas.splice(current+1, 0, d)
+    this.sheetIndex = current + 1
     this.sheet.resetData(d)
     return d
   }

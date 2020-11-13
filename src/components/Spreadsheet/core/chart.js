@@ -1,6 +1,10 @@
 export default class Chart {
-  constructor(name, settings) {
+  constructor(name) {
     this.name = name || 'chart';
     this.type = "chart";
+  }
+
+  setData(d) {
+    // doChart()
   }
 }

@@ -42,10 +42,14 @@ const Insert = ({ color, authUser, slides, rightSidebar, dataNames, current, onS
 	const handleInsert = key => {
 		switch(key) {
 			case INSERT_DROPDOWN[0].key:
-        onSetDataNames([...dataNames, "sheet" + slides.sheetIndex])
-        onSetCurrent(dataNames.length)
-				const d = slides.addSheet();
+        var d = slides.addSheet(undefined, undefined, current);
         slides.sheet.resetData(d);
+        onSetDataNames([
+          ...dataNames.slice(0, current+1),
+          d.name,
+          ...dataNames.slice(current+1)
+        ])
+        onSetCurrent(current+1)
         slides.data = d
 				break;
 			case INSERT_DROPDOWN[1].key:
@@ -112,7 +116,11 @@ const Insert = ({ color, authUser, slides, rightSidebar, dataNames, current, onS
     o.delimiter = delimiter
     o.filename = filename
     const d = slides.insertData(dataNames, current, o, name)
-    onSetDataNames([...dataNames, d.name])
+    onSetDataNames([
+      ...dataNames.slice(0, current+1),
+      d.name,
+      ...dataNames.slice(current+1)
+    ])
     onSetCurrent(current+1)
     slides.data = d
   }
