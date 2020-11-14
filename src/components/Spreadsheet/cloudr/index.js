@@ -90,17 +90,15 @@ export function translateR(cell, name) {
   let coordinates = cell.replace(/'/g, "`")
   for (var i=0; i<match.length; i++) {
     // R reads 1:1 as first number in row and column
-    // let column = match[i].toLowerCase().charCodeAt(0) - 96
-    // let row = match[i].charAt(1) - 1
     let column = letterToColumn(match[i].match(LETTERS_REFERENCE)[0])
     let row = match[i].match(NUMBERS_REFERENCE)
-    if (row != null) {row = row[0] - 1 } else {row = NaN}
+    // if (row != null) {row = row[0] - 1} else {row = NaN}
+    if (row != null) {row = row[0]} else {row = NaN}
     if (i !== match.length-1) {
-      // let column2 = match[i+1].toLowerCase().charCodeAt(0) - 96
-      // let row2 = match[i+1].charAt(1) - 1
       let column2 = letterToColumn(match[i+1].match(LETTERS_REFERENCE)[0])
       let row2 = match[i+1].match(NUMBERS_REFERENCE)
-      if (row2 != null) {row2 = row2[0] - 1 } else {row2 = NaN}
+      // if (row2 != null) {row2 = row2[0] - 1} else {row2 = NaN}
+      if (row2 != null) {row2 = row2[0]} else {row2 = NaN}
       if (!/\d/.test(match[i])) {
         // Check for Sheet1!B:B and replace with Sheet1[,2:2]
         let ref5 = '[,' + column + ':' + column2 + ']'
@@ -219,7 +217,7 @@ const doParse = (obj, data, ri, ci) => {
   })
 }
 
-export const doChart = data => {
+const doChart = data => {
   return fetchR(data, "plot")
     .then(res => res.arrayBuffer())
     .then(buffer => {

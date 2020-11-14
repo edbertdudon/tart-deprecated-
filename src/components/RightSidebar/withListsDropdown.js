@@ -11,7 +11,7 @@ const withListsDropdown = Component => (props) => {
   const [showOptions, setShowOptions] = useState(false)
   const [activeOption, setActiveOption] = useState(null)
   const wrapperRef = useRef(null)
-	
+
   const useOutsideAlerter = (ref) => {
     const handleOutsideClick = (event) => {
       if (ref.current && !ref.current.contains(event.target)) {
@@ -71,7 +71,6 @@ const withListsDropdown = Component => (props) => {
   					items={OPTIONS_DROPDOWN}
   					onSelect={handleDelete}
   					style={{marginLeft:"76px", marginTop: "10px"}}
-  					classname='rightsidebar-dropdown-rightclick'
           />
         </div>
       </ContextMenuTrigger>

@@ -397,8 +397,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 
 	const isEmptyObjective = {
 		0: objective === '' || decision === '',
-		1: quadratic === '',
-		2: linear === '',
+		1: linear === '',
+		2: quadratic === '',
 	}
 
 	const isError = errorGeneral !== null

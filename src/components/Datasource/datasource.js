@@ -172,7 +172,6 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 						text={<Icon path={mdiDotsHorizontal} size={0.9} />}
 						items={DATASOURCE_DROPDOWN}
 						onSelect={handleDropdown}
-						classname='datasource-options'
 						color={OFF_COLOR[color[authUser.uid]]}
 						style={{ left: "13px" }}
 					/>
@@ -189,16 +188,14 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 	)
 }
 
-const Option = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
+const Option = ({ text, hover, onHover, isOpen, onOpen, color }) => (
 	<div
-		className={classname}
+		className='datasource-options'
 		onClick={onOpen}
 		onMouseEnter={onHover}
 		onMouseLeave={onHover}
 		style={{ backgroundColor: hover && color }}
-	>
-		{text}
-	</div>
+	>{text}</div>
 )
 
 const OptionWithDropdown = withDropdown(Option)

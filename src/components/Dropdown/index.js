@@ -1,46 +1,82 @@
 import React, { useState, useRef, useEffect } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
 import { Link } from 'react-router-dom'
 import Icon from '@mdi/react';
-import { mdilChevronRight } from '@mdi/light-js'
-// import { mdiMagnify, mdiBrush, mdiMathIntegral } from '@mdi/js'
+import { mdiChevronRight } from '@mdi/js'
 import './index.less'
 
-import { OFF_COLOR } from '../../constants/off-color'
-
-const Item = ({ text, onSelect }) =>
-	<div className='dropdown-item' onClick={() => onSelect(text)}>
-		{text}
-	</div>
-
-const Redirect = ({ path, text }) =>
-	<Link to={{ pathname: path }} className='dropdown-item'>
-		{text}
-	</Link>
-
-const Toggle = ({ text, onSelect, isOpen }) =>
-	<div className='dropdown-item' onClick={() => onSelect(text)}>
-		{(isOpen ? 'Hide ' : 'Show ') + text}
-	</div>
-
-const SecondaryMenu = ({ text, items, style, onSelect }) => {
+const Item = ({ text, onSelect, color }) => {
 	const [hover, setHover] = useState(false)
 
 	const handleHover = () => setHover(!hover)
 
 	return (
-		<div className='dropdown'>
-			<div className='dropdown-item' onMouseEnter={handleHover} onMouseLeave={handleHover}>
+		<div
+			className='dropdown-item'
+			onClick={() => onSelect(text)}
+			onMouseEnter={handleHover}
+			onMouseLeave={handleHover}
+			style={{ backgroundColor: hover && color, color: hover ? "#fff" : "#000000" }}
+		>{text}</div>
+	)
+}
+
+const Redirect = ({ path, text, color }) => {
+	const [hover, setHover] = useState(false)
+
+	const handleHover = () => setHover(!hover)
+
+	return (
+		<Link
+			to={{ pathname: path }}
+			className='dropdown-item'
+			onMouseEnter={handleHover}
+			onMouseLeave={handleHover}
+			style={{ backgroundColor: hover && color, color: hover ? "#fff" : "#000000" }}
+		>{text}</Link>
+	)
+}
+
+const Toggle = ({ text, onSelect, isOpen, color }) => {
+	const [hover, setHover] = useState(false)
+
+	const handleHover = () => setHover(!hover)
+
+	return (
+		<div
+			className='dropdown-item'
+			onClick={() => onSelect(text)}
+			onMouseEnter={handleHover}
+			onMouseLeave={handleHover}
+			style={{ backgroundColor: hover && color, color: hover ? "#fff" : "#000000" }}
+		>{(isOpen ? 'Hide ' : 'Show ') + text}</div>
+	)
+}
+
+const SecondaryMenu = ({ text, items, style, onSelect, color }) => {
+	const [hover, setHover] = useState(false)
+	const [hoverFirst, setHoverFirst] = useState(false)
+
+	const handleHover = () => setHover(!hover)
+
+	const handleHoverFirst = () => setHoverFirst(!hoverFirst)
+
+	return (
+		<div className='dropdown' onMouseEnter={handleHover} onMouseLeave={handleHover}>
+			<div
+				className='dropdown-item'
+				onMouseEnter={handleHoverFirst}
+				onMouseLeave={handleHoverFirst}
+				style={{ backgroundColor: hover && (hoverFirst ? color : "rgba(0, 0, 0, 0.05)"), color: hoverFirst ? "#fff" : "#000000" }}
+			>
 				{text}
 				<div className='dropdown-item-arrow'>
-					<Icon path={mdilChevronRight} size={0.9}/>
+					<Icon path={mdiChevronRight} size={0.9}/>
 				</div>
 			</div>
 			{hover &&
 				<div className='dropdown-content-second' style={style}>
 					{items.map((item, i) =>
-						<Item text={item.pt} onSelect={() => onSelect(text, item.pt)} key={item.pt} />
+						<Item text={item.pt} onSelect={() => onSelect(text, item.pt)} color={color} key={item.pt} />
 					)}
 				</div>
 			}
@@ -48,13 +84,20 @@ const SecondaryMenu = ({ text, items, style, onSelect }) => {
 	)
 }
 
-const getDropdownStates = (item, i, onSelect, component, isOpen) => ({
-	item: <Item text={item.key} onSelect={onSelect} key={item.key} />,
-	link: <Redirect text={item.key} path={item.path} key={item.key} />,
-	toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} isOpen={isOpen} />,
-	secondarymenu: <SecondaryMenu text={item.key} items={item.options} style={item.style} onSelect={onSelect} key={item.key} />,
+const getDropdownStates = (item, i, onSelect, color, component, isOpen) => ({
+	item: <Item text={item.key} onSelect={onSelect} key={item.key} color={color} />,
+	link: <Redirect text={item.key} path={item.path} key={item.key} color={color} />,
+	toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} isOpen={isOpen} color={color} />,
+	secondarymenu: <SecondaryMenu
+		text={item.key}
+		items={item.options}
+		style={item.style}
+		onSelect={onSelect}
+		color={color}
+		key={item.key}
+	/>,
 	component: <div key={item.key}>{component}</div>,
-	divider: <hr key={i}/>,
+	divider: <hr key={i} />,
 })
 
 const withDropdown = Component => (props) => {
@@ -88,7 +131,6 @@ const withDropdown = Component => (props) => {
 	return (
 		<div className='dropdown' ref={wrapperRef}>
 			<Component
-				classname={props.classname}
 				text={props.text}
 				hover={hover}
 				onHover={handleHover}
@@ -101,7 +143,7 @@ const withDropdown = Component => (props) => {
 			{isOpen &&
 				<div className='dropdown-content' style={props.style}>
 					{props.items.map((item, i) =>
-						getDropdownStates(item, i, handleSelect, item.component, item.visibility)[item.type]
+						getDropdownStates(item, i, handleSelect, props.color, item.component, item.visibility)[item.type]
 					)}
 				</div>
 			}

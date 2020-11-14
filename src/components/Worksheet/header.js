@@ -43,7 +43,6 @@ const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSet
 					items={USER_DROPDOWN}
 					onSelect={handleDropdown}
 					style={{right:"10px"}}
-					classname='worksheet-header-dropdown-header'
 					color={OFF_COLOR[color[authUser.uid]]}
 				/>
 			</div>
@@ -64,7 +63,7 @@ const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSet
 
 const User = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
 	<div
-		className={classname}
+		className='worksheet-header-dropdown-header'
 		onClick={onOpen}
 		onMouseEnter={onHover}
 		onMouseLeave={onHover}

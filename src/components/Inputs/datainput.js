@@ -51,7 +51,6 @@ const DataInput = ({ firebase, authUser, color, filename, onReload }) => {
 						text={<Icon path={mdiDotsHorizontal} size={0.9} />}
 						items={DATASOURCE_DROPDOWN}
 						onSelect={handleTrash}
-						classname='datasource-options-only'
 						color={OFF_COLOR[color[authUser.uid]]}
 						style={{ left: "13px" }}
 					/>
@@ -63,9 +62,9 @@ const DataInput = ({ firebase, authUser, color, filename, onReload }) => {
 	)
 }
 
-const Option = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
+const Option = ({ text, hover, onHover, isOpen, onOpen, color }) => (
 	<div
-		className={classname}
+		className='datasource-options-only'
 		onClick={onOpen}
 		onMouseEnter={onHover}
 		onMouseLeave={onHover}

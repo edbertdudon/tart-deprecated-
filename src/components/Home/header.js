@@ -17,9 +17,8 @@ const USER_DROPDOWN = [
 ]
 
 const Header = ({ firebase, authUser, color, notifications, setNotifications }) => {
-
+	console.log(notifications)
 	const handleNotification = () => {}
-
 	const handleDropdown = i => firebase.doSignOut()
 
 	return (

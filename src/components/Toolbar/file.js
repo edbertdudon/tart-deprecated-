@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
+import Header from './header'
 import ImportDatabase from '../Connectors/importdatabase'
 import ImportDatabaseOracle from '../Connectors/importdatabaseoracle'
 import { getMaxNumberFromFiles, xtos } from '../../functions'
 import withDropdown from '../Dropdown'
 import withModal from '../Modal'
-import { OFF_COLOR } from '../../constants/off-color'
 import * as ROUTES from '../../constants/routes'
 import { withFirebase } from '../Firebase'
 
@@ -19,9 +19,9 @@ export const FILE_DROPDOWN = [
   {key: 'Download as Xlsx', type: 'item'},
   {key: 'Move to Trash', type: 'link', path: ROUTES.HOME},
   {type: 'divider'},
-  {key: 'Connect MySQL', type: 'item'},
-  {key: 'Connect Microsoft SQL server', type: 'item'},
-  {key: 'Connect Oracle SQL', type: 'item'},
+  {key: 'Connect to MySQL...', type: 'item'},
+  {key: 'Connect to SQL server...', type: 'item'},
+  {key: 'Connect to Oracle SQL...', type: 'item'},
 ]
 
 const Files = ({ firebase, authUser, worksheetname, files, slides, color, onSetWorksheetname }) => {
@@ -96,30 +96,13 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, onSetW
 
   return (
     <>
-      <FileWithDropdown
-        items={FILE_DROPDOWN}
-        onSelect={handleFile}
-        classname='worksheet-header-dropdown-header'
-        color={OFF_COLOR[color[authUser.uid]]}
-      />
+      <FileWithDropdown text='File' items={FILE_DROPDOWN} onSelect={handleFile} color={color[authUser.uid]}/>
       <ImportDatabaseWithModal databaseType='MySQL' isOpen={isOpenDatabaseMysql} setIsOpen={setIsOpenDatabaseMysql} />
       <ImportDatabaseWithModal databaseType='Microsoft SQL Server' isOpen={isOpenDatabaseSqlserver} setIsOpen={setIsOpenDatabaseSqlserver} />
       <ImportDatabaseOracleWithModal isOpen={isOpenDatabaseOracle} setIsOpen={setIsOpenDatabaseOracle} />
     </>
   )
 }
-
-const Header = ({ classname, hover, onHover, isOpen, onOpen, color }) => (
-  <div
-    className={classname}
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ color: (hover || isOpen) && color }}
-  >
-    File
-  </div>
-)
 
 const FileWithDropdown = withDropdown(Header)
 const ImportDatabaseWithModal = withModal(ImportDatabase)

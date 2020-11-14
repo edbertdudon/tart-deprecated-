@@ -81,7 +81,6 @@ const DataTrash = ({ firebase, authUser, color, filename, onReload, connections 
 						text={<Icon path={mdiDotsHorizontal} size={0.9} />}
 						items={DATASOURCE_DROPDOWN}
 						onSelect={handleDropdown}
-						classname='datasource-options-only'
 						color={OFF_COLOR[color[authUser.uid]]}
 						style={{ left: "13px" }}
 					/>
@@ -100,16 +99,14 @@ const DataTrash = ({ firebase, authUser, color, filename, onReload, connections 
 	)
 }
 
-const Option = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
+const Option = ({ text, hover, onHover, isOpen, onOpen, color }) => (
 	<div
-		className={classname}
+		className='datasource-options-only'
 		onClick={onOpen}
 		onMouseEnter={onHover}
 		onMouseLeave={onHover}
 		style={{ backgroundColor: hover && color }}
-	>
-		{text}
-	</div>
+	>{text}</div>
 )
 
 const VerifyDelete = ({ filename, color, onDelete, onClose, onSelect }) => (

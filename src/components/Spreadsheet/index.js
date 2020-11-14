@@ -96,7 +96,7 @@ class Spreadsheet {
       name = name + ' ' + n
     }
     let d = new Chart(name)
-    d.setData(o)
+    d.setData(o, this.datas)
     this.datas.splice(current+1, 0, d)
     this.sheetIndex = current + 1
     this.sheet.resetData(d)

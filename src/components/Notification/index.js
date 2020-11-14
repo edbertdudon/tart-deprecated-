@@ -10,7 +10,6 @@ const getNotificationStates = (item, i, onSelect, component, isOpen) => ({
 	notification: <div className='notification-item' key={item.key}>{item.key}</div>
 })
 
-
 const withNotification = Component => (props) => {
 	const [hover, setHover] = useState(false)
 	const [isOpen, setIsOpen] = useState(false)
@@ -40,7 +39,7 @@ const withNotification = Component => (props) => {
 	}
 
 	const handleClear = () => setNotifications([])
-
+	console.log(props.items)
 	return (
 		<div className='notification' ref={wrapperRef}>
 			<Component

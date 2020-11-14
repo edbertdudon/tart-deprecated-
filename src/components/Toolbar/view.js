@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
-
+import Header from './header'
 import withDropdown from '../Dropdown'
-import { OFF_COLOR } from '../../constants/off-color'
 
 const View = ({ authUser, color, slides, rightSidebar, onSetRightSidebar, navigator, setNavigator }) => {
   const VIEW_DROPDOWN = [
@@ -43,26 +42,9 @@ const View = ({ authUser, color, slides, rightSidebar, onSetRightSidebar, naviga
   }
 
   return (
-    <ViewWithDropdown
-      items={VIEW_DROPDOWN}
-      onSelect={handleView}
-      classname='worksheet-header-dropdown-header'
-      color={OFF_COLOR[color[authUser.uid]]}
-    />
+    <ViewWithDropdown text='View' items={VIEW_DROPDOWN} onSelect={handleView} color={color[authUser.uid]} />
   )
 }
-
-const Header = ({ classname, hover, onHover, isOpen, onOpen, color }) => (
-  <div
-    className={classname}
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ color: (hover || isOpen) && color }}
-  >
-    View
-  </div>
-)
 
 const ViewWithDropdown = withDropdown(Header)
 

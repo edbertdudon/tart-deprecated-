@@ -22,7 +22,6 @@ const Header = ({ firebase, authUser, color }) => {
 				text={authUser.firstname}
 				items={USER_DROPDOWN}
 				onSelect={handleDropdown}
-				classname='home-header-user'
 				color={OFF_COLOR[color[authUser.uid]]}
 				style={{marginLeft: 'calc(100% - 195px)'}}
 			/>
@@ -30,16 +29,14 @@ const Header = ({ firebase, authUser, color }) => {
 	)
 }
 
-const User = ({ classname, text, hover, onHover, isOpen, onOpen, color }) => (
+const User = ({ text, hover, onHover, isOpen, onOpen, color }) => (
 	<div
-		className={classname}
+		className='home-header-user'
 		onClick={onOpen}
 		onMouseEnter={onHover}
 		onMouseLeave={onHover}
 		style={{ color: (hover || isOpen) && color }}
-	>
-		{text}
-	</div>
+	>{text}</div>
 )
 
 const UserWithDropdown = withDropdown(User)

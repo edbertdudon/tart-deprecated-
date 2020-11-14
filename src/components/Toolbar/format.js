@@ -2,9 +2,9 @@ import React, { useState } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 
+import Header from './header'
 import { fontSizes } from '../Spreadsheet/core/font'
 import withDropdown from '../Dropdown'
-import { OFF_COLOR } from '../../constants/off-color'
 
 const Format = ({ authUser, color, slides, rightSidebar, onSetRightSidebar }) => {
   const FORMAT_DROPDOWN = [
@@ -15,7 +15,7 @@ const Format = ({ authUser, color, slides, rightSidebar, onSetRightSidebar }) =>
     {type: 'divider'},
     {key: 'Edit Chart Data...', type: 'item'},
     {type: 'divider'},
-    {key: 'Font size', type: 'secondarymenu', options: fontSizes, style:{width: "50px"}},
+    {key: 'Font size', type: 'secondarymenu', options: fontSizes, style:{width: "55px"}},
     {type: 'divider'},
     {key: 'Horizontal Align Left', type: 'item'},
     {key: 'Horizontal Aign Center', type: 'item'},
@@ -84,23 +84,10 @@ const Format = ({ authUser, color, slides, rightSidebar, onSetRightSidebar }) =>
   }
 
   return (
-    <FormatWithDropdown
-      items={FORMAT_DROPDOWN}
-      onSelect={handleFormat}
-      color={OFF_COLOR[color[authUser.uid]]}
+    <FormatWithDropdown text='Format' items={FORMAT_DROPDOWN} onSelect={handleFormat} color={color[authUser.uid]}
     />
   )
 }
-
-const Header = ({ hover, onHover, isOpen, onOpen, color }) => (
-  <div
-    className='worksheet-header-dropdown-header'
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ color: (hover || isOpen) && color }}
-  >Format</div>
-)
 
 const FormatWithDropdown = withDropdown(Header)
 

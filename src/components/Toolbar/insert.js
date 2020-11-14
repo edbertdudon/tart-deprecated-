@@ -3,9 +3,9 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import XLSX from 'xlsx'
 
+import Header from './header'
 import ImportConnection from './importconnection'
 import { stox } from '../../functions'
-import { OFF_COLOR } from '../../constants/off-color'
 import * as ROUTES from '../../constants/routes'
 import withDropdown from '../Dropdown'
 import withModal from '../Modal'
@@ -127,29 +127,12 @@ const Insert = ({ color, authUser, slides, rightSidebar, dataNames, current, onS
 
 	return (
 		<>
-	    <InsertWithDropdown
-	    	items={INSERT_DROPDOWN}
-	    	onSelect={handleInsert}
-	    	classname='worksheet-header-dropdown-header'
-				color={OFF_COLOR[color[authUser.uid]]}
-	    />
-			<input type="file" className='toolbar-upload' onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef}/>
+	    <InsertWithDropdown text='Insert' items={INSERT_DROPDOWN} onSelect={handleInsert} color={color[authUser.uid]} />
+			<input type="file" className='toolbar-upload' onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef} />
 			<ImportConnectionWithModal isOpen={isOpen} setIsOpen={setIsOpen} />
 		</>
 	)
 }
-
-const Header = ({ classname, hover, onHover, isOpen, onOpen, color }) => (
-	<div
-		className={classname}
-		onClick={onOpen}
-		onMouseEnter={onHover}
-		onMouseLeave={onHover}
-		style={{ color: (hover || isOpen) && color }}
-	>
-		Insert
-	</div>
-)
 
 const InsertWithDropdown = withDropdown(Header)
 const ImportConnectionWithModal = withModal(ImportConnection)

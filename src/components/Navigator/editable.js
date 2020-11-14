@@ -104,10 +104,17 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
 		if (dataNames.length > 1) {
 			onSetDataNames(dataNames.filter((n,i) => index !== i))
 			if (current === index) {
-				onSetCurrent(current-1)
-				const d = slides.datas[index-1];
-				slides.data = d
-				slides.deleteSheet(index, index-1)
+				if (index === 0) {
+					onSetCurrent(0)
+					const d = slides.datas[index+1];
+					slides.data = d
+					slides.deleteSheet(index, index)
+				} else {
+					onSetCurrent(current-1)
+					const d = slides.datas[index-1];
+					slides.data = d
+					slides.deleteSheet(index, index-1)
+				}
 			} else {
 				slides.deleteSheet(index, -1)
 			}

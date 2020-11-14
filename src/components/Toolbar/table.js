@@ -1,9 +1,8 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
-
+import Header from './header'
 import withDropdown from '../Dropdown'
-import { OFF_COLOR } from '../../constants/off-color'
 
 export const TABLE_DROPDOWN = [
   {key: 'Insert Row', type: 'item'},
@@ -71,26 +70,9 @@ const Table = ({ color, authUser, slides, rightSidebar, onSetRightSidebar }) => 
   }
 
   return (
-    <TableWithDropdown
-      items={TABLE_DROPDOWN}
-      onSelect={handleTable}
-      classname='worksheet-header-dropdown-header'
-      color={OFF_COLOR[color[authUser.uid]]}
-    />
+    <TableWithDropdown text='Table' items={TABLE_DROPDOWN} onSelect={handleTable} color={color[authUser.uid]} />
   )
 }
-
-const Header = ({ classname, hover, onHover, isOpen, onOpen, color }) => (
-  <div
-    className={classname}
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ color: (hover || isOpen) && color }}
-  >
-    Table
-  </div>
-)
 
 const TableWithDropdown = withDropdown(Header)
 

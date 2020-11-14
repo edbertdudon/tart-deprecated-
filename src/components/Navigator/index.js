@@ -24,18 +24,17 @@ const reorder = (list, startIndex, endIndex) => {
 const Navigator = ({ slides, color, authUser, dataNames, current, onSetDataNames, onSetCurrent }) => {
 	const handleDragEnd = (result) => {
 		if (!result.destination) return
-		if (result.destination.index === result.source.index) return;
-		const dn = reorder(
-			dataNames,
-			result.source.index,
-			result.destination.index
-		);
+    const destination = result.destination.index
+    const source = result.source.index
+		if (destination === source) return;
+		const dn = reorder(dataNames, source, destination);
 		onSetDataNames(dn)
-		if (result.source.index === current) {
-			onSetCurrent(result.destination.index)
+		if (source === current) {
+			onSetCurrent(destination)
 		} else {
-			onSetCurrent(result.source.index)
+			onSetCurrent(source)
 		}
+    slides.datas = reorder(slides.datas, source, destination)
 	}
 
 	const List = () => {
