@@ -5,6 +5,7 @@ import { compose } from 'recompose'
 import Header from './header'
 import { sheetReset } from '../Spreadsheet/component/sheet'
 import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
 
 export const EDIT_DROPDOWN = [
   {key: 'Undo', type: 'item'},
@@ -56,7 +57,7 @@ const Edit = ({ color, authUser, slides }) => {
   }
 
   return (
-    <EditWithDropdown text='Edit' items={EDIT_DROPDOWN} onSelect={handleEdit} color={color[authUser.uid]} />
+    <EditWithDropdown text='Edit' items={EDIT_DROPDOWN} onSelect={handleEdit} color={OFF_COLOR[color[authUser.uid]]} />
   )
 }
 

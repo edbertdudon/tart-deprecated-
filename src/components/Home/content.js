@@ -116,7 +116,7 @@ export const updateFilesAfterTrash = (filename, files) => {
 }
 
 const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive,
-	notifications, setNotifications }) => {
+	notifications, onSetNotifications }) => {
 	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
@@ -156,12 +156,12 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 	const handleJobSubmit = filename => {
 		onSetIsJobsActive(true)
 		onSetJobs(submitJob(filename, jobs))
-		setNotifications(notifications.concat({key: 'Job started: ' + filename, type: 'notification'}))
+		onSetNotifications(notifications.concat({key: 'Job started: ' + filename, type: 'notification'}))
 	}
 
 	const handleJobCancel = runId => {
 		onSetJobs(cancelJob(runId, jobs))
-		setNotifications(notifications.concat({key: 'Job cancelled: ' + filename, type: 'notification'}))
+		onSetNotifications(notifications.concat({key: 'Job cancelled: ' + filename, type: 'notification'}))
 	}
 
 	const listFilesLessTrash = () => {
@@ -222,6 +222,7 @@ const mapDispatchToProps = dispatch => ({
 	onSetFiles: (files, uid) => dispatch({type: 'FILES_SET', files, uid}),
 	onSetJobs: (jobs) => dispatch({type: 'JOBS_SET', jobs}),
 	onSetIsJobsActive: (isJobsActive) => dispatch({type: 'ISJOBSACTIVE_SET', isJobsActive}),
+  onSetNotifications: (notifications) => dispatch({type: 'NOTIFICATIONS_SET', notifications}),
 })
 
 export default compose(

@@ -1,3 +1,14 @@
+//
+//  Import Connection
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
+//	Commands:
+//	docker restart 67a02d931c58 (SQL server) a5bafc14065b (OracleDB)
+//	sqlcmd -S 0.0.0.0:1433 -U sa -P MyNewPass! -Q "CREATE DATABASE SampleDB;"
+//
 import React, { useState, useEffect } from 'react'
 import { compose } from 'recompose'
 import { connect } from 'react-redux'

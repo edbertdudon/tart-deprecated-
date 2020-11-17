@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Header from './header'
 import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
 
 export const TABLE_DROPDOWN = [
   {key: 'Insert Row', type: 'item'},
@@ -70,7 +71,7 @@ const Table = ({ color, authUser, slides, rightSidebar, onSetRightSidebar }) => 
   }
 
   return (
-    <TableWithDropdown text='Table' items={TABLE_DROPDOWN} onSelect={handleTable} color={color[authUser.uid]} />
+    <TableWithDropdown text='Table' items={TABLE_DROPDOWN} onSelect={handleTable} color={OFF_COLOR[color[authUser.uid]]} />
   )
 }
 

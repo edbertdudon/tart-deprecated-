@@ -45,13 +45,13 @@ const Navigation = (props) => (
 	<div>
 		{
 			{
-				[ROUTES.WORKSHEET]: <Auth authUser={props.authUser} props={props}/>,
-				[ROUTES.HOME]: <Auth props={props}/>,
 				[ROUTES.SIGN_IN]: <NonAuth />,
 				[ROUTES.ACCOUNT]: <NonAuth />,
 				[ROUTES.VERIFICATION]: <NonAuth />,
 				[ROUTES.SIGN_UP]: <NonAuth />,
 				[ROUTES.PASSWORD_FORGET]: <NonAuth />,
+				[ROUTES.WORKSHEET]: <Auth authUser={props.authUser} props={props}/>,
+				[ROUTES.HOME]: <Auth props={props}/>,
 				[ROUTES.SETTINGS]: <Auth authUser={props.authUser} props={props}/>,
 				[ROUTES.CONNECTIONS]: <Auth authUser={props.authUser} props={props}/>,
 				[ROUTES.INPUTS]: <Auth authUser={props.authUser} props={props}/>,

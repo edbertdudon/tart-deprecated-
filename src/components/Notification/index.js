@@ -6,7 +6,7 @@ import './index.less'
 
 import { OFF_COLOR } from '../../constants/off-color'
 
-const getNotificationStates = (item, i, onSelect, component, isOpen) => ({
+const getNotificationStates = (item, i) => ({
 	notification: <div className='notification-item' key={item.key}>{item.key}</div>
 })
 
@@ -33,13 +33,8 @@ const withNotification = Component => (props) => {
 	const handleOpen = () => setIsOpen(!isOpen)
 	const handleHover = () => setHover(!hover)
 
-	const handleSelect = (selection) => {
-		setIsOpen(!isOpen)
-		props.onSelect(selection)
-	}
+	const handleClear = () => props.onSetNotifications([])
 
-	const handleClear = () => setNotifications([])
-	console.log(props.items)
 	return (
 		<div className='notification' ref={wrapperRef}>
 			<Component
@@ -57,7 +52,7 @@ const withNotification = Component => (props) => {
 						<div className='notification-clear' onClick={handleClear} style={{color: props.color}}>clear</div>
 					</div>
 					{props.items.map((item, i) =>
-						getNotificationStates(item, i, handleSelect)[item.type]
+						getNotificationStates(item, i)[item.type]
 					)}
 				</div>
 			}

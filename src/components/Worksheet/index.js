@@ -6,6 +6,7 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState, useRef } from 'react';
+import { compose } from 'recompose'
 import './index.less'
 
 import Header from './header'
@@ -15,6 +16,7 @@ import Formulabar from '../Formulabar'
 import Navigator from '../Navigator'
 import RightSidebar from '../RightSidebar'
 import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
+import { withAuthorization, withEmailVerification } from '../Session'
 
 const Worksheet = () => {
 	const [text, setText] = useState({ text: '', ri: 0, ci: 0 })
@@ -36,4 +38,9 @@ const Worksheet = () => {
 	)
 }
 
-export default Worksheet;
+const condition = authUser => !!authUser
+
+export default compose(
+	withEmailVerification,
+	withAuthorization(condition),
+)(Worksheet)

@@ -10,6 +10,7 @@ import colorReducer from './color'
 import jobsReducer from './jobs'
 import isJobsActiveReducer from './isJobsActive'
 import searchReducer from './search'
+import notificationsReducer from './notifications'
 
 const rootReducer = combineReducers({
   sessionState: sessionReducer,
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
 	jobsState: jobsReducer,
 	isJobsActiveState: isJobsActiveReducer,
   searchState: searchReducer,
+  notificationsState: notificationsReducer,
 })
 
 export default rootReducer

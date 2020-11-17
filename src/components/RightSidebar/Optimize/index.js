@@ -430,26 +430,26 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				options={OBJECTIVE_CLASS}
 				name={OBJECTIVE_CLASS[objectiveClass]}
 			/>
-			<button
-				className='rightsidebar-button'
-				style={{
-					backgroundColor: minMax === 0 && color[authUser.uid],
-					boxShadow: minMax === 0 ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: minMax === 0 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-				}}
-				onClick={handleMinimize}
-			></button>
-			<div className='rightsidebar-buttontext'>Minimum</div>
-			<button
-				className='rightsidebar-button'
-				style={{
-					backgroundColor: minMax === 1 && color[authUser.uid],
-					boxShadow: minMax === 1 ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: minMax === 1 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-				}}
-				onClick={handleMaximize}
-			></button>
-			<div className='rightsidebar-buttontext'>Maximum</div>
+		<div className='rightsidebar-buttonwrapper' onClick={handleMinimize}>
+				<button className='rightsidebar-button'
+					style={{
+						backgroundColor: minMax === 0 && color[authUser.uid],
+						boxShadow: minMax === 0 ? 'inset 0px 0px 0px 3px #fff' : 'none',
+	          border: minMax === 0 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
+					}}
+				></button>
+				<div className='rightsidebar-buttontext'>Minimum</div>
+			</div>
+			<div className='rightsidebar-buttonwrapper' onClick={handleMaximize}>
+				<button className='rightsidebar-button'
+					style={{
+						backgroundColor: minMax === 1 && color[authUser.uid],
+						boxShadow: minMax === 1 ? 'inset 0px 0px 0px 3px #fff' : 'none',
+	          border: minMax === 1 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
+					}}
+				></button>
+				<div className='rightsidebar-buttontext'>Maximum</div>
+			</div>
 			<div className='rightsidebar-label'>Constraints</div>
 			{!constraints.includes(CONSTRAINTS_TYPE[0]) &&
 				<Fconstraint

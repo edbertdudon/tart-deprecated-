@@ -27,11 +27,11 @@ const App = () => (
   <Router>
     <div>
 			<Navigation />
-			<Route exact path={ROUTES.HOME} component={Home} />
-			<Route path={ROUTES.WORKSHEET} component={Worksheet} />
 			<Route path={ROUTES.SIGN_IN} component={SignInPage} />
       <Route path={ROUTES.SIGN_UP} component={SignUpPage} />
       <Route path={ROUTES.PASSWORD_FORGET} component={PasswordForgetPage} />
+      <Route exact path={ROUTES.HOME} component={Home} />
+      <Route path={ROUTES.WORKSHEET} component={Worksheet} />
       <Route path={ROUTES.ACCOUNT} component={AccountPage} />
       <Route path={ROUTES.ADMIN} component={AdminPage} />
 		  <Route path={ROUTES.VERIFICATION} component={Verification} />

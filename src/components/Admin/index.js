@@ -26,9 +26,7 @@ const AdminPage = () => (
   </div>
 )
 
-const condition = authUser =>
-      authUser && !!authUser.roles[ROLES.ADMIN]
-
+const condition = authUser => authUser && !!authUser.roles[ROLES.ADMIN]
 
 export default compose(
   withEmailVerification,

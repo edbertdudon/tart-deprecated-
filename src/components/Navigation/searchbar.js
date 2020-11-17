@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdilMagnify } from '@mdi/light-js'
 
+import { withAuthorization, withEmailVerification } from '../Session'
 import { withFirebase } from '../Firebase'
 import * as ROUTES from '../../constants/routes'
 
@@ -77,8 +78,11 @@ const mapDispatchToProps = dispatch => ({
 	onSetFiles: (files, uid) => dispatch({type: 'FILES_SET', files, uid}),
 })
 
+const condition = authUser => !!authUser
 
 export default compose(
+	withEmailVerification,
+	withAuthorization(condition),
 	connect(
 		mapStateToProps,
 		mapDispatchToProps

@@ -28,18 +28,34 @@ const NAVIGATOR_DROPDOWN = [
 	{key: 'Delete', type: 'item'},
 ]
 
-const ContextMenuDropdown = ({ slide, onDropdown }) => (
+const Item = ({ text, onSelect, color }) => {
+	const [hover, setHover] = useState(false)
+
+	const handleHover = () => setHover(!hover)
+
+	return (
+		<div
+			className='dropdown-item'
+			onClick={() => onSelect(text)}
+			onMouseEnter={handleHover}
+			onMouseLeave={handleHover}
+			style={{ backgroundColor: hover && color, color: hover ? "#fff" : "#000000" }}
+		>{text}</div>
+	)
+}
+
+const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 	<ContextMenu id={'right-click' + slide}>
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[0].key)}>{NAVIGATOR_DROPDOWN[0].key}</MenuItem>
+		<Item text={NAVIGATOR_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
 		<hr/>
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[2].key)}>{NAVIGATOR_DROPDOWN[2].key}</MenuItem>
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[3].key)}>{NAVIGATOR_DROPDOWN[3].key}</MenuItem>
+		<Item text={NAVIGATOR_DROPDOWN[2].key} onSelect={onDropdown} color={color} />
+		<Item text={NAVIGATOR_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
 		<hr/>
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[5].key)}>{NAVIGATOR_DROPDOWN[5].key}</MenuItem>
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[6].key)}>{NAVIGATOR_DROPDOWN[6].key}</MenuItem>
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[7].key)}>{NAVIGATOR_DROPDOWN[7].key}</MenuItem>
+		<Item text={NAVIGATOR_DROPDOWN[5].key} onSelect={onDropdown} color={color} />
+		<Item text={NAVIGATOR_DROPDOWN[6].key} onSelect={onDropdown} color={color} />
+		<Item text={NAVIGATOR_DROPDOWN[7].key} onSelect={onDropdown} color={color} />
 		<hr />
-		<MenuItem onClick={() => onDropdown(NAVIGATOR_DROPDOWN[9].key)}>{NAVIGATOR_DROPDOWN[9].key}</MenuItem>
+		<Item text={NAVIGATOR_DROPDOWN[9].key} onSelect={onDropdown} color={color} />
 	</ContextMenu>
 )
 
@@ -209,7 +225,7 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
           </div>
         </div>
       </ContextMenuTrigger>
-      <ContextMenuDropdown slide={text} onDropdown={handleDropdown} />
+      <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
     </>
   )
 }

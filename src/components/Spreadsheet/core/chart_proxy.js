@@ -1,6 +1,6 @@
 import { doChart, spreadsheetToR } from '../cloudr'
 
-export default class Chart {
+export default class ChartProxy {
   constructor(name) {
     this.name = name || 'chart';
     this.type = "chart";

@@ -5,6 +5,7 @@ import { compose } from 'recompose'
 import Header from './header'
 import { fontSizes } from '../Spreadsheet/core/font'
 import withDropdown from '../Dropdown'
+import { OFF_COLOR } from '../../constants/off-color'
 
 const Format = ({ authUser, color, slides, rightSidebar, onSetRightSidebar }) => {
   const FORMAT_DROPDOWN = [
@@ -84,7 +85,7 @@ const Format = ({ authUser, color, slides, rightSidebar, onSetRightSidebar }) =>
   }
 
   return (
-    <FormatWithDropdown text='Format' items={FORMAT_DROPDOWN} onSelect={handleFormat} color={color[authUser.uid]}
+    <FormatWithDropdown text='Format' items={FORMAT_DROPDOWN} onSelect={handleFormat} color={OFF_COLOR[color[authUser.uid]]}
     />
   )
 }

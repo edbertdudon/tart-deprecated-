@@ -16,9 +16,8 @@ const USER_DROPDOWN = [
 	{key: 'Settings', type: 'link', path: ROUTES.SETTINGS}
 ]
 
-const Header = ({ firebase, authUser, color, notifications, setNotifications }) => {
-	console.log(notifications)
-	const handleNotification = () => {}
+const Header = ({ firebase, authUser, color, notifications, onSetNotifications }) => {
+
 	const handleDropdown = i => firebase.doSignOut()
 
 	return (
@@ -27,8 +26,8 @@ const Header = ({ firebase, authUser, color, notifications, setNotifications }) 
 				header='Notifications'
 				items={notifications}
 				color={OFF_COLOR[color[authUser.uid]]}
-				onSelect={handleNotification}
 				style={{ marginLeft: 'calc(100% - 375px)', marginTop: "42px" }}
+				onSetNotifications={onSetNotifications}
 			/>
 			<UserWithDropdown
 				text={authUser.firstname}
@@ -67,11 +66,17 @@ const NotificationWithNotification = withNotification(Notification)
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
 	color: (state.colorState.colors || {}),
+	notifications: (state.notificationsState.notifications || []),
 });
+
+const mapDispatchToProps = dispatch => ({
+  onSetNotifications: (notifications) => dispatch({type: 'NOTIFICATIONS_SET', notifications}),
+})
 
 export default compose(
 	withFirebase,
 	connect(
 		mapStateToProps,
+		mapDispatchToProps
 	)
 )(Header)

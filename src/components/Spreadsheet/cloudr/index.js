@@ -8,10 +8,7 @@
 //  Notes:
 //  Build: docker build . -t 'cloudrun-r-rscript'
 //  Run: docker run -p 8080:8080 -e PORT=8080 cloudrun-r-rscript
-//  Spreadsheet Architecture: https://ethercalc.net/#ch1
 //  234\ ==> 234\\
-//  translateR only works for "A2" not "AA22" for javascript and R
-//  '=B2' works in cloudfunctions but not in localhost
 //
 //  Test Cases:
 //  reference within a reference:
@@ -212,12 +209,13 @@ const doParse = (obj, data, ri, ci) => {
       }
     })
     .catch(err => {
+      console.log(err)
       removeMatrix(data, ri, ci)
       return '#ERROR!'
   })
 }
 
-const doChart = data => {
+export const doChart = data => {
   return fetchR(data, "plot")
     .then(res => res.arrayBuffer())
     .then(buffer => {

@@ -1,6 +1,7 @@
 /* global window, document */
 import { h } from './component/element';
 import DataProxy from './core/data_proxy';
+import ChartProxy from './core/chart_proxy';
 import Sheet from './component/sheet';
 // import Bottombar from './component/bottombar';
 import Clipboard from './core/clipboard';
@@ -95,7 +96,7 @@ class Spreadsheet {
     if (n !== 1) {
       name = name + ' ' + n
     }
-    let d = new Chart(name)
+    let d = new ChartProxy(name)
     d.setData(o, this.datas)
     this.datas.splice(current+1, 0, d)
     this.sheetIndex = current + 1
