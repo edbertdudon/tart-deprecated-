@@ -2,6 +2,7 @@ import { h } from './element';
 import { bindClickoutside, unbindClickoutside } from './event';
 import { cssPrefix } from '../config';
 import { tf } from '../locale/locale';
+import { options } from '../options'
 
 const menuItems = [
   { key: 'copy', title: tf('contextmenu.copy'), label: 'Ctrl+C' },
@@ -35,6 +36,12 @@ function buildMenuItem(item) {
     .on('click', () => {
       this.itemClick(item.key);
       this.hide();
+    })
+    .on('mouseenter', (e) => {
+      e.target.style.background = options.style.offcolor;
+    })
+    .on('mouseleave', (e) => {
+      e.target.style.background = "";
     })
     .children(
       item.title(),
