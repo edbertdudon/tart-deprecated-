@@ -92,16 +92,13 @@ class Spreadsheet {
   }
 
   insertChart(dataNames, current, o, name) {
-    let n = getMaxNumberCustomSheet(dataNames, name)
-    if (n !== 1) {
-      name = name + ' ' + n
-    }
-    let d = new ChartProxy(name)
-    d.setData(o, this.datas)
-    this.datas.splice(current+1, 0, d)
-    this.sheetIndex = current + 1
-    this.sheet.resetData(d)
-    return d
+    const n = name || `chart${this.sheetIndex}`;
+    let d = new ChartProxy(n, o);
+    d.setData(o, this.datas);
+    // this.datas.splice(current+1, 0, d)
+    // this.sheetIndex = current + 1
+    // this.sheet.resetData(d)
+    // return d
   }
 
   insertData(dataNames, current, o, name) {

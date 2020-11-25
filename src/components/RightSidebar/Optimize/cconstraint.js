@@ -8,15 +8,10 @@
 import React from 'react'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
-import { validateCellRange, validateCellText } from './index'
-import withListsXS from './withListsXS'
+import { updateCellorRange } from './index'
 
 const Cconstraint = ({ lhs, setLhs, rhs, setRhs, type, onClose, error, setError }) => {
-  const handleUpdateLhs = e => {
-    const v = e.target.value
-    setLhs(v)
-    setError(validateCellRange(v))
-  }
+  const handleUpdateLhs = e => updateCellorRange(e, setLhs, setError)
 
   // const handleUpdateCone = e => {
   //   const v = e.target.value
@@ -26,17 +21,7 @@ const Cconstraint = ({ lhs, setLhs, rhs, setRhs, type, onClose, error, setError 
   //   }
   // }
 
-  const handleUpdateRhs = e => {
-    const v = e.target.value
-    setRhs(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText)) {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
 
   // <div className='rightsidebar-input-text-3part1'>Linear matrix</div>
   // <div className='rightsidebar-input-text-3part2'># of variables</div>
@@ -93,6 +78,5 @@ const Cconstraint = ({ lhs, setLhs, rhs, setRhs, type, onClose, error, setError 
 }
 
 const Options = ({ option }) => option
-const OptionsWithLists = withListsXS(Options)
 
 export default Cconstraint

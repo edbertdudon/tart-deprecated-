@@ -1,30 +1,19 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React from 'react'
 
-const Number = ({ initialNumber, errorMessage }) => {
-	const [number, setNumber] = useState(initialNumber)
-	const [error, setError] = useState(null)
-
-	const handleChange = e => {
-		let input = e.target.value
-		setNumber(input)
-		if (isNaN(parseFloat(input))) {
-			setError(errorMessage)
-		} else {
-			setError(null)
-		}
-	}
-
+const Number = ({ label, value, onChange, error  }) => {
   return (
-    <div className='rightsidebar-variable'>
-			<input
-				type="number"
-				name="confidenceLevel"
-				value={number}
-				onChange={handleChange}
-				className='rightsidebar-input'
-			/>
-			{error && <p>{error}</p>}
-    </div>
+		<>
+			<div className='rightsidebar-label'>{label}</div>
+			<div className='rightsidebar-variable'>
+				<input
+					className='rightsidebar-input'
+					type="number"
+					value={value}
+					onChange={onChange}
+				/>
+				{error && <p>{error}</p>}
+			</div>
+		</>
   )
 }
 

@@ -10,44 +10,16 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
-import { validateCell, validateCellRange, validateCellText } from './index'
+import { updateCellorRange, updateCell } from './index'
 
 const Fconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, setJacobian, onClose, error, setError }) => {
-  const handleUpdateLhs = e => {
-    const v = e.target.value
-    setLhs(v)
-    setError(validateCellRange(v))
-  }
+  const handleUpdateLhs = e => updateCellorRange(e, setLhs, setError)
 
-  const handleUpdateDir = e => {
-    const v = e.target.value
-    setDir(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
-          return("Direction must be =, <= or >=.")
-        }
-      })
-    )
-  }
+  const handleUpdateDir = e => updateCellorRange(e, setDir, setError)
 
-  const handleUpdateRhs = e => {
-    const v = e.target.value
-    setRhs(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText)) {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
 
-  const handleUpdateJacobian = e => {
-    const v = e.target.value
-    setJacobian(v)
-    setError(validateCell(v))
-  }
+  const handleUpdateJacobian = e => updateCell(e, setJacobian, setError)
 
   const handleClose = () => onClose(0)
 

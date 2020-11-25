@@ -10,101 +10,27 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose, mdiLessThanOrEqual } from '@mdi/js'
-import { validateCell, validateCellRange, validateCellText } from './index'
+import { updateCell, updateCellorRange } from './index'
 
 const Bounds = ({ slides, objectiveClass, lhs, setLhs, dir, setDir, rhs, setRhs,
   li, setLi, lb, setLb, ui, setUi, ub, setUb, ld, setLd, ud, setUd, onClose, error, setError }) => {
+  const handleUpdateLhs = e => updateCellorRange(e, setLhs, setError)
 
-  const handleUpdateLhs = e => {
-    const v = e.target.value
-    setLhs(v)
-    setError(validateCellRange(v))
-  }
+  const handleUpdateDir = e => updateCellorRange(e, setDir, setError)
 
-  const handleUpdateDir = e => {
-    const v = e.target.value
-    setDir(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        console.log(cellText)
-        if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
-          return("Direction must be =, <= or >=.")
-        }
-      })
-    )
-  }
+  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
 
-  const handleUpdateRhs = e => {
-    const v = e.target.value
-    setRhs(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText) && cellText !== "Inf" && cellText !== "-inf") {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateLi = e => updateCellorRange(e, setLi, setError)
 
-  const handleUpdateLi = e => {
-    const v = e.target.value
-    setLi(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText)) {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateLb = e => updateCellorRange(e, setLb, setError)
 
-  const handleUpdateLb = e => {
-    const v = e.target.value
-    setLb(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText) && cellText !== "Inf" && cellText !== "-inf") {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateUi = e => updateCellorRange(e, setUi, setError)
 
-  const handleUpdateUi = e => {
-    const v = e.target.value
-    setUi(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText)) {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateUb = e => updateCellorRange(e, setUb, setError)
 
-  const handleUpdateUb = e => {
-    const v = e.target.value
-    setUb(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText) && cellText !== "Inf" && cellText !== "-inf") {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateLd = e => updateCell(e, setLd, setError)
 
-  const handleUpdateLd = e => {
-    const v = e.target.value
-    setLd(v)
-    setError(validateCell(v))
-  }
-
-  const handleUpdateUd = e => {
-    const v = e.target.value
-    setUd(v)
-    setError(validateCell(v))
-  }
+  const handleUpdateUd = e => updateCell(e, setUd, setError)
 
   const handleClose = () => onClose(1)
 

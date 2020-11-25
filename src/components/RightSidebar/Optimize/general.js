@@ -6,32 +6,16 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react'
-import { validateCell, validateCellRange } from './index'
+import { updateCell, updateCellorRange } from './index'
 
 const General = ({ objective, setObjective, decision, setDecision, gradient, setGradient, hessian, setHessian, error, setError }) => {
-  const handleUpdateObjective = e => {
-    const v = e.target.value
-    setObjective(v)
-    setError(validateCell(v))
-  }
+  const handleUpdateObjective = e => updateCell(e, setObjective, setError)
 
-  const handleUpdateDecision = e => {
-    const v = e.target.value
-    setDecision(v)
-    setError(validateCellRange(v))
-  }
+  const handleUpdateDecision = e => updateCellorRange(e, setDecision, setError)
 
-  const handleUpdateGradient = e => {
-    const v = e.target.value
-    setGradient(v)
-    setError(validateCell(v))
-  }
+  const handleUpdateGradient = e => updateCell(e, setGradient, setError)
 
-  const handleUpdateHessian = e => {
-    const v = e.target.value
-    setHessian(v)
-    setError(validateCell(v))
-  }
+  const handleUpdateHessian = e => updateCell(e, setHessian, setError)
 
   return (
     <>
@@ -68,7 +52,9 @@ const General = ({ objective, setObjective, decision, setDecision, gradient, set
         value={hessian}
         placeholder="D1"
       />
-    {error && <div className='rightsidebar-error'>{error}</div>}
+      <div className='rightsidebar-text'>
+        {error && <div className='rightsidebar-error'>{error}</div>}
+      </div>
     </>
   )
 }

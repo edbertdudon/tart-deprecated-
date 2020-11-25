@@ -1,12 +1,28 @@
 const statistics = [
 	// Frequency tables
-	{key: "Frequency Tables", category: 0},
-	{key: "Two-Way frequency table", function: "ftable(", arguments: ["xvariable", "yvariable"], category: 0},
-	{key: "Three-Way frequency table", function: "ftable(", arguments: ["xvariable", "yvariable", "zvariable"], category: 0},
+	// {
+	// 	key: "Frequency Tables",
+	// 	category: 0
+	// },
+	{
+		key: "Two-Way frequency table",
+		function: "ftable(",
+		arguments: ["xvariable", "yvariable"],
+		category: 0
+	},
+	{
+		key: "Three-Way frequency table",
+		function: "ftable(",
+		arguments: ["xvariable", "yvariable", "zvariable"],
+		category: 0
+	},
 	// Two-Way Cross Tabulation
 
 	// Tests of Independence
-	{key: "Tests of Independence", category: 1},
+	// {
+	// 	key: "Tests of Independence",
+	// 	category: 1
+	// },
 	{
 		key: "Chi-squared test",
 		function: "chisq.test(",
@@ -25,7 +41,7 @@ const statistics = [
 	// loglinear models library: "MASS"
 
 	// t-tests
-	{key: "t-tests", category: 2},
+	// {key: "t-tests", category: 2},
 	{key: "One sample t-test", function: "t.test(", arguments: ["xvariable", "alt", "varEqual", "mu", "conf"], category: 2},
 	{key: "Paired t-test", function: "t.test(paired=TRUE,", arguments: ["xvariable", "yvariable", "alt", "varEqual", "conf"], category: 2},
 	{key: "Independent Two-group t-test", function: "t.test(", arguments: ["xvariable", "yvariable", "alt", "varEqual", "conf"], category: 2},
@@ -37,16 +53,16 @@ const statistics = [
 	{key: "Correlation", function: "cor(", arguments: ["matrix", "corr"], category: 3},
 
 	// Nonparametric Tests of Group Differences
-	{key: "Nonparametric Tests of Group Differences", category: 4},
+	// {key: "Nonparametric Tests of Group Differences", category: 4},
 	{key: "Independent Two-group Mann-Whitney U Test", function: "wilcox.test(", arguments: ["xvariable", "yvariable", "alt"] , category: 4},
 	{key: "Dependent Two-group Wilcoxon Signed Rank Test", function: "wilcox.test(paired=TRUE,", arguments: ["xvariable", "yvariable", "alt"] , category: 4},
 	{key: "Kruskal-Wallis rank sum test", function: "kruskal.test(", arguments: ["xvariable", "groups"], category: 4},
 	{key: "Friedman rank sum test", function: "friedman.test(", arguments: ["yvariable", "groups", "blocks"], category: 4},
 
 	// Multiple (Linear) Regression
-	{key: "Multiple (Linear) Regression", category: 5},
+	// {key: "Multiple (Linear) Regression", category: 5},
 	{key: "Coefficients", function: "coefficients(", arguments: ["multipleLinearRegression"], category: 5},
-	{key: "Confidence Intervals", function: "confint(", arguments: ["multipleLinearRegression", "level"], category: 5},
+	{key: "Confidence Intervals", function: "confint(", arguments: ["multipleLinearRegression", "conf"], category: 5},
 	{key: "Fitted Values", function: "fitted(", arguments: ["multipleLinearRegression"], category: 5},
 	{key: "Residuals", function: "residuals(", arguments: ["multipleLinearRegression"], category: 5},
 	{key: "ANOVA (general)", function: "anova(", arguments: ["multipleLinearRegression"], description: "Compute analysis of variance (or deviance) tables for one or more fitted model objects.", category: 5},
@@ -60,7 +76,7 @@ const statistics = [
 	// Robust regression
 
 	// ANOVA
-	{key: "ANOVA", category: 6},
+	// {key: "ANOVA", category: 6},
 	{key: "One-Way ANOVA", function: "aov(", arguments: ["oneWayAnova"], category: 6},
 	{key: "Randomized block design ANOVA", function: "aov(", arguments: ["randomizedBlockDesign"], category: 6},
 	{key: "Two-Way ANOVA", function: "aov(", arguments: ["twoWayAnova"], category: 6},
@@ -71,7 +87,7 @@ const statistics = [
 	// TukeyHSD
 
 	// MANOVA
-	{key: "MANOVA", category: 7},
+	// {key: "MANOVA", category: 7},
 	{key: "One-Way MANOVA", function: "manova(", arguments: ["oneWayManova"], category: 7},
 	{key: "Randomized block design MANOVA", function: "manova(", arguments: ["randomizedBlockDesignManova"], category: 7},
 	{key: "Two-Way ANOVA", function: "manova(", arguments: ["twoWayManova"], category: 7},

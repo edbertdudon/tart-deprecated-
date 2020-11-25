@@ -35,8 +35,10 @@
 // 	H4:H6 %*% H4:H6 should work (replaces MMULT)
 //	H:H %*% 2 should not work (can do H1+2, H2+2, etc.)
 //	t(H:H)%*% H:H should work
+//  matrix with cell referencing
 //
-import rFormulas from './formula'
+import _cell from '../core/cell';
+import { formulam, rFormulas } from './formula'
 import { createEmptyMatrix } from '../../../functions'
 import { CellRange } from '../core/cell_range';
 
@@ -251,11 +253,15 @@ export const doOptimization = data => {
 
 export const rRender = (src, data, datas, ri, ci) => {
   if (src[0] === '=') {
-    return doParse({
-      cell: translateR(src.slice(1), data.name),
-      slides: JSON.stringify(spreadsheetToR(datas)),
-      names: JSON.stringify(datas.map(data => data.name)),
-    }, data, ri, ci)
+    if (/[a-z]+/i.test(src)) {
+      return doParse({
+        cell: translateR(src.slice(1), data.name),
+        slides: JSON.stringify(spreadsheetToR(datas)),
+        names: JSON.stringify(datas.map(data => data.name)),
+      }, data, ri, ci)
+    } else {
+      return _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+    }
   }
   removeMatrix(data, ri, ci)
   return src;

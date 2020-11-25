@@ -6,14 +6,10 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react'
-import { validateCellRange } from './index'
+import { updateCellorRange } from './index'
 
 const Linear = ({ linear, setLinear, error, setError }) => {
-  const handleUpdateLinear = e => {
-    const v = e.target.value
-    setLinear(v)
-    setError(validateCellRange(v))
-  }
+  const handleUpdateLinear = e => updateCellorRange(e, setLinear, setError)
 
   return (
     <>

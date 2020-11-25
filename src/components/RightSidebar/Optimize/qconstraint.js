@@ -10,44 +10,16 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
-import { validateRange, validateCellRange, validateCellText } from './index'
+import { updateRange, updateCellorRange } from './index'
 
 const Qconstraint = ({ slides, quadratic, setQuadratic, linear, setLinear, dir, setDir, rhs, setRhs, onClose, error, setError }) => {
-  const handleUpdateQuadratic = e => {
-    const v = e.target.value
-    setQuadratic(v)
-    setError(validateRange(v))
-  }
+  const handleUpdateQuadratic = e => updateRange(e, setQuadratic, setError)
 
-  const handleUpdateLinear = e => {
-    const v = e.target.value
-    setLinear(v)
-    setError(validateCellRange(v))
-  }
+  const handleUpdateLinear = e => updateCellorRange(e, setLinear, setError)
 
-  const handleUpdateDir = e => {
-    const v = e.target.value
-    setDir(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
-          return("Direction must be =, <= or >=.")
-        }
-      })
-    )
-  }
+  const handleUpdateDir = e => updateCellorRange(e, setDir, setError)
 
-  const handleUpdateRhs = e => {
-    const v = e.target.value
-    setRhs(v)
-    setError(
-      validateCellText(v, slides, (cellText) => {
-        if (isNaN(cellText)) {
-          return("Range must be numeric.")
-        }
-      })
-    )
-  }
+  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
 
   const handleClose = () => onClose(3)
 

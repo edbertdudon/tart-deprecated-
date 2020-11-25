@@ -15,9 +15,9 @@ import Icon from '@mdi/react';
 import { mdiLoading, mdiClose } from '@mdi/js'
 
 import statistics from '../statisticsR'
-import { doRegression } from '../../Spreadsheet/cloudr'
-import { setFormula, setSparkData, setStatisticalFunciton, cbindDependents } from './functions'
+import { doRegression, spreadsheetToR } from '../../Spreadsheet/cloudr'
 import { getMaxNumberCustomSheet } from '../../../functions'
+import DataRange from '../datarange'
 import Anova from './Anova'
 import Manova from './Manova'
 import Number from './Number'
@@ -27,13 +27,83 @@ import Matrix from './Matrix'
 import MultipleLinearRegression from './MultipleLinearRegression'
 import { withFirebase } from '../../Firebase'
 
+function setFormula(slides, datarange, formula) {
+	const current = slides.bottombar.dataNames.indexOf(slides.data.name)
+	return {
+		slides: JSON.stringify(spreadsheetToR(slides.datas)),
+		names: JSON.stringify(slides.bottombar.dataNames),
+		formulatext: formula,
+		range: datarange,
+	}
+}
+
+function setSparkData(slides, formula) {
+	const current = slides.bottombar.dataNames.indexOf(slides.data.name)
+	return {
+		formulatext: formula,
+		name: slides.datas[current].name,
+	}
+}
+
 const ALTERNATIVES = ["two.sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
+const TEST_STATISTICS = ["Pillai", "Wilks", "Hotelling-Lawley", "Roy"]
 const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
+
+function setStatisticalFunciton(
+		statistic, oneWayAnova, randomizedBlockDesign, twoWayAnova, analysisOfCovariance, oneWayWithin, twoWayWithin, twoWayBetween, test,
+		linearRegressionVars, linearRegressionVars2, formulaText, formulaText2, variableX, variableY, variableZ, groups, blocks,
+		alt, varEqual, trueMean, confidenceLevel, level, paired, matrix, corr
+	) {
+	let isVarEqual = VAR_EQUAL[varEqual] === VAR_EQUAL[1]
+	let statisticalFunction = statistic.function
+	if (oneWayAnova != "") statisticalFunction = statisticalFunction + oneWayAnova + ",currentLattitude"
+	if (randomizedBlockDesign != "") statisticalFunction = statisticalFunction + randomizedBlockDesign + ",currentLattitude"
+	if (twoWayAnova != "") statisticalFunction = statisticalFunction + twoWayAnova + ",currentLattitude"
+	if (analysisOfCovariance != "") statisticalFunction = statisticalFunction + analysisOfCovariance + ",currentLattitude"
+	if (oneWayWithin != "") statisticalFunction = statisticalFunction + oneWayWithin + ",currentLattitude"
+	if (twoWayWithin != "") statisticalFunction = statisticalFunction + twoWayWithin + ",currentLattitude"
+	if (twoWayBetween != "") statisticalFunction = statisticalFunction + twoWayBetween + ",currentLattitude"
+	if (linearRegressionVars != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars + ",currentLattitude)"
+	if (linearRegressionVars2 != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars2 + ",currentLattitude)"
+	if (formulaText != "") statisticalFunction = statisticalFunction + "lm(" + formulaText + ",currentLattitude)"
+	if (formulaText2 != "") statisticalFunction = statisticalFunction + "lm(" + formulaText2 + ",currentLattitude)"
+
+	// supplemental variables
+	if (variableX != null) statisticalFunction = statisticalFunction + ",x=currentLattitude$" + variableX
+	if (variableY != null) statisticalFunction = statisticalFunction + ",y=currentLattitude$" + variableY
+	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=currentLattitude$" + variableZ
+	if (ALTERNATIVES[alt] != "two.sided") statisticalFunction = statisticalFunction + ",alternative=" + ALTERNATIVES[alt]
+	if (isVarEqual != false) statisticalFunction = statisticalFunction + ",var.equal=TRUE"
+	if (trueMean != 0) statisticalFunction = statisticalFunction + ",mu=" + trueMean
+	if (paired != false) statisticalFunction = statisticalFunction + ",var.equal=" + paired
+	if (confidenceLevel != 0.95) statisticalFunction = statisticalFunction + ",conf.level=" + confidenceLevel
+	if (level != 0.95) statisticalFunction = statisticalFunction + ",level=" + level
+
+	if (statisticalFunction.includes('cbind(')) {
+		statisticalFunction = 'tidy(' + statisticalFunction + '),test="' + TEST_STATISTICS[test] + '")'
+	} else {
+		if (matrix != "") statisticalFunction = statisticalFunction + matrix
+		if (corr != 0) statisticalFunction = statisticalFunction + ",method=" + CORRELATION_TYPE[corr]
+		statisticalFunction = 'tidy(' + statisticalFunction + '))'
+	}
+	return statisticalFunction
+}
+
+function cbindDependents(dependents, variables) {
+	let stringDependents = 'cbind(`' + variables[dependents[0]] + '`'
+	for (var i=1; i<dependents.length; i++) {
+		stringDependents = stringDependents + ',`' + variables[dependents[i]] + '`'
+	}
+
+	stringDependents = stringDependents + ')'
+	return stringDependents
+}
 
 const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, current,
 	onSetDataNames, onSetCurrent, onSetRightSidebar, statistic, setStatistic }) => {
 	const [variables, setVariables] = useState([])
+	const [datarange, setDatarange] = useState('')
 	const [oneWayAnova, setOneWayAnova] = useState('')
 	const [randomizedBlockDesign, setRandomizedBlockDesign] = useState('')
 	const [twoWayAnova, setTwoWayAnova] = useState('')
@@ -46,23 +116,28 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [linearRegressionVars2, setLinearRegressionVars2] = useState('')
 	const [formulaText, setFormulaText] = useState('')
 	const [formulaText2, setFormulaText2] = useState('')
-	const [formulaError, setFormulaError] = useState(null)
-	const [formulaError2, setFormulaError2] = useState(null)
 	const [variableX, setVariableX] = useState(null)
 	const [variableY, setVariableY] = useState(null)
 	const [variableZ, setVariableZ] = useState(null)
 	const [alt, setAlt] = useState(0)
 	const [varEqual, setVarEqual] = useState(0)
 	const [trueMean, setTrueMean] = useState(0)
-	const [trueMeanError, setTrueMeanError] = useState(null)
 	const [confidenceLevel, setConfidenceLevel] = useState(0.95)
-	const [confidenceLevelError, setConfidenceLevelError] = useState(null)
-	const [level, setLevel] = useState(0.95)
 	const [paired, setPaired] = useState(false)
 	const [groups, setGroups] = useState(null)
 	const [blocks, setBlocks] = useState(null)
 	const [matrix, setMatrix] = useState([])
 	const [corr, setCorr] = useState(0)
+	const [successes, setSuccesses] = useState(1)
+	const [trials, setTrials] = useState(1)
+	const [prob, setProb] = useState(0.5)
+	const [datarangeError, setDatarangeError] = useState(null)
+	const [formulaError, setFormulaError] = useState(null)
+	const [formulaError2, setFormulaError2] = useState(null)
+	const [trueMeanError, setTrueMeanError] = useState(null)
+	const [confidenceLevelError, setConfidenceLevelError] = useState(null)
+	const [successesError, setSuccessesError] = useState(null)
+	const [trialsError, setTrialsError] = useState(null)
 	const [error, setError] = useState(null)
 	const [loading, setLoading] = useState(false)
 
@@ -171,12 +246,31 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 
 	const handleUpdateAlt = activeOption => setAlt(activeOption)
 
+	const handleChangeSuccesses = e => {
+		let input = e.target.value
+		setSuccesses(input)
+		if (Number.isInteger(parseFloat(input))) {
+			setSuccessesError(null)
+		} else {
+			setSuccessesError("Successes must be a positive integer greater or equal to the number of trials.")
+		}
+	}
+
+	const handleChangeTrials = e => {
+		let input = e.target.value
+		setTrials(input)
+		if (Number.isInteger(parseFloat(input))) {
+			setTrialsError(null)
+		} else {
+			setTrialsError("Trials must be a nonnegative integer.")
+		}
+	}
+
 	const handleChangeTrueMean = e => {
 		let input = e.target.value
 		setTrueMean(input)
-
 		if (isNaN(parseFloat(input))) {
-			setTrueMeanError("True mean must be a number")
+			setTrueMeanError("True mean must be a number.")
 		} else {
 			setTrueMeanError(null)
 		}
@@ -186,21 +280,9 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		let input = e.target.value
 		setConfidenceLevel(input)
 		if (isNaN(parseFloat(input))) {
-			setConfidenceLevelError("Confidence level must be a number")
+			setConfidenceLevelError("Confidence level must be a number.")
 		} else if (parseFloat(input) > 1 || parseFloat(input) < 0) {
-			setConfidenceLevelError("Confidence Level must be between 0 and 1")
-		} else {
-			setConfidenceLevelError(null)
-		}
-	}
-
-	const handleChangeLevel = e => {
-		let input = e.target.value
-		setLevel(input)
-		if (isNaN(parseFloat(input))) {
-			setConfidenceLevelError("Confidence level must be a number")
-		} else if (parseFloat(input) > 1 || parseFloat(input) < 0) {
-			setConfidenceLevelError("Confidence Level must be between 0 and 1")
+			setConfidenceLevelError("Confidence Level must be between 0 and 1.")
 		} else {
 			setConfidenceLevelError(null)
 		}
@@ -239,7 +321,6 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			varEqual,
 			trueMean,
 			confidenceLevel,
-			level,
 			paired,
 			matrix.length > 0 ? cbindDependents(matrix, variables) : matrix,
 			corr
@@ -249,7 +330,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			setLoading(false)
 			return
 		}
-		let formulaData = setFormula(slides, statisticalFunction)
+		let formulaData = setFormula(slides, datarange, statisticalFunction)
 		let statName = statistics[statistic].key + ' '
 			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[statistic].key)
 		let sparkData = setSparkData(slides, statisticalFunction)
@@ -283,7 +364,10 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		setLoading(false)
 	}
 
-	const isInvalid = variables.length < 1 || trueMeanError !== null || confidenceLevelError !== null
+	const isInvalid = variables.length < 1
+		|| trueMeanError !== null
+		|| confidenceLevelError !== null
+		|| datarangeError !== null
 
 	return (
     <>
@@ -293,6 +377,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			<div className='rightsidebar-heading'>
 				{statistics[statistic].key}
 			</div>
+			<DataRange datarange={datarange} setDatarange={setDatarange} error={datarangeError} setError={setDatarangeError} />
 			{statistics[statistic].arguments.includes("oneWayAnova") &&
 				<Anova
 					variables={variables}
@@ -429,7 +514,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					name={variables[variableZ]}
 				/>}
 			{statistics[statistic].arguments.includes("groups") &&
-	        	<Variable
+	       <Variable
 					label="Grouping factor"
 					onChange={handleUpdateGroups}
 					options={variables}
@@ -442,71 +527,55 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					options={variables}
 					name={variables[blocks]}
 				/>}
-	        {statistics[statistic].arguments.includes("varEqual") &&
+	    {statistics[statistic].arguments.includes("varEqual") &&
 				<Variable
 					label="Equal variance or pooled variance"
 					onChange={handleChangeVarEqual}
 					options={VAR_EQUAL}
 					name={VAR_EQUAL[varEqual]}
 				/>}
-	        {statistics[statistic].arguments.includes("alt") &&
-	        	<Variable
+	    {statistics[statistic].arguments.includes("alt") &&
+	      <Variable
 					label="Alternative"
 					onChange={handleUpdateAlt}
 					options={ALTERNATIVES.map(alternative => {return alternative.replace(".", " ")})}
 					name={ALTERNATIVES[alt]}
 				/>}
-	        {statistics[statistic].arguments.includes("mu") &&
-				<div>
-					<div className='rightsidebar-label'>
-						True value of the mean (or difference in means)
-					</div>
-					<div className='rightsidebar-variable'>
-			        	<input
-							type="number"
-							name="trueMean"
-							value={trueMean}
-							onChange={handleChangeTrueMean}
-							className='rightsidebar-input'
-						/>
-						{trueMeanError && <p>{trueMeanError}</p>}
-					</div>
-				</div>}
-	        {/*{statistics[statistic].arguments.includes("paired") &&
-	        	<input
+			{statistics[statistic].arguments.includes("successes") &&
+				<Number
+					label='Number of successes'
+					value={successes}
+					onChange={handleChangeSuccesses}
+					error={successesError}
+				/>}
+			{statistics[statistic].arguments.includes("trials") &&
+				<Number
+					label='Number of trials'
+					value={trials}
+					onChange={handleChangeTrials}
+					error={trialsError}
+				/>}
+	    {statistics[statistic].arguments.includes("mu") &&
+				<Number
+					label='True value of the mean (or difference in means)'
+					value={trueMean}
+					onChange={handleChangeTrueMean}
+					error={trueMeanError}
+				/>}
+	    {/*{statistics[statistic].arguments.includes("paired") &&
+	      <input
 					type="checkbox"
 					name="paired"
 					value={paired}
 					onChange={handleChangePaired}
 				/>}*/}
-	        {statistics[statistic].arguments.includes("conf") &&
-				<div>
-					<div className='rightsidebar-label'>Confidence level</div>
-					<div className='rightsidebar-variable'>
-			        	<input
-							type="number"
-							name="confidenceLevel"
-							value={confidenceLevel}
-							onChange={handleChangeConfidenceLevel}
-							className='rightsidebar-input'
-						/>
-						{confidenceLevelError && <p>{confidenceLevelError}</p>}
-					</div>
-				</div>}
-			{statistics[statistic].arguments.includes("level") &&
-				<div>
-					<div className='rightsidebar-label'>Confidence level</div>
-					<div className='rightsidebar-variable'>
-			        	<input
-							type="number"
-							name="confidenceLevel"
-							value={level}
-							onChange={handleChangeLevel}
-							className='rightsidebar-input'
-						/>
-						{confidenceLevelError && <p>{confidenceLevelError}</p>}
-					</div>
-				</div>}
+	    {statistics[statistic].arguments.includes("conf") &&
+				<Number
+					label='Confidence level'
+					value={confidenceLevel}
+					onChange={handleChangeConfidenceLevel}
+					error={confidenceLevelError}
+				/>}
 			{statistics[statistic].arguments.includes("matrix") &&
 				<Matrix
 					variables={variables}

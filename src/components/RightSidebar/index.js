@@ -11,9 +11,9 @@ import StatisticsEdtior from './StatisticsEditor'
 import Optimize from './Optimize'
 import Formulas from './formulas'
 
-const RightSidebar = ({ rightSidebar, statistic, setStatistic, schart, setSchart }) => {
+const RightSidebar = ({ rightSidebar, statistic, setStatistic }) => {
   const RIGHTSIDEBAR_STATES = {
-    charteditor: <ChartEditor schart={schart} setSchart={setSchart} />,
+    charteditor: <ChartEditor />,
     statistics: <StatisticsEdtior statistic={statistic} setStatistic={setStatistic} />,
     optimize: <Optimize />,
     formulas: <Formulas />

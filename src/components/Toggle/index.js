@@ -76,23 +76,22 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
     const i = charts.findIndex(item => item.key === chart)
     // setSchart([i])
     if (slides.data.type === "sheet" || slides.data.type === "input") {
-      const { name } = slides.data
-      const { selector } = slides.sheet
-      const {
-        sri, sci, eri, eci,
-      } = selector.range;
+      const { name } = slides.data;
+      const { selector } = slides.sheet;
+      const { sri, sci, eri, eci } = selector.range;
+      const datarange = '`' + name + '`' + '[' + (sri+1) + ':' + (eri+1) + ',' + (sci+1) + ':' + (eci+1) + ']'
       const data = {
-        charts: [charts[i].type],
-        datarange: translateR(columnToLetter(sci) + sri + ":" + columnToLetter(eci) + eri, name)
+        types: [charts[i].type],
+        range: datarange
       }
-      const d = slides.insertChart(dataNames, current, data, name)
-      onSetDataNames([
-        ...dataNames.slice(0, current+1),
-        d.name,
-        ...dataNames.slice(current+1)
-      ])
-      onSetCurrent(current+1)
-      slides.data = d
+      const d = slides.insertChart(dataNames, current, data)
+      // onSetDataNames([
+      //   ...dataNames.slice(0, current+1),
+      //   d.name,
+      //   ...dataNames.slice(current+1)
+      // ])
+      // onSetCurrent(current+1)
+      // slides.data = d
     }
   }
 

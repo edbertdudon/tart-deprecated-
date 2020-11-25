@@ -1,6 +1,18 @@
 import React from 'react'
 import withFormula from './withFormula'
-import { readableFormula } from './functions'
+
+const OPERATORS_REGEX = /\+|\~/g
+
+function readableFormula(formula) {
+  if (formula == "") return "y = b0 + b1X"
+  let formulaAsArray = formula.split(OPERATORS_REGEX)
+  let newFormula = formulaAsArray[0] + " = b0"
+  for (var i=1; i<formulaAsArray.length; i++) {
+    let nextVar = " + " + "b"+ i + formulaAsArray[i]
+    newFormula = newFormula.concat(nextVar)
+  }
+  return newFormula
+}
 
 const Formula = ({ formulaText, variables, onSetFormula, formulaError}) =>
 	<div className='rightsidebar-formula'>

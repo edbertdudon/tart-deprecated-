@@ -22,17 +22,16 @@ const Worksheet = () => {
 	const [text, setText] = useState({ text: '', ri: 0, ci: 0 })
 	const [saving, setSaving] = useState(false)
 	const [navigator, setNavigator] = useState(true)
-	const [statistic, setStatistic] = useState(null)
-	const [schart, setSchart] = useState([])
+	const [statistic, setStatistic] = useState(0)
 
 	return (
  		<div className='worksheet' onContextMenu={e => {e.preventDefault(); return false;}}>
 			<Header saving={saving} setSaving={setSaving} />
 			<Toolbar navigator={navigator} setNavigator={setNavigator} />
-			<Toggle setStatistic={setStatistic} setSchart={setSchart} />
+			<Toggle setStatistic={setStatistic} />
 			<Formulabar text={text} />
 			{navigator && <Navigator />}
-			<RightSidebar statistic={statistic} setStatistic={setStatistic} schart={schart} setSchart={setSchart} />
+			<RightSidebar statistic={statistic} setStatistic={setStatistic} />
 			<SpreadsheetWrapper setSaving={setSaving} setText={setText} />
 		</div>
 	)

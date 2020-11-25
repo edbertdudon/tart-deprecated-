@@ -80,17 +80,18 @@ const SOLVER_CONSTRAINTS = [
 const OPTIMX_METHODS = [
   'Nelder-mead', 'L-BFGS-B', 'BFGS', 'CG', 'nlm', 'nlminb', 'spg', 'ucminf', 'newuoa', 'bobyqa', 'nmkb', 'hjkb', 'Rcgmin', 'Rvmmin'
 ]
-
-var RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g
+var VALID_RANGE_REFERENCES = /^\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*$/
+var VALID_FORMULA_CELL_REFERENCES = /^\$?[A-Z]+\$?[0-9]*$/;
+var RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g;
 var FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
 var LETTERS_REFERENCE = /\$?[A-Z]+/g;
 var NUMBERS_REFERENCE = /\$?[0-9]+/g;
 
-export const validateCell = (v) => {
+const validateCell = (v) => {
+	if (!VALID_FORMULA_CELL_REFERENCES.test(v)) {
+		return("Invalid cell reference.")
+	}
 	const mc = v.match(FORMULA_CELL_REFERENCES)
-  if (mc === null) {
-    return("Invalid cell.")
-  }
   const mr = v.match(RANGE_REFERENCES)
   if (mr !== null) {
     const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
@@ -102,7 +103,16 @@ export const validateCell = (v) => {
   return(null)
 }
 
-export const validateRange = (v) => {
+export const updateCell = (e, setLhs, setError) => {
+	const v = e.target.value
+	setLhs(v)
+	setError(validateCell(v))
+}
+
+const validateRange = (v) => {
+	if (!VALID_RANGE_REFERENCES.test(v)) {
+		return("Invalid cell reference.")
+	}
 	const mc = v.match(FORMULA_CELL_REFERENCES)
   if (mc === null) {
     return("Invalid cell.")
@@ -118,7 +128,16 @@ export const validateRange = (v) => {
   return(null)
 }
 
-export const validateCellRange = (v) => {
+export const updateRange = (e, setLhs, setError) => {
+	const v = e.target.value
+	setLhs(v)
+	setError(validateRange(v))
+}
+
+const validateCellorRange = (v) => {
+	if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
+		return("Invalid cell reference.")
+	}
 	const mc = v.match(FORMULA_CELL_REFERENCES)
   if (mc === null) {
     return("Invalid cell.")
@@ -134,29 +153,64 @@ export const validateCellRange = (v) => {
   return(null)
 }
 
-export const validateCellText = (v, slides, check) => {
-  const mc = v.match(FORMULA_CELL_REFERENCES)
-  if (mc === null) {
-    return("Invalid cell.")
-  }
-  const mr = v.match(RANGE_REFERENCES)
-  if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
-    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
-    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length > 2 || mn.length > 2) {
-      return("Invalid range.")
-    }
-    for (var i=mn[0]-1; i<mn[1]; i++) {
-      for (var j=ml[0]-1; j<ml[1]; j++) {
-        const cellText = check(slides.data.getCellTextOrDefault(i,j))
-				if (cellText != undefined) {
-	        return(cellText)
-				}
-      }
-    }
-  }
-  return(null)
+export const updateCellorRange = (e, setLhs, setError) => {
+	const v = e.target.value
+	setLhs(v)
+	setError(validateCellorRange(v))
 }
+
+// export const validateCellText = (v, slides, check) => {
+// 	if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
+// 		return("Invalid cell reference.")
+// 	}
+//   const mc = v.match(FORMULA_CELL_REFERENCES)
+//   if (mc === null) {
+//     return("Invalid cell.")
+//   }
+//   const mr = v.match(RANGE_REFERENCES)
+//   if (mr !== null) {
+//     const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
+//     const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
+//     if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length > 2 || mn.length > 2) {
+//       return("Invalid range.")
+//     }
+//     for (var i=mn[0]-1; i<mn[1]; i++) {
+//       for (var j=ml[0]-1; j<ml[1]; j++) {
+//         const cellText = check(slides.data.getCellTextOrDefault(i,j))
+// 				if (cellText != undefined) {
+// 	        return(cellText)
+// 				}
+//       }
+//     }
+//   }
+//   return(null)
+// }
+
+// export const updateDir = (e, setDir, setError) => {
+// 	const v = e.target.value
+// 	setDir(v)
+// 	setError(validateCellorRange(v))
+// 	// setError(
+// 	//   validateCellText(v, slides, (cellText) => {
+// 	//     if (cellText !== "=" && cellText !== "<=" && cellText !== ">=") {
+// 	//       return("Direction must be =, <= or >=.")
+// 	//     }
+// 	//   })
+// 	// )
+// }
+//
+// export const updateRhs = (e, setRhs, setError) => {
+// 	const v = e.target.value
+// 	setRhs(v)
+// 	setError(validateCellorRange(v))
+// 	// setError(
+// 	//   validateCellText(v, slides, (cellText) => {
+// 	//     if (isNaN(cellText)) {
+// 	//       return("Range must be numeric.")
+// 	//     }
+// 	//   })
+// 	// )
+// }
 
 const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar }) => {
 	const [objective, setObjective] = useState('')
@@ -430,7 +484,7 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				options={OBJECTIVE_CLASS}
 				name={OBJECTIVE_CLASS[objectiveClass]}
 			/>
-		<div className='rightsidebar-buttonwrapper' onClick={handleMinimize}>
+			<div className='rightsidebar-buttonwrapper' onClick={handleMinimize}>
 				<button className='rightsidebar-button'
 					style={{
 						backgroundColor: minMax === 0 && color[authUser.uid],
