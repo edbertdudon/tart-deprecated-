@@ -46,7 +46,7 @@ function insertText({ target }, itxt) {
   resetTextareaSize.call(this);
 }
 
-const OPERATORS_REGEX = /\+|\-|\*|\/|\~/g
+const OPERATORS_REGEX = /\+|\-|%\*%|\*|\/|\~/g
 
 function keydownEventHandler(evt) {
   const { keyCode, altKey } = evt;
@@ -156,11 +156,20 @@ function suggestItemClick(it) {
     let [l] = nv.slice(nv.length-1);
     eit = l;
     if (eit.length < 1) {
-      this.inputText = `${sit + it.key}(`;
+      // When does this occur? Before changes to suggest requiring 1 character after '='?
+      if (it.key === '%*%') {
+        this.inputText = `${sit + it.key}`;
+      } else {
+        this.inputText = `${sit + it.key}(`;
+      }
       position = this.inputText.length;
       this.inputText += `)${eit}`;
     } else {
-      this.inputText = this.inputText.slice(0, this.inputText.length - l.length) + `${it.key}(`;
+      let formula = `${it.key}`
+      if (formula !== '%*%') {
+        formula += '('
+      }
+      this.inputText = this.inputText.slice(0, this.inputText.length - l.length) + formula;
       position = this.inputText.length;
       // this.inputText += ')';
     }

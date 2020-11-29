@@ -12,6 +12,9 @@ export default class ChartProxy {
   setData(d, datas) {
     d.slides = JSON.stringify(spreadsheetToR(datas))
     d.names = JSON.stringify(datas.map(data => data.name))
-    doChart(d).then(src => this.source = src)
+    doChart(d).then(src => {
+      console.log(src)
+      this.source = src
+    })
   }
 }

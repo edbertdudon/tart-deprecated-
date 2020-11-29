@@ -381,26 +381,26 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 		}
 		console.log(sparkData)
 		console.log(JSON.stringify(spreadsheetToR(slides.datas)))
-		doOptimization(optimizationData)
-			.then(res => {
-				if (typeof res[0] === "string" || res[0] instanceof String) {
-					setError(res)
-					setLoading(false)
-				} else {
-					res.type = "optimize"
-					res.optimization = sparkData
-					const d = slides.insertData(dataNames, current, res, name)
-					onSetDataNames([
-			      ...dataNames.slice(0, current+1),
-			      d.name,
-			      ...dataNames.slice(current+1)
-			    ])
-					onSetCurrent(current+1)
-					slides.data = d
-					onSetRightSidebar('none')
-					setLoading(false)
-				}
-			})
+		// doOptimization(optimizationData)
+		// 	.then(res => {
+		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
+		// 			setError(res)
+		// 			setLoading(false)
+		// 		} else {
+		// 			res.type = "optimize"
+		// 			res.optimization = sparkData
+		// 			const d = slides.insertData(dataNames, current, res, name)
+		// 			onSetDataNames([
+		// 	      ...dataNames.slice(0, current+1),
+		// 	      d.name,
+		// 	      ...dataNames.slice(current+1)
+		// 	    ])
+		// 			onSetCurrent(current+1)
+		// 			slides.data = d
+		// 			onSetRightSidebar('none')
+		// 			setLoading(false)
+		// 		}
+		// 	})
 	}
 
 	const handleClose = () => {

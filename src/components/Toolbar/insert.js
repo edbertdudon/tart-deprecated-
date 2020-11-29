@@ -8,12 +8,13 @@ import withDropdown from '../Dropdown'
 import { withFirebase } from '../Firebase'
 import { OFF_COLOR } from '../../constants/off-color'
 
-const Insert = ({ color, authUser, slides, dataNames, current, onSetDataNames, onSetCurrent }) => {
+const Insert = ({ color, authUser, slides, dataNames, current, rightSidebar, onSetDataNames, onSetCurrent, onSetRightSidebar }) => {
 	const INSERT_DROPDOWN = [
 		{key: 'Sheet', type: 'item'},
 		{key: 'Chart', type: 'item'},
 		{key: 'Statistics', type: 'item'},
 		{key: 'Formulas', type: 'item'},
+		{key: 'Optimization', type: 'item'},
 	]
 
 	const handleInsert = key => {
@@ -38,8 +39,19 @@ const Insert = ({ color, authUser, slides, dataNames, current, onSetDataNames, o
 			case INSERT_DROPDOWN[3].key:
 				document.getElementById("formulastoggle").click()
 				break;
+			case INSERT_DROPDOWN[4].key:
+				handleToggle('optimize')
+				break;
 		}
 	}
+
+  const handleToggle = select => {
+    if (rightSidebar !== select) {
+      onSetRightSidebar(select)
+    } else {
+      onSetRightSidebar('none')
+    }
+  }
 
 	return (
     <InsertWithDropdown text='Insert' items={INSERT_DROPDOWN} onSelect={handleInsert} color={OFF_COLOR[color[authUser.uid]]} />
@@ -54,11 +66,13 @@ const mapStateToProps = state => ({
 	slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
   current: (state.currentState.current || 0),
+	rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
 })
 
 const mapDispatchToProps = dispatch => ({
   onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
+	onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 })
 
 export default compose(

@@ -75,16 +75,18 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
     // onSetRightSidebar('charteditor')
     const i = charts.findIndex(item => item.key === chart)
     // setSchart([i])
+    // console.log(slides.data.type)
     if (slides.data.type === "sheet" || slides.data.type === "input") {
       const { name } = slides.data;
       const { selector } = slides.sheet;
       const { sri, sci, eri, eci } = selector.range;
       const datarange = '`' + name + '`' + '[' + (sri+1) + ':' + (eri+1) + ',' + (sci+1) + ':' + (eci+1) + ']'
       const data = {
-        types: [charts[i].type],
+        types: charts[i].type,
         range: datarange
       }
       const d = slides.insertChart(dataNames, current, data)
+      console.log(JSON.stringify(slides.getData()))
       // onSetDataNames([
       //   ...dataNames.slice(0, current+1),
       //   d.name,

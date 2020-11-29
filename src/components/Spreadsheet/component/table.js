@@ -64,9 +64,10 @@ export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0,
 
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
-  let cellText = await rRender(cell.text || '', data, datas, rindex, cindex)
-  yoffset = 25
-  xoffset = 60
+  let cellText = rRender(cell.text || '', data, datas, rindex, cindex)
+  // let cellText = await rRender(cell.text || '', data, datas, rindex, cindex)
+  // yoffset = 25
+  // xoffset = 60
   let frozen = false;
   if ('editable' in cell && cell.editable === false) {
     frozen = true;
@@ -333,6 +334,7 @@ class Table {
     const tx = data.freezeTotalWidth();
     const ty = data.freezeTotalHeight();
     const { x, y } = data.scroll;
+
     // 1
     renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
     renderContent.call(this, viewRange, fw, fh, -x, -y)

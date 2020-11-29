@@ -144,7 +144,17 @@ function mapSpreadsheet(data, cb) {
 export function spreadsheetToR(datas) {
   let newDatas = datas.map(data => {
     const {rows, cols } = data
-    let newData = createEmptyMatrix(rows.len, cols.len)
+    const arows = Object.keys(rows._)
+    const nrows = Math.max(...arows)+1
+    let ncols = 0
+    arows.forEach(row => {
+      const l = Math.max(...Object.keys(rows._.[row].cells))
+      if (l > ncols) {
+        ncols = l
+      }
+    });
+    ncols = ncols+1
+    let newData = createEmptyMatrix(nrows, ncols)
     newData = mapSpreadsheet(newData, (ri, ci) => {
       if (rows._.[ri] != undefined && rows._.[ri].cells[ci] != undefined) {
         const cell = rows._.[ri].cells[ci].text
@@ -198,6 +208,7 @@ const doParse = (obj, data, ri, ci) => {
     .then(res => res.json())
     .then(res => {
       let result = JSON.parse(res[0])
+      console.log(result)
       if (result.length > 1 || result[0].length > 1) {
         if (!Array.isArray(result[0])) {
           result = [result]

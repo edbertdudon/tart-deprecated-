@@ -15,7 +15,7 @@ import Icon from '@mdi/react';
 import { mdiLoading, mdiClose } from '@mdi/js'
 
 import statistics from '../statisticsR'
-import { doRegression, spreadsheetToR } from '../../Spreadsheet/cloudr'
+import { columnToLetter, translateR, spreadsheetToR, doRegression } from '../../Spreadsheet/cloudr'
 import { getMaxNumberCustomSheet } from '../../../functions'
 import DataRange from '../datarange'
 import Anova from './Anova'
@@ -27,24 +27,6 @@ import Matrix from './Matrix'
 import MultipleLinearRegression from './MultipleLinearRegression'
 import { withFirebase } from '../../Firebase'
 
-function setFormula(slides, datarange, formula) {
-	const current = slides.bottombar.dataNames.indexOf(slides.data.name)
-	return {
-		slides: JSON.stringify(spreadsheetToR(slides.datas)),
-		names: JSON.stringify(slides.bottombar.dataNames),
-		formulatext: formula,
-		range: datarange,
-	}
-}
-
-function setSparkData(slides, formula) {
-	const current = slides.bottombar.dataNames.indexOf(slides.data.name)
-	return {
-		formulatext: formula,
-		name: slides.datas[current].name,
-	}
-}
-
 const ALTERNATIVES = ["two.sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
 const TEST_STATISTICS = ["Pillai", "Wilks", "Hotelling-Lawley", "Roy"]
@@ -53,8 +35,7 @@ const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
 function setStatisticalFunciton(
 		statistic, oneWayAnova, randomizedBlockDesign, twoWayAnova, analysisOfCovariance, oneWayWithin, twoWayWithin, twoWayBetween, test,
 		linearRegressionVars, linearRegressionVars2, formulaText, formulaText2, variableX, variableY, variableZ, groups, blocks,
-		alt, varEqual, trueMean, confidenceLevel, level, paired, matrix, corr
-	) {
+		alt, varEqual, trueMean, confidenceLevel, paired, matrix, corr, successes, trials, prob) {
 	let isVarEqual = VAR_EQUAL[varEqual] === VAR_EQUAL[1]
 	let statisticalFunction = statistic.function
 	if (oneWayAnova != "") statisticalFunction = statisticalFunction + oneWayAnova + ",currentLattitude"
@@ -69,6 +50,11 @@ function setStatisticalFunciton(
 	if (formulaText != "") statisticalFunction = statisticalFunction + "lm(" + formulaText + ",currentLattitude)"
 	if (formulaText2 != "") statisticalFunction = statisticalFunction + "lm(" + formulaText2 + ",currentLattitude)"
 
+	// binomial
+	if (statistic.function === "binom.test(") {
+		statisticalFunction = statisticalFunction + successes + "," + trials + ",p=" + prob
+	}
+
 	// supplemental variables
 	if (variableX != null) statisticalFunction = statisticalFunction + ",x=currentLattitude$" + variableX
 	if (variableY != null) statisticalFunction = statisticalFunction + ",y=currentLattitude$" + variableY
@@ -78,7 +64,6 @@ function setStatisticalFunciton(
 	if (trueMean != 0) statisticalFunction = statisticalFunction + ",mu=" + trueMean
 	if (paired != false) statisticalFunction = statisticalFunction + ",var.equal=" + paired
 	if (confidenceLevel != 0.95) statisticalFunction = statisticalFunction + ",conf.level=" + confidenceLevel
-	if (level != 0.95) statisticalFunction = statisticalFunction + ",level=" + level
 
 	if (statisticalFunction.includes('cbind(')) {
 		statisticalFunction = 'tidy(' + statisticalFunction + '),test="' + TEST_STATISTICS[test] + '")'
@@ -119,18 +104,19 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [variableX, setVariableX] = useState(null)
 	const [variableY, setVariableY] = useState(null)
 	const [variableZ, setVariableZ] = useState(null)
+	const [groups, setGroups] = useState(null)
+	const [blocks, setBlocks] = useState(null)
 	const [alt, setAlt] = useState(0)
 	const [varEqual, setVarEqual] = useState(0)
 	const [trueMean, setTrueMean] = useState(0)
 	const [confidenceLevel, setConfidenceLevel] = useState(0.95)
 	const [paired, setPaired] = useState(false)
-	const [groups, setGroups] = useState(null)
-	const [blocks, setBlocks] = useState(null)
 	const [matrix, setMatrix] = useState([])
 	const [corr, setCorr] = useState(0)
 	const [successes, setSuccesses] = useState(1)
 	const [trials, setTrials] = useState(1)
 	const [prob, setProb] = useState(0.5)
+	const [firstRow, setFirstRow] = useState(true)
 	const [datarangeError, setDatarangeError] = useState(null)
 	const [formulaError, setFormulaError] = useState(null)
 	const [formulaError2, setFormulaError2] = useState(null)
@@ -142,9 +128,20 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [loading, setLoading] = useState(false)
 
 	useEffect(() => {
-		if (slides.data.type !== "chart" && !(Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object)) {
-			setVariables(Object.values(slides.data.rows._[0].cells)
-				.map(variable => Object.values(variable)[0]))
+		const { data } = slides
+		if ((data.type === "sheet" || data.type === "input") && "0" in data.rows._) {
+			const rownames = Object.values(data.rows._[0].cells)
+				.map(cell => cell.text)
+			const rows = Object.keys(data.rows._)
+				.map(row => parseInt(row)+1)
+			const cols = rownames.map((t, i) => columnToLetter(i+1))
+			setDatarange(cols[0] + rows[0] + ":" + cols[cols.length-1] + rows[rows.length-1])
+			if (rownames.every(isNaN)) {
+				setVariables(rownames)
+			} else {
+				setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
+				setFirstRow(false)
+			}
 		}
 	}, [])
 
@@ -323,39 +320,67 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			confidenceLevel,
 			paired,
 			matrix.length > 0 ? cbindDependents(matrix, variables) : matrix,
-			corr
+			corr,
+			successes,
+			trials,
+			prob,
 		)
 		if (statisticalFunction.includes("()")) {
 			setError('Select columns to analyze')
 			setLoading(false)
 			return
 		}
-		let formulaData = setFormula(slides, datarange, statisticalFunction)
-		let statName = statistics[statistic].key + ' '
-			+ getMaxNumberCustomSheet(slides.bottombar.dataNames, statistics[statistic].key)
-		let sparkData = setSparkData(slides, statisticalFunction)
-		doRegression(formulaData)
-			.then(res => {
-				if (typeof res[0] === "string" || res[0] instanceof String) {
-					setError(res)
-					setLoading(false)
-				} else {
-					res.name = statName
-					res.type = "regression"
-					res.regression = sparkData
-					const d = slides.insertData(dataNames, current, res, name)
-					onSetDataNames([
-			      ...dataNames.slice(0, current+1),
-			      d.name,
-			      ...dataNames.slice(current+1)
-			    ])
-					onSetCurrent(current+1)
-					slides.data = d
-					onSetRightSidebar('none')
-					setStatistic(null)
-					setLoading(false)
-				}
-		  })
+		const { datas, data } = slides
+		let sparkData = {
+			formulatext: statisticalFunction,
+			range: translateR(datarange, data.name),
+			firstrow: firstRow
+		}
+		let formulaData = {
+			...sparkData,
+			slides: JSON.stringify(spreadsheetToR(datas)),
+			names: JSON.stringify(datas.map(data => data.name))
+		}
+		const key = statistics[statistic].key
+		const statName = key + ' ' + getMaxNumberCustomSheet(datas.map(data => data.name), key)
+		console.log(formulaData)
+		// doRegression(formulaData)
+		// 	.then(res => {
+		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
+		// 			setError(res)
+		// 			setLoading(false)
+		// 		} else {
+		// 			res.name = statName
+		// 			res.type = "regression"
+		// 			res.regression = sparkData
+		// 			const d = slides.insertData(dataNames, current, res, name)
+		// 			onSetDataNames([
+		// 	      ...dataNames.slice(0, current+1),
+		// 	      d.name,
+		// 	      ...dataNames.slice(current+1)
+		// 	    ])
+		// 			onSetCurrent(current+1)
+		// 			data = d
+		// 			onSetRightSidebar('none')
+		// 			setStatistic(null)
+		// 			setLoading(false)
+		// 		}
+		//   })
+	}
+
+	const handleFirstrow = () => {
+		const { data } = slides
+		const rownames = Object.values(data.rows._[0].cells)
+			.map(cell => cell.text)
+		const rows = Object.keys(data.rows._)
+			.map(row => parseInt(row)+1)
+		const cols = rownames.map((t, i) => columnToLetter(i+1))
+		if (firstRow) {
+			setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
+		} else {
+			setVariables(rownames)
+		}
+		setFirstRow(!firstRow)
 	}
 
 	const handleClose = () => {
@@ -589,6 +614,16 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					options={CORRELATION_TYPE}
 					name={CORRELATION_TYPE[corr]}
 				/>}
+			<div className='rightsidebar-buttonwrapper' onClick={handleFirstrow}>
+				<button className='rightsidebar-button'
+					style={{
+						backgroundColor: firstRow === true && color[authUser.uid],
+						boxShadow: firstRow === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
+	          border: firstRow === true ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
+					}}
+				></button>
+				<div className='rightsidebar-buttontext'>First row as header</div>
+			</div>
 			<div className='rightsidebar-text'>
 				{"description" in statistics[statistic] && <p>{statistics[statistic].description}</p>}
 				{error && <p>{error}</p>}

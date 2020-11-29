@@ -654,6 +654,10 @@ function sheetInitEvents() {
       const { offsetX, offsetY } = evt;
       if (offsetY <= 0) colResizer.hide();
       if (offsetX <= 0) rowResizer.hide();
+    })
+    .on('mousewheel', (evt) => {
+      evt.stopPropagation();
+      evt.preventDefault();
     });
 
   selector.inputChange = (v) => {

@@ -150,7 +150,6 @@ class Spreadsheet {
   }
 
   reRender() {
-    this.sheet.table.render();
     return this;
   }
 

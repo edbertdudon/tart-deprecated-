@@ -19,11 +19,9 @@ export const TABLE_DROPDOWN = [
   {key: 'Unfreeze Cells', type: 'item'},
   {type: 'divider'},
   {key: 'Filter Cell', type: 'item'},
-  {type: 'divider'},
-  {key: 'Optimize', type: 'item'},
 ]
 
-const Table = ({ color, authUser, slides, rightSidebar, onSetRightSidebar }) => {
+const Table = ({ color, authUser, slides }) => {
   const handleTable = key => {
     const { data } = slides
     switch (key) {
@@ -55,19 +53,8 @@ const Table = ({ color, authUser, slides, rightSidebar, onSetRightSidebar }) => 
       case TABLE_DROPDOWN[12].key:
         data.autofilter()
         break;
-      case TABLE_DROPDOWN[14].key:
-        handleToggle('optimize')
-        break;
     }
     slides.reRender()
-  }
-
-  const handleToggle = (select) => {
-    if (rightSidebar !== select) {
-      onSetRightSidebar(select)
-    } else {
-      onSetRightSidebar('none')
-    }
   }
 
   return (
@@ -81,16 +68,10 @@ const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
-  rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
-})
-
-const mapDispatchToProps = dispatch => ({
-  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 })
 
 export default compose(
   connect(
     mapStateToProps,
-    mapDispatchToProps,
   ),
 )(Table)

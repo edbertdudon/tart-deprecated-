@@ -52,6 +52,7 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color,
 			const dataNames = s.datas.map(data => data.name)
 			onSetDataNames([...dataNames])
 			onSetCurrent(0)
+			const spreadsheet = document.getElementById('spreadsheet')
 			console.log(s)
 		// 	if (firstUpdate.current) {
 		// 		firstUpdate.current = false;
