@@ -7,7 +7,6 @@ import Header from './header'
 import { stox } from '../../functions'
 import ImportConnection from './importconnection'
 import ImportDatabase from '../Connectors/importdatabase'
-import ImportDatabaseOracle from '../Connectors/importdatabaseoracle'
 import { getMaxNumberFromFiles, xtos } from '../../functions'
 import withDropdown from '../Dropdown'
 import withModal from '../Modal'
@@ -176,7 +175,7 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
       <ImportConnectionWithModal isOpen={isOpen} setIsOpen={setIsOpen} />
       <ImportDatabaseWithModal databaseType='MySQL' isOpen={isOpenDatabaseMysql} setIsOpen={setIsOpenDatabaseMysql} />
       <ImportDatabaseWithModal databaseType='Microsoft SQL Server' isOpen={isOpenDatabaseSqlserver} setIsOpen={setIsOpenDatabaseSqlserver} />
-      <ImportDatabaseOracleWithModal isOpen={isOpenDatabaseOracle} setIsOpen={setIsOpenDatabaseOracle} />
+      <ImportDatabaseWithModal databaseType='OracleDB' isOpen={isOpenDatabaseOracle} setIsOpen={setIsOpenDatabaseOracle} />
     </>
   )
 }
@@ -184,7 +183,6 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
 const FileWithDropdown = withDropdown(Header)
 const ImportConnectionWithModal = withModal(ImportConnection)
 const ImportDatabaseWithModal = withModal(ImportDatabase)
-const ImportDatabaseOracleWithModal = withModal(ImportDatabaseOracle)
 
 const mapStateToProps = state => ({
   authUser: state.sessionState.authUser,

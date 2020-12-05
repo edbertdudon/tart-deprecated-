@@ -56,9 +56,9 @@ function setStatisticalFunciton(
 	}
 
 	// supplemental variables
-	if (variableX != null) statisticalFunction = statisticalFunction + ",x=currentLattitude$" + variableX
-	if (variableY != null) statisticalFunction = statisticalFunction + ",y=currentLattitude$" + variableY
-	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=currentLattitude$" + variableZ
+	if (variableX != null) statisticalFunction = statisticalFunction + ",x=currentLattitude$`" + variableX + '`'
+	if (variableY != null) statisticalFunction = statisticalFunction + ",y=currentLattitude$`" + variableY + '`'
+	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=currentLattitude$`" + variableZ + '`'
 	if (ALTERNATIVES[alt] != "two.sided") statisticalFunction = statisticalFunction + ",alternative=" + ALTERNATIVES[alt]
 	if (isVarEqual != false) statisticalFunction = statisticalFunction + ",var.equal=TRUE"
 	if (trueMean != 0) statisticalFunction = statisticalFunction + ",mu=" + trueMean
@@ -343,29 +343,28 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		}
 		const key = statistics[statistic].key
 		const statName = key + ' ' + getMaxNumberCustomSheet(datas.map(data => data.name), key)
-		console.log(formulaData)
-		// doRegression(formulaData)
-		// 	.then(res => {
-		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
-		// 			setError(res)
-		// 			setLoading(false)
-		// 		} else {
-		// 			res.name = statName
-		// 			res.type = "regression"
-		// 			res.regression = sparkData
-		// 			const d = slides.insertData(dataNames, current, res, name)
-		// 			onSetDataNames([
-		// 	      ...dataNames.slice(0, current+1),
-		// 	      d.name,
-		// 	      ...dataNames.slice(current+1)
-		// 	    ])
-		// 			onSetCurrent(current+1)
-		// 			data = d
-		// 			onSetRightSidebar('none')
-		// 			setStatistic(null)
-		// 			setLoading(false)
-		// 		}
-		//   })
+		doRegression(formulaData)
+			.then(res => {
+				if (typeof res[0] === "string" || res[0] instanceof String) {
+					setError(res)
+					setLoading(false)
+				} else {
+					res.name = statName
+					res.type = "regression"
+					res.regression = sparkData
+					const d = slides.insertData(dataNames, current, res, name)
+					onSetDataNames([
+			      ...dataNames.slice(0, current+1),
+			      d.name,
+			      ...dataNames.slice(current+1)
+			    ])
+					onSetCurrent(current+1)
+					data = d
+					onSetRightSidebar('none')
+					setStatistic(null)
+					setLoading(false)
+				}
+		  })
 	}
 
 	const handleFirstrow = () => {

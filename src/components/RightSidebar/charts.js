@@ -37,24 +37,29 @@ const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts })
 	const [filteredOption, setFilteredOption] = useState(charts)
 
 	const handleSelectChart = chart => {
-		setRightSidebar('charteditor')
-		let chartNumber
-		for (var i=0; i<charts.length; i++) {
-			if (chart === charts[i].key) {
-				chartNumber = i
-				break;
+		// setRightSidebar('charteditor')
+		// let chartNumber
+		// for (var i=0; i<charts.length; i++) {
+		// 	if (chart === charts[i].key) {
+		// 		chartNumber = i
+		// 		break;
+		// 	}
+		// }
+		// setSelectedCharts([chartNumber])
+		const { data } = slides
+		if (data.type !== "chart") {
+			// let variables
+			// if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
+			// 	variables = []
+			// } else {
+			// 	variables = Object.values(slides.data.rows._[0].cells)
+			// 		.map(variable => Object.values(variable)[0])
+			// }
+			// let chartData = setChart(slides, variables, [chartNumber], 0, 1, 2)
+			let chartData = {
+				name: data.name,
+				type: chart,
 			}
-		}
-		setSelectedCharts([chartNumber])
-		if (slides.data.type !== "chart") {
-			let variables
-			if (Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) {
-				variables = []
-			} else {
-				variables = Object.values(slides.data.rows._[0].cells)
-					.map(variable => Object.values(variable)[0])
-			}
-			let chartData = setChart(slides, variables, [chartNumber], 0, 1, 2)
 			console.log(chartData)
 			// dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
 			// setCurrentSlide(currentSlide+1)

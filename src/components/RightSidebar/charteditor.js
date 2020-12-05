@@ -1,84 +1,132 @@
+//
+//  Chart editor
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
-
 import charts from './chartsR'
+import DataRange from './datarange'
 import withLists from './withLists'
 import withListsDropdown from './withListsDropdown'
-import { setChart } from './charts'
+import { columnToLetter, translateR, spreadsheetToR } from '../Spreadsheet/cloudR'
 
-const ChartEditor = ({ slides }) => {
+function setChart(datarange, name, schart, variablex, variabley, firstRow) {
+	let data = {
+		range: translateR(datarange, name),
+		types: schart.map(c => charts[c].type).join("+"),
+		variablex: variablex,
+		firstrow: firstRow,
+	}
+	if (Math.max(...schart.map(c => charts[c].variables)) > 1) {
+		chartData["variabley"] = variabley
+	}
+	return(data)
+}
+
+const ChartEditor = ({ authUser, color, slides }) => {
 	const [schart, setSchart] = useState([0])
 	const [datarange, setDatarange] = useState('')
 	const [variables, setVariables] = useState([])
-	const [variableX, setVariableX] = useState(0)
-	const [variableY, setVariableY] = useState(1)
+	const [variableX, setVariableX] = useState(null)
+	const [variableY, setVariableY] = useState(null)
+	const [firstRow, setFirstRow] = useState(true)
+	const [datarangeError, setDatarangeError] = useState(null)
 
 	useEffect(() => {
-		// if ((Object.keys(slides.data.rows._).length === 0 && slides.data.rows._.constructor === Object) || !("0" in slides.data.rows._)) {
-		// 	return
-		// }
-		// let current
-		// if (slides.data.type === "chart") {
-		// 	current = slides.bottombar.dataNames.indexOf(slides.data.chart.name)
-		// } else {
-		// 	current = slides.bottombar.dataNames.indexOf(slides.data.name)
-		// }
-		// let slide = slides.datas[current]
-		// if (!(current == -1)) {
-		// 	setVariables(Object.values(slides.data.rows._[0].cells)
-		// 		.map(variable => Object.values(variable)[0]))
-		// }
-		// if (slides.data.type === "chart") {
-		// 	let varx = slides.data.chart.variablex
-		// 	let currentVarX = newOptions.map(variable => {return variable})
-		// 		.indexOf(varx)
-		// 	setVariableX(currentVarX)
-		//
-		// 	if ("variabley" in slides[currentSlide].data) {
-		// 		let vary = slides.data.chart.variabley
-		// 		let currentVarY = newOptions.map(variable => {return variable})
-		// 			.indexOf(vary)
-		// 		setVariableY(currentVarY)
-		// 	}
-		// }
+		const { data, datas } = slides
+		if ((data.type === "sheet" || data.type === "input") && "0" in data.rows._) {
+			const rownames = Object.values(data.rows._[0].cells)
+				.map(cell => cell.text)
+			const rows = Object.keys(data.rows._)
+				.map(row => parseInt(row)+1)
+			const cols = rownames.map((t, i) => columnToLetter(i+1))
+			setDatarange(cols[0] + rows[0] + ":" + cols[cols.length-1] + rows[rows.length-1])
+			if (rownames.every(isNaN)) {
+				setVariables(rownames)
+			} else {
+				setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
+				setFirstRow(false)
+			}
+		} else if (data.type === "chart") {
+			let slide = datas.find(s => s.name === data.name)
+			setVariableX(slide.variablex)
+			if ("variabley" in slide) {
+				setVariableY(slide.variabley)
+			}
+		}
 	}, [])
 
-	// useEffect(() => {
-	// 	if (slides[currentSlide].type === "chart") {
-	// 		let chartTypes = slides[currentSlide].data.type.split("+")
-	// 		let types = charts.map(chart => {return chart.type})
-	//
-	// 		let chartIndex = []
-	// 		for (var i=0; i<chartTypes.length; i++) {
-	// 			chartIndex.push(types.indexOf(chartTypes[i]))
-	// 		}
-	// 		setSchart(chartIndex)
-	// 	}
-	// }, [currentSlide])
-
-	const handleUpdateChart = (newSelectedCharts) => {
-		let chartData = setChart(slides, currentSlide, variables, newSelectedCharts, variableX, variableY)
+	const handleUpdateChart = selected => {
+		setSchart(selected)
+		let data = setChart(
+			datarange,
+			slides.data.name,
+			selected,
+			variables[variableX],
+			variables[variableY],
+			firstRow
+		)
 		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
 
-	const handleUpdateVariableX = (activeOption) => {
-		setVariableX(activeOption)
-		let chartData = setChart(slides, currentSlide, variables, schart, activeOption, variableY)
+	const handleUpdateVariableX = option => {
+		setVariableX(option)
+		let data = setChart(
+			datarange,
+			slides.data.name,
+			schart,
+			variables[option],
+			variables[variableY],
+			firstRow
+		)		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
+	}
+
+	const handleUpdateVariableY = option => {
+		setVariableY(option)
+		let data = setChart(
+			datarange,
+			slides.data.name,
+			schart,
+			variables[variableX],
+			variables[option],
+			firstRow
+		)		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
+	}
+
+	const handleAddChart = option => {
+		let newScharts = [...schart, option]
+		setSchart(newScharts)
+		let data = setChart(
+			datarange,
+			slides.data.name,
+			newScharts,
+			variables[variableX],
+			variables[variableY],
+			firstRow
+		)
+		console.log(chartData)
 		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
 
-	const handleUpdateVariableY = (activeOption) => {
-		setVariableY(activeOption)
-		let chartData = setChart(slides, currentSlide, variables, schart, variableX, activeOption)
-		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
-	}
-
-	const handleAddChart = (activeOption) => {
-		let newSelectedCharts = [...schart, activeOption]
-		setSchart(newSelectedCharts)
-		let chartData = setChart(slides, currentSlide, variables, newSelectedCharts, variableX, variableY)
-		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
+	const handleFirstrow = () => {
+		setFirstRow(!firstRow)
+		if (Object.keys(data.rows._[0].cells).length > 0 && obj.constructor === Object) {
+			const { data } = slides
+			const rownames = Object.values(data.rows._[0].cells)
+				.map(cell => cell.text)
+			const rows = Object.keys(data.rows._)
+				.map(row => parseInt(row)+1)
+			const cols = rownames.map((t, i) => columnToLetter(i+1))
+			if (firstRow) {
+				setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
+			} else {
+				setVariables(rownames)
+			}
+		}
 	}
 
 	return (
@@ -97,10 +145,11 @@ const ChartEditor = ({ slides }) => {
 			))}
 			<ChartsWithLists
 				onChange={handleAddChart}
-				options={charts.filter(item => charts[schart[0]].variables === item.variables)}
+				options={charts.filter((item, index) => charts[schart[0]].variables === item.variables && !schart.includes(index))}
 				name='Add Additonal Chart'
 				styles={{color: "#aaa"}}
 			/>
+			<DataRange datarange={datarange} setDatarange={setDatarange} error={datarangeError} setError={setDatarangeError} />
 			<div className='rightsidebar-label'>X-Axis</div>
 			<OptionsWithLists
 				onChange={handleUpdateVariableX}
@@ -117,6 +166,16 @@ const ChartEditor = ({ slides }) => {
 					/>
 				</>
 			}
+			<div className='rightsidebar-buttonwrapper' onClick={handleFirstrow}>
+				<button className='rightsidebar-button'
+					style={{
+						backgroundColor: firstRow === true && color[authUser.uid],
+						boxShadow: firstRow === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
+						border: firstRow === true ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
+					}}
+				></button>
+				<div className='rightsidebar-buttontext'>First row as header</div>
+			</div>
 		</>
 	)
 }
@@ -130,6 +189,8 @@ const ChartsWithLists = withLists(Charts)
 const OptionsWithLists = withLists(Options)
 
 const mapStateToProps = state => ({
+	authUser: state.sessionState.authUser,
+	color: (state.colorState.colors || {}),
 	slides: (state.slidesState.slides || {}),
 });
 

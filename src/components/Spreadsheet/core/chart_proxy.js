@@ -3,8 +3,11 @@ import { doChart, spreadsheetToR } from '../cloudr'
 export default class ChartProxy {
   constructor(name, d) {
     this.name = name || 'chart';
-    // this.charts = d.charts || [0];
-    // this.datarange = d.datarange;
+    this.types = d.types || [0];
+    this.range = d.range;
+    this.variablex = d.variablex || '';
+    this.variabley = d.variabley || '';
+    this.firstrow = d.firstrow || true;
     this.source = '';
     this.type = "chart";
   }

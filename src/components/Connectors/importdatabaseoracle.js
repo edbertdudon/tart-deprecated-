@@ -31,7 +31,7 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 
 	const handleHost = event => setHost(event.target.value)
 	const handlePort = event => setPort(event.target.value)
-	const handleSID = event => setSid(event.target.value)
+	const handleSid = event => setSid(event.target.value)
 	const handleUser = event => setUser(event.target.value)
 	const handlePassword = event => setPassword(event.target.value)
 
@@ -87,11 +87,11 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 						placeholder='Oracle system identifier (SID)'
 						type="text"
 						name="sid"
-						onChange={handleSID}
+						onChange={handleSid}
 					/>
 				</div>
 				<br/>
-		        <div className='importdatabase-inputs-login'>
+		    <div className='importdatabase-inputs-login'>
 					<input
 						placeholder='username'
 						type="text"

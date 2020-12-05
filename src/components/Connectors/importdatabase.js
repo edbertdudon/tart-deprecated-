@@ -12,6 +12,8 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 	const [loading, setLoading] = useState(false)
 	const [host, setHost] = useState('')
 	const [port, setPort] = useState('')
+	const [sid, setSid] = useState('')
+	const [url, setUrl] = useState('')
 	const [user, setUser] = useState('')
 	const [password, setPassword] = useState('')
 	const [ssl, setSSL] = useState(false)
@@ -24,42 +26,58 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 	const cert = useRef(null)
 
 	const handleClose = () => {
-		setHost('')
-		setPort('')
-		setUser('')
-		setPassword('')
+		// setHost('')
+		// setPort('')
+		// setSid('')
+		// setUser('')
+		// setPassword('')
+		// setUrl('')
 		setError(null)
 		setLoading(false)
 		onClose()
 	}
 
-	const handleHost = (event) => setHost(event.target.value)
-	const handlePort = (event) => setPort(event.target.value)
-	const handleUser = (event) => setUser(event.target.value)
-	const handlePassword = (event) => setPassword(event.target.value)
+	const handleHost = e => setHost(e.target.value)
+	const handlePort = e => setPort(e.target.value)
+	const handleSid = event => setSid(event.target.value)
+	const handleUser = e => setUser(e.target.value)
+	const handlePassword = e => setPassword(e.target.value)
+	const handleUrl = e => setUrl(e.target.value)
 
 	const handleClickCA = () => ca.current.click()
 	const handleClickKey = () => key.current.click()
 	const handleClickCert = () => cert.current.click()
 
-	const handleInputCA = event => setCaFile(event.target.files[0])
-	const handleInputKey = event => setKeyFile(event.target.files[0])
-	const handleInputCert = event => setCertFile(event.target.files[0])
+	const handleInputCA = e => setCaFile(e.target.files[0])
+	const handleInputKey = e => setKeyFile(e.target.files[0])
+	const handleInputCert = e => setCertFile(e.target.files[0])
 
 	const handleConnect = () => {
 		setLoading(true)
-		serverConnect(
-			databaseType,
-			{
+		if (databaseType === "OracleDB") {
+			const data = {
 				host: host,
 				user: user,
 				password: password,
 				port: port,
+				sid: sid,
+				url: url,
 				connector: databaseType,
 				uid: authUser.uid
-			},
-			firebase
-		).then(res => {
+			}
+		} else {
+			const data = {
+				host: host,
+				user: user,
+				password: password,
+				port: port,
+				url: url,
+				connector: databaseType,
+				uid: authUser.uid,
+			}
+		}
+
+		serverConnect(databaseType, data, firebase).then(res => {
 			setLoading(false)
 			if (res.status === 'CONNECTED') {
 				handleClose()
@@ -71,7 +89,9 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 		})
 	}
 
-	const isInvalid = host === '' || port === '' || user === '' || password === ''
+	const isInvalid = databaseType === "OracleDB"
+		? (host === '' || port === '' || sid === '' || user === '' || password === '') && url === ''
+		:	(host === '' || port === '' || user === '' || password === '') && url === ''
 
 	return (
 		<form className='modal-form'>
@@ -83,6 +103,7 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 						name="host"
 						onChange={handleHost}
 						autoFocus={true}
+						disabled={url === '' ? false : true}
 					/>
 				</div>
 				<div className='importdatabase-inputs-port'>
@@ -91,20 +112,20 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 						type="text"
 						name="port"
 						onChange={handlePort}
+						disabled={url === '' ? false : true}
 					/>
 				</div>
-				{/*<p>or</p>
-				<div className='signin-form'>
-					<input
-						placeholder='url'
-						type="text"
-						name="url"
-						onChange={handleUrl}
-						disabled={host == '' && port == '' ? false : true}
-					/>
-		        </div>
-				<br/>
-				<hr/> */}
+				{databaseType === "OracleDB" && <>
+					<br/>
+					<div className='importdatabase-inputs-login'>
+						<input
+							placeholder='Oracle system identifier (SID)'
+							type="text"
+							name="sid"
+							onChange={handleSid}
+						/>
+					</div>
+				</>}
 				<br/>
 		    <div className='importdatabase-inputs-login'>
 					<input
@@ -112,6 +133,7 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 						type="text"
 						name="user"
 						onChange={handleUser}
+						disabled={url === '' ? false : true}
 					/>
 		    </div>
         <br/>
@@ -121,8 +143,19 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 						type="password"
 						name="password"
 						onChange={handlePassword}
+						disabled={url === '' ? false : true}
 					/>
         </div>
+				<p>or</p>
+				<div className='importdatabase-inputs-login'>
+					<input
+						placeholder='url'
+						type="text"
+						name="url"
+						onChange={handleUrl}
+						disabled={host === '' && port === '' && user === '' && password === '' ? false : true}
+					/>
+				</div>
 				{ssl &&
 					<div>
 						<div className='importdatabase-inputs-login'>
@@ -158,7 +191,7 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
       		{error && <p>{error}</p>}
 				</div>
 				<p>
-					Tart requires credentials to RUN your worksheet. Passwords are encrypted.
+					Tart requires credentials to run your worksheet. Passwords are encrypted.
 					Users have strict read access (Unable to edit, download, delete data within a database).
 				</p>
 				<br />

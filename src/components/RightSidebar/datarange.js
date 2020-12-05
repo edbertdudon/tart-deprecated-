@@ -10,7 +10,6 @@ import { updateCellorRange } from './Optimize'
 
 const DataRange = ({ datarange, setDatarange, error, setError }) => {
   const handleUpdateDatarange = e => updateCellorRange(e, setDatarange, setError)
-
   return (
     <>
       <div className='rightsidebar-label'>Data Range</div>

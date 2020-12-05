@@ -5,7 +5,7 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { compose } from 'recompose'
 import './index.less'
 

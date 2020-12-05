@@ -329,7 +329,6 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 			gradient: translateR(gradient || 'na', name),
 			hessian: translateR(hessian || 'na', name),
 			isMaximum: minMax === 0 ? "minimum" : "maximum",
-			objectiveClass: objectiveClass,
 			decision: translateR(decision || 'na', name),
 			flhs: translateR(flhs || 'na', name),
 			fdir: translateR(fdir || 'na', name),

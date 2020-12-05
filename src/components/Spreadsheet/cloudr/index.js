@@ -204,6 +204,7 @@ const removeMatrix = (data, ri, ci) => {
 }
 
 const doParse = (obj, data, ri, ci) => {
+  console.log(obj.cell)
   return fetchR(obj, "cloudR")
     .then(res => res.json())
     .then(res => {

@@ -9,11 +9,11 @@ export const options = {
     width: () => document.documentElement.clientWidth,
   },
   row: {
-    len: 100,
+    len: 1000,
     height: 25,
   },
   col: {
-    len: 26,
+    len: 40,
     width: 100,
     indexWidth: 60,
     minWidth: 60,

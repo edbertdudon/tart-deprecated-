@@ -62,7 +62,7 @@ const Button = ({ isSelected, onToggle, icon, name }) => {
 }
 
 const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
-  onSetDataNames, onSetCurrent, onSetRightSidebar, setStatistic, setSchart }) => {
+  onSetDataNames, onSetCurrent, onSetRightSidebar, setStatistic }) => {
   const handleToggle = select => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select)
@@ -75,18 +75,30 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
     // onSetRightSidebar('charteditor')
     const i = charts.findIndex(item => item.key === chart)
     // setSchart([i])
-    // console.log(slides.data.type)
+
     if (slides.data.type === "sheet" || slides.data.type === "input") {
       const { name } = slides.data;
       const { selector } = slides.sheet;
       const { sri, sci, eri, eci } = selector.range;
-      const datarange = '`' + name + '`' + '[' + (sri+1) + ':' + (eri+1) + ',' + (sci+1) + ':' + (eci+1) + ']'
-      const data = {
-        types: charts[i].type,
-        range: datarange
+      let data = {
+        types: [charts[i].type],
+        range: '`' + name + '`' + '[' + (sri+1) + ':' + (eri+1) + ',' + (sci+1) + ':' + (eci+1) + ']',
+      }
+      if (Object.keys(slides.data.rows._).length !== 0) {
+        const rownames = Object.values(slides.data.rows._[0].cells)
+        	.map(cell => cell.text)
+        const isFirstRowHeader = rownames.every(isNaN)
+        data = {
+          ...data,
+          variablex: isFirstRowHeader ? rownames[0] : columnToLetter(sci+1) + (sri+1) + ":" + columnToLetter(sci+1) + (eci+1),
+          firstrow: isFirstRowHeader ? true : false,
+        }
+        if (charts[i].variables > 1 && rownames.length > 1) {
+          data["variabley"] = isFirstRowHeader ? rownames[1] : columnToLetter(sci+2) + (sri+1) + ":" + columnToLetter(sci+2) + (eci+1)
+        }
       }
       const d = slides.insertChart(dataNames, current, data)
-      console.log(JSON.stringify(slides.getData()))
+      // console.log(JSON.stringify(slides.getData()))
       // onSetDataNames([
       //   ...dataNames.slice(0, current+1),
       //   d.name,
