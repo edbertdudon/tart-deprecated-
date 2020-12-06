@@ -6,12 +6,12 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react'
-import { updateCell, updateCellorRange } from './index'
+import { updateCell, updateCellorSingleRange } from './index'
 
 const General = ({ objective, setObjective, decision, setDecision, gradient, setGradient, hessian, setHessian, error, setError }) => {
   const handleUpdateObjective = e => updateCell(e, setObjective, setError)
 
-  const handleUpdateDecision = e => updateCellorRange(e, setDecision, setError)
+  const handleUpdateDecision = e => updateCellorSingleRange(e, setDecision, setError)
 
   const handleUpdateGradient = e => updateCell(e, setGradient, setError)
 

@@ -53,7 +53,7 @@ function renderCellBorders(bboxes, translateFunc) {
 }
 */
 
-// default yoffset = 0
+// default yoffset = 0 xoffset = 0
 export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffset = 0) {
   const { sortedRowMap, rows, cols } = data;
   if (rows.isHide(rindex) || cols.isHide(cindex)) return;
@@ -64,10 +64,10 @@ export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0,
 
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
-  // let cellText = rRender(cell.text || '', data, datas, rindex, cindex)
-  let cellText = await rRender(cell.text || '', data, datas, rindex, cindex)
-  yoffset = 25
-  xoffset = 60
+  let cellText = rRender(cell.text || '', data, datas, rindex, cindex)
+  // let cellText = await rRender(cell.text || '', data, datas, rindex, cindex)
+  // yoffset = 25
+  // xoffset = 60
   let frozen = false;
   if ('editable' in cell && cell.editable === false) {
     frozen = true;
@@ -142,13 +142,12 @@ function renderContent(viewRange, fw, fh, tx, ty) {
     }
     return !ret;
   };
-
   const exceptRowTotalHeight = data.exceptRowTotalHeight(viewRange.sri, viewRange.eri);
   // 1 render cell
   draw.save();
   draw.translate(0, -exceptRowTotalHeight);
-  viewRange.each(async (ri, ci) => {
-    await renderCell(draw, data, datas, ri, ci);
+  viewRange.each((ri, ci) => {
+    renderCell(draw, data, datas, ri, ci);
   }, ri => filteredTranslateFunc(ri));
   draw.restore();
 
@@ -334,10 +333,9 @@ class Table {
     const tx = data.freezeTotalWidth();
     const ty = data.freezeTotalHeight();
     const { x, y } = data.scroll;
-
     // 1
     renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
-    renderContent.call(this, viewRange, fw, fh, -x, -y)
+    renderContent.call(this, viewRange, fw, fh, -x, -y);
     renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
     renderFixedLeftTopCell.call(this, fw, fh);
     const [fri, fci] = data.freeze;

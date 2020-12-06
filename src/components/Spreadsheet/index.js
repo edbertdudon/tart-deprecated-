@@ -103,6 +103,16 @@ class Spreadsheet {
   }
 
   insertData(dataNames, current, o, name) {
+    const { row, col } = this.options;
+    const { rows } = o;
+    const nrows = Object.keys(rows).length;
+    const ncols = Object.keys(rows[0].cells).length;
+    if (nrows > row.len) {
+      row.len = nrows;
+    }
+    if (ncols > col.len) {
+      col.len = ncols;
+    }
     let d = new DataProxy('temp', this.options)
     d.setData(o)
     let n = getMaxNumberCustomSheet(dataNames, name)

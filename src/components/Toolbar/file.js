@@ -13,6 +13,7 @@ import withModal from '../Modal'
 import * as ROUTES from '../../constants/routes'
 import { withFirebase } from '../Firebase'
 import { OFF_COLOR } from '../../constants/off-color'
+import { options } from '../Spreadsheet/options'
 
 const Papa = require('papaparse/papaparse.min.js');
 
@@ -130,8 +131,9 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
         Papa.parse(f, {
           worker: true,
           complete: function(results, file) {
-            let o = papaToSpreadsheet(results.data)
-            insert(o, f.name, results.meta.delimiter, f.name)
+            const { data, meta } = results;
+            let o = papaToSpreadsheet(data)
+            insert(o, f.name, meta.delimiter, f.name)
             firebase.doUploadFile(authUser.uid, f.name, file)
           }
         });
@@ -140,8 +142,8 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
       case 'xlsx':
         var reader = new FileReader();
         reader.onload = function(e) {
-          var data = new Uint8Array(e.target.result);
-          var wb = XLSX.read(data, {type: 'array'});
+          var results = new Uint8Array(e.target.result);
+          var wb = XLSX.read(results, {type: 'array'});
           stox(wb).forEach(o => insert(o, o.name, ",", f.name + "_" + o.name));
           wb.SheetNames.forEach(function(name) {
             var ws = wb.Sheets[name];

@@ -44,7 +44,8 @@ const ChartEditor = ({ authUser, color, slides }) => {
 			const rows = Object.keys(data.rows._)
 				.map(row => parseInt(row)+1)
 			const cols = rownames.map((t, i) => columnToLetter(i+1))
-			setDatarange(cols[0] + rows[0] + ":" + cols[cols.length-1] + rows[rows.length-1])
+			setDatarange(cols[0] + ":" + cols[cols.length-1])
+			// setDatarange(cols[0] + rows[0] + ":" + cols[cols.length-1] + rows[rows.length-1])
 			if (rownames.every(isNaN)) {
 				setVariables(rownames)
 			} else {

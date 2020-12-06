@@ -6,12 +6,12 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react'
-import { updateRange, updateCellorRange } from './index'
+import { updateRangeNotOne, updateCellorSingleRange } from './index'
 
 const Quadratic = ({ quadratic, setQuadratic, linear, setLinear, error, setError }) => {
-  const handleUpdateQuadratic = e => updateRange(e, setQuadratic, setError)
+  const handleUpdateQuadratic = e => updateRangeNotOne(e, setQuadratic, setError)
 
-  const handleUpdateLinear = e => updateCellorRange(e, setLinear, setError)
+  const handleUpdateLinear = e => updateCellorSingleRange(e, setLinear, setError)
 
   return (
     <>

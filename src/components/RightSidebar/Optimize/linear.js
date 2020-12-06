@@ -6,10 +6,10 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react'
-import { updateCellorRange } from './index'
+import { updateCellorSingleRange } from './index'
 
 const Linear = ({ linear, setLinear, error, setError }) => {
-  const handleUpdateLinear = e => updateCellorRange(e, setLinear, setError)
+  const handleUpdateLinear = e => updateCellorSingleRange(e, setLinear, setError)
 
   return (
     <>

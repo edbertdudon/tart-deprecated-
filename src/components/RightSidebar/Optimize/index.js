@@ -80,6 +80,7 @@ const SOLVER_CONSTRAINTS = [
 const OPTIMX_METHODS = [
   'Nelder-mead', 'L-BFGS-B', 'BFGS', 'CG', 'nlm', 'nlminb', 'spg', 'ucminf', 'newuoa', 'bobyqa', 'nmkb', 'hjkb', 'Rcgmin', 'Rvmmin'
 ]
+
 var VALID_RANGE_REFERENCES = /^\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*$/
 var VALID_FORMULA_CELL_REFERENCES = /^\$?[A-Z]+\$?[0-9]*$/;
 var RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g;
@@ -87,11 +88,10 @@ var FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
 var LETTERS_REFERENCE = /\$?[A-Z]+/g;
 var NUMBERS_REFERENCE = /\$?[0-9]+/g;
 
-const validateCell = (v) => {
+const validateCell = v => {
 	if (!VALID_FORMULA_CELL_REFERENCES.test(v)) {
 		return("Invalid cell reference.")
 	}
-	const mc = v.match(FORMULA_CELL_REFERENCES)
   const mr = v.match(RANGE_REFERENCES)
   if (mr !== null) {
     const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
@@ -109,9 +109,34 @@ export const updateCell = (e, setLhs, setError) => {
 	setError(validateCell(v))
 }
 
-const validateRange = (v) => {
+const validateCellorSingleRange = v => {
+	if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
+		return("Invalid cell, row or column.")
+	}
+	const mc = v.match(FORMULA_CELL_REFERENCES)
+	if (mc === null) {
+		return("Invalid cell.")
+	}
+	const mr = v.match(RANGE_REFERENCES)
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE)
+    const mn = v.match(NUMBERS_REFERENCE)
+		if (!(ml[1] == ml[0] || mn[1] == mn[0]) || ml.length > 2 || mn.length > 2) {
+      return("Invalid row or column. Must be limited to a single row or column")
+    }
+  }
+  return(null)
+}
+
+export const updateCellorSingleRange = (e, setLhs, setError) => {
+	const v = e.target.value
+	setLhs(v)
+	setError(validateCellorSingleRange(v))
+}
+
+const validateRange = v => {
 	if (!VALID_RANGE_REFERENCES.test(v)) {
-		return("Invalid cell reference.")
+		return("Invalid range reference.")
 	}
 	const mc = v.match(FORMULA_CELL_REFERENCES)
   if (mc === null) {
@@ -134,7 +159,32 @@ export const updateRange = (e, setLhs, setError) => {
 	setError(validateRange(v))
 }
 
-const validateCellorRange = (v) => {
+const validateRangeNotOne = v => {
+	if (!VALID_RANGE_REFERENCES.test(v)) {
+		return("Invalid range reference.")
+	}
+	const mc = v.match(FORMULA_CELL_REFERENCES)
+  if (mc === null) {
+    return("Invalid cell.")
+  }
+  const mr = v.match(RANGE_REFERENCES)
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
+    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
+    if (ml[1] <= ml[0] || mn[1] <= mn[0] || ml.length !== 2 || mn.length !== 2) {
+      return("Invalid range. Must be greater than a single row or column")
+    }
+  }
+  return(null)
+}
+
+export const updateRangeNotOne = (e, setLhs, setError) => {
+	const v = e.target.value
+	setLhs(v)
+	setError(validateRange(v))
+}
+
+const validateCellorRange = v => {
 	if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
 		return("Invalid cell reference.")
 	}
