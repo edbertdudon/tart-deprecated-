@@ -14,7 +14,7 @@ import Icon from '@mdi/react';
 import { mdilTable } from '@mdi/light-js'
 import { mdiStop, mdiLoading, mdiDotsHorizontal } from '@mdi/js'
 
-import { xtos } from '../../functions'
+import { getMaxNumberCustomSheet, xtos, addCopyToName } from '../../functions'
 import EditableInput from '../EditableInput'
 import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color'
@@ -29,58 +29,51 @@ const DATASOURCE_DROPDOWN = [
 	{key: 'Move to trash', type: 'item'},
 ]
 
+const Item = ({text, onDropdown }) => <MenuItem onClick={() => onDropdown(text)}>{text}</MenuItem>
+
 const ContextMenuDropdown = ({ filename, onDropdown }) => (
 	<ContextMenu id={'right-click' + filename}>
 		<MenuItem onClick={() =>onDropdown(DATASOURCE_DROPDOWN[0].key)} onContextMenu={(e) => e.preventPropognation()}>
 			{DATASOURCE_DROPDOWN[0].key}
 		</MenuItem>
-		<MenuItem onClick={() => onDropdown(DATASOURCE_DROPDOWN[1].key)}>{DATASOURCE_DROPDOWN[1].key}</MenuItem>
-		<MenuItem onClick={() => onDropdown(DATASOURCE_DROPDOWN[2].key)}>{DATASOURCE_DROPDOWN[2].key}</MenuItem>
-		<MenuItem onClick={() => onDropdown(DATASOURCE_DROPDOWN[3].key)}>{DATASOURCE_DROPDOWN[2].key}</MenuItem>
-		<MenuItem onClick={() => onDropdown(DATASOURCE_DROPDOWN[4].key)}>{DATASOURCE_DROPDOWN[2].key}</MenuItem>
+		<Item text={DATASOURCE_DROPDOWN[1].key} onDropdown={onDropdown} />
+		<Item text={DATASOURCE_DROPDOWN[2].key} onDropdown={onDropdown} />
+		<Item text={DATASOURCE_DROPDOWN[3].key} onDropdown={onDropdown} />
+		<Item text={DATASOURCE_DROPDOWN[4].key} onDropdown={onDropdown} />
 	</ContextMenu>
 )
 
-const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorksheetname, onSetJobs,
-	filename, onReload, runId,onJobSubmit, onJobCancel, onListFilesLessTrash }) => {
+const DataSource = ({ firebase, authUser, color, files, jobs, onSetWorksheetname, onSetJobs,
+	filename, onReload, runId,onJobSubmit, onJobCancel, onListFilesLessTrash, filesWithTrash }) => {
+	const [loading, setLoading] = useState(false)
+	const [name, setName] = useState(filename)
 	const [hover, setHover] = useState(false)
 	const [hoverDropdown, setHoverDropdown] = useState(false)
+	const [readOnly, setReadOnly] = useState(true)
 
 	const handleDropdown = key => {
 		switch(key) {
 			case DATASOURCE_DROPDOWN[0].key:
-				onSetWorksheetname(filename, authUser.uid)
+				onSetWorksheetname(filename)
 				document.getElementById(`link-app-${filename}`).click()
 				break;
 			case DATASOURCE_DROPDOWN[1].key:
-				let worksheet = filename
-				if (worksheet.includes(' copy')) {
-					worksheet = worksheet.substring(0, worksheet.indexOf(' copy'))
-				}
-				// Can we persist files deeper than one level instead?
-				firebase.doListFiles(authUser.uid).then(res => {
-					firebase.doDownloadFile(authUser.uid, filename).then(slides => {
-						const file = new File (
-							[JSON.stringify(slides.getData())],
-							worksheet + ' copy ' + getMaxNumberFile(res.items, worksheet),
-							{type: "application/json"}
-						)
-						var uploadTask = firebase.doUploadFile(authUser.uid, filename, file)
-						uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
-							onListFilesLessTrash()
-						})
+				const newname = addCopyToName(filesWithTrash, filename)
+				firebase.doDownloadFile(authUser.uid, filename).then(slide => {
+					const file = new File ([JSON.stringify(slide)], newname, {type: "application/json"})
+					var uploadTask = firebase.doUploadFile(authUser.uid, newname, file)
+					uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
+						onListFilesLessTrash()
 					})
 				})
 				break;
 			case DATASOURCE_DROPDOWN[2].key:
-				document.getElementById('datasource-editabletext-' + filename).readOnly = false
-				document.getElementById('datasource-editabletext-' + filename).focus()
+				setReadOnly(false)
 				break;
 			case DATASOURCE_DROPDOWN[3].key:
-				firebase.doDownloadFile(authUser.uid, filename)
-					.then(slides => {
-						xtos(slides, filename)
-					})
+				firebase.doDownloadFile(authUser.uid, filename).then(slide => {
+					xtos(slide, filename)
+				})
 				break;
 			case DATASOURCE_DROPDOWN[4].key:
 				let today = new Date().toLocaleDateString()
@@ -118,25 +111,27 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 		)
 	}
 
-	const handleHeader = name => {
-		firebase.doDownloadFile(authUser.uid, filename)
-			.then(slides => {
-				firebase.doUploadFile(
-					authUser.uid,
-					name,
-					new File ([JSON.stringify(slides)], name, {type: "application/json"})
-				).then(() => {
-					firebase.doDeleteFile(authUser.uid, filename)
-						.then(() => {
-							onListFilesLessTrash()
-						})
+	const handleRename = n => {
+		setLoading(true)
+		setName(n)
+		firebase.doDownloadFile(authUser.uid, filename).then(slide => {
+			firebase.doUploadFile(
+				authUser.uid,
+				n,
+				new File ([JSON.stringify(slide)], n, {type: "application/json"})
+			).then(() => {
+				firebase.doDeleteFile(authUser.uid, filename).then(() => {
+					// onListFilesLessTrash()
+					setLoading(false)
+					// onSetWorksheetname(n)
 				})
-				onSetWorksheetname(name, authUser.uid)
 			})
-		// Name reverts back temporarily
+		})
 	}
 
-	const handleOpen = () => onSetWorksheetname(filename, authUser.uid)
+	const handleOpen = () => onSetWorksheetname(filename)
+
+	const handleClose = () => setError('')
 
 	const Run = () => (
 		(runId === undefined || runId === "")
@@ -177,10 +172,13 @@ const DataSource = ({ firebase, authUser, color, files, jobs, slides, onSetWorks
 					/>
 				</div>
 				<EditableInput
-					value={filename}
-					onCommit={handleHeader}
-					files={files[authUser.uid]}
+					value={name}
+					readOnly={readOnly}
+					onCommit={handleRename}
+					files={filesWithTrash}
 					classname='datasource-editabletext'
+					setReadOnly={setReadOnly}
+					inputId={'datasource-editabletext-'+filename}
 				/>
 			</ContextMenuTrigger>
 			<ContextMenuDropdown filename={filename} onDropdown={handleDropdown} />
@@ -206,7 +204,6 @@ const mapStateToProps = state => ({
 	color: (state.colorState.colors || {}),
 	files: (state.filesState.files || {}),
 	jobs: (state.jobsState.jobs || [{status:'failed list jobs'}]),
-	slides: (state.slidesState.slides || {}),
 });
 
 const mapDispatchToProps = dispatch => ({

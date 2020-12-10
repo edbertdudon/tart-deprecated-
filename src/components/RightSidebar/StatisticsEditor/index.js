@@ -503,8 +503,8 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					variables={variables}
 					onChange={handleSetMultipleLinearRegressionVars2}
 				/></>}
-	        {statistics[statistic].arguments.includes("formula") &&
-	        	<Formula
+	    {statistics[statistic].arguments.includes("formula") &&
+	      <Formula
 					formulaText={formulaText}
 					variables={variables}
 					onSetFormula={handleSetFormula}

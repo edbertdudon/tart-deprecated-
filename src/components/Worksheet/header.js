@@ -13,7 +13,8 @@ const USER_DROPDOWN = [
 	{key: 'Settings', type: 'link', path: ROUTES.SETTINGS}
 ]
 
-const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSetFiles, onSetWorksheetname, saving, setSaving }) => {
+const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSetFiles, onSetWorksheetname,
+	saving, setSaving, readOnly, setReadOnly }) => {
 	useEffect(() => {
 		if (files[authUser.uid] === undefined) {
 			firebase.doListFiles(authUser.uid).then(res => {
@@ -22,7 +23,7 @@ const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSet
 		}
 	}, [])
 
-	const handleChange = name => {
+	const handleCommit = name => {
 		setSaving(true)
 		const file = new File ([JSON.stringify(slides.getData())], name, {type: "application/json"})
 		firebase.doUploadFile(authUser.uid, name, file)
@@ -50,9 +51,11 @@ const Header = ({ firebase, authUser, color, worksheetname, files, slides, onSet
 				<div className='worksheet-header-center'>
 					<EditableInput
 						value={worksheetname.replace(/\.[^/.]+$/, "")}
-						onCommit={handleChange}
+						readOnly={readOnly}
+						onCommit={handleCommit}
 						files={files[authUser.uid]}
 						classname='worksheet-header-filename'
+						setReadOnly={setReadOnly}
 					/>
 				</div>
 				{saving && <div className='worksheet-header-save'>- Saving...</div>}

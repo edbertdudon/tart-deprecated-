@@ -17,15 +17,13 @@ import { OFF_COLOR } from '../../constants/off-color'
 
 const NAVIGATOR_DROPDOWN = [
 	{key: 'New sheet', type: 'item'},
-	{type: 'divider'},
 	{key: 'Rename...', type: 'item'},
-	{key: 'Duplicate', type: 'item'},
 	{type: 'divider'},
 	{key: 'Cut', type: 'item'},
 	{key: 'Copy', type: 'item'},
 	{key: 'Paste', type: 'item'},
-	{type: 'divider'},
 	{key: 'Delete', type: 'item'},
+	{key: 'Duplicate', type: 'item'},
 ]
 
 const Item = ({ text, onSelect, color }) => {
@@ -47,15 +45,13 @@ const Item = ({ text, onSelect, color }) => {
 const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 	<ContextMenu id={'right-click' + slide}>
 		<Item text={NAVIGATOR_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
-		<hr/>
-		<Item text={NAVIGATOR_DROPDOWN[2].key} onSelect={onDropdown} color={color} />
+		<Item text={NAVIGATOR_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
 		<Item text={NAVIGATOR_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
 		<hr/>
+		<Item text={NAVIGATOR_DROPDOWN[4].key} onSelect={onDropdown} color={color} />
 		<Item text={NAVIGATOR_DROPDOWN[5].key} onSelect={onDropdown} color={color} />
 		<Item text={NAVIGATOR_DROPDOWN[6].key} onSelect={onDropdown} color={color} />
 		<Item text={NAVIGATOR_DROPDOWN[7].key} onSelect={onDropdown} color={color} />
-		<hr />
-		<Item text={NAVIGATOR_DROPDOWN[9].key} onSelect={onDropdown} color={color} />
 	</ContextMenu>
 )
 
@@ -160,36 +156,34 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
 				onSetCurrent(current+1)
 				slides.data = d
 				break;
-			case NAVIGATOR_DROPDOWN[2].key:
+			case NAVIGATOR_DROPDOWN[1].key:
 				// Not working as expected
 				handleShow();
 				// handleSelect();
 				break;
 			case NAVIGATOR_DROPDOWN[3].key:
-				var d = slides.pasteSheet(dataNames, index, true)
-				paste(d)
-				break;
-			case NAVIGATOR_DROPDOWN[5].key:
 				deleteSheet()
 				break;
-			case NAVIGATOR_DROPDOWN[6].key:
+			case NAVIGATOR_DROPDOWN[4].key:
 				slides.copySheet(index)
 				break;
-			case NAVIGATOR_DROPDOWN[7].key:
+			case NAVIGATOR_DROPDOWN[5].key:
 				var d = slides.pasteSheet(dataNames, index, false)
 				paste(d)
 				break;
-			case NAVIGATOR_DROPDOWN[9].key:
+			case NAVIGATOR_DROPDOWN[6].key:
 				deleteSheet()
+				break;
+			case NAVIGATOR_DROPDOWN[7].key:
+				var d = slides.pasteSheet(dataNames, index, true)
+				paste(d)
 				break;
 		}
 	}
 
   const handleChange = e => setText(e.target.value)
 
-  const handleShow = () => {
-		setShow(true)
-	}
+  const handleShow = () => setShow(true)
 
 	const handleSelect = () => {
 		if (current !== index) {
@@ -213,16 +207,12 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
       <ContextMenuTrigger id={'right-click' + text}>
         <div className='navigator-slide' onClick={handleSelect} style={backgroundColor()} ref={wrapperRef}>
           <div className='navigator-number' style={whiteText()}>{index+1}</div>
-          {show && <input
-            type="text"
-            onChange={handleChange}
-            className='navigator-input'
-            value={text}
-						autoFocus
-          />}
-          <div className='navigator-text' style={{...backgroundColor(index), ...whiteText(index)}} onDoubleClick={handleShow}>
-            {text}
-          </div>
+          {show
+						? <input type="text" onChange={handleChange} className='navigator-input' value={text} autoFocus />
+						:	<div className='navigator-text' style={{...backgroundColor(index), ...whiteText(index)}} onDoubleClick={handleShow}>
+								{text}
+							</div>
+					}
         </div>
       </ContextMenuTrigger>
       <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />

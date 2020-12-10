@@ -61,7 +61,7 @@ const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts })
 				type: chart,
 			}
 			console.log(chartData)
-			// dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberFile(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
+			// dispatchSlides({function:'CHART', data: chartData, name:("Chart" + getMaxNumberCustomSheet(slides, "Chart")), currentSlide: currentSlide, type:"chart"})
 			// setCurrentSlide(currentSlide+1)
 		}
 	}

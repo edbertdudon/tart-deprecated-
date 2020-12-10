@@ -19,6 +19,7 @@ import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js'
 import { withAuthorization, withEmailVerification } from '../Session'
 
 const Worksheet = () => {
+	const [readOnly, setReadOnly] = useState(true)
 	const [text, setText] = useState({ text: '', ri: 0, ci: 0 })
 	const [saving, setSaving] = useState(false)
 	const [navigator, setNavigator] = useState(true)
@@ -26,8 +27,8 @@ const Worksheet = () => {
 
 	return (
  		<div className='worksheet' onContextMenu={e => {e.preventDefault(); return false;}}>
-			<Header saving={saving} setSaving={setSaving} />
-			<Toolbar navigator={navigator} setNavigator={setNavigator} />
+			<Header saving={saving} setSaving={setSaving} readOnly={readOnly} setReadOnly={setReadOnly} />
+			<Toolbar navigator={navigator} setNavigator={setNavigator} readOnly={readOnly} setReadOnly={setReadOnly} />
 			<Toggle setStatistic={setStatistic} />
 			<Formulabar text={text} />
 			{navigator && <Navigator />}

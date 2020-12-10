@@ -63,15 +63,9 @@ const DataInput = ({ firebase, authUser, color, filename, onReload }) => {
 }
 
 const Option = ({ text, hover, onHover, isOpen, onOpen, color }) => (
-	<div
-		className='datasource-options-only'
-		onClick={onOpen}
-		onMouseEnter={onHover}
-		onMouseLeave={onHover}
+	<div className='datasource-options-only' onClick={onOpen} onMouseEnter={onHover} onMouseLeave={onHover}
 		style={{ backgroundColor: hover && color }}
-	>
-		{text}
-	</div>
+	>{text}</div>
 )
 
 const OptionWithDropdown = withDropdown(Option)

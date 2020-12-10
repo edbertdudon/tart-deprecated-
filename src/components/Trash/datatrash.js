@@ -94,6 +94,7 @@ const DataTrash = ({ firebase, authUser, color, filename, onReload, connections 
 				onSelect={handleDelete}
 				isOpen={isOpen}
 				setIsOpen={setIsOpen}
+				style={{width: "360px", left: "Calc((100% - 360px)/2)"}}
 			/>
     </div>
 	)
@@ -109,22 +110,22 @@ const Option = ({ text, hover, onHover, isOpen, onOpen, color }) => (
 	>{text}</div>
 )
 
-const VerifyDelete = ({ filename, color, onDelete, onClose, onSelect }) => (
+const VerifyDelete = ({ filename, color, onClose, onSelect }) => (
 	<form className='modal-form'>
 		<h3>{'Are you sure you want to delete "' + filename + '"?'}</h3>
-		<p>This item will be deleted immediately. You can't undo this action.</p>
-		<input
-			className='modal-button'
-			type="button"
-			value="Delete"
-			onClick={onSelect}
-		/>
+		<p>This item will be deleted immediately. You cannot undo this action.</p>
 		<input
 			className='modal-button'
 			type="button"
 			value="Cancel"
 			onClick={onClose}
 			style={{color: color}}
+		/>
+		<input
+			className='modal-button'
+			type="button"
+			value="Delete"
+			onClick={onSelect}
 		/>
 	</form>
 )

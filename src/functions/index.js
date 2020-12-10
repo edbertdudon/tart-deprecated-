@@ -28,39 +28,9 @@ export function createEmptyMatrix(rows, columns) {
 
 // *** File Organization API ***
 
-export function getMaxNumberFromFiles(files) {
-  let untitledWorksheetNames = []
-  for (var i=0; i<files.length; i++) {
-    if (files[i].name.startsWith("Untitled Worksheet ")
-      && /\d/.test(files[i].name)) {
-        untitledWorksheetNames.push(files[i].name.match(/\d+/)[0])
-    }
-  }
-
-  let max = Math.max(...untitledWorksheetNames)
-  if (max === -Infinity) {
-    return 1
-  } else {
-    return max + 1
-  }
-}
-
 export function getMaxNumberCustomSheet(dataNames, prefix) {
-  // /^\d+$/ contains no space when prefix = sheetname but contains space after. Will always return false
   const v = dataNames.filter(name => name.startsWith(prefix))
   return(v.length+1)
-  // let names = []
-  // for (var i=0; i<dataNames.length; i++) {
-  //   if (dataNames[i].startsWith(prefix) && /^\d+$/.test(dataNames[i].substring(prefix.length))) {
-  //     names.push(dataNames[i].substring(prefix.length))
-  //   }
-  // }
-  // let max = Math.max(...names)
-  // if (max === -Infinity) {
-  //   return 1
-  // } else {
-  //   return max + 1
-  // }
 }
 
 export function xtos(sdata, filename) {
@@ -101,4 +71,29 @@ export function stox(wb) {
     out.push(o);
   });
   return out;
+}
+
+export function addCopyToName(files, prefix) {
+  const names = files.map(file => file.name)
+  let newname = prefix
+  if (newname.endsWith(" copy")) {
+  	newname = newname + " " + 2
+  }
+  if (newname.match(/ copy [0-9]+/) == null) {
+  	newname = newname + " copy"
+  	if (names.includes(newname)) {
+        newname = newname + " " + 2
+    }
+  }
+  let match = newname.match(/ copy [0-9]+/)
+  if (match != null && match.length > 0 && newname.endsWith(match)) {
+  	let n = 2
+  	let next = newname.replace(match, " copy " + n)
+      while (names.includes(next)) {
+        	n++
+      	next = newname.replace(match, " copy " + n)
+      }
+    	newname = next
+  }
+  return(newname)
 }

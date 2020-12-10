@@ -8,10 +8,10 @@ import Table from './table'
 import Format from './format'
 import View from './view'
 
-const Toolbar = ({ navigator, setNavigator }) => {
+const Toolbar = ({ navigator, setNavigator, setReadOnly }) => {
 	return (
 		<div className='worksheet-toolbar'>
-			<Files />
+			<Files setReadOnly={setReadOnly} />
 			<Edit />
 			<Insert />
 			<Table />

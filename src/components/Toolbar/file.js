@@ -4,10 +4,10 @@ import { compose } from 'recompose'
 import XLSX from 'xlsx'
 
 import Header from './header'
-import { stox } from '../../functions'
+import { stox, addCopyToName } from '../../functions'
 import ImportConnection from './importconnection'
 import ImportDatabase from '../Connectors/importdatabase'
-import { getMaxNumberFromFiles, xtos } from '../../functions'
+import { getMaxNumberCustomSheet, xtos } from '../../functions'
 import withDropdown from '../Dropdown'
 import withModal from '../Modal'
 import * as ROUTES from '../../constants/routes'
@@ -46,7 +46,7 @@ export const FILE_DROPDOWN = [
 ]
 
 const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNames, current,
-  onSetDataNames, onSetCurrent, onSetWorksheetname }) => {
+  onSetDataNames, onSetCurrent, onSetWorksheetname, setReadOnly }) => {
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenDatabaseMysql, setIsOpenDatabaseMysql] = useState(false)
   const [isOpenDatabaseSqlserver, setIsOpenDatabaseSqlserver] = useState(false)
@@ -56,7 +56,11 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
   const handleFile = key => {
     switch (key) {
       case FILE_DROPDOWN[0].key:
-        let filename = "Untitled Worksheet " + getMaxNumberFromFiles(files[authUser.uid])
+        let filename = "Untitled Worksheet "
+          + getMaxNumberCustomSheet(
+            files[authUser.uid].map(file => file.name),
+            "Untitled Worksheet "
+          )
         firebase.doUploadFile(
           authUser.uid,
           filename,
@@ -71,27 +75,19 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
         firebase.doUploadFile(authUser.uid, worksheetname, file)
         break;
       case FILE_DROPDOWN[2].key:
-        let worksheet = worksheetname
-        if (worksheet.includes(' copy')) {
-        	worksheet = worksheet.substring(0, worksheet.indexOf(' copy'))
-        }
-        // Can we persist files deeper than one level instead?
+        // doListFiles needed because files[authUser.uid] does not contain trash
         firebase.doListFiles(authUser.uid).then(res => {
-        	const file = new File (
-        		[JSON.stringify(slides.getData())],
-        		worksheet + ' copy ' + getMaxNumberFile(res.items, worksheet),
-        		{type: "application/json"}
-        	)
-        	var uploadTask = firebase.doUploadFile(authUser.uid, filename, file)
-        	uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
-        		onSetWorksheetname(filename)
+          const newname = addCopyToName(res.items, worksheetname)
+          const file = new File ([JSON.stringify(slides.getData())], newname, {type: "application/json"})
+          var uploadTask = firebase.doUploadFile(authUser.uid, newname, file)
+          uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
+            onSetWorksheetname(newname)
         		window.location.reload()
-        	})
+          })
         })
         break;
       case FILE_DROPDOWN[3].key:
-        document.getElementById('worksheet-header-filename').readOnly = false
-        document.getElementById('worksheet-header-filename').focus()
+        setReadOnly(false)
         break;
       case FILE_DROPDOWN[4].key:
         xtos(slides.getData(), worksheetname)
@@ -174,10 +170,29 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
     <>
       <FileWithDropdown text='File' items={FILE_DROPDOWN} onSelect={handleFile} color={OFF_COLOR[color[authUser.uid]]}/>
       <input type="file" className='toolbar-upload' onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef} />
-      <ImportConnectionWithModal isOpen={isOpen} setIsOpen={setIsOpen} />
-      <ImportDatabaseWithModal databaseType='MySQL' isOpen={isOpenDatabaseMysql} setIsOpen={setIsOpenDatabaseMysql} />
-      <ImportDatabaseWithModal databaseType='Microsoft SQL Server' isOpen={isOpenDatabaseSqlserver} setIsOpen={setIsOpenDatabaseSqlserver} />
-      <ImportDatabaseWithModal databaseType='OracleDB' isOpen={isOpenDatabaseOracle} setIsOpen={setIsOpenDatabaseOracle} />
+      <ImportConnectionWithModal
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        style={{width: "550px", left: "Calc((100% - 550px)/2)", top: "10%"}}
+      />
+      <ImportDatabaseWithModal
+        databaseType='MySQL'
+        isOpen={isOpenDatabaseMysql}
+        setIsOpen={setIsOpenDatabaseMysql}
+        style={{width: "466px", left: "Calc((100% - 466px)/2)", top: "10%"}}
+      />
+      <ImportDatabaseWithModal
+        databaseType='Microsoft SQL Server'
+        isOpen={isOpenDatabaseSqlserver}
+        setIsOpen={setIsOpenDatabaseSqlserver}
+        style={{width: "466px", left: "Calc((100% - 466px)/2)", top: "10%"}}
+      />
+      <ImportDatabaseWithModal
+        databaseType='OracleDB'
+        isOpen={isOpenDatabaseOracle}
+        setIsOpen={setIsOpenDatabaseOracle}
+        style={{width: "466px", left: "Calc((100% - 466px)/2)", top: "10%"}}
+      />
     </>
   )
 }

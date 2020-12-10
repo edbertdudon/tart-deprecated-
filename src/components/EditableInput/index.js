@@ -9,11 +9,13 @@
 // Alert users when they make an illegal change ie. same name headers, spaces within name
 //
 import React, {useState, useEffect, useRef} from 'react'
+import withModal from '../Modal'
 
-const EditableInput = ({ value, onCommit, files, classname, style, reference, inputId }) => {
+const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inputId, reference, setReadOnly }) => {
   const [text, setText] = useState(value)
-  const [readOnly, setReadOnly] = useState(true)
   const wrapperRef = useRef(null)
+  const [error, setError] = useState(false)
+  const [errortext, setErrorText] = useState('')
 
   const checkIllegalChange = () => {
     if (readOnly === false) {
@@ -30,6 +32,8 @@ const EditableInput = ({ value, onCommit, files, classname, style, reference, in
         onCommit(text)
       } else {
         setText(value)
+        setError(true)
+        setErrorText(text)
       }
     }
   }
@@ -60,19 +64,43 @@ const EditableInput = ({ value, onCommit, files, classname, style, reference, in
 
   const handleChange = e => setText(e.target.value)
 
+  const handleClose = () => setErrorText('')
+
   return (
-    <input
-      type="text"
-      onChange={handleChange}
-      className={classname}
-      value={text}
-      readOnly={readOnly}
-      onDoubleClick={handleReadonly}
-      style={style}
-      ref={wrapperRef}
-      id={inputId}
-    />
+    <>
+      {readOnly
+        ? <div className={classname} onDoubleClick={handleReadonly} style={style}>
+            {text}
+          </div>
+        : <input
+            type="text"
+            onChange={handleChange}
+            className={classname}
+            value={text}
+            style={style}
+            ref={wrapperRef}
+            id={inputId}
+            autoFocus
+          />
+      }
+      <MessageWithModal
+        text={errortext}
+        isOpen={error}
+        setIsOpen={setError}
+        onSelect={handleClose}
+        style={{width: "199px", left: "Calc((100% - 199px)/2)"}}
+      />
+    </>
   )
 }
+
+const Message = ({ text, onSelect }) => (
+	<form className='modal-form'>
+    <p>{"The name " + text + " is already taken."}</p>
+		<button className='modal-button' onClick={onSelect}>Ok</button>
+	</form>
+)
+
+const MessageWithModal = withModal(Message)
 
 export default EditableInput

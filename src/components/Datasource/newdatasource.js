@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { compose } from 'recompose'
 import { connect } from 'react-redux'
 import { useHistory } from 'react-router-dom';
-import { getMaxNumberFromFiles } from '../../functions'
+import { getMaxNumberCustomSheet } from '../../functions'
 import Icon from '@mdi/react';
 import { mdilPlus } from '@mdi/light-js'
 import { mdiLoading } from '@mdi/js'
@@ -17,7 +17,11 @@ const NewDataSource = ({ firebase, authUser, files, onSetWorksheetname }) => {
 
 	const handleOpen = () => {
 		setIsLoading(true)
-		let filename = "Untitled Worksheet " + getMaxNumberFromFiles(files[authUser.uid])
+		let filename = "Untitled Worksheet "
+			+ getMaxNumberCustomSheet(
+				files[authUser.uid].map(file => file.name),
+				"Untitled Worksheet "
+			)
 		firebase.doUploadFile(
 			authUser.uid,
 			filename,

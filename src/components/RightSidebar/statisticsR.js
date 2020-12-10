@@ -254,13 +254,19 @@ const statistics = [
 
 	// Tests
 	{
+		key: "Fitting Linear Models",
+		function: "lm(",
+		arguments: ["formula"],
+		category: 8
+	}
+	{
 		key: "Ansari-Bradley test",
-		function: "ansari.test())",
+		function: "ansari.test(",
 		category: 8
 	},
 	{
 		key: "Bartlett test of homogeneity of variances",
-		function: "bartlett.test()",
+		function: "bartlett.test(",
 		category: 8
 	},
 	{
@@ -271,38 +277,99 @@ const statistics = [
 	},
 	// {
 	// 	key: "Box-pierce and Ljung-Box test",
-	// 	function: "Box.test()",
+	// 	function: "Box.test(",
 	// 	category: 8
 	// },
 	{
 		key: "Test for association/correlation between paired samples",
-		function: "cor.test()",
+		function: "cor.test(",
 		category: 8
 	},
 	{
 		key: "Filgner-Killeen test for homegenity of variances",
-		function: "filgner.test()",
+		function: "filgner.test(",
 		category: 8
 	},
-
-
-	// {key: "Kolmogorov-Smirnov test", function: "ks.test()", category: 8},
-	// {key: "Mauchly's test of sphericity", function: "mauchly.test()", category: 8},
-	// {key: "Mcnemar's Chi-Squared test for count data", function: "mcnemar.test()", category: 8},
-	{key: "Mood two-sample test of scale", function: "mood.test()", category: 8},
-	{key: "Equal means in a one-way layout", function: "oneway.test()", category: 8},
-	// {key: "Pairwise comparisons for proportions", function: "bartlett.test()", category: 8},
-	{key: "Pairwise t-tests", function: "pairwise.t.test()", category: 8},
-	// {key: "Pairwise Wilcoxon rank sum tests", function: "pairwise.wilcox.test()", category: 8},
-	// {key: "Exact poisson test", function: "poisson.test()", category: 8},
-	// {key: "Power calculations for balanced one-way analysis of variance tests", function: "power.anova.test()", category: 8},
-	// {key: "Power calculations for one and two sample t-tests", function: "power.t.test()", category: 8},
-	// {key: "Phillips-Perron test for unit roots", function: "PP.test()", category: 8},
-	// {key: "Print method for hypothesis tests and power calculation object", function: "print.htest()", category: 8},
-	// {key: "Test for equal or given proportions", function: "prop.test()", category: 8},
-	{key: "Quade test", function: "quade.test()", category: 8},
-	// {key: "Shapiro-Wilk normality test", function: "shapiro.test()", category: 8},
-
+	// {
+	// 	key: "Kolmogorov-Smirnov test",
+	// 	function: "ks.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Mauchly's test of sphericity",
+	// 	function: "mauchly.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Mcnemar's Chi-Squared test for count data",
+	// 	function: "mcnemar.test(",
+	// 	category: 8
+	// },
+	{
+		key: "Mood two-sample test of scale",
+		function: "mood.test(",
+		category: 8
+	},
+	{
+		key: "Equal means in a one-way layout",
+		function: "oneway.test(",
+		category: 8
+	},
+	// {
+	// 	key: "Pairwise comparisons for proportions",
+	// 	function: "bartlett.test(",
+	// 	category: 8
+	// },
+	{
+		key: "Pairwise t-tests",
+		function: "pairwise.t.test(",
+		category: 8
+	},
+	// {
+	// 	key: "Pairwise Wilcoxon rank sum tests",
+	// 	function: "pairwise.wilcox.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Exact poisson test",
+	// 	function: "poisson.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Power calculations for balanced one-way analysis of variance tests",
+	// 	function: "power.anova.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Power calculations for one and two sample t-tests",
+	// 	function: "power.t.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Phillips-Perron test for unit roots",
+	// 	function: "PP.test(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Print method for hypothesis tests and power calculation object",
+	// 	function: "print.htest(",
+	// 	category: 8
+	// },
+	// {
+	// 	key: "Test for equal or given proportions",
+	// 	function: "prop.test(",
+	// 	category: 8
+	// },
+	{
+		key: "Quade test",
+		function: "quade.test(",
+		category: 8
+	},
+	// {
+	// 	key: "Shapiro-Wilk normality test",
+	// 	function: "shapiro.test(",
+	// 	category: 8
+	// },
 ]
 
 export default statistics

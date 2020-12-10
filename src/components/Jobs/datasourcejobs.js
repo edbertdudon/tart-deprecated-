@@ -47,10 +47,7 @@ const DataSourceJobs = ({ firebase, authUser, color, onJobSubmit, onJobCancel, o
 
 	const Run = () => (
 		(runId === undefined || runId === "")
-			?	<button
-					className='datasource-button'
-					onClick={handleRun}
-					style={{backgroundColor: hover && color[authUser.uid]}}
+			?	<button className='datasource-button' onClick={handleRun} style={{backgroundColor: hover && color[authUser.uid]}}
 					onMouseEnter={() => setHover(!hover)} onMouseLeave={() => setHover(!hover)}
 				>RUN</button>
 			:	<button className='datasource-button' onClick={handleCancel} style={{backgroundColor:color[authUser.uid]}}>

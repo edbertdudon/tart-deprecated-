@@ -195,6 +195,12 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 					Users have strict read access (Unable to edit, download, delete data within a database).
 				</p>
 				<br />
+				<input
+					className='modal-button'
+					type="button"
+					value="Cancel"
+					onClick={handleClose}
+				/>
 				{loading
 					? 	<div className='modal-button'>
 							<Icon path={mdiLoading} size={1.5} spin/>
@@ -208,12 +214,6 @@ const ImportDatabase = ({ firebase, authUser, color, databaseType, onClose }) =>
 							style={{color: isInvalid ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
 						/>
 				}
-				<input
-					className='modal-button'
-					type="button"
-					value="Cancel"
-					onClick={handleClose}
-				/>
 			</div>
 		</form>
 	)

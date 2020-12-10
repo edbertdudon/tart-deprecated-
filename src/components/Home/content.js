@@ -118,6 +118,7 @@ export const updateFilesAfterTrash = (filename, files) => {
 const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive,
 	notifications, onSetNotifications }) => {
 	const [loading, setLoading] = useState(false)
+  const [filesWithTrash, setFilesWithTrash] = useState([])
 
 	useEffect(() => {
 		setLoading(true)
@@ -167,6 +168,7 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 	const listFilesLessTrash = () => {
 		firebase.doListFiles(authUser.uid).then(res => {
 			let allFiles = res.items
+      setFilesWithTrash(allFiles)
 			firebase.trash(authUser.uid).get().then(doc => {
 				if (doc.exists) {
 					let list = Object.keys(doc.data())
@@ -196,6 +198,7 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 							onJobCancel={handleJobCancel}
 							key={file.name}
 							onListFilesLessTrash={listFilesLessTrash}
+              filesWithTrash={filesWithTrash}
 						/>
 				))}
 			</>
