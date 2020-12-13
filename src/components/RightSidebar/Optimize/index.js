@@ -45,7 +45,7 @@ const CONES_TYPE = ["K_zero", "K_lin", "K_soc", "K_expp", "K_powp", "K_powd", "K
 
 const SOLVER_STATES = [
 	// General
-	["optimx", "nloptr"],
+	["optimx", "nloptr.lbfgs"],
 	// Linear
 	["lpsolve", "glpk"],
 	// Quadratic
@@ -54,7 +54,7 @@ const SOLVER_STATES = [
 
 const SOLVER_CONSTRAINTS = [
 	// General
-	["nloptr"],
+	["nloptr.lbfgs"],
 	// Bound
 	["optimx"],
 	// Linear

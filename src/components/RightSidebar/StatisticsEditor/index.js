@@ -31,11 +31,22 @@ const ALTERNATIVES = ["two.sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
 const TEST_STATISTICS = ["Pillai", "Wilks", "Hotelling-Lawley", "Roy"]
 const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
+const FAMILY_OBJECTS = [
+	'binomial(link = "logit")',
+	'gaussian(link = "identity")',
+	'Gamma(link = "inverse")',
+	'inverse.gaussian(link = "1/mu^2")',
+	'poisson(link = "log")',
+	'quasi(link = "identity", variance = "constant")',
+	'quasibinomial(link = "logit")',
+	'quasipoisson(link = "log")',
+]
 
 function setStatisticalFunciton(
-		statistic, oneWayAnova, randomizedBlockDesign, twoWayAnova, analysisOfCovariance, oneWayWithin, twoWayWithin, twoWayBetween, test,
-		linearRegressionVars, linearRegressionVars2, formulaText, formulaText2, variableX, variableY, variableZ, groups, blocks,
-		alt, varEqual, trueMean, confidenceLevel, paired, matrix, corr, successes, trials, prob) {
+	statistic, oneWayAnova, randomizedBlockDesign, twoWayAnova, analysisOfCovariance, oneWayWithin, twoWayWithin, twoWayBetween,
+	test, linearRegressionVars, linearRegressionVars2, formulaText, formulaText2, family, variableX, variableY, variableZ, groups, blocks,
+	successes, trials, prob, alt, varEqual, trueMean, paired, confidenceLevel, matrix, corr
+) {
 	let isVarEqual = VAR_EQUAL[varEqual] === VAR_EQUAL[1]
 	let statisticalFunction = statistic.function
 	if (oneWayAnova != "") statisticalFunction = statisticalFunction + oneWayAnova + ",currentLattitude"
@@ -49,16 +60,17 @@ function setStatisticalFunciton(
 	if (linearRegressionVars2 != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars2 + ",currentLattitude)"
 	if (formulaText != "") statisticalFunction = statisticalFunction + "lm(" + formulaText + ",currentLattitude)"
 	if (formulaText2 != "") statisticalFunction = statisticalFunction + "lm(" + formulaText2 + ",currentLattitude)"
-
-	// binomial
-	if (statistic.function === "binom.test(") {
-		statisticalFunction = statisticalFunction + successes + "," + trials + ",p=" + prob
+	if (statistic.function === "glm(") {
+		statisticalFunction = statisticalFunction + ",family=" + family
 	}
-
-	// supplemental variables
 	if (variableX != null) statisticalFunction = statisticalFunction + ",x=currentLattitude$`" + variableX + '`'
 	if (variableY != null) statisticalFunction = statisticalFunction + ",y=currentLattitude$`" + variableY + '`'
 	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=currentLattitude$`" + variableZ + '`'
+	if (groups != null) statisticalFunction = statisticalFunction + ",g=currentLattitude$`" + groups + '`'
+	if (blocks != null) statisticalFunction = statisticalFunction + ",b=currentLattitude$`" + blocks + '`'
+	if (statistic.function === "binom.test(") {
+		statisticalFunction = statisticalFunction + successes + "," + trials + ",p=" + prob
+	}
 	if (ALTERNATIVES[alt] != "two.sided") statisticalFunction = statisticalFunction + ",alternative=" + ALTERNATIVES[alt]
 	if (isVarEqual != false) statisticalFunction = statisticalFunction + ",var.equal=TRUE"
 	if (trueMean != 0) statisticalFunction = statisticalFunction + ",mu=" + trueMean
@@ -101,6 +113,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [linearRegressionVars2, setLinearRegressionVars2] = useState('')
 	const [formulaText, setFormulaText] = useState('')
 	const [formulaText2, setFormulaText2] = useState('')
+	const [family, setFamily] = useState(4)
 	const [variableX, setVariableX] = useState(null)
 	const [variableY, setVariableY] = useState(null)
 	const [variableZ, setVariableZ] = useState(null)
@@ -124,6 +137,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [confidenceLevelError, setConfidenceLevelError] = useState(null)
 	const [successesError, setSuccessesError] = useState(null)
 	const [trialsError, setTrialsError] = useState(null)
+	const [probError, setProbError] = useState(null)
 	const [error, setError] = useState(null)
 	const [loading, setLoading] = useState(false)
 
@@ -145,6 +159,12 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			}
 		}
 	}, [])
+
+	const handleClose = () => {
+		onSetRightSidebar('none')
+		setStatistic(null)
+		setLoading(false)
+	}
 
 	const handleSetOneWayAnova = (dependent, independent) =>
 		setOneWayAnova('`' + variables[dependent] + '`~`' + variables[independent] + '`')
@@ -232,6 +252,8 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 
 	const handleSetFormula2 = formula => setFormulaText2(formula)
 
+	const handleSetFamily = family => setFamily(family)
+
 	const handleUpdateVariableX = activeOption => setVariableX(activeOption)
 
 	const handleUpdateVariableY = activeOption => setVariableY(activeOption)
@@ -241,8 +263,6 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const handleUpdateGroups = activeOption => setGroups(activeOption)
 
 	const handleUpdateBlocks = activeOption => setBlocks(activeOption)
-
-	const handleUpdateAlt = activeOption => setAlt(activeOption)
 
 	const handleChangeSuccesses = e => {
 		let input = e.target.value
@@ -264,6 +284,20 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		}
 	}
 
+	const handleChangeProb = e => {
+		let input = e.target.value
+		setProb(input)
+		if (Number.isInteger(parseFloat(input))) {
+			setProbError(null)
+		} else {
+			setProbError("Probability must be a nonnegative integer.")
+		}
+	}
+
+	const handleUpdateAlt = activeOption => setAlt(activeOption)
+
+	const handleChangeVarEqual = activeOption => setVarEqual(activeOption)
+
 	const handleChangeTrueMean = e => {
 		let input = e.target.value
 		setTrueMean(input)
@@ -273,6 +307,8 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			setTrueMeanError(null)
 		}
 	}
+
+	// const handleChangePaired = () => setPaired(!paired)
 
 	const handleChangeConfidenceLevel = e => {
 		let input = e.target.value
@@ -286,13 +322,24 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		}
 	}
 
-	const handleChangeVarEqual = activeOption => setVarEqual(activeOption)
-
-	const handleChangePaired = () => setPaired(!paired)
-
 	const handleUpdateMatrix = newSelectedVariables => setMatrix(newSelectedVariables)
 
 	const handleUpdateCorr = activeOption => setCorr(activeOption)
+
+	const handleFirstrow = () => {
+		const { data } = slides
+		const rownames = Object.values(data.rows._[0].cells)
+			.map(cell => cell.text)
+		const rows = Object.keys(data.rows._)
+			.map(row => parseInt(row)+1)
+		const cols = rownames.map((t, i) => columnToLetter(i+1))
+		if (firstRow) {
+			setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
+		} else {
+			setVariables(rownames)
+		}
+		setFirstRow(!firstRow)
+	}
 
 	const handleSubmit = () => {
 		setLoading(true)
@@ -310,21 +357,22 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			linearRegressionVars2,
 			formulaText,
 			formulaText2,
+			FAMILY_OBJECTS[family],
 			variables[variableX],
 			variables[variableY],
 			variables[variableZ],
 			groups,
 			blocks,
-			alt,
-			varEqual,
-			trueMean,
-			confidenceLevel,
-			paired,
-			matrix.length > 0 ? cbindDependents(matrix, variables) : matrix,
-			corr,
 			successes,
 			trials,
 			prob,
+			alt,
+			varEqual,
+			trueMean,
+			paired,
+			confidenceLevel,
+			matrix.length > 0 ? cbindDependents(matrix, variables) : matrix,
+			corr,
 		)
 		if (statisticalFunction.includes("()")) {
 			setError('Select columns to analyze')
@@ -366,27 +414,6 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					setLoading(false)
 				}
 		  })
-	}
-
-	const handleFirstrow = () => {
-		const { data } = slides
-		const rownames = Object.values(data.rows._[0].cells)
-			.map(cell => cell.text)
-		const rows = Object.keys(data.rows._)
-			.map(row => parseInt(row)+1)
-		const cols = rownames.map((t, i) => columnToLetter(i+1))
-		if (firstRow) {
-			setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
-		} else {
-			setVariables(rownames)
-		}
-		setFirstRow(!firstRow)
-	}
-
-	const handleClose = () => {
-		onSetRightSidebar('none')
-		setStatistic(null)
-		setLoading(false)
 	}
 
 	const isInvalid = variables.length < 1
@@ -517,15 +544,22 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					onSetFormula={handleSetFormula2}
 					formulaError={formulaError2}
 				/>}
-	        {statistics[statistic].arguments.includes("xvariable") &&
+			{statistics[statistic].arguments.includes("family") &&
+				<Variable
+					label="X variable"
+					onChange={handleSetFamily}
+					options={FAMILY_OBJECTS}
+					name={FAMILY_OBJECTS[family]}
+				/>}
+	    {statistics[statistic].arguments.includes("xvariable") &&
 				<Variable
 					label="X variable"
 					onChange={handleUpdateVariableX}
 					options={variables}
 					name={variables[variableX]}
 				/>}
-	        {statistics[statistic].arguments.includes("yvariable") &&
-	        	<Variable
+      {statistics[statistic].arguments.includes("yvariable") &&
+      	<Variable
 					label="Y variable"
 					onChange={handleUpdateVariableY}
 					options={variables}
@@ -552,20 +586,6 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					options={variables}
 					name={variables[blocks]}
 				/>}
-	    {statistics[statistic].arguments.includes("varEqual") &&
-				<Variable
-					label="Equal variance or pooled variance"
-					onChange={handleChangeVarEqual}
-					options={VAR_EQUAL}
-					name={VAR_EQUAL[varEqual]}
-				/>}
-	    {statistics[statistic].arguments.includes("alt") &&
-	      <Variable
-					label="Alternative"
-					onChange={handleUpdateAlt}
-					options={ALTERNATIVES.map(alternative => {return alternative.replace(".", " ")})}
-					name={ALTERNATIVES[alt]}
-				/>}
 			{statistics[statistic].arguments.includes("successes") &&
 				<Number
 					label='Number of successes'
@@ -579,6 +599,27 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					value={trials}
 					onChange={handleChangeTrials}
 					error={trialsError}
+				/>}
+			{statistics[statistic].arguments.includes("prob") &&
+				<Number
+					label='Probability of success'
+					value={prob}
+					onChange={handleChangeProb}
+					error={probError}
+				/>}
+	    {statistics[statistic].arguments.includes("alt") &&
+	      <Variable
+					label="Alternative"
+					onChange={handleUpdateAlt}
+					options={ALTERNATIVES.map(alternative => {return alternative.replace(".", " ")})}
+					name={ALTERNATIVES[alt]}
+				/>}
+			{statistics[statistic].arguments.includes("varEqual") &&
+				<Variable
+					label="Equal variance or pooled variance"
+					onChange={handleChangeVarEqual}
+					options={VAR_EQUAL}
+					name={VAR_EQUAL[varEqual]}
 				/>}
 	    {statistics[statistic].arguments.includes("mu") &&
 				<Number
