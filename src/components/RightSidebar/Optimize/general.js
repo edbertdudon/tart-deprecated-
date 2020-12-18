@@ -8,7 +8,7 @@
 import React from 'react'
 import { updateCell, updateCellorSingleRange } from './index'
 
-const General = ({ objective, setObjective, decision, setDecision, gradient, setGradient, hessian, setHessian, error, setError }) => {
+const General = ({ objective, decision, gradient, hessian, error, setObjective, setDecision, setGradient, setHessian, setError }) => {
   const handleUpdateObjective = e => updateCell(e, setObjective, setError)
 
   const handleUpdateDecision = e => updateCellorSingleRange(e, setDecision, setError)

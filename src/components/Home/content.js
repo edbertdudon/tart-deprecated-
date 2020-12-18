@@ -121,15 +121,15 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
   const [filesWithTrash, setFilesWithTrash] = useState([])
 
 	useEffect(() => {
-		setLoading(true)
-		listFilesLessTrash()
-		firebase.doListJobs(authUser.uid)
-			.then(res => {
-				if (!("error" in res)) {
-					onSetJobs(res)
-				}
-			})
-			.then(() => onSetIsJobsActive(shouldReloadTimer(jobs)))
+		// setLoading(true)
+		// listFilesLessTrash()
+		// firebase.doListJobs(authUser.uid)
+		// 	.then(res => {
+		// 		if (!("error" in res)) {
+		// 			onSetJobs(res)
+		// 		}
+		// 	})
+		// 	.then(() => onSetIsJobsActive(shouldReloadTimer(jobs)))
 	}, [])
 
 	// Checks every ** 1 minutes *** for finished jobs
@@ -177,8 +177,8 @@ const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJob
 							return file.name
 						}
 					})
+          setLoading(false)
 					onSetFiles(filesLessTrash, authUser.uid)
-					setLoading(false)
 				}
 			})
 		})

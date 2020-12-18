@@ -10,14 +10,14 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
-import { updateCellorRange, updateCell } from './index'
+import { updateCellorSingleRange, updateCell } from './index'
 
-const Fconstraint = ({ slides, lhs, setLhs, dir, setDir, rhs, setRhs, jacobian, setJacobian, onClose, error, setError }) => {
-  const handleUpdateLhs = e => updateCellorRange(e, setLhs, setError)
+const Fconstraint = ({ slides, lhs, dir, rhs, jacobian, error, setLhs, setDir, setRhs, setJacobian, setError, onClose }) => {
+  const handleUpdateLhs = e => updateCellorSingleRange(e, setLhs, setError)
 
-  const handleUpdateDir = e => updateCellorRange(e, setDir, setError)
+  const handleUpdateDir = e => updateCellorSingleRange(e, setDir, setError)
 
-  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
+  const handleUpdateRhs = e => updateCellorSingleRange(e, setRhs, setError)
 
   const handleUpdateJacobian = e => updateCell(e, setJacobian, setError)
 

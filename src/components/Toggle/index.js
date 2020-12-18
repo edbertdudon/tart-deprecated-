@@ -98,14 +98,13 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
         }
       }
       const d = slides.insertChart(dataNames, current, data)
-      // console.log(JSON.stringify(slides.getData()))
-      // onSetDataNames([
-      //   ...dataNames.slice(0, current+1),
-      //   d.name,
-      //   ...dataNames.slice(current+1)
-      // ])
-      // onSetCurrent(current+1)
-      // slides.data = d
+      onSetDataNames([
+        ...dataNames.slice(0, current+1),
+        d.name,
+        ...dataNames.slice(current+1)
+      ])
+      onSetCurrent(current+1)
+      slides.data = d
     }
   }
 

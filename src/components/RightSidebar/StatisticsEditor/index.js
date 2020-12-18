@@ -392,28 +392,29 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		}
 		const key = statistics[statistic].key
 		const statName = key + ' ' + getMaxNumberCustomSheet(datas.map(data => data.name), key)
-		doRegression(formulaData)
-			.then(res => {
-				if (typeof res[0] === "string" || res[0] instanceof String) {
-					setError(res)
-					setLoading(false)
-				} else {
-					res.name = statName
-					res.type = "regression"
-					res.regression = sparkData
-					const d = slides.insertData(dataNames, current, res, name)
-					onSetDataNames([
-			      ...dataNames.slice(0, current+1),
-			      d.name,
-			      ...dataNames.slice(current+1)
-			    ])
-					onSetCurrent(current+1)
-					data = d
-					onSetRightSidebar('none')
-					setStatistic(null)
-					setLoading(false)
-				}
-		  })
+		console.log(formulaData)
+		// doRegression(formulaData)
+		// 	.then(res => {
+		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
+		// 			setError(res)
+		// 			setLoading(false)
+		// 		} else {
+		// 			res.name = statName
+		// 			res.type = "regression"
+		// 			res.regression = sparkData
+		// 			const d = slides.insertData(dataNames, current, res, name)
+		// 			onSetDataNames([
+		// 	      ...dataNames.slice(0, current+1),
+		// 	      d.name,
+		// 	      ...dataNames.slice(current+1)
+		// 	    ])
+		// 			onSetCurrent(current+1)
+		// 			data = d
+		// 			onSetRightSidebar('none')
+		// 			setStatistic(null)
+		// 			setLoading(false)
+		// 		}
+		//   })
 	}
 
 	const isInvalid = variables.length < 1

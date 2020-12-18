@@ -8,7 +8,7 @@
 import React from 'react'
 import { updateCellorSingleRange } from './index'
 
-const Linear = ({ linear, setLinear, error, setError }) => {
+const Linear = ({ linear, error, setLinear, setError }) => {
   const handleUpdateLinear = e => updateCellorSingleRange(e, setLinear, setError)
 
   return (

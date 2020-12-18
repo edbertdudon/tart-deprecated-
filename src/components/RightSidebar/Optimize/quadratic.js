@@ -8,7 +8,7 @@
 import React from 'react'
 import { updateRangeNotOne, updateCellorSingleRange } from './index'
 
-const Quadratic = ({ quadratic, setQuadratic, linear, setLinear, error, setError }) => {
+const Quadratic = ({ quadratic, linear, error, setQuadratic, setLinear, setError }) => {
   const handleUpdateQuadratic = e => updateRangeNotOne(e, setQuadratic, setError)
 
   const handleUpdateLinear = e => updateCellorSingleRange(e, setLinear, setError)

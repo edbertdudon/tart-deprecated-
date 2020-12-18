@@ -19,9 +19,11 @@ const withModal = Component => (props) => {
   return (
     <>
       {props.isOpen &&
+        <div className='modal-outbox'>
           <div className='modal' style={props.style}>
             <Component {...props} onClose={handleClose} onSelect={handleSelect} />
           </div>
+        </div>
       }
     </>
   )

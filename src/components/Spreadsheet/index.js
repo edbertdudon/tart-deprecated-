@@ -94,12 +94,11 @@ class Spreadsheet {
   insertChart(dataNames, current, o, name) {
     const n = name || `chart${this.sheetIndex}`;
     let d = new ChartProxy(n, o);
-    console.log(d)
-    // d.setData(o, this.datas);
-    // this.datas.splice(current+1, 0, d)
-    // this.sheetIndex = current + 1
-    // this.sheet.resetData(d)
-    // return d
+    d.setData(o, this.datas);
+    this.datas.splice(current+1, 0, d)
+    this.sheetIndex = current + 1
+    this.sheet.resetData(d)
+    return d
   }
 
   insertData(dataNames, current, o, name) {

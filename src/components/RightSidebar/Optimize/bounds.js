@@ -10,23 +10,23 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose, mdiLessThanOrEqual } from '@mdi/js'
-import { updateCell, updateCellorRange } from './index'
+import { updateCell, updateCellorSingleRange } from './index'
 
-const Bounds = ({ slides, objectiveClass, lhs, setLhs, dir, setDir, rhs, setRhs,
-  li, setLi, lb, setLb, ui, setUi, ub, setUb, ld, setLd, ud, setUd, onClose, error, setError }) => {
-  const handleUpdateLhs = e => updateCellorRange(e, setLhs, setError)
+const Bounds = ({ slides, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
+  setLhs, setDir, setRhs, setLi, setLb, setUi, setUb, setLd, setUd, setError, onClose }) => {
+  const handleUpdateLhs = e => updateCellorSingleRange(e, setLhs, setError)
 
-  const handleUpdateDir = e => updateCellorRange(e, setDir, setError)
+  const handleUpdateDir = e => updateCellorSingleRange(e, setDir, setError)
 
-  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
+  const handleUpdateRhs = e => updateCellorSingleRange(e, setRhs, setError)
 
-  const handleUpdateLi = e => updateCellorRange(e, setLi, setError)
+  const handleUpdateLi = e => updateCellorSingleRange(e, setLi, setError)
 
-  const handleUpdateLb = e => updateCellorRange(e, setLb, setError)
+  const handleUpdateLb = e => updateCellorSingleRange(e, setLb, setError)
 
-  const handleUpdateUi = e => updateCellorRange(e, setUi, setError)
+  const handleUpdateUi = e => updateCellorSingleRange(e, setUi, setError)
 
-  const handleUpdateUb = e => updateCellorRange(e, setUb, setError)
+  const handleUpdateUb = e => updateCellorSingleRange(e, setUb, setError)
 
   const handleUpdateLd = e => updateCell(e, setLd, setError)
 

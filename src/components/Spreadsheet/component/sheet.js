@@ -980,6 +980,13 @@ export default class Sheet {
     this.table.resetData(data);
   }
 
+  resetChart(data) {
+    // before
+    this.editor.clear();
+    // after
+    this.data = data;
+  }
+
   loadData(data) {
     this.data.setData(data);
     sheetReset.call(this);

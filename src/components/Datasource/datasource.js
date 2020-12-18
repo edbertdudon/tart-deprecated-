@@ -111,7 +111,7 @@ const DataSource = ({ firebase, authUser, color, files, jobs, onSetWorksheetname
 		)
 	}
 
-	const handleRename = n => {
+	const handleCommitRename = n => {
 		setLoading(true)
 		setName(n)
 		firebase.doDownloadFile(authUser.uid, filename).then(slide => {
@@ -159,6 +159,7 @@ const DataSource = ({ firebase, authUser, color, files, jobs, onSetWorksheetname
 
 	return (
 		<div className='datasource-thumbnail'>
+			{loading && <div className='datasource-loading-overlay'/>}
 			<ContextMenuTrigger className='datasource-dropdown' id={'right-click' + filename}>
 				<LinkToApp />
 				<div className='datasource-buttons-wrapper'>
@@ -174,7 +175,7 @@ const DataSource = ({ firebase, authUser, color, files, jobs, onSetWorksheetname
 				<EditableInput
 					value={name}
 					readOnly={readOnly}
-					onCommit={handleRename}
+					onCommit={handleCommitRename}
 					files={filesWithTrash}
 					classname='datasource-editabletext'
 					setReadOnly={setReadOnly}

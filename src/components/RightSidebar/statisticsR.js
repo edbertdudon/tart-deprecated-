@@ -258,13 +258,13 @@ const statistics = [
 		function: "lm(",
 		arguments: ["formula"],
 		category: 8
-	}
+	},
 	{
 		key: "Fitting Generalized Linear Models",
 		function: "glm(",
 		arguments: ["formula", "family"],
 		category: 8
-	}
+	},
 	{
 		key: "Ansari-Bradley test",
 		function: "ansari.test(",

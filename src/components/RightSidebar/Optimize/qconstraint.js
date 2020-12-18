@@ -10,16 +10,16 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js'
-import { updateRange, updateCellorRange } from './index'
+import { updateRangeNotOne, updateCellorSingleRange } from './index'
 
-const Qconstraint = ({ slides, quadratic, setQuadratic, linear, setLinear, dir, setDir, rhs, setRhs, onClose, error, setError }) => {
-  const handleUpdateQuadratic = e => updateRange(e, setQuadratic, setError)
+const Qconstraint = ({ slides, quadratic, linear, dir, rhs, error, setQuadratic, setLinear, setDir, setRhs, setError, onClose }) => {
+  const handleUpdateQuadratic = e => updateRangeNotOne(e, setQuadratic, setError)
 
-  const handleUpdateLinear = e => updateCellorRange(e, setLinear, setError)
+  const handleUpdateLinear = e => updateCellorSingleRange(e, setLinear, setError)
 
-  const handleUpdateDir = e => updateCellorRange(e, setDir, setError)
+  const handleUpdateDir = e => updateCellorSingleRange(e, setDir, setError)
 
-  const handleUpdateRhs = e => updateCellorRange(e, setRhs, setError)
+  const handleUpdateRhs = e => updateCellorSingleRange(e, setRhs, setError)
 
   const handleClose = () => onClose(3)
 

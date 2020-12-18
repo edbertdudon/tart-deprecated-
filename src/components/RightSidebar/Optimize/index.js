@@ -298,31 +298,31 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 	const [lrhs, setLrhs] = useState('')
 	// Zero cone
 	const [c0lhs, setC0lhs] = useState('')
-	// const [c0cone, setC0cone] = useState(1)
+	const [c0cone, setC0cone] = useState(1)
 	const [c0rhs, setC0rhs] = useState('')
 	// Linear cone
 	const [cllhs, setCllhs] = useState('')
-	// const [lcone, setlcone] = useState(1)
+	const [lcone, setlcone] = useState(1)
 	const [clrhs, setClrhs] = useState('')
 	// Second-order cone
 	const [csolhs, setCsolhs] = useState('')
-	// const [socone, setSocone] = useState(1)
+	const [socone, setSocone] = useState(1)
 	const [csorhs, setCsorhs] = useState('')
 	// Exponential cone
 	const [cexlhs, setCexlhs] = useState('')
-	// const [excone, setExcone] = useState(1)
+	const [excone, setExcone] = useState(1)
 	const [cexrhs, setCexrhs] = useState('')
 	// Power 3d cone
 	const [cpplhs, setCpplhs] = useState('')
-	// const [ppcone, setPpcone] = useState(1)
+	const [ppcone, setPpcone] = useState(0.5)
 	const [cpprhs, setCpprhs] = useState('')
 	// Power 2d cone
 	const [cpdlhs, setCpdlhs] = useState('')
-	// const [pdcone, setPdcone] = useState(1)
+	const [pdcone, setPdcone] = useState(0.5)
 	const [cpdrhs, setCpdrhs] = useState('')
 	// Positive semidefinite cone
 	const [cpsdlhs, setCpsdlhs] = useState('')
-	// const [psdcone, setPsdcone] = useState(1)
+	const [psdcone, setPsdcone] = useState(1)
 	const [cpsdrhs, setCpsdrhs] = useState('')
 	const [solver, setSolver] = useState(0)
 	const [loading, setLoading] = useState(false)
@@ -401,25 +401,25 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 			ldir: translateR(ldir || 'na', name),
 			lrhs: translateR(lrhs || 'na', name),
 			c0lhs: translateR(c0lhs || 'na', name),
-			// c0cone: CONES_TYPE[0],
+			c0cone: c0cone || 'na',
 			c0rhs: translateR(c0rhs || 'na', name),
 			cllhs: translateR(cllhs || 'na', name),
-			// lcone: CONES_TYPE[1],
+			lcone: lcone || 'na',
 			clrhs: translateR(clrhs || 'na', name),
 			csolhs: translateR(csolhs || 'na', name),
-			// socone: CONES_TYPE[2],
+			socone: socone || 'na',
 			csorhs: translateR(csorhs || 'na', name),
 			cexlhs: translateR(cexlhs || 'na', name),
-			// excone: CONES_TYPE[3],
+			excone: excone || 'na',
 			cexrhs: translateR(cexrhs || 'na', name),
 			cpplhs: translateR(cpplhs || 'na', name),
-			// ppcone: CONES_TYPE[4],
+			ppcone: ppcone || 'na',
 			cpprhs: translateR(cpprhs || 'na', name),
 			cpdlhs: translateR(cpdlhs || 'na', name),
-			// pdcone: CONES_TYPE[5],
+			pdcone: pdcone || 'na',
 			cpdrhs: translateR(cpdrhs || 'na', name),
 			cpsdlhs: translateR(cpsdlhs || 'na', name),
-			// psdcone: CONES_TYPE[6],
+			psdcone: psdcone || 'na',
 			cpsdrhs: translateR(cpsdrhs || 'na', name),
 			solver: SOLVER_STATES[objectiveClass][solver],
 		}
@@ -618,8 +618,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={c0lhs}
 					setLhs={setC0lhs}
-					// cone={c0cone}
-					// setCone={setC0cone}
+					cone={c0cone}
+					setCone={setC0cone}
 					rhs={c0rhs}
 					setRhs={setC0rhs}
 					type={CONSTRAINTS_TYPE[4]}
@@ -632,8 +632,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={cllhs}
 					setLhs={setCllhs}
-					// cone={lcone}
-					// setCone={setlcone}
+					cone={lcone}
+					setCone={setlcone}
 					rhs={clrhs}
 					setRhs={setClrhs}
 					type={CONSTRAINTS_TYPE[5]}
@@ -646,8 +646,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={csolhs}
 					setLhs={setCsolhs}
-					// cone={socone}
-					// setCone={setSocone}
+					cone={socone}
+					setCone={setSocone}
 					rhs={csorhs}
 					setRhs={setCsorhs}
 					type={CONSTRAINTS_TYPE[6]}
@@ -660,8 +660,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={cexlhs}
 					setLhs={setCexlhs}
-					// cone={excone}
-					// setCone={setExcone}
+					cone={excone}
+					setCone={setExcone}
 					rhs={cexrhs}
 					setRhs={setCexrhs}
 					type={CONSTRAINTS_TYPE[7]}
@@ -674,8 +674,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={cpplhs}
 					setLhs={setCpplhs}
-					// cone={ppcone}
-					// setCone={setPpcone}
+					cone={ppcone}
+					setCone={setPpcone}
 					rhs={cpprhs}
 					setRhs={setCpprhs}
 					type={CONSTRAINTS_TYPE[8]}
@@ -688,8 +688,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={cpdlhs}
 					setLhs={setCpdlhs}
-					// cone={pdcone}
-					// setCone={setPdcone}
+					cone={pdcone}
+					setCone={setPdcone}
 					rhs={cpdrhs}
 					setRhs={setCpdrhs}
 					type={CONSTRAINTS_TYPE[9]}
@@ -702,8 +702,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<Cconstraint
 					lhs={cpsdlhs}
 					setLhs={setCpsdlhs}
-					// cone={psdcone}
-					// setCone={setPsdcone}
+					cone={psdcone}
+					setCone={setPsdcone}
 					rhs={cpsdrhs}
 					setRhs={setCpsdrhs}
 					type={CONSTRAINTS_TYPE[10]}

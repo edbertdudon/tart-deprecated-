@@ -14,15 +14,12 @@ const SearchBar = ({ onSetSearch, files, authUser, firebase, onSetFiles, search 
 
 	useEffect(() => {
 		firebase.doListFiles(authUser.uid).then(res => {
-        	onSetFiles(res.items, authUser.uid)
+      onSetFiles(res.items, authUser.uid)
 			let list = res.items.map(file => {return file.name})
-
-			firebase.connection(authUser.uid).get()
-			  .then(docC => {
+			firebase.connection(authUser.uid).get().then(docC => {
 				if (docC.exists) {
 					let connections = Object.keys(docC.data())
 					let allFiles = [...list, ...connections]
-
 					firebase.trash(authUser.uid).get().then(docT => {
 						if (docT.exists) {
 							let trash = Object.keys(docT.data())
@@ -35,8 +32,8 @@ const SearchBar = ({ onSetSearch, files, authUser, firebase, onSetFiles, search 
 						}
 					})
 				}
-			  })
-        })
+			})
+    })
 	}, [])
 
 	const handleChange = (e) => {
