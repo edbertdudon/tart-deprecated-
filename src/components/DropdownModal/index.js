@@ -34,11 +34,13 @@ const withDropdownModal = Component => (props) => {
     setSearch(e.target.value)
     if (e.target.value.length > 0) {
       setIsSearching(true)
-      setFilteredOption(
-        props.items.filter(item =>
-          item.key.toLowerCase().includes(e.target.value.toLowerCase())
-        )
-      )
+      setFilteredOption(props.items.filter(item => {
+        if (props.name === 'formulas') {
+          return item.key.toLowerCase().includes(e.target.value.toLowerCase())
+        } else {
+          return item.title.toLowerCase().includes(e.target.value.toLowerCase())
+        }
+      }))
     } else {
       setIsSearching(false)
       setFilteredOption(props.items.filter(item => item.category === category))
@@ -47,10 +49,10 @@ const withDropdownModal = Component => (props) => {
 
   const handleSelect = item => {
     setIsOpen(!isOpen)
-    props.onSelect(item)
+    props.onSelect(item.key)
   }
 
-  const handleSelectCateogry = i => {
+  const handleSelectCategory = i => {
     setCategory(i)
     setFilteredOption(props.items.filter(item => item.category === i))
     setIsSearching(false)
@@ -58,10 +60,10 @@ const withDropdownModal = Component => (props) => {
   }
 
   return (
-    <div className='dropdownmodal' style={props.style} ref={wrapperRef}>
+    <div className='dropdownmodal' ref={wrapperRef}>
       <Component onToggle={handleOpen} isSelected={isOpen} {...props} />
       {isOpen &&
-        <div className='dropdownmodal-content' style={{height: props.height + "px"}}>
+        <div className={props.classname}>
           <input
             type="text"
             name="search"
@@ -74,7 +76,7 @@ const withDropdownModal = Component => (props) => {
             {props.categories.map((cat, i) => (
               <div
                 className='dropdownmodal-item'
-                onClick={() => handleSelectCateogry(i)}
+                onClick={() => handleSelectCategory(i)}
                 key={i}
                 style={{
                   backgroundColor: i === category && !isSearching ? props.color : "#ebebeb",
@@ -87,10 +89,10 @@ const withDropdownModal = Component => (props) => {
           </div>
           <div className='dropdownmodal-selection' style={{height: props.height - 40 + "px"}}>
             {filteredOption.map((item, i) => (
-              <div className='dropdownmodal-item' onClick={() => handleSelect(item.key)} key={i} >
-                {item.key}
+              <div className='dropdownmodal-item' onClick={() => handleSelect(item)} key={i}>
+                {props.name === 'formulas' ? item.key : item.title}
               </div>
-      			))}
+            ))}
           </div>
         </div>
       }

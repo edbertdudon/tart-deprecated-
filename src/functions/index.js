@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import XLSX from 'xlsx'
 
 function range(end) {
@@ -24,6 +25,27 @@ export function createEmptyMatrix(rows, columns) {
   return range(rows).map(function () {
     return Array(columns);
   });
+}
+
+export function useOutsideAlerter(ref, customFunction) {
+  const handleOutsideClick = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      customFunction()
+    }
+  }
+  const handleKeyPress = (event) => {
+    if (event.key === 'Enter' || event.key === 'Tab') {
+      customFunction()
+    }
+  }
+  useEffect(() => {
+    document.addEventListener("mousedown", handleOutsideClick)
+    document.addEventListener("keypress", handleKeyPress)
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick)
+      document.removeEventListener("keypress", handleKeyPress)
+    }
+  })
 }
 
 // *** File Organization API ***

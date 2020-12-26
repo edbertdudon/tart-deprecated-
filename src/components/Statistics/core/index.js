@@ -15,103 +15,25 @@ import Icon from '@mdi/react';
 import { mdiLoading, mdiClose } from '@mdi/js'
 
 import statistics from '../statisticsR'
-import { columnToLetter, translateR, spreadsheetToR, doRegression } from '../../Spreadsheet/cloudr'
-import { getMaxNumberCustomSheet } from '../../../functions'
-import DataRange from '../datarange'
-import Anova from './Anova'
-import Manova from './Manova'
-import Number from './Number'
-import Variable from './Variable'
-import Formula from './Formula'
-import Matrix from './Matrix'
-import MultipleLinearRegression from './MultipleLinearRegression'
-import { withFirebase } from '../../Firebase'
+import { translateR, spreadsheetToR, doRegression } from '../../Spreadsheet/cloudr'
+import Anova from '../core/anova'
+import Manova from '../core/manova'
+import Number from '../core/number'
+import Variable from '../core/variable'
+import Formula from '../core/formula'
+import Matrix from '../core/matrix'
+import MultipleLinearRegression from '../core/multiplelinearregression'
 
-const ALTERNATIVES = ["two.sided", "greater", "less"]
+const ALTERNATIVES = ["two sided", "greater", "less"]
 const VAR_EQUAL = ["Equal variance", "Pooled variance"]
 const TEST_STATISTICS = ["Pillai", "Wilks", "Hotelling-Lawley", "Roy"]
 const CORRELATION_TYPE = ["pearson", "spearman", "kendall"]
 const P_ADJUST = ["holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr", "none"]
-// const FAMILY_OBJECTS = [
-// 	'binomial(link = "logit")',
-// 	'gaussian(link = "identity")',
-// 	'Gamma(link = "inverse")',
-// 	'inverse.gaussian(link = "1/mu^2")',
-// 	'poisson(link = "log")',
-// 	'quasi(link = "identity", variance = "constant")',
-// 	'quasibinomial(link = "logit")',
-// 	'quasipoisson(link = "log")',
-// ]
 
-function setStatisticalFunction(
-	statistic, oneWayAnova, randomizedBlockDesign, twoWayAnova, analysisOfCovariance, oneWayWithin, twoWayWithin, twoWayBetween,
-	test, linearRegressionVars, linearRegressionVars2, formulaText, formulaText2, variableX, variableY, variableZ, groups, blocks,
-	padj, successes, trials, prob, probs, alt, varEqual, trueMean, paired, confidenceLevel, correct, matrix, corr
-) {
-	let isVarEqual = VAR_EQUAL[varEqual] === VAR_EQUAL[1]
-	let statisticalFunction = statistic.function
-	if (oneWayAnova != "") statisticalFunction = statisticalFunction + oneWayAnova + ",currentLattitude"
-	if (randomizedBlockDesign != "") statisticalFunction = statisticalFunction + randomizedBlockDesign + ",currentLattitude"
-	if (twoWayAnova != "") statisticalFunction = statisticalFunction + twoWayAnova + ",currentLattitude"
-	if (analysisOfCovariance != "") statisticalFunction = statisticalFunction + analysisOfCovariance + ",currentLattitude"
-	if (oneWayWithin != "") statisticalFunction = statisticalFunction + oneWayWithin + ",currentLattitude"
-	if (twoWayWithin != "") statisticalFunction = statisticalFunction + twoWayWithin + ",currentLattitude"
-	if (twoWayBetween != "") statisticalFunction = statisticalFunction + twoWayBetween + ",currentLattitude"
-	if (linearRegressionVars != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars + ",currentLattitude)"
-	if (linearRegressionVars2 != "") statisticalFunction = statisticalFunction + "lm(" + linearRegressionVars2 + ",currentLattitude)"
-	if (formulaText != "") statisticalFunction = statisticalFunction + "lm(" + formulaText + ",currentLattitude)"
-	if (formulaText2 != "") statisticalFunction = statisticalFunction + "lm(" + formulaText2 + ",currentLattitude)"
-	// variableX must always be the first variable
-	if (variableX != null) statisticalFunction = statisticalFunction + "x=currentLattitude$`" + variableX + '`'
-	if (variableY != null) {
-		if (variableX == null) {
-			statisticalFunction = statisticalFunction + "y=currentLattitude$`" + variableY + '`'
-		} else {
-			statisticalFunction = statisticalFunction + ",y=currentLattitude$`" + variableY + '`'
-		}
-	}
-	if (variableZ != null) statisticalFunction = statisticalFunction + ",z=currentLattitude$`" + variableZ + '`'
-	if (groups != null) statisticalFunction = statisticalFunction + ",g=currentLattitude$`" + groups + '`'
-	if (blocks != null) statisticalFunction = statisticalFunction + ",b=currentLattitude$`" + blocks + '`'
-	if (padj != 0) statisticalFunction = statisticalFunction + ",p.adj='" + P_ADJUST[padj] + "'"
-	// successes must always be the first variable
-	if (successes != null) statisticalFunction = statisticalFunction + successes
-	if (trials != null) statisticalFunction = statisticalFunction + "," + trials
-	if (prob != 0.5) statisticalFunction = statisticalFunction + ",p=" + prob
-	if (probs != null)  statisticalFunction = statisticalFunction + ",b=currentLattitude$`" + probs + '`'
-	if (ALTERNATIVES[alt] != "two.sided") statisticalFunction = statisticalFunction + ",alternative=" + ALTERNATIVES[alt]
-	if (isVarEqual != false) statisticalFunction = statisticalFunction + ",var.equal=TRUE"
-	if (trueMean != 0) statisticalFunction = statisticalFunction + ",mu=" + trueMean
-	if (paired != false) statisticalFunction = statisticalFunction + ",var.equal=" + paired
-	if (confidenceLevel != 0.95) statisticalFunction = statisticalFunction + ",conf.level=" + confidenceLevel
-	if (correct != true) statisticalFunction = statisticalFunction + ",correct=F"
-
-	if (statisticalFunction.includes('cbind(')) {
-		statisticalFunction = 'tidy(' + statisticalFunction + '),test="' + TEST_STATISTICS[test] + '")'
-	} else {
-		if (matrix != "") statisticalFunction = statisticalFunction + matrix
-		if (corr != 0) statisticalFunction = statisticalFunction + ",method=" + CORRELATION_TYPE[corr]
-		statisticalFunction = 'tidy(' + statisticalFunction + '))'
-	}
-	return statisticalFunction
-}
-
-function cbindDependents(dependents, variables) {
-	let stringDependents = 'cbind(`' + variables[dependents[0]] + '`'
-	for (var i=1; i<dependents.length; i++) {
-		stringDependents = stringDependents + ',`' + variables[dependents[i]] + '`'
-	}
-
-	stringDependents = stringDependents + ')'
-	return stringDependents
-}
-
-const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, current,
+const Statistics = ({ authUser, color, slides, dataNames, current,
 	onSetDataNames, onSetCurrent, onSetRightSidebar, statistic, setStatistic }) => {
 	const [variables, setVariables] = useState([])
-	const [datarange, setDatarange] = useState('')
-	const [firstRow, setFirstRow] = useState(true)
-
+	const [columns, setColumns] = useState([])
 	const [oneWayAnova, setOneWayAnova] = useState('')
 	const [randomizedBlockDesign, setRandomizedBlockDesign] = useState('')
 	const [twoWayAnova, setTwoWayAnova] = useState('')
@@ -144,8 +66,6 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [correct, setCorrect] = useState(true)
 	const [matrix, setMatrix] = useState([])
 	const [corr, setCorr] = useState(0)
-
-	const [datarangeError, setDatarangeError] = useState(null)
 	const [formulaError, setFormulaError] = useState(null)
 	const [formulaError2, setFormulaError2] = useState(null)
 	const [trueMeanError, setTrueMeanError] = useState(null)
@@ -154,33 +74,10 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	const [trialsError, setTrialsError] = useState(null)
 	const [probError, setProbError] = useState(null)
 	const [error, setError] = useState(null)
-	const [loading, setLoading] = useState(false)
 
-	useEffect(() => {
-		const { data } = slides
-		if ((data.type === "sheet" || data.type === "input") && "0" in data.rows._) {
-			const rownames = Object.values(data.rows._[0].cells).map(cell => cell.text)
-			const rows = Object.keys(data.rows._).map(row => parseInt(row)+1)
-			const cols = rownames.map((t, i) => columnToLetter(i+1))
-			setDatarange(cols[0] + ":" + cols[cols.length-1])
-			// setDatarange(cols[0] + rows[0] + ":" + cols[cols.length-1] + rows[rows.length-1])
-			if (rownames.every(isNaN)) {
-				setVariables(rownames)
-			} else {
-				setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
-				setFirstRow(false)
-			}
-		} else {
-			setDatarange("A1")
-		}
-	}, [])
+	const handleVars = i => setVars(i)
 
-	const handleClose = () => {
-		onSetRightSidebar('none')
-		setStatistic(null)
-		setFirstRow(true)
-		setLoading(false)
-	}
+	const handleAddVars = i => setVars([...vars, i])
 
 	const handleOneWayAnova = (dependent, independent) =>
 		setOneWayAnova('`' + variables[dependent] + '`~`' + variables[independent] + '`')
@@ -350,98 +247,30 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 
 	const handleCorr = i => setCorr(i)
 
-	const handleFirstrow = () => {
-		setFirstRow(!firstRow)
-		const { data } = slides
-		if ((data.type === "sheet" || data.type === "input") && "0" in data.rows._) {
-			const rownames = Object.values(data.rows._[0].cells)
-				.map(cell => cell.text)
-			const rows = Object.keys(data.rows._)
-				.map(row => parseInt(row)+1)
-			const cols = rownames.map((t, i) => columnToLetter(i+1))
-			if (firstRow) {
-				setVariables(cols.map(col => col + rows[0] + ":" + col + rows[rows.length-1]))
-			} else {
-				setVariables(rownames)
-			}
-		}
-	}
-
-	const handleSubmit = () => {
-		setLoading(true)
-		let statisticalFunction = setStatisticalFunction(
-			statistics[statistic],
-			oneWayAnova,
-			randomizedBlockDesign,
-			twoWayAnova,
-			analysisOfCovariance,
-			oneWayWithin,
-			twoWayWithin,
-			twoWayBetween,
-			test,
-			linearRegressionVars,
-			linearRegressionVars2,
-			formulaText,
-			formulaText2,
-			variables[variableX],
-			variables[variableY],
-			variables[variableZ],
-			variables[groups],
-			variables[blocks],
-			padj,
-			successes,
-			trials,
-			prob,
-			probs,
-			alt,
-			varEqual,
-			trueMean,
-			paired,
-			confidenceLevel,
-			correct,
-			matrix.length > 0 ? cbindDependents(matrix, variables) : matrix,
-			corr,
-		)
+	const handleSubmit = e => {
+		const formuladata = e
+		// if ()
 		const { datas, data } = slides
-		let sparkData = {
-			formulatext: statisticalFunction,
-			range: translateR(datarange, data.name),
-			firstrow: firstRow
-		}
-		let formulaData = {
-			...sparkData,
-			slides: JSON.stringify(spreadsheetToR(datas)),
-			names: JSON.stringify(datas.map(data => data.name))
-		}
-		const key = statistics[statistic].key
-		const statName = key + ' ' + getMaxNumberCustomSheet(datas.map(data => data.name), key)
-		console.log(formulaData)
-		// doRegression(formulaData)
-		// 	.then(res => {
-		// 		if (typeof res[0] === "string" || res[0] instanceof String) {
-		// 			setError(res)
-		// 			setLoading(false)
-		// 		} else {
-		// 			res.name = statName
-		// 			res.type = "regression"
-		// 			res.regression = sparkData
-		// 			const d = slides.insertData(dataNames, current, res, name)
-		// 			onSetDataNames([
-		// 	      ...dataNames.slice(0, current+1),
-		// 	      d.name,
-		// 	      ...dataNames.slice(current+1)
-		// 	    ])
-		// 			onSetCurrent(current+1)
-		// 			data = d
-		// 			onSetRightSidebar('none')
-		// 			setStatistic(null)
-		// 			setLoading(false)
-		// 		}
-		//   })
+		doRegress(formuladata, "fishertest").then(res => {
+			delete formuladata.slides
+			delete formuladata.names
+			const statName = statistic + ' ' + getMaxNumberCustomSheet(datas.map(d => d.name), statistic)
+			res.name = statName
+			res.type = "regression"
+			res.regression = formuladata
+			const d = slides.insertData(dataNames, current, res, key)
+			onSetDataNames([
+				...dataNames.slice(0, current+1),
+				d.name,
+				...dataNames.slice(current+1)
+			])
+			onSetCurrent(current+1)
+			onSetRightSidebar('none')
+			data = d
+		}).catch(err => setError(err.toString()))
 	}
 
 	const isInvalid = variables.length < 1
-		|| datarangeError !== null
 		|| formulaError !== null
 		|| formulaError2 !== null
 		|| trueMeanError !== null
@@ -449,17 +278,16 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 		|| successesError !== null
 		|| trialsError !== null
 		|| probError !== null
-		|| error !== null
 
 	return (
-    <>
-			<button className='rightsidebar-close' onClick={handleClose}>
-				<Icon path={mdiClose} size={1}/>
-			</button>
-			<div className='rightsidebar-heading'>
-				{statistics[statistic].key}
-			</div>
-			<DataRange datarange={datarange} setDatarange={setDatarange} error={datarangeError} setError={setDatarangeError} />
+		<Form
+			statistic={statistic}
+			invalidStat={isInvalid}
+			setVariables={setVariables}
+			onSubmit={handleSubmit}
+			error={error}
+			setError={setError}
+		>
 			{statistics[statistic].arguments.includes("oneWayAnova") &&
 				<Anova
 					variables={variables}
@@ -549,21 +377,17 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					hasBetween={true}
 				/>}
 			{statistics[statistic].arguments.includes("multipleLinearRegression") &&
-				<>
-					<h5>Linear model</h5>
-					<MultipleLinearRegression
-						variables={variables}
-						onChange={handleMultipleLinearRegressionVars}
-					/>
-				</>}
+				<MultipleLinearRegression
+					text='Linear model'
+					variables={variables}
+					onChange={handleMultipleLinearRegressionVars}
+				/>}
 			{statistics[statistic].arguments.includes("multipleLinearRegression2") &&
-				<>
-					<h5>Linear model 2</h5>
-					<MultipleLinearRegression
-						variables={variables}
-						onChange={handleMultipleLinearRegressionVars2}
-					/>
-				</>}
+				<MultipleLinearRegression
+					text='Linear model 2'
+					variables={variables}
+					onChange={handleMultipleLinearRegressionVars2}
+				/>}
 	    {statistics[statistic].arguments.includes("formula") &&
 	      <Formula
 					formulaText={formulaText}
@@ -659,7 +483,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 	      <Variable
 					label="Alternative"
 					onChange={handleAlt}
-					options={ALTERNATIVES.map(alternative => {return alternative.replace(".", " ")})}
+					options={ALTERNATIVES}
 					name={ALTERNATIVES[alt]}
 				/>}
 			{statistics[statistic].arguments.includes("varEqual") &&
@@ -671,7 +495,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 				/>}
 	    {statistics[statistic].arguments.includes("mu") &&
 				<Number
-					label='True value of the mean (or difference in means)'
+					label='True value of the mean (difference in means)'
 					value={trueMean}
 					onChange={handleTrueMean}
 					error={trueMeanError}
@@ -691,16 +515,11 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					error={confidenceLevelError}
 				/>}
 			{statistics[statistic].arguments.includes("correct") &&
-				<div className='rightsidebar-buttonwrapper' onClick={handleCorrect}>
-					<button className='rightsidebar-button'
-						style={{
-							backgroundColor: correct === true && color[authUser.uid],
-							boxShadow: correct === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-		          border: correct === true ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-						}}
-					></button>
-					<div className='rightsidebar-buttontext'>Continuity correction</div>
-				</div>}
+				<Button
+					onClick={handleCorrect}
+					condition={correct}
+					text='Continuity correction'
+				/>}
 			{statistics[statistic].arguments.includes("matrix") &&
 				<Matrix
 					variables={variables}
@@ -714,31 +533,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 					options={CORRELATION_TYPE}
 					name={CORRELATION_TYPE[corr]}
 				/>}
-			<div className='rightsidebar-buttonwrapper' onClick={handleFirstrow}>
-				<button className='rightsidebar-button'
-					style={{
-						backgroundColor: firstRow === true && color[authUser.uid],
-						boxShadow: firstRow === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-	          border: firstRow === true ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-					}}
-				></button>
-				<div className='rightsidebar-buttontext'>First row as header</div>
-			</div>
-			<div className='rightsidebar-text'>
-				{"description" in statistics[statistic] && <p>{statistics[statistic].description}</p>}
-				{error && <p>{error}</p>}
-			</div>
-			{loading
-				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin /></div>
-				: <input
-						disabled={isInvalid}
-						type="submit"
-						style={{ color : isInvalid ? "rgb(0, 0, 0, 0.5)" : color[authUser.uid]}}
-						onClick={handleSubmit}
-						className='rightsidebar-submit'
-					/>
-			}
-  	</>
+  	</Form>
 	)
 }
 
@@ -758,9 +553,8 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export default compose(
-	withFirebase,
 	connect(
 		mapStateToProps,
 		mapDispatchToProps,
 	),
-)(StatisticsEditor)
+)(Statistics)

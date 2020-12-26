@@ -965,13 +965,13 @@ const rFormulas = [
     category: 2
   },
   // Data
-	{
-		key: 'c',
-		title: tf('formula.c'),
-		syntax:'c(range, [range])',
-		description: 'a generic function which combines its arguments',
-    category: 3
-	},
+	// {
+	// 	key: 'c',
+	// 	title: tf('formula.c'),
+	// 	syntax:'c(range, [range])',
+	// 	description: 'a generic function which combines its arguments',
+  //   category: 3
+	// },
   {
     key: 'seq',
     title: tf('formula.seq'),
@@ -986,27 +986,27 @@ const rFormulas = [
     description: 'replicates value',
     category: 3
   },
-  {
-    key: 'list',
-    title: tf('formula.list'),
-    syntax:'list(range, [range])',
-    description: 'create a list',
-    category: 3
-  },
-  {
-    key: 'array',
-    title: tf('formula.array'),
-    syntax:'array(range, dimension)',
-    description: 'array',
-    category: 3
-  },
-  {
-    key: 'matrix',
-    title: tf('formula.matrix'),
-    syntax:'matrix(range, rows, columns)',
-    description: 'matrix',
-    category: 3
-  },
+  // {
+  //   key: 'list',
+  //   title: tf('formula.list'),
+  //   syntax:'list(range, [range])',
+  //   description: 'create a list',
+  //   category: 3
+  // },
+  // {
+  //   key: 'array',
+  //   title: tf('formula.array'),
+  //   syntax:'array(range, dimension)',
+  //   description: 'array',
+  //   category: 3
+  // },
+  // {
+  //   key: 'matrix',
+  //   title: tf('formula.matrix'),
+  //   syntax:'matrix(range, rows, columns)',
+  //   description: 'matrix',
+  //   category: 3
+  // },
   // {
   //   key: 'factor',
   //   title: tf('formula.factor'),
@@ -1014,27 +1014,27 @@ const rFormulas = [
   //   description: 'generates a factor',
   //   category: 3
   // },
-  {
-    key: 'gl',
-    title: tf('formula.gl'),
-    syntax:'gl(replications, levels, length, labels)',
-    description: 'generates levels (factors) by specifying the pattern of their levels',
-    category: 3
-  },
-  {
-    key: 'rbind',
-    title: tf('formula.rbind'),
-    syntax:'rbind(range, [range])',
-    description: 'combine arguments by rows',
-    category: 3
-  },
-  {
-    key: 'cbind',
-    title: tf('formula.cbind'),
-    syntax:'cbind(range, [range])',
-    description: 'combine arguments by columns',
-    category: 3
-  },
+  // {
+  //   key: 'gl',
+  //   title: tf('formula.gl'),
+  //   syntax:'gl(replications, levels, length, labels)',
+  //   description: 'generates levels (factors) by specifying the pattern of their levels',
+  //   category: 3
+  // },
+  // {
+  //   key: 'rbind',
+  //   title: tf('formula.rbind'),
+  //   syntax:'rbind(range, [range])',
+  //   description: 'combine arguments by rows',
+  //   category: 3
+  // },
+  // {
+  //   key: 'cbind',
+  //   title: tf('formula.cbind'),
+  //   syntax:'cbind(range, [range])',
+  //   description: 'combine arguments by columns',
+  //   category: 3
+  // },
 ];
 
 const formulas = rFormulas;

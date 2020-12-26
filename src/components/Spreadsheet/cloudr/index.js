@@ -172,19 +172,6 @@ export function spreadsheetToR(datas) {
   return newDatas
 }
 
-function rToSpreadsheet(tibble) {
-  let slide = JSON.parse(tibble[0])
-  let aoa = slide.map(row => {return Object.values(row)})
-  aoa = [Object.keys(slide[0]), ...aoa]
-  let o = {rows:{}};
-  aoa.forEach(function(r, i) {
-    var cells = {};
-    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
-    o.rows[i] = { cells: cells };
-  })
-  return o
-}
-
 const fetchR = (data, func) => {
   return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
     method: 'POST',
@@ -239,6 +226,37 @@ export const doChart = data => {
     })
 }
 
+function rToSpreadsheet(aoa) {
+  let o = {rows:{}};
+  aoa.forEach(function(r, i) {
+    var cells = {};
+    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
+    o.rows[i] = { cells: cells };
+  })
+  return o
+}
+
+export const doRegress = (data, type) => {
+  return fetchR(data, type)
+		.then(res => res.json())
+		.then(res => {
+			// if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
+			// 	return(res)
+			// } else {
+			// 	return rToSpreadsheet(res)
+			// }
+      // const slide = JSON.parse(res[0])
+      const slide = JSON.parse(res)
+      if (typeof slide === 'object' && slide !== null) {
+        let aoa = slide.map(row => {return Object.values(row)})
+        aoa = [Object.keys(slide[0]), ...aoa]
+        return rToSpreadsheet(aoa)
+      } else {
+        return rToSpreadsheet(slide)
+      }
+		})
+}
+
 export const doRegression = data => {
   return fetchR(data, "regression")
 		.then(res => res.json())
@@ -258,7 +276,7 @@ export const doOptimization = data => {
       if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
         return(res)
       } else {
-        return rToSpreadsheet(res)
+        return robjToSrToSpreadsheetpreadsheet(res)
       }
     })
 }

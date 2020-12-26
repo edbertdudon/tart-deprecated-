@@ -3,20 +3,15 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import './index.less'
 
-import Connections from './connections'
-import Charts from './charts'
 import ChartEditor from './charteditor'
-import Statistics from './statistics'
-import StatisticsEdtior from './StatisticsEditor'
+import Statistics from '../Statistics'
 import Optimize from './Optimize'
-import Formulas from './formulas'
 
-const RightSidebar = ({ rightSidebar, statistic, setStatistic }) => {
+const RightSidebar = ({ rightSidebar, statistic }) => {
   const RIGHTSIDEBAR_STATES = {
     charteditor: <ChartEditor />,
-    statistics: <StatisticsEdtior statistic={statistic} setStatistic={setStatistic} />,
+    statistics: <Statistics statistic={statistic} />,
     optimize: <Optimize />,
-    formulas: <Formulas />
   }
 
   return (

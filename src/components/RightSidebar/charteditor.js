@@ -10,6 +10,7 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import charts from './chartsR'
 import DataRange from './datarange'
+import Button from './button'
 import withLists from './withLists'
 import withListsDropdown from './withListsDropdown'
 import { columnToLetter, translateR, spreadsheetToR } from '../Spreadsheet/cloudR'
@@ -167,16 +168,7 @@ const ChartEditor = ({ authUser, color, slides }) => {
 					/>
 				</>
 			}
-			<div className='rightsidebar-buttonwrapper' onClick={handleFirstrow}>
-				<button className='rightsidebar-button'
-					style={{
-						backgroundColor: firstRow === true && color[authUser.uid],
-						boxShadow: firstRow === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-						border: firstRow === true ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-					}}
-				></button>
-				<div className='rightsidebar-buttontext'>First row as header</div>
-			</div>
+			<Button onClick={handleFirstrow} condition={firstRow} text='First row as header' />
 		</>
 	)
 }

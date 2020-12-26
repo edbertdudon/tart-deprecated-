@@ -10,7 +10,6 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Icon from '@mdi/react';
 import { mdiLoading, mdiClose } from '@mdi/js'
-
 import General from './general'
 import Linear from './linear'
 import Quadratic from './quadratic'
@@ -19,7 +18,8 @@ import Fconstraint from './fconstraint'
 import Cconstraint from './cconstraint'
 import Qconstraint from './qconstraint'
 import Lconstraint from './lconstraint'
-import Variable from '../StatisticsEditor/Variable'
+import Variable from '../../Statistics/core/variable'
+import Button from '../button'
 import withListsDropdown from '../withListsDropdown'
 import withLists from '../withLists'
 import { letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR } from '../../Spreadsheet/cloudr'
@@ -95,10 +95,16 @@ const validateCell = v => {
   const mr = v.match(RANGE_REFERENCES)
   if (mr !== null) {
     const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
-    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
-    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length !== 1 || mn.length !== 1) {
-      return("Invalid range.")
-    }
+		if (ml[1] < ml[0] || ml.length !== 1) {
+			return("Invalid range.")
+		}
+    const mn = v.match(NUMBERS_REFERENCE)
+		if (mn !== null) {
+			mn.map(ref => parseInt(ref))
+			if (mn[1] < mn[0] || mn.length !== 1) {
+				return("Invalid range.")
+			}
+		}
   }
   return(null)
 }
@@ -144,11 +150,17 @@ const validateRange = v => {
   }
   const mr = v.match(RANGE_REFERENCES)
   if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
-    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
-    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length !== 2 || mn.length !== 2) {
-      return("Invalid range.")
-    }
+		const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref)-1)
+		if (ml[1] < ml[0] || ml.length !== 2) {
+			return("Invalid range.")
+		}
+    const mn = v.match(NUMBERS_REFERENCE)
+		if (mn !== null) {
+			mn.map(ref => parseInt(ref))
+			if (mn[1] < mn[0] || mn.length !== 2) {
+				return("Invalid range.")
+			}
+		}
   }
   return(null)
 }
@@ -169,11 +181,17 @@ const validateRangeNotOne = v => {
   }
   const mr = v.match(RANGE_REFERENCES)
   if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
-    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
-    if (ml[1] <= ml[0] || mn[1] <= mn[0] || ml.length !== 2 || mn.length !== 2) {
+		const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref)-1)
+		if (ml[1] <= ml[0] || ml.length !== 2) {
       return("Invalid range. Must be greater than a single row or column")
     }
+    const mn = v.match(NUMBERS_REFERENCE)
+		if (mn !== null) {
+			mn.map(ref => parseInt(ref))
+			if (mn[1] <= mn[0] || mn.length !== 2) {
+	      return("Invalid range. Must be greater than a single row or column")
+	    }
+		}
   }
   return(null)
 }
@@ -194,11 +212,17 @@ const validateCellorRange = v => {
   }
   const mr = v.match(RANGE_REFERENCES)
   if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref))
-    const mn = v.match(NUMBERS_REFERENCE).map(ref => parseInt(ref))
-    if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length > 2 || mn.length > 2) {
-      return("Invalid range.")
-    }
+		const ml = v.match(LETTERS_REFERENCE).map(ref => letterToColumn(ref)-1)
+		if (ml[1] < ml[0] || ml.length > 2) {
+			return("Invalid range.")
+		}
+    const mn = v.match(NUMBERS_REFERENCE)
+		if (mn !== null) {
+			mn.map(ref => parseInt(ref))
+			if (mn[1] < mn[0] || mn.length > 2) {
+				return("Invalid range.")
+			}
+		}
   }
   return(null)
 }
@@ -533,26 +557,8 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				options={OBJECTIVE_CLASS}
 				name={OBJECTIVE_CLASS[objectiveClass]}
 			/>
-			<div className='rightsidebar-buttonwrapper' onClick={handleMinimize}>
-				<button className='rightsidebar-button'
-					style={{
-						backgroundColor: minMax === 0 && color[authUser.uid],
-						boxShadow: minMax === 0 ? 'inset 0px 0px 0px 3px #fff' : 'none',
-	          border: minMax === 0 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-					}}
-				></button>
-				<div className='rightsidebar-buttontext'>Minimum</div>
-			</div>
-			<div className='rightsidebar-buttonwrapper' onClick={handleMaximize}>
-				<button className='rightsidebar-button'
-					style={{
-						backgroundColor: minMax === 1 && color[authUser.uid],
-						boxShadow: minMax === 1 ? 'inset 0px 0px 0px 3px #fff' : 'none',
-	          border: minMax === 1 ? '1px solid '+ color[authUser.uid] : '1px solid #fff'
-					}}
-				></button>
-				<div className='rightsidebar-buttontext'>Maximum</div>
-			</div>
+			<Button onClick={handleMinimize} condition={minMax === 0} text='Minimum' />
+			<Button onClick={handleMaximize} condition={minMax === 1} text='Maximum' />
 			<div className='rightsidebar-label'>Constraints</div>
 			{!constraints.includes(CONSTRAINTS_TYPE[0]) &&
 				<Fconstraint

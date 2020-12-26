@@ -1,38 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react'
+import Icon from '@mdi/react';
+import { mdiClose } from '@mdi/js'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
-
-import withDropdown from '../Dropdown'
-
-const OPTIONS_DROPDOWN = [
-	{key: 'Remove', type: 'item'},
-]
+import { useOutsideAlerter } from '../../functions'
 
 const withListsDropdown = Component => (props) => {
   const [showOptions, setShowOptions] = useState(false)
   const [activeOption, setActiveOption] = useState(null)
-  const wrapperRef = useRef(null)
+  const listdropdownRef = useRef(null)
 
-  const useOutsideAlerter = (ref) => {
-    const handleOutsideClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setShowOptions(false)
-      }
-    }
-    const handleKeyPress = (event) => {
-      if (event.key === 'Enter' || event.key === 'Tab') {
-        setShowOptions(false)
-      }
-    }
-    useEffect(() => {
-      document.addEventListener("mousedown", handleOutsideClick)
-      document.addEventListener("keypress", handleKeyPress)
-      return () => {
-        document.removeEventListener("mousedown", handleOutsideClick)
-        document.removeEventListener("keypress", handleKeyPress)
-      }
-    })
-  }
-  useOutsideAlerter(wrapperRef)
+	const handleHideOptions = () => setShowOptions(false)
+
+  useOutsideAlerter(listdropdownRef, handleHideOptions)
 
   const handleSelectComponent = () => {
     setShowOptions(false)
@@ -62,16 +41,13 @@ const withListsDropdown = Component => (props) => {
 	const toggleComponent = () => setShowOptions(false)
 
   return (
-    <div ref={wrapperRef}>
+    <div ref={listdropdownRef}>
       <ContextMenuTrigger id='withlistsdropdown-rightclick'>
         <div className='rightsidebar-dropdown' onClick={toggleComponent}>
           {props.name}
-          <OptionsWithDropdown
-            text='...'
-  					items={OPTIONS_DROPDOWN}
-  					onSelect={handleDelete}
-  					style={{marginLeft:"76px", marginTop: "10px"}}
-          />
+					<button className='rightsidebar-dropdown-close' onClick={handleDelete}>
+						<Icon path={mdiClose} size={0.8}/>
+					</button>
         </div>
       </ContextMenuTrigger>
       <ContextMenu id='withlistsdropdown-rightclick' className='rightsidebar-dropdown-contextmenu'>
@@ -80,7 +56,12 @@ const withListsDropdown = Component => (props) => {
       {(showOptions && props.options.length) &&
         <div className='rightsidebar-dropdown-content'>
           {props.options.map((option, index) =>
-            <div className='rightsidebar-dropdown-item' key={index} onClick={() => handleSelectComponent(index)} onMouseEnter={() => toggleHover(index)}>
+            <div
+							className='rightsidebar-dropdown-item'
+							key={index}
+							onClick={() => handleSelectComponent(index)}
+							onMouseEnter={() => toggleHover(index)}
+						>
               <Component option={option} />
             </div>
 					)}
@@ -89,13 +70,5 @@ const withListsDropdown = Component => (props) => {
     </div>
   )
 }
-
-const Options = ({ text, onOpen }) => (
-	<div className='rightsidebar-dropdown-rightclick' onClick={onOpen}>
-		{text}
-	</div>
-)
-
-const OptionsWithDropdown = withDropdown(Options)
 
 export default withListsDropdown

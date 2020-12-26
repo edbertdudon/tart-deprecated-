@@ -15,10 +15,10 @@ import './index.less'
 
 import { OFF_COLOR } from '../../constants/off-color'
 import withDropdownModal from '../DropdownModal'
-import charts from '../RightSidebar/chartsR'
-import statistics from '../RightSidebar/statisticsR'
-import { columnToLetter, translateR } from '../Spreadsheet/cloudr'
 import formulas from '../Spreadsheet/cloudr/formula'
+import charts from '../RightSidebar/chartsR'
+import statistics from '../Statistics/core/statisticsR'
+import { columnToLetter, translateR } from '../Spreadsheet/cloudr'
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet'
 
 const CHART_CATEGORIES = [
@@ -31,12 +31,16 @@ const CHART_CATEGORIES = [
 ]
 
 const STATISTICS_CATEGORIES = [
-  'Frequency table',
+  'Descriptive Statistics',
+  'Frequency/Contingency',
   'Tests of Independence',
+  'Correlations/Covariances',
   't-tests',
-  'Correlations',
-  'Nonparametric Tests of Group Differences',
-  'Multiple (Linear) Regression',
+  'Nonparametric statistic',
+  'Fitting Tools',
+  'Regression',
+  'Regression Diagnostics',
+  'Multiple Regression',
   'ANOVA',
   'MANOVA',
 ]
@@ -75,7 +79,6 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
     // onSetRightSidebar('charteditor')
     const i = charts.findIndex(item => item.key === chart)
     // setSchart([i])
-
     if (slides.data.type === "sheet" || slides.data.type === "input") {
       const { name } = slides.data;
       const { selector } = slides.sheet;
@@ -108,10 +111,9 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
     }
   }
 
-  const handleStatistics = statistic => {
+  const handleStatistics = stat => {
     onSetRightSidebar('statistics')
-    const i = statistics.findIndex(item => item.key === statistic)
-		setStatistic(i)
+		setStatistic(stat)
   }
 
   const handleFormulas = formula => {
@@ -131,7 +133,7 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
           items={formulas}
           categories={FORMULA_CATEGORIES}
           color={OFF_COLOR[color[authUser.uid]]}
-          height={296}
+          classname='dropdownmodal-content-formulas'
           name="formulas"
         />
         <ButtonWithDropdownModal
@@ -140,8 +142,7 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
           items={charts}
           categories={CHART_CATEGORIES}
           color={OFF_COLOR[color[authUser.uid]]}
-          style={{marginLeft: "30px"}}
-          height={232}
+          classname='dropdownmodal-content-chart'
           name="charts"
         />
         <ButtonWithDropdownModal
@@ -150,8 +151,7 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
           items={statistics}
           categories={STATISTICS_CATEGORIES}
           color={OFF_COLOR[color[authUser.uid]]}
-          style={{marginLeft: "60px"}}
-          height={296}
+          classname='dropdownmodal-content-statistics'
           name="statistics"
         />
       </div>
@@ -160,7 +160,7 @@ const Toggle = ({ color, authUser, slides, rightSidebar, dataNames, current,
           isSelected={rightSidebar === 'charteditor'}
           onToggle={() => handleToggle('charteditor')}
           icon={mdiBrush}
-          name={'charteditor'}
+          name='charteditor'
         />
   		</div>
     </>

@@ -23,7 +23,7 @@ const Worksheet = () => {
 	const [text, setText] = useState({ text: '', ri: 0, ci: 0 })
 	const [saving, setSaving] = useState(false)
 	const [navigator, setNavigator] = useState(true)
-	const [statistic, setStatistic] = useState(0)
+	const [statistic, setStatistic] = useState('statdesc')
 
 	return (
  		<div className='worksheet' onContextMenu={e => {e.preventDefault(); return false;}}>
@@ -32,7 +32,7 @@ const Worksheet = () => {
 			<Toggle setStatistic={setStatistic} />
 			<Formulabar text={text} />
 			{navigator && <Navigator />}
-			<RightSidebar statistic={statistic} setStatistic={setStatistic} />
+			<RightSidebar statistic={statistic} />
 			<SpreadsheetWrapper setSaving={setSaving} setText={setText} />
 		</div>
 	)

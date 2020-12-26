@@ -1,5 +1,5 @@
 import React from 'react'
-import withLists from '../withLists'
+import withLists from '../../RightSidebar/withLists'
 
 const Variable = ({ label, onChange, options, name }) => (
 	<>

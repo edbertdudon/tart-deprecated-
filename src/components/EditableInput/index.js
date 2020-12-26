@@ -9,11 +9,12 @@
 // Alert users when they make an illegal change ie. same name headers, spaces within name
 //
 import React, {useState, useEffect, useRef} from 'react'
+import { useOutsideAlerter } from '../../functions'
 import withModal from '../Modal'
 
 const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inputId, reference, setReadOnly }) => {
   const [text, setText] = useState(value)
-  const wrapperRef = useRef(null)
+  const editableinputRef = useRef(null)
   const [error, setError] = useState(false)
   const [errortext, setErrorText] = useState('')
 
@@ -38,27 +39,7 @@ const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inp
     }
   }
 
-  const useOutsideAlerter = (ref) => {
-    const handleOutsideClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        checkIllegalChange()
-      }
-    }
-    const handleKeyPress = (event) => {
-      if (event.key === 'Enter' || event.key === 'Tab') {
-        checkIllegalChange()
-      }
-    }
-    useEffect(() => {
-      document.addEventListener("mousedown", handleOutsideClick)
-      document.addEventListener("keypress", handleKeyPress)
-      return () => {
-        document.removeEventListener("mousedown", handleOutsideClick)
-        document.removeEventListener("keypress", handleKeyPress)
-      }
-    })
-  }
-  useOutsideAlerter(wrapperRef, readOnly)
+  useOutsideAlerter(editableinputRef, checkIllegalChange)
 
   const handleReadonly = () => setReadOnly(false)
 
@@ -78,7 +59,7 @@ const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inp
             className={classname}
             value={text}
             style={style}
-            ref={wrapperRef}
+            ref={editableinputRef}
             id={inputId}
             autoFocus
           />
