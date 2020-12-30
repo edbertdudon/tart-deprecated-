@@ -11,7 +11,7 @@ const Number = ({ label, value, onChange, error  }) => {
 					value={value}
 					onChange={onChange}
 				/>
-				{error && <p>{error}</p>}
+				{error && <div className='rightsidebar-error'>{error}</div>}
 			</div>
 		</>
   )

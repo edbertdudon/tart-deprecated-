@@ -191,7 +191,6 @@ const removeMatrix = (data, ri, ci) => {
 }
 
 const doParse = (obj, data, ri, ci) => {
-  console.log(obj.slides)
   return fetchR(obj, "cloudR")
     .then(res => res.json())
     .then(res => {
@@ -236,23 +235,21 @@ function rToSpreadsheet(aoa) {
   return o
 }
 
+// const firstone = '[["formula.name","ChiSquare","Df","p","test"],["Variance","0.932418764519325","1","0.334235198366151","Non-constant Variance Score Test"]]'
+// const secondone = '[{"statistic":0,"p.value":1,"parameter":1,"method":"Pearson\'s Chi-squared test with Yates\' continuity correction"}]'
+// const thirdone = '[{"rowname":"Air.Flow","Air.Flow":1,"Water.Temp":0.781852332952155,"Acid.Conc.":0.500142874899459},{"rowname":"Water.Temp","Air.Flow":0.781852332952155,"Water.Temp":1,"Acid.Conc.":0.39093953782809},{"rowname":"Acid.Conc.","Air.Flow":0.500142874899459,"Water.Temp":0.39093953782809,"Acid.Conc.":1}]'
 export const doRegress = (data, type) => {
   return fetchR(data, type)
 		.then(res => res.json())
 		.then(res => {
-			// if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
-			// 	return(res)
-			// } else {
-			// 	return rToSpreadsheet(res)
-			// }
-      // const slide = JSON.parse(res[0])
       const slide = JSON.parse(res)
-      if (typeof slide === 'object' && slide !== null) {
+      // const slide = JSON.parse(res[0])
+      if (Array.isArray(slide[0])) {
+        return rToSpreadsheet(slide)
+      } else {
         let aoa = slide.map(row => {return Object.values(row)})
         aoa = [Object.keys(slide[0]), ...aoa]
         return rToSpreadsheet(aoa)
-      } else {
-        return rToSpreadsheet(slide)
       }
 		})
 }

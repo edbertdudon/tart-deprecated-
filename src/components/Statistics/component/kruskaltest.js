@@ -20,10 +20,6 @@ const KruskalTest = ({  slides, dataNames, current, onSetDataNames, onSetCurrent
   const [groups, setGroups] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleVariableX = i => setVariableX(i)
-
-  const handleGroups = i => setGroups(i)
-
   const handleSubmit = e => {
     const formuladata = {
       ...e,
@@ -48,8 +44,8 @@ const KruskalTest = ({  slides, dataNames, current, onSetDataNames, onSetCurrent
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Grouping variable" onChange={handleGroups} options={variables} name={variables[groups]} />
+      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Grouping variable" setSelected={setGroups} options={variables} name={variables[groups]} />
     </Form>
   )
 }

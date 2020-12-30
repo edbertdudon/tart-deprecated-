@@ -13,7 +13,7 @@ import statistics from '../core/statisticsR'
 import { doRegress } from '../../Spreadsheet/cloudr'
 import { createStatistic } from '../core/form'
 import Formula from '../core/formula'
-import Number from '../core/number'
+import Number from '../../RightSidebar/number'
 
 const AkaikeInformationCriterion = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
@@ -41,7 +41,6 @@ const AkaikeInformationCriterion = ({ slides, dataNames, current, onSetDataNames
       formula: formula
     }
     if (penalty !== 0.95) formuladata.penalty = penalty
-    console.log(formuladata)
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
       slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)

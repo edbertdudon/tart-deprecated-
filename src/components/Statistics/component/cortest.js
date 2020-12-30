@@ -14,7 +14,7 @@ import { doRegress } from '../../Spreadsheet/cloudr'
 import { CORRELATION_METHOD, ALTERNATIVES, createStatistic } from '../core/form'
 import Variable from '../core/variable'
 import Alternative from '../core/alternative'
-import Number from '../core/number'
+import Number from '../../RightSidebar/number'
 import AlternativeMethod from '../core/alternativecorrelation'
 
 const CorrelationSignificance = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
@@ -26,12 +26,6 @@ const CorrelationSignificance = ({ slides, dataNames, current, onSetDataNames, o
   const [confLevel, setConfLevel] = useState(0.95)
   const [error, setError] = useState(null)
   const [confLevelError, setConfLevelError] = useState(null)
-
-  const handleVariableX = i => setVariableX(i)
-
-  const handleVariableY = i => setVariableY(i)
-
-  const handleAlt = i => setAlt(i)
 
   const handleMethod = i => setMethod(i)
 
@@ -75,9 +69,9 @@ const CorrelationSignificance = ({ slides, dataNames, current, onSetDataNames, o
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Y variable" onChange={handleVariableY} options={variables} name={variables[variableY]} />
-      <Alternative onSetAlt={handleAlt} alt={alt} />
+      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Alternative setAlt={setAlt} alt={alt} />
       <AlternativeMethod onSetAlt={handleMethod} options={CORRELATION_METHOD} alt={method} />
       <Number label='Confidence level' value={confLevel} onChange={handleConfLevel} error={confLevelError} />
     </Form>

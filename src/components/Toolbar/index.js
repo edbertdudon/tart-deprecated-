@@ -7,6 +7,7 @@ import Insert from './insert'
 import Table from './table'
 import Format from './format'
 import View from './view'
+import Run from './run'
 
 const Toolbar = ({ navigator, setNavigator, setReadOnly }) => {
 	return (
@@ -17,6 +18,7 @@ const Toolbar = ({ navigator, setNavigator, setReadOnly }) => {
 			<Table />
 			<Format />
 			<View navigator={navigator} setNavigator={setNavigator} />
+			<Run />
 		</div>
 	)
 }

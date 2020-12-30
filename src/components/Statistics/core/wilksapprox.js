@@ -1,5 +1,5 @@
 //
-//  BootstrapMethod
+//  WilksApproximation
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -8,19 +8,22 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
-import { BOOTSTRAP_METHOD } from './form'
+import { WILKS_APPROXIMATION } from './form'
 
-const BootstrapMethod = ({ authUser, color, setMethod, method }) => {
+const WilksApproximation = ({ authUser, color, setMethod, method }) => {
 
-	const handleMethodResample = () => setMethod(0)
+	const handleMethod0 = () => setMethod(0)
 
-	const handleMethodNormal = () => setMethod(1)
+	const handleMethod1 = () => setMethod(1)
+
+	const handleMethod2 = () => setMethod(2)
 
 	return (
 		<>
-			<div className='rightsidebar-label'>Bootstrap Method</div>
-	    <Button onClick={handleMethodResample} condition={method === 0} text={BOOTSTRAP_METHOD[0]} color={color[authUser.uid]} />
-	    <Button onClick={handleMethodNormal} condition={method === 1} text={BOOTSTRAP_METHOD[1]} color={color[authUser.uid]} />
+			<div className='rightsidebar-label'>Approximation</div>
+	    <Button onClick={handleMethod0} condition={method === 0} text={WILKS_APPROXIMATION[0]} color={color[authUser.uid]} />
+	    <Button onClick={handleMethod1} condition={method === 1} text={WILKS_APPROXIMATION[1]} color={color[authUser.uid]} />
+			<Button onClick={handleMethod2} condition={method === 2} text={WILKS_APPROXIMATION[2]} color={color[authUser.uid]} />
 		</>
 	)
 }
@@ -34,7 +37,7 @@ const Button = ({ onClick, condition, text, color }) => (
 				border: condition === true ? '1px solid '+ color : '1px solid #fff'
 			}}
 		></button>
-		<div className='rightsidebar-buttontext-2part-bootstrap'>{text}</div>
+	<div className='rightsidebar-buttontext-2part-wilksapprox'>{text}</div>
 	</div>
 )
 
@@ -47,4 +50,4 @@ export default compose(
 	connect(
 		mapStateToProps,
 	),
-)(BootstrapMethod)
+)(WilksApproximation)

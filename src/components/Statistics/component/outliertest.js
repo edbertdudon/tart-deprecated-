@@ -1,5 +1,5 @@
 //
-//  ConfidenceInterval
+//  OutlierTest
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -15,25 +15,37 @@ import { createStatistic } from '../core/form'
 import Formula from '../core/formula'
 import Number from '../../RightSidebar/number'
 
-const ConfidenceInterval = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
+const OutlierTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
   const [formula, setFormula] = useState('')
-  const [confLevel, setConfLevel] = useState(0.95)
+  const [pvalue, setPvalue] = useState(0.05)
+  const [observations, setObservations] = useState(10)
   const [error, setError] = useState(null)
   const [formulaError, setFormulaError] = useState(null)
-  const [confLevelError, setConfLevelError] = useState(null)
+  const [pvalueError, setPvalueError] = useState(null)
+  const [observationsError, setObservationsError] = useState(null)
 
   const handleFormula = e => setFormula(e)
 
-  const handleConfLevel = e => {
+  const handlePvalue = e => {
     let input = e.target.value
-    setConfLevel(input)
+    setPvalue(input)
     if (isNaN(parseFloat(input))) {
-      setConfLevelError("Confidence level must be a number.")
+      setPvalueError("p-values level must be a number.")
     } else if (parseFloat(input) > 1 || parseFloat(input) < 0) {
-      setConfLevelError("Confidence Level must be between 0 and 1.")
+      setPvalueError("p-values must be between 0 and 1.")
     } else {
-      setConfLevelError(null)
+      setPvalueError(null)
+    }
+  }
+
+  const handleObservations = e => {
+    let input = e.target.value
+    setObservations(input)
+    if (isNaN(parseFloat(input))) {
+      setObservationsError("Maximum observations must be a number.")
+    } else {
+      setObservationsError(null)
     }
   }
 
@@ -42,7 +54,8 @@ const ConfidenceInterval = ({ slides, dataNames, current, onSetDataNames, onSetC
       ...e,
       formula: formula
     }
-    if (confLevel !== 0.95) formuladata.confidencelevel = confLevel
+    if (pvalue !== 0.05) formuladata.pvalue = pvalue
+    if (observations !== 10) formuladata.observations = observations
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
       slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)
@@ -50,7 +63,8 @@ const ConfidenceInterval = ({ slides, dataNames, current, onSetDataNames, onSetC
   }
 
   const isInvalid = formulaError !== null
-    || confLevelError !== null
+    || pvalueError !== null
+    || observationsError !== null
 
   return (
     <Form
@@ -62,7 +76,8 @@ const ConfidenceInterval = ({ slides, dataNames, current, onSetDataNames, onSetC
       setError={setError}
     >
       <Formula formulaText={formula} variables={variables} onSetFormula={handleFormula} formulaError={formulaError} />
-      <Number label='Confidence level' value={confLevel} onChange={handleConfLevel} error={confLevelError} />
+      <Number label='Significance Level' value={pvalue} onChange={handlePvalue} error={pvalueError} />
+      <Number label='Observations' value={observations} onChange={handleObservations} error={observationsError} />
     </Form>
   )
 }
@@ -85,4 +100,4 @@ export default compose(
 		mapStateToProps,
     mapDispatchToProps
 	),
-)(ConfidenceInterval)
+)(OutlierTest)

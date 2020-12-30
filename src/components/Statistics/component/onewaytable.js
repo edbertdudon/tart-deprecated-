@@ -19,8 +19,6 @@ const OneWayTable = ({  slides, dataNames, current, onSetDataNames, onSetCurrent
   const [variableX, setVariableX] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleVariableX = i => setVariableX(i)
-
   const handleSubmit = e => {
     const formuladata = {
       ...e,
@@ -43,7 +41,7 @@ const OneWayTable = ({  slides, dataNames, current, onSetDataNames, onSetCurrent
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
     </Form>
   )
 }

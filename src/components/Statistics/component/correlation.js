@@ -49,8 +49,6 @@ const Correlation = ({ slides, dataNames, current, onSetDataNames, onSetCurrent,
     setVarsy(varsy.filter(v => variables.includes(variables[v])))
   }, [variables])
 
-  const handleMethod = i => setMethod(i)
-
   const handleSubmit = e => {
     const formuladata = {
       ...e,
@@ -78,7 +76,7 @@ const Correlation = ({ slides, dataNames, current, onSetDataNames, onSetCurrent,
     >
       <Matrix variables={variables} selected={varsx} setSelected={setVarsx} text='X variables' />
       <Matrix variables={variables} selected={varsy} setSelected={setVarsy} text='Y variables' />
-      <Alternative onSetAlt={handleMethod} options={CORRELATION_METHOD} alt={method} />
+      <Alternative setAlt={setMethod} options={CORRELATION_METHOD} alt={method} />
     </Form>
   )
 }

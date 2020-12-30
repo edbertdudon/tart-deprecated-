@@ -23,7 +23,7 @@ const Formula = ({ formulaText, variables, onSetFormula, formulaError}) =>
 			onSetFormula={onSetFormula}
 		/>
 		<div className='rightsidebar-subtext'>Use I() for transformations involving +, -, *, or ^. e.g. y ~ x + I(x^2)</div>
-		{formulaError && <p>{formulaError}</p>}
+		{formulaError && <div className='rightsidebar-error'>{formulaError}</div>}
 	</div>
 
 

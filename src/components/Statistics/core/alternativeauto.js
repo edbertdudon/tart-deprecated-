@@ -3,13 +3,13 @@ import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { ALTERNATIVES_AUTOCORRELATION } from './form'
 
-const Alternative = ({ authUser, color, onSetAlt, alt }) => {
+const Alternative = ({ authUser, color, setAlt, alt }) => {
 
-	const handleAlt0 = () => onSetAlt(0)
+	const handleAlt0 = () => setAlt(0)
 
-	const handleAlt1 = () => onSetAlt(1)
+	const handleAlt1 = () => setAlt(1)
 
-	const handleAlt2 = () => onSetAlt(2)
+	const handleAlt2 = () => setAlt(2)
 
 	return (
 		<>

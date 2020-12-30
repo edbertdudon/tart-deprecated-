@@ -12,7 +12,6 @@ import ChiSquareTest from './component/chisqtest'
 import FisherExactTest from './component/fishertest'
 import CochranMantelHaenTest from './component/mantelhaentest'
 import Correlation from './component/correlation'
-import Covariance from './component/covariance'
 import CorrelationSignificance from './component/cortest'
 import OneSampleTTest from './component/onettest'
 import TwoSampleTTest from './component/twottest'
@@ -31,15 +30,18 @@ import SimpleLinearRegression from './component/simplelinreg'
 // import QuasiBinomRegression from './component/quasibinomreg'
 // import QuasiPoissonRegression from './component/quasipoissonreg'
 import DurbinWatsonTest from './component/durbinwatson'
+import OutlierTest from './component/outliertest'
+import Ancova1Covariate from './component/ancovawith1cov'
+import TwoWayAov from './component/twowayaov'
+import TwoWayAncova2Covariate from './component/twowayancovawith2cov'
+import RandomAnova from './component/randomaov'
+import OneWayWithinAnova from './component/onewaywithinaov'
+import RepeatedMeasuresAnova from './component/repeatedmeasuresaov'
 // import CompareAnova from './component/companova'
-// import OnewWayAov from './component/onewayaov'
-// import RandomAov from './component/randomaov'
-// import TwoWayAov from './component/twowayaov'
-// import Ancova from './component/covaov'
-// import OneWayWithinAov from './component/onewaywithinaov'
 // import TwoWayWithinAov from './component/twowaywithinaov'
 // import TwoWayBetweenAov from './component/twowaybetweenaov'
-// import OneWayManova from './component/onewaymanova'
+import OneWayManova from './component/onewayman'
+import RobustOneWayManova from './component/robustonewayman'
 // import RandomManova from './component/randommanova'
 // import TwoWayManova from './component/twowaymanova'
 // import Mancova from './component/covmanova'
@@ -48,8 +50,6 @@ import DurbinWatsonTest from './component/durbinwatson'
 // import TwoWayBetweenManova from './component/twowaybetweenmanova'
 // import BinomTest from './component/binomtest'
 // import AnsariBradleyTest from './component/ansaritest'
-// import BartlettTest from './component/bartletttest'
-// import FilgnerTest from './component/filgnertest'
 // import KolmogorovTest from './component/kstest'
 // import MauchlyTest from './component/mauchlytest'
 // import McnemarTest from './component/mcnemartest'
@@ -75,7 +75,7 @@ const Statistics = ({ statistic }) => (
         fishertest: <FisherExactTest statistic={statistic} />,
         mantelhaentest: <CochranMantelHaenTest statistic={statistic} />,
         cor: <Correlation statistic={statistic} />,
-        cov: <Covariance statistic={statistic} />,
+        cov: <Correlation statistic={statistic} />,
         cortest: <CorrelationSignificance statistic={statistic} />,
   	    onettest: <OneSampleTTest statistic={statistic} />,
         pairedttest: <TwoSampleTTest statistic={statistic} />,
@@ -91,7 +91,6 @@ const Statistics = ({ statistic }) => (
         confint: <ConfidenceInterval statistic={statistic} />,
         fitted: <LinearRegression statistic={statistic} />,
         residuals: <LinearRegression statistic={statistic} />,
-        anova: <LinearRegression statistic={statistic} />,
         vcov: <LinearRegression statistic={statistic} />,
         aic: <AkaikeInformationCriterion statistic={statistic} />,
         predict: <LinearRegression statistic={statistic} />,
@@ -106,27 +105,37 @@ const Statistics = ({ statistic }) => (
       //   quasibinomreg: <QuasiBinomRegression statistic={statistic} />,
       //   quasipoissonreg: <QuasiPoissonRegression statistic={statistic} />,
         durbinwatson: <DurbinWatsonTest statistic={statistic} />,
+        ncvtest: <LinearRegression statistic={statistic} />,
+        outliertest: <OutlierTest statistic={statistic} />,
+        varianceinflation: <LinearRegression statistic={statistic} />,
       //   influence: <LinearModelFit statistic={statistic} />,
       //   companova: <CompareAnova statistic={statistic} />,
-      //   onewayaov: <OnewWayAov statistic={statistic} />,
-      //   randomaov: <RandomAov statistic={statistic} />,
-      //   twowayaov: <TwoWayAov statistic={statistic} />,
-      //   covaov: <Ancova statistic={statistic} />,
-      //   onewaywithinaov: <OneWayWithinAov statistic={statistic} />,
+        anova: <LinearRegression statistic={statistic} />,
+        onewayaov: <SimpleLinearRegression statistic={statistic} />,
+        tukeyhsd: <ConfidenceInterval statistic={statistic} />,
+        ancovawith1cov: <Ancova1Covariate statistic={statistic} />,
+        twowayaov: <TwoWayAov statistic={statistic} />,
+        twowayancovawith2cov: <TwoWayAncova2Covariate statistic={statistic} />,
+        randomaov: <RandomAnova statistic={statistic} />,
+        onewaywithinaov: <OneWayWithinAnova statistic={statistic} />,
+        repeatedmeasuresaov: <RepeatedMeasuresAnova statistic={statistic} />,
       //   twowaywithinaov: <TwoWayWithinAov statistic={statistic} />,
       //   twowaybetweenaov: <TwoWayBetweenAov statistic={statistic} />,
-      //   onewaymanova: <OneWayManova statistic={statistic} />,
+        manova: <LinearRegression statistic={statistic} />,
+        onewayman: <OneWayManova statistic={statistic} />,
+        robustonewayman: <RobustOneWayManova statistic={statistic} />,
       //   randommanova: <RandomManova statistic={statistic} />,
       //   twowaymanova: <TwoWayManova statistic={statistic} />,
       //   covmanova: <Mancova statistic={statistic} />,
       //   onewaywithinmanova: <OneWayWithinManova statistic={statistic} />,
       //   twowaywithinmanova: <TwoWayWithinManova statistic={statistic} />,
       //   twowaybetweenmanova: <TwoWayBetweenManova statistic={statistic} />,
+        bartletttest: <SimpleLinearRegression statistic={statistic} />,
+        filgnertest: <SimpleLinearRegression statistic={statistic} />,
+        // hovtest: <SimpleLinearRegression statistic={statistic} />,
       //   binomtest: <BinomTest statistic={statistic} />,
       //   ansaritest: <AnsariBradleyTest statistic={statistic} />,
-      //   bartletttest: <BartlettTest statistic={statistic} />,
       // // 	Boxtest: <BoxTest statistic={statistic} />,
-      //   filgnertest: <FilgnerTest statistic={statistic} />,
       // // 	kstest: <KolmogorovTest statistic={statistic} />,
       // // 	mauchlytest: <MauchlyTest statistic={statistic} />,
       // // 	mcnemartest: <McnemarTest statistic={statistic} />,

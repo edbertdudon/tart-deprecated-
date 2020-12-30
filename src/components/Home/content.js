@@ -115,21 +115,21 @@ export const updateFilesAfterTrash = (filename, files) => {
   return newFile
 }
 
-const Content = ({ firebase, authUser, files, jobs, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive,
-	notifications, onSetNotifications }) => {
+const Content = ({ firebase, authUser, files, jobs, notifications, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive,
+  onSetNotifications }) => {
 	const [loading, setLoading] = useState(false)
   const [filesWithTrash, setFilesWithTrash] = useState([])
 
 	useEffect(() => {
-		// setLoading(true)
-		// listFilesLessTrash()
-		// firebase.doListJobs(authUser.uid)
-		// 	.then(res => {
-		// 		if (!("error" in res)) {
-		// 			onSetJobs(res)
-		// 		}
-		// 	})
-		// 	.then(() => onSetIsJobsActive(shouldReloadTimer(jobs)))
+		setLoading(true)
+		listFilesLessTrash()
+		firebase.doListJobs(authUser.uid)
+			.then(res => {
+				if (!("error" in res)) {
+					onSetJobs(res)
+				}
+			})
+			.then(() => onSetIsJobsActive(shouldReloadTimer(jobs)))
 	}, [])
 
 	// Checks every ** 1 minutes *** for finished jobs
@@ -219,6 +219,7 @@ const mapStateToProps = state => ({
 	files: (state.filesState.files || {}),
 	jobs: (state.jobsState.jobs || [{status:'failed list jobs'}]),
 	isJobsActive: (state.isJobsActiveState.isJobsActive || false),
+  notifications: (state.notificationsState.notifications || []),
 })
 
 const mapDispatchToProps = dispatch => ({

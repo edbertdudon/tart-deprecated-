@@ -1,11 +1,11 @@
 //
-//  ChiSquareTest
+//  RepeatedMeasuresAnova
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Form from '../core/form'
@@ -14,17 +14,21 @@ import { doRegress } from '../../Spreadsheet/cloudr'
 import { createStatistic } from '../core/form'
 import Variable from '../core/variable'
 
-const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
+const RepeatedMeasuresAnova = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
-  const [variableX, setVariableX] = useState(null)
+  const [variableX1, setVariableX1] = useState(null)
+  const [variableX2, setVariableX2] = useState(null)
   const [variableY, setVariableY] = useState(null)
+  const [subject, setSubject] = useState(null)
   const [error, setError] = useState(null)
 
   const handleSubmit = e => {
     const formuladata = {
       ...e,
-      variablex: variables[variableX],
+      variablex1: variables[variableX1],
+      variablex2: variables[variableX2],
       variabley: variables[variableY],
+      subject: variables[subject]
     }
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
       slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
@@ -32,8 +36,10 @@ const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurren
     }).catch(err => setError(err.toString()))
   }
 
-  const isInvalid = variableX == null
+  const isInvalid = variableX1 == null
+    || variableX2 == null
     || variableY == null
+    || subject == null
 
   return (
     <Form
@@ -44,8 +50,10 @@ const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurren
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Variable label="Y (dependent) variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Variable label="Within-groups factor" setSelected={setVariableX1} options={variables} name={variables[variableX1]} />
+      <Variable label="Between-groups factor" setSelected={setVariableX2} options={variables} name={variables[variableX2]} />
+      <Variable label="Subject" setSelected={setSubject} options={variables} name={variables[subject]} />
     </Form>
   )
 }
@@ -68,4 +76,4 @@ export default compose(
 		mapStateToProps,
     mapDispatchToProps
 	),
-)(ChiSquareTest)
+)(RepeatedMeasuresAnova)

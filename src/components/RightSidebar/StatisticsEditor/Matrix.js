@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import Variable from './Variable'
 import withListsDropdown from '../withListsDropdown'
 import withLists from '../withLists'
 

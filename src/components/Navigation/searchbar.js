@@ -13,8 +13,9 @@ const SearchBar = ({ onSetSearch, files, authUser, firebase, onSetFiles, search 
 	const [library, setLibrary] = useState([])
 
 	useEffect(() => {
+		// Files + connections - trash
 		firebase.doListFiles(authUser.uid).then(res => {
-      onSetFiles(res.items, authUser.uid)
+      // onSetFiles(res.items, authUser.uid)
 			let list = res.items.map(file => {return file.name})
 			firebase.connection(authUser.uid).get().then(docC => {
 				if (docC.exists) {

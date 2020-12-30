@@ -40,9 +40,9 @@ const STATISTICS_CATEGORIES = [
   'Fitting Tools',
   'Regression',
   'Regression Diagnostics',
-  'Multiple Regression',
   'ANOVA',
   'MANOVA',
+  'Equality of Variances'
 ]
 
 const FORMULA_CATEGORIES = [

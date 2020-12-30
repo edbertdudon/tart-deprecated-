@@ -55,16 +55,14 @@ const withListsDropdown = Component => (props) => {
       </ContextMenu>
       {(showOptions && props.options.length) &&
         <div className='rightsidebar-dropdown-content'>
-          {props.options.map((option, index) =>
+          {props.options.map((option, index) => (
             <div
 							className='rightsidebar-dropdown-item'
 							key={index}
 							onClick={() => handleSelectComponent(index)}
 							onMouseEnter={() => toggleHover(index)}
-						>
-              <Component option={option} />
-            </div>
-					)}
+						><Component option={option} /></div>
+					))}
         </div>
       }
     </div>

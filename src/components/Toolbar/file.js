@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import XLSX from 'xlsx'
-
+import { useHistory } from 'react-router-dom'
 import Header from './header'
 import { stox, addCopyToName } from '../../functions'
 import ImportConnection from './importconnection'
@@ -35,7 +35,7 @@ export const FILE_DROPDOWN = [
   {key: 'Duplicate', type: 'item'},
   {key: 'Rename...', type: 'item'},
   {key: 'Download as Xlsx', type: 'item'},
-  {key: 'Move to Trash', type: 'link', path: ROUTES.HOME},
+  {key: 'Move to Trash', type: 'item', path: ROUTES.HOME},
   {type: 'divider'},
   {key: 'Import csv or xlsx', type: 'item'},
   {key: 'Import connection', type: 'item'},
@@ -52,6 +52,7 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
   const [isOpenDatabaseSqlserver, setIsOpenDatabaseSqlserver] = useState(false)
   const [isOpenDatabaseOracle, setIsOpenDatabaseOracle] = useState(false)
   const uploadRef = useRef(null)
+  let history = useHistory()
 
   const handleFile = key => {
     switch (key) {
@@ -101,6 +102,7 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
             firebase.trash(authUser.uid).set({ [worksheetname]: today })
           }
         })
+        history.push(ROUTES.HOME)
         break;
       case FILE_DROPDOWN[7].key:
         uploadRef.current.click()

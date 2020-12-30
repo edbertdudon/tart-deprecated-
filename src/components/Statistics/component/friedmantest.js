@@ -21,12 +21,6 @@ const FriedmanTest = ({  slides, dataNames, current, onSetDataNames, onSetCurren
   const [blocks, setBlocks] = useState(null)
   const [error, setError] = useState(null)
 
-  const handleVariableX = i => setVariableX(i)
-
-  const handleGroups = i => setGroups(i)
-
-  const handleBlocks = i => setBlocks(i)
-
   const handleSubmit = e => {
     const formuladata = {
       ...e,
@@ -53,9 +47,9 @@ const FriedmanTest = ({  slides, dataNames, current, onSetDataNames, onSetCurren
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Grouping variable" onChange={handleGroups} options={variables} name={variables[groups]} />
-      <Variable label="Blocking variable" onChange={handleBlocks} options={variables} name={variables[blocks]} />
+      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Grouping variable" setSelected={setGroups} options={variables} name={variables[groups]} />
+      <Variable label="Blocking variable" setSelected={setBlocks} options={variables} name={variables[blocks]} />
     </Form>
   )
 }

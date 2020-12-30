@@ -1,11 +1,11 @@
 //
-//  ChiSquareTest
+//  Ancova1Covariate
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import Form from '../core/form'
@@ -14,10 +14,11 @@ import { doRegress } from '../../Spreadsheet/cloudr'
 import { createStatistic } from '../core/form'
 import Variable from '../core/variable'
 
-const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
+const Ancova1Covariate = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
   const [variableX, setVariableX] = useState(null)
   const [variableY, setVariableY] = useState(null)
+  const [covariate1, setCovariate1] = useState(null)
   const [error, setError] = useState(null)
 
   const handleSubmit = e => {
@@ -25,6 +26,7 @@ const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurren
       ...e,
       variablex: variables[variableX],
       variabley: variables[variableY],
+      covariate1: variables[covariate1]
     }
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
       slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
@@ -34,6 +36,7 @@ const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurren
 
   const isInvalid = variableX == null
     || variableY == null
+    || covariate1 == null
 
   return (
     <Form
@@ -44,8 +47,9 @@ const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurren
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Variable label="Y (dependent) variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Variable label="X (independent) variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Covariate" setSelected={setCovariate1} options={variables} name={variables[covariate1]} />
     </Form>
   )
 }
@@ -68,4 +72,4 @@ export default compose(
 		mapStateToProps,
     mapDispatchToProps
 	),
-)(ChiSquareTest)
+)(Ancova1Covariate)

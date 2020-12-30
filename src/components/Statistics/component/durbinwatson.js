@@ -15,7 +15,7 @@ import { BOOTSTRAP_METHOD, ALTERNATIVES, createStatistic } from '../core/form'
 import Formula from '../core/formula'
 import BootstrapMethod from '../core/bootstrap'
 import Alternative from '../core/alternative'
-import Number from '../core/number'
+import Number from '../../RightSidebar/number'
 
 const DurbinWatsonTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
@@ -40,10 +40,6 @@ const DurbinWatsonTest = ({ slides, dataNames, current, onSetDataNames, onSetCur
       setLagError(null)
     }
   }
-
-  const handleMethod = i => setMethod(i)
-
-  const handleAlt = i => setAlt(i)
 
   const handleSubmit = e => {
     const formuladata = {
@@ -79,8 +75,8 @@ const DurbinWatsonTest = ({ slides, dataNames, current, onSetDataNames, onSetCur
     >
       <Formula formulaText={formula} variables={variables} onSetFormula={handleFormula} formulaError={formulaError} />
       <Number label='Maximum Lag' value={lag} onChange={handleLag} error={lagError} />
-      <BootstrapMethod onSetMethod={handleMethod} method={method} />
-      {lag == 1 && <Alternative onSetAlt={handleAlt} alt={alt} />}
+      <BootstrapMethod setMethod={setMethod} method={method} />
+      {lag == 1 && <Alternative setAlt={setAlt} alt={alt} />}
     </Form>
   )
 }

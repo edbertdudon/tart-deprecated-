@@ -1,10 +1,15 @@
+//
+//  Matrix
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React, { useState } from 'react'
-import Variable from './variable'
 import withLists from '../../RightSidebar/withLists'
 import withListsDropdown from '../../RightSidebar/withListsDropdown'
 
 const Matrix = ({ variables, selected, setSelected, text }) => {
-
 	const handleUpdateVariable = newSelectedVariables => setSelected(newSelectedVariables)
 
 	const handleAddVariable = activeOption => {
@@ -15,15 +20,15 @@ const Matrix = ({ variables, selected, setSelected, text }) => {
 	return (
 		<>
 			<div className='rightsidebar-label'>{text}</div>
-			{selected.map((selected, index) => (
+			{selected.map((select, index) => (
 				<OptionsWithListsDropdown
 					onChange={handleUpdateVariable}
 					options={variables}
-					name={variables[selected]}
+					name={variables[select]}
 					selection={selected}
 					setSelection={setSelected}
 					currentSelection={index}
-					key={selected}
+					key={text + index}
 				/>
 			))}
 			<OptionsWithLists

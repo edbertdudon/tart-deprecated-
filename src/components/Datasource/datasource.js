@@ -44,7 +44,7 @@ const ContextMenuDropdown = ({ filename, onDropdown }) => (
 )
 
 const DataSource = ({ firebase, authUser, color, files, jobs, onSetWorksheetname, onSetJobs,
-	filename, onReload, runId,onJobSubmit, onJobCancel, onListFilesLessTrash, filesWithTrash }) => {
+	filename, onReload, runId, onJobSubmit, onJobCancel, onListFilesLessTrash, filesWithTrash }) => {
 	const [loading, setLoading] = useState(false)
 	const [name, setName] = useState(filename)
 	const [hover, setHover] = useState(false)

@@ -726,7 +726,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 			</div>
 			<div className='rightsidebar-text'>
 				{"description" in statistics[statistic] && <p>{statistics[statistic].description}</p>}
-				{error && <p>{error}</p>}
+				{error && <div className='rightsidebar-error'>{error}</div>}
 			</div>
 			{loading
 				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin /></div>

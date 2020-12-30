@@ -21,6 +21,8 @@ export const ALTERNATIVES = ["Two-sided", "Greater", "Less"]
 export const ALTERNATIVES_AUTOCORRELATION = ["Two-sided", "Positive", "Negative"]
 export const CORRELATION_METHOD = ["Pearson", "Spearman", "Kendall"]
 export const BOOTSTRAP_METHOD = ["Resample", "Normal"]
+export const WILKS_METHOD = ["c (standard)", "MCD", "Rank"]
+export const WILKS_APPROXIMATION = ["Bartlett", "Rao", "Empirical"]
 
 export function createStatistic(res, slides, formuladata, statistic, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar) {
 	const { datas, data } = slides
@@ -112,7 +114,7 @@ const Form = ({ slides, color, authUser, statistic, invalidStat, setVariables,
 			<Button onClick={handleFirstrow} condition={firstRow} text='First row as header' />
 			<div className='rightsidebar-text'>
 				<p>{statistics.find(e => e.key === statistic).description}</p>
-				{error && <p>{error}</p>}
+				{error && <div className='rightsidebar-error'>{error}</div>}
 			</div>
 			{loading
 				?	<div className='rightsidebar-loading'><Icon path={mdiLoading} size={1.5} spin /></div>

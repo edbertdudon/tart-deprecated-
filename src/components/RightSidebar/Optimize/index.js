@@ -20,10 +20,8 @@ import Qconstraint from './qconstraint'
 import Lconstraint from './lconstraint'
 import Variable from '../../Statistics/core/variable'
 import Button from '../button'
-import withListsDropdown from '../withListsDropdown'
 import withLists from '../withLists'
 import { letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR } from '../../Spreadsheet/cloudr'
-import { withFirebase } from '../../Firebase'
 
 const OBJECTIVE_CLASS = ["General nonlinear optimization", "Linear programming", "Quadratic programming"]
 
@@ -286,7 +284,7 @@ export const updateCellorRange = (e, setLhs, setError) => {
 // 	// )
 // }
 
-const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar }) => {
+const Optimize = ({ slides, authUser, color, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar }) => {
 	const [objective, setObjective] = useState('')
 	const [quadratic, setQuadratic] = useState('')
 	const [linear, setLinear] = useState('')
@@ -375,7 +373,6 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 		setObjective(columnToLetter(sci+1) + (sri+1))
 	}, [])
 
-	const handleUpdateObjectiveClass = i => setObjectiveClass(i)
 
 	const handleMinimize = () => setMinMax(0)
 
@@ -390,8 +387,6 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 			.sort((a,b) => a-b)
 			.map(c => CONSTRAINTS_TYPE[c])
 	)
-
-	const handleUpdateSolver = i => setSolver(i)
 
 	const handleSubmit = () => {
 		setLoading(true)
@@ -553,7 +548,7 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 			{OBJECTIVE_STATES[objectiveClass]}
 			<Variable
 				label="Objective function type"
-				onChange={handleUpdateObjectiveClass}
+				setSelected={setObjectiveClass}
 				options={OBJECTIVE_CLASS}
 				name={OBJECTIVE_CLASS[objectiveClass]}
 			/>
@@ -722,7 +717,7 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 				<OptionsWithLists onChange={handleAddConstraint} options={constraints} name='Add constraint' />}
 			<Variable
 				label="Solver"
-				onChange={handleUpdateSolver}
+				setSelected={setSolver}
 				options={filteredOptions}
 				name={filteredOptions[0]}
 			/>
@@ -748,7 +743,6 @@ const Optimize = ({ firebase, slides, authUser, color, dataNames, current, onSet
 
 const Options = ({ option }) => option
 const OptionsWithLists = withLists(Options)
-const OptionsWithListsDropdown = withListsDropdown(Options)
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,
@@ -766,7 +760,6 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export default compose(
-	withFirebase,
 	connect(
 		mapStateToProps,
 		mapDispatchToProps,

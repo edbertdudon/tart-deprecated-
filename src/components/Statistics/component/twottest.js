@@ -14,7 +14,7 @@ import { doRegress } from '../../Spreadsheet/cloudr'
 import { ALTERNATIVES, createStatistic } from '../core/form'
 import Variable from '../core/variable'
 import Alternative from '../core/alternative'
-import Number from '../core/number'
+import Number from '../../RightSidebar/number'
 
 const TwoSampleTTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
@@ -26,12 +26,6 @@ const TwoSampleTTest = ({ slides, dataNames, current, onSetDataNames, onSetCurre
   const [error, setError] = useState(null)
   const [meanError, setMeanError] = useState(null)
   const [confLevelError, setConfLevelError] = useState(null)
-
-  const handleVariableX = i => setVariableX(i)
-
-  const handleVariableY = i => setVariableY(i)
-
-  const handleAlt = i => setAlt(i)
 
   const handleMean = e => {
     let input = e.target.value
@@ -84,9 +78,9 @@ const TwoSampleTTest = ({ slides, dataNames, current, onSetDataNames, onSetCurre
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Y variable" onChange={handleVariableY} options={variables} name={variables[variableY]} />
-      <Alternative onSetAlt={handleAlt} alt={alt} />
+      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Alternative setAlt={setAlt} alt={alt} />
       <Number label='True value of the mean (difference in means)' value={mean} onChange={handleMean} error={meanError} />
       <Number label='Confidence level' value={confLevel} onChange={handleConfLevel} error={confLevelError} />
     </Form>

@@ -14,7 +14,7 @@ import { doRegress } from '../../Spreadsheet/cloudr'
 import { ALTERNATIVES, createStatistic } from '../core/form'
 import Variable from '../core/variable'
 import Alternative from '../core/alternative'
-import Number from '../core/number'
+import Number from '../../RightSidebar/number'
 
 const FisherExactTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
   const [variables, setVariables] = useState([])
@@ -24,12 +24,6 @@ const FisherExactTest = ({ slides, dataNames, current, onSetDataNames, onSetCurr
   const [confLevel, setConfLevel] = useState(0.95)
   const [error, setError] = useState(null)
   const [confLevelError, setConfLevelError] = useState(null)
-
-  const handleVariableX = i => setVariableX(i)
-
-  const handleVariableY = i => setVariableY(i)
-
-  const handleAlt = i => setAlt(i)
 
   const handleConfLevel = e => {
     let input = e.target.value
@@ -70,9 +64,9 @@ const FisherExactTest = ({ slides, dataNames, current, onSetDataNames, onSetCurr
       error={error}
       setError={setError}
     >
-      <Variable label="X variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
-      <Variable label="Y variable" onChange={handleVariableY} options={variables} name={variables[variableY]} />
-      <Alternative onSetAlt={handleAlt} alt={alt} />
+      <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Alternative setAlt={setAlt} alt={alt} />
       <Number label='Confidence level' value={confLevel} onChange={handleConfLevel} error={confLevelError} />
     </Form>
   )

@@ -19,11 +19,6 @@ const SimpleLinearRegression = ({ slides, dataNames, current, onSetDataNames, on
   const [variableX, setVariableX] = useState(null)
   const [variableY, setVariableY] = useState(null)
   const [error, setError] = useState(null)
-  const [formulaError, setFormulaError] = useState(null)
-
-  const handleVariableX = i => setVariableX(i)
-
-  const handleVariableY = i => setVariableY(i)
 
   const handleSubmit = e => {
     const formuladata = {
@@ -49,8 +44,8 @@ const SimpleLinearRegression = ({ slides, dataNames, current, onSetDataNames, on
       error={error}
       setError={setError}
     >
-      <Variable label="Y (dependent) variable" onChange={handleVariableY} options={variables} name={variables[variableY]} />
-      <Variable label="X (independent) variable" onChange={handleVariableX} options={variables} name={variables[variableX]} />
+      <Variable label="Y (dependent) variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
+      <Variable label="X (independent) variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
     </Form>
   )
 }

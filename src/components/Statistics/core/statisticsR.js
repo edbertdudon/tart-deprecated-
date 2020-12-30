@@ -200,14 +200,6 @@ const statistics = [
 		category: 6
 	},
 	{
-		key: 'anova',
-		title: tf('anova'),
-		function: 'anova',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	{
 		key: 'vcov',
 		title: tf('vcov'),
 		function: 'vcov',
@@ -354,122 +346,216 @@ const statistics = [
 		description: '',
 		category: 8
 	},
+	{
+		key: 'varianceinflation',
+		title: tf('varianceinflation'),
+		function: 'varianceinflation',
+		description: '',
+		category: 8
+	},
+	// qqPlot()
+	// crPlot()
+	// spreadLevelPlot()
+	// influencePlot()
+	// scatterplot()
+	// scatterplotMatrix()
 	// ANOVA
+	{
+		key: 'anova',
+		title: tf('anova'),
+		function: 'anova',
+		arguments: ['formula'],
+		description: '',
+		category: 9
+	},
 	{
 		key: 'onewayaov',
 		title: tf('onewayaov'),
-		function: 'aov(',
+		function: 'onewayaov',
 		arguments: ['oneWayAnova'],
 		description: '',
 		category: 9
 	},
 	{
-		key: 'randomaov',
-		title: tf('randomaov'),
-		function: 'aov(',
-		arguments: ['randomizedBlockDesign'],
+		key: 'tukeyhsd',
+		title: tf('tukeyhsd'),
+		function: 'tukeyhsd',
+		arguments: ['tukeyhsd'],
+		description: '',
+		category: 9
+	},
+	{
+		key: 'ancovawith1cov',
+		title: tf('ancovawith1cov'),
+		function: 'ancovawith1cov',
+		arguments: ['ancovawith1cov'],
 		description: '',
 		category: 9
 	},
 	{
 		key: 'twowayaov',
 		title: tf('twowayaov'),
-		function: 'aov(',
+		function: 'twowayaov',
 		arguments: ['twoWayAnova'],
 		description: '',
 		category: 9
 	},
 	{
-		key: 'covaov',
-		title: tf('covaov'),
-		function: 'aov(',
-		arguments: ['analysisOfCovariance'],
+		key: 'twowayancovawith2cov',
+		title: tf('twowayancovawith2cov'),
+		function: 'twowayancovawith2cov',
+		arguments: ['twowayancovawith2cov'],
+		description: '',
+		category: 9
+	},
+	{
+		key: 'randomaov',
+		title: tf('randomaov'),
+		function: 'randomaov',
+		arguments: ['randomizedBlockDesign'],
 		description: '',
 		category: 9
 	},
 	{
 		key: 'onewaywithinaov',
 		title: tf('onewaywithinaov'),
-		function: 'aov(',
+		function: 'onewaywithinaov',
 		arguments: ['oneWayWithin'],
 		description: '',
 		category: 9
 	},
 	{
-		key: 'twowaywithinaov',
-		title: tf('twowaywithinaov'),
-		function: 'aov(',
-		arguments: ['twoWayWithin'],
+		key: 'repeatedmeasuresaov',
+		title: tf('repeatedmeasuresaov'),
+		function: 'repeatedmeasuresaov',
+		arguments: ['repeatedmeasuresaov'],
 		description: '',
 		category: 9
 	},
-	{
-		key: 'twowaybetweenaov',
-		title: tf('twowaybetweenaov'),
-		function: 'aov(',
-		arguments: ['twoWayBetween'],
-		description: '',
-		category: 9
-	},
-	// TukeyHSD
-
+	// {
+	// 	key: 'twowaywithinaov',
+	// 	title: tf('twowaywithinaov'),
+	// 	function: 'aov(',
+	// 	arguments: ['twoWayWithin'],
+	// 	description: '',
+	// 	category: 9
+	// },
+	// {
+	// 	key: 'twowaybetweenaov',
+	// 	title: tf('twowaybetweenaov'),
+	// 	function: 'aov(',
+	// 	arguments: ['twoWayBetween'],
+	// 	description: '',
+	// 	category: 9
+	// },
 	// MANOVA
 	{
-		key: 'onewaymanova',
-		title: tf('onewaymanova'),
-		function: 'manova(',
+		key: 'manova',
+		title: tf('manova'),
+		function: 'manova',
+		arguments: ['manova'],
+		description: '',
+		category: 10
+	},
+	{
+		key: 'onewayman',
+		title: tf('onewayman'),
+		function: 'onewayman',
 		arguments: ['oneWayManova'],
 		description: '',
 		category: 10
 	},
 	{
-		key: 'randommanova',
-		title: tf('randommanova'),
-		function: 'manova(',
-		arguments: ['randomizedBlockDesignManova'],
+		key: 'robustonewayman',
+		title: tf('robustonewayman'),
+		function: 'robustonewayman',
+		arguments: ['robustonewayman'],
 		description: '',
 		category: 10
+	},
+	// {
+	// 	key: 'randommanova',
+	// 	title: tf('randommanova'),
+	// 	function: 'manova(',
+	// 	arguments: ['randomizedBlockDesignManova'],
+	// 	description: '',
+	// 	category: 10
+	// },
+	// {
+	// 	key: 'twowaymanova',
+	// 	title: tf('twowaymanova'),
+	// 	function: 'manova(',
+	// 	arguments: ['twoWayManova'],
+	// 	description: '',
+	// 	category: 10
+	// },
+	// {
+	// 	key: 'covmanova',
+	// 	title: tf('covmanova'),
+	// 	function: 'manova(',
+	// 	arguments: ['mancova'],
+	// 	description: '',
+	// 	category: 10
+	// },
+	// {
+	// 	key: 'onewaywithinmanova',
+	// 	title: tf('onewaywithinmanova'),
+	// 	function: 'manova(',
+	// 	arguments: ['oneWayWithinManova'],
+	// 	description: '',
+	// 	category: 10
+	// },
+	// {
+	// 	key: 'twowaywithinmanova',
+	// 	title: tf('twowaywithinmanova'),
+	// 	function: 'manova(',
+	// 	arguments: ['twoWayWithinManova'],
+	// 	description: '',
+	// 	category: 10
+	// },
+	// {
+	// 	key: 'twowaybetweenmanova',
+	// 	title: tf('twowaybetweenmanova'),
+	// 	function: 'manova(',
+	// 	arguments: ['twoWayBetweenManova'],
+	// 	description: '',
+	// 	category: 10
+	// },
+	// contrasts() contr.helmert contr.poly contr.sum contr.treatment contr.SAS
+	// Equality of Variances Test
+	{
+		key: 'bartletttest',
+		title: tf('bartletttest'),
+		function: 'bartletttest',
+		description: '',
+		category: 11
 	},
 	{
-		key: 'twowaymanova',
-		title: tf('twowaymanova'),
-		function: 'manova(',
-		arguments: ['twoWayManova'],
+		key: 'filgnertest',
+		title: tf('filgnertest'),
+		function: 'filgnertest',
 		description: '',
-		category: 10
+		category: 11
 	},
-	{
-		key: 'covmanova',
-		title: tf('covmanova'),
-		function: 'manova(',
-		arguments: ['mancova'],
-		description: '',
-		category: 10
-	},
-	{
-		key: 'onewaywithinmanova',
-		title: tf('onewaywithinmanova'),
-		function: 'manova(',
-		arguments: ['oneWayWithinManova'],
-		description: '',
-		category: 10
-	},
-	{
-		key: 'twowaywithinmanova',
-		title: tf('twowaywithinmanova'),
-		function: 'manova(',
-		arguments: ['twoWayWithinManova'],
-		description: '',
-		category: 10
-	},
-	{
-		key: 'twowaybetweenmanova',
-		title: tf('twowaybetweenmanova'),
-		function: 'manova(',
-		arguments: ['twoWayBetweenManova'],
-		description: '',
-		category: 10
-	},
+	// {
+	// 	key: 'hovtest',
+	// 	title: tf('hovtest'),
+	// 	function: 'hovtest',
+	// 	description: '',
+	// 	category: 11
+	// },
+	// Power Analysis
+	// 	key: 'poweranovatest',
+		// title: tf('poweranovatest'),
+	// 	function: 'power.anova.test(',
+	// 	category: 12
+	// },
+	// {
+	// 	key: 'powerttest',
+		// title: tf('powerttest'),
+	// 	function: 'power.t.test(',
+	// 	category: 12
+	// },
 	// Fitting
 	{
 		key: 'binomtest',
@@ -477,115 +563,85 @@ const statistics = [
 		function: 'binom.test(',
 		arguments: ['successes', 'trials', 'prob', 'alt', 'conf'],
 		description: '',
-		category: 9
+		category: 13
 	},
 	{
 		key: 'ansaritest',
 		title: tf('ansaritest'),
 		function: 'ansari.test(',
 		description: '',
-		category: 9
-	},
-	{
-		key: 'bartletttest',
-		title: tf('bartletttest'),
-		function: 'bartlett.test(',
-		description: '',
-		category: 9
+		category: 13
 	},
 	// {
 	// 	key: 'boxtest',
 		// title: tf('boxtest'),
 	// 	function: 'Box.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
-	{
-		key: 'filgnertest',
-		title: tf('filgnertest'),
-		function: 'filgner.test(',
-		description: '',
-		category: 9
-	},
 	// {
 	// 	key: 'kstest',
 		// title: tf('kstest'),
 	// 	function: 'ks.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
 	// {
 	// 	key: 'mauchlytest',
 		// title: tf('mauchlytest'),
 	// 	function: 'mauchly.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
 	// {
 	// 	key: 'mcnemartest',
 		// title: tf('mcnemartest'),
 	// 	function: 'mcnemar.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
 	{
 		key: 'moodtest',
 		title: tf('moodtest'),
 		function: 'mood.test(',
 		description: '',
-		category: 9
+		category: 13
 	},
 	{
 		key: 'onewaytest',
 		title: tf('onewaytest'),
 		function: 'oneway.test(',
 		description: '',
-		category: 9
+		category: 13
 	},
-	// {
-	// 	key: 'bartletttest',
-		// title: tf('bartletttest'),
-	// 	function: 'bartlett.test(',
-	// 	category: 9
-	// },
+
 	// {
 	// 	key: 'poissontest',
 		// title: tf('poissontest'),
 	// 	function: 'poisson.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
 	// {
-	// 	key: 'poweranovatest',
-		// title: tf('poweranovatest'),
-	// 	function: 'power.anova.test(',
-	// 	category: 9
-	// },
-	// {
-	// 	key: 'powerttest',
-		// title: tf('powerttest'),
-	// 	function: 'power.t.test(',
-	// 	category: 9
-	// },
 	// {
 	// 	key: 'PPtest',
 		// title: tf('PPtest'),
 	// 	function: 'PP.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
 	// {
 	// 	key: 'printhtest',
 		// title: tf('printhtest'),
 	// 	function: 'print.htest(',
-	// 	category: 9
+	// 	category: 12
 	// },
 	{
 		key: 'quadetest',
 		title: tf('quadetest'),
 		function: 'quade.test(',
 		description: '',
-		category: 9
+		category: 13
 	},
 	// {
 	// 	key: 'shapirotest',
 	// title: tf('shapirotest'),
 	// 	function: 'shapiro.test(',
-	// 	category: 9
+	// 	category: 12
 	// },
 ]
 
