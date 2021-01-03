@@ -15,7 +15,7 @@ import { translateR, spreadsheetToR } from '../../Spreadsheet/cloudr'
 import DataRange from '../../RightSidebar/datarange'
 import Button from '../../RightSidebar/button'
 import { getRownames, getCols, getVars, setVariablesRange } from '../../RightSidebar/datarange'
-import { getMaxNumberCustomSheet } from '../../../functions'
+import { getMaxNumberCustomSheet, insertData } from '../../../functions'
 
 export const ALTERNATIVES = ["Two-sided", "Greater", "Less"]
 export const ALTERNATIVES_AUTOCORRELATION = ["Two-sided", "Positive", "Negative"]
@@ -29,16 +29,10 @@ export function createStatistic(res, slides, formuladata, statistic, dataNames, 
 	delete formuladata.slides
 	delete formuladata.names
 	const statName = statistic + ' ' + getMaxNumberCustomSheet(datas.map(d => d.name), statistic)
-	res.name = statName
+	// res.name = statName
 	res.type = "regression"
 	res.regression = formuladata
-	const d = slides.insertData(dataNames, current, res, key)
-	onSetDataNames([
-		...dataNames.slice(0, current+1),
-		d.name,
-		...dataNames.slice(current+1)
-	])
-	onSetCurrent(current+1)
+	insertData(slides, dataNames, current, res, statName, onSetDataNames, onSetCurrent)
 	onSetRightSidebar('none')
 	return d
 }

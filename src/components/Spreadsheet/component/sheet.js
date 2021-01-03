@@ -8,6 +8,7 @@ import Editor from './editor';
 import Print from './print';
 import ContextMenu from './contextmenu';
 import Table from './table';
+import Chart from './chart2';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
 import SortFilter from './sort_filter';
@@ -288,10 +289,12 @@ export function sheetReset() {
     tableEl,
     overlayerEl,
     overlayerCEl,
+    // chartEl,
     table,
     toolbar,
     selector,
     el,
+    // chart,
   } = this;
   const tOffset = this.getTableOffset();
   const vRect = this.getRect();
@@ -303,6 +306,7 @@ export function sheetReset() {
   horizontalScrollbarSet.call(this);
   sheetFreeze.call(this);
   table.render();
+  // chart.render();
   toolbar.reset();
   selector.reset();
 }
@@ -908,6 +912,8 @@ export default class Sheet {
     this.data = data;
     // table
     this.tableEl = h('canvas', `${cssPrefix}-table`);
+    // chart
+    this.chartEl = h('div', `${cssPrefix}-resize-container`);
     // resizer
     this.rowResizer = new Resizer(false, data.rows.height);
     this.colResizer = new Resizer(true, data.cols.minWidth);
@@ -939,6 +945,7 @@ export default class Sheet {
     this.el.children(
       this.tableEl,
       this.overlayerEl.el,
+      this.chartEl,
       this.rowResizer.el,
       this.colResizer.el,
       this.verticalScrollbar.el,
@@ -949,6 +956,13 @@ export default class Sheet {
     );
     // table
     this.table = new Table(this.tableEl.el, data, datas);
+    // chart
+    this.chart = new Chart(
+      this.chartEl,
+      this.verticalScrollbar,
+      this.horizontalScrollbar,
+      this.overlayerEl
+    );
     sheetInitEvents.call(this);
     sheetReset.call(this);
     // init selector [0, 0]

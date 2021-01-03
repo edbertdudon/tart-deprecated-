@@ -46,7 +46,7 @@ const NewDataSource = ({ firebase, authUser, files, onSetWorksheetname }) => {
 					}
 				</div>
 			</div>
-			<div className='datasource-text'>Add worksheet</div>
+			{/*<div className='datasource-text'>Add worksheet</div>*/}
 		</div>
   )
 }

@@ -83,6 +83,80 @@ body {
   margin-left: 125px;
 }
 
+// .@{css-prefix}-chart {
+//   // html5 bottom margin bug
+//   position: absolute;
+//   top: 0;
+//   z-index: 100000;
+//   background-color: aliceblue;
+// }
+
+.@{css-prefix}-resize-image {
+  // position: absolute;
+  // z-index: 99;
+  // top: 0;
+  // max-width: 500px;
+  // max-height: 500px;
+  // width: 500px;
+  // height: 500px;
+}
+
+.@{css-prefix}-resize-container {
+  position: relative;
+  display: inline-block;
+  // cursor: move;
+  margin: 0 auto;
+  // position: absolute;
+  z-index: 99;
+  top: 0;
+}
+
+.@{css-prefix}-resize-container img {
+  display: block
+}
+
+.@{css-prefix}-resize-container:hover img,
+.@{css-prefix}-resize-container:active img {
+  outline: 2px dashed rgba(222,60,80,.9);
+}
+
+.resize-handle-ne,
+.resize-handle-ne,
+.resize-handle-se,
+.resize-handle-nw,
+.resize-handle-sw {
+  position: absolute;
+  display: block;
+  width: 10px;
+  height: 10px;
+  background: rgba(222,60,80,.9);
+  z-index: 999;
+}
+
+.resize-handle-nw {
+  top: -5px;
+  left: -5px;
+  cursor: nw-resize;
+}
+
+.resize-handle-sw {
+  bottom: -5px;
+  left: -5px;
+  cursor: sw-resize;
+}
+
+.resize-handle-ne {
+  top: -5px;
+  right: -5px;
+  cursor: ne-resize;
+}
+
+.resize-handle-se {
+  bottom: -5px;
+  right: -5px;
+  cursor: se-resize;
+}
+
 .@{css-prefix}-tooltip {
   font-family: Helvetica;
   position: absolute;

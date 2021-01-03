@@ -101,7 +101,7 @@ class Spreadsheet {
     return d
   }
 
-  insertData(dataNames, current, o, name) {
+  insertData(dataNames, current, o, name, isEmptyData) {
     const { row, col } = this.options;
     const { rows } = o;
     const nrows = Object.keys(rows).length;
@@ -119,8 +119,12 @@ class Spreadsheet {
       name = name + ' ' + n
     }
     d.name = name
-    this.datas.splice(current+1, 0, d)
-    this.sheetIndex = current + 1
+    if (isEmptyData) {
+      this.datas.splice(current, 1, d)
+    } else {
+      this.datas.splice(current+1, 0, d)
+      this.sheetIndex = current + 1  
+    }
     this.sheet.resetData(d)
     return d
   }

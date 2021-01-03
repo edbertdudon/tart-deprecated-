@@ -31,13 +31,10 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color,
 	const firstUpdate = useRef(true)
 
 	useLayoutEffect(() => {
-		// const unsubscribe = firebase.doDownloadFile(
-		// 	authUser.uid,
-		// 	worksheetname
-		// ).then(res => {
+		const unsubscribe = firebase.doDownloadFile(authUser.uid, worksheetname).then(res => {
 			options.style.offcolor = OFF_COLOR[color[authUser.uid]]
 			var s = new Spreadsheet('#spreadsheet', options)
-				// .loadData(res)
+				.loadData(res)
 				.on('cell-edited', (text, ri, ci) => {
           setText({ text: text, ri: ri, ci: ci })
         })
@@ -48,32 +45,33 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color,
 						setText({ text: text.text, ri: ri, ci: ci })
 					}
 				})
-			onSetSlides(s)
+				.change(data => {
+					// const timer = setTimeout(() => {
+					// 	console.log(slides.getData())
+					// 	if (firstUpdate.current === false && slides.data !== null) {
+					// 		setSaving(true)
+					// 		firebase.doUploadFile(
+					// 			authUser.uid,
+					// 			worksheetname,
+					// 			new File ([JSON.stringify(slides.getData())], worksheetname, {type: "application/json"})
+					// 		).then(() => setSaving(false))
+					// 	}
+					// }, 750)
+					// return () => clearTimeout(timer)
+				})
+			s.validate()
+			s.data = s.datas[0]
 			const dataNames = s.datas.map(data => data.name)
 			onSetDataNames([...dataNames])
 			onSetCurrent(0)
+			onSetSlides(s)
 			console.log(s)
-		// 	if (firstUpdate.current) {
-		// 		firstUpdate.current = false;
-		// 		return;
-		// 	}
-		// })
-		// return () => unsubscribe
+			if (firstUpdate.current) {
+				firstUpdate.current = false;
+			}
+		})
+		return () => unsubscribe
 	}, [])
-
-	// useEffect(() => {
-	// 	const timer = setTimeout(() => {
-	// 		if (firstUpdate.current === false && slides[0].data !== null) {
-	// 			setSaving(true)
-	// 			props.firebase.doUploadFile(
-	// 				authUser.uid,
-	// 				worksheetname,
-	// 				new File ([JSON.stringify(slides.getData())], worksheetname, {type: "application/json"})
-	// 			).then(() => setSaving(false))
-	// 		}
-	// 	}, 750)
-	// 	return () => clearTimeout(timer)
-	// }, [slides])
 
 	return (
  		<div id="spreadsheet"></div>

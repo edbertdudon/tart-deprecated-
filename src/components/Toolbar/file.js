@@ -7,7 +7,8 @@ import Header from './header'
 import { stox, addCopyToName } from '../../functions'
 import ImportConnection from './importconnection'
 import ImportDatabase from '../Connectors/importdatabase'
-import { getMaxNumberCustomSheet, xtos } from '../../functions'
+import { getMaxNumberCustomSheet, xtos, insertData } from '../../functions'
+import { DEFAULT_INITIAL_SLIDES } from '../../constants/default'
 import withDropdown from '../Dropdown'
 import withModal from '../Modal'
 import * as ROUTES from '../../constants/routes'
@@ -30,7 +31,7 @@ function papaToSpreadsheet(csv) {
 }
 
 export const FILE_DROPDOWN = [
-  {key: 'New...', type: 'item'},
+  {key: 'New Worksheet', type: 'item'},
   {key: 'Save', type: 'item'},
   {key: 'Duplicate', type: 'item'},
   {key: 'Rename...', type: 'item'},
@@ -128,11 +129,11 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
       case 'csv':
         Papa.parse(f, {
           worker: true,
-          complete: function(results, file) {
+          complete: function(results) {
             const { data, meta } = results;
             let o = papaToSpreadsheet(data)
             insert(o, f.name, meta.delimiter, f.name)
-            firebase.doUploadFile(authUser.uid, f.name, file)
+            firebase.doUploadFile(authUser.uid, f.name, f)
           }
         });
         break;
@@ -145,7 +146,7 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
           stox(wb).forEach(o => insert(o, o.name, ",", f.name + "_" + o.name));
           wb.SheetNames.forEach(function(name) {
             var ws = wb.Sheets[name];
-            var aoa = XLSX.utils.sheet_to_csv(ws);
+            var aoa = new File ([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, {type: "text/csv"})
             firebase.doUploadFile(authUser.uid, f.name + "_" + name, aoa)
           });
         };
@@ -158,14 +159,7 @@ const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNa
   const insert = (o, name, delimiter, filename) => {
     o.delimiter = delimiter
     o.filename = filename
-    const d = slides.insertData(dataNames, current, o, name)
-    onSetDataNames([
-      ...dataNames.slice(0, current+1),
-      d.name,
-      ...dataNames.slice(current+1)
-    ])
-    onSetCurrent(current+1)
-    slides.data = d
+    insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent)
   }
 
   return (

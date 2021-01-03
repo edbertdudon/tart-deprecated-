@@ -119,3 +119,25 @@ export function addCopyToName(files, prefix) {
   }
   return(newname)
 }
+
+export function insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent) {
+  const currentData = slides.data.rows._
+  console.log(currentData)
+  const isEmptyData = Object.keys(currentData).length === 0 && currentData.constructor === Object
+  const d = slides.insertData(dataNames, current, o, name, isEmptyData)
+  if (isEmptyData) {
+    onSetDataNames([
+      ...dataNames.slice(0, current),
+      d.name,
+      ...dataNames.slice(current+1),
+    ])
+  } else {
+    onSetDataNames([
+      ...dataNames.slice(0, current+1),
+      d.name,
+      ...dataNames.slice(current+1)
+    ])
+    onSetCurrent(current+1)
+  }
+  slides.data = d
+}

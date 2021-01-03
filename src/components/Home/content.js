@@ -207,7 +207,7 @@ const Content = ({ firebase, authUser, files, jobs, notifications, onSetFiles, o
 
 	return (
 		<div className='home-content'>
-			{loading && <LoadingDataSource />}
+			{/*{loading && <LoadingDataSource />}*/}
 			<Files />
 			<NewDataSource />
 		</div>

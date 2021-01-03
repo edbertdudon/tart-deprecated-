@@ -18,10 +18,11 @@ import Fconstraint from './fconstraint'
 import Cconstraint from './cconstraint'
 import Qconstraint from './qconstraint'
 import Lconstraint from './lconstraint'
-import Variable from '../../Statistics/core/variable'
-import Button from '../button'
-import withLists from '../withLists'
-import { letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR } from '../../Spreadsheet/cloudr'
+import Variable from '../Statistics/core/variable'
+import Button from '../RightSidebar/button'
+import withLists from '../RightSidebar/withLists'
+import { letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR } from '../Spreadsheet/cloudr'
+import { insertData } from '../../functions'
 
 const OBJECTIVE_CLASS = ["General nonlinear optimization", "Linear programming", "Quadratic programming"]
 
@@ -457,14 +458,7 @@ const Optimize = ({ slides, authUser, color, dataNames, current, onSetDataNames,
 		// 		} else {
 		// 			res.type = "optimize"
 		// 			res.optimization = sparkData
-		// 			const d = slides.insertData(dataNames, current, res, name)
-		// 			onSetDataNames([
-		// 	      ...dataNames.slice(0, current+1),
-		// 	      d.name,
-		// 	      ...dataNames.slice(current+1)
-		// 	    ])
-		// 			onSetCurrent(current+1)
-		// 			slides.data = d
+		// 			insertData(slides, dataNames, current, res, name, onSetDataNames, onSetCurrent)
 		// 			onSetRightSidebar('none')
 		// 			setLoading(false)
 		// 		}

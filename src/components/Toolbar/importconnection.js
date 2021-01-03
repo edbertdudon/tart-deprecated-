@@ -19,7 +19,7 @@ import { mdiLoading } from '@mdi/js'
 import { databaseList } from '../Connectors/databaseList'
 import { tablesList } from '../Connectors/tablesList'
 import { getTableSample } from '../Connectors/getTableSample'
-import { getMaxNumberCustomSheet } from '../../functions'
+import { getMaxNumberCustomSheet, insertData } from '../../functions'
 import { withFirebase } from '../Firebase'
 
 function aoaToSpreadsheet(aoa) {
@@ -198,7 +198,7 @@ const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, o
 				out.database = config.database
 				out.fileName = table
 				const name = table.split('.').slice(0, -1).join('.') + tablenumber
-				insert(out, name)
+				insertData(slides, dataNames, current, out, name, onSetDataNames, onSetCurrent)
 			} else if (config.connector === 'Microsoft SQL Server') {
 				let out = mysqlToSpreadsheet(res)
 				out.delimiter = "SQLServer"
@@ -206,7 +206,7 @@ const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, o
 				out.database = config.database
 				out.fileName = table
 				const name = table.split('.').slice(0, -1).join('.') + tablenumber
-				insert(out, name)
+				insertData(slides, dataNames, current, out, name, onSetDataNames, onSetCurrent)
 			} else if (config.connector === 'Oracle SQL') {
 				let out = oracledbToSpreadsheet(res)
 				out.delimiter = "OracleDB"
@@ -214,24 +214,13 @@ const ImportConnection = ({ firebase, authUser, color, slides, files, onClose, o
 				out.database = config.database
 				out.fileName = table
 				const name = table.split('.').slice(0, -1).join('.') + tablenumber
-				insert(out, name)
+				insertData(slides, dataNames, current, out, name, onSetDataNames, onSetCurrent)
 			}
 			onSelect()
 			handleClose()
 			setLevel(0)
 			setLoading(false)
 		})
-	}
-
-	const insert = (out, name) => {
-		const d = slides.insertData(dataNames, current, out, name)
-    onSetDataNames([
-      ...dataNames.slice(0, current+1),
-      d.name,
-      ...dataNames.slice(current+1)
-    ])
-    onSetCurrent(current+1)
-		slides.data = d
 	}
 
 	// const isInvalid = false

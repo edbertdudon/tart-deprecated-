@@ -5,7 +5,7 @@ import './index.less'
 
 import ChartEditor from './charteditor'
 import Statistics from '../Statistics'
-import Optimize from './Optimize'
+import Optimize from '../Optimize'
 
 const RightSidebar = ({ rightSidebar, statistic }) => {
   const RIGHTSIDEBAR_STATES = {

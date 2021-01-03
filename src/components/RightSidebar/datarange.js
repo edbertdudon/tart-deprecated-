@@ -8,7 +8,7 @@
 import React, { useRef } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
-import { updateCellorRange } from './Optimize'
+import { updateCellorRange } from '../Optimize'
 import { useOutsideAlerter } from '../../functions'
 import { letterToColumn, columnToLetter } from '../Spreadsheet/cloudr'
 
