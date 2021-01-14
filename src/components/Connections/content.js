@@ -34,7 +34,7 @@ const Content = ({ firebase, authUser }) => {
 
 	const handleReloadAfterDelete = (filename) => {
 		let newConnection
-		for (var i=0; i<connections.length; i++) {
+		for (let i=0; i<connections.length; i++) {
 			if (connections[i] === filename) {
 				newConnection = [
 					...connections.slice(0,i),

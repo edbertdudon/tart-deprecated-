@@ -1,6 +1,3 @@
-// import { createEmptyMatrix } from 'react-spreadsheet'
-// export const DEFAULT_MAX_COLUMNS = 52
-// export const DEFAULT_MAX_ROWS = 200
 export const DEFAULT_INITIAL_SLIDES = [{
 	autofilter:{},
   cols:{},
@@ -11,4 +8,4 @@ export const DEFAULT_INITIAL_SLIDES = [{
   styles:[],
 	type: 'sheet',
   validations:[],
-}]
+}];

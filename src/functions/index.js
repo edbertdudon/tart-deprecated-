@@ -122,7 +122,6 @@ export function addCopyToName(files, prefix) {
 
 export function insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent) {
   const currentData = slides.data.rows._
-  console.log(currentData)
   const isEmptyData = Object.keys(currentData).length === 0 && currentData.constructor === Object
   const d = slides.insertData(dataNames, current, o, name, isEmptyData)
   if (isEmptyData) {

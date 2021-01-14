@@ -30,11 +30,10 @@ export function createStatistic(res, slides, formuladata, statistic, dataNames, 
 	delete formuladata.names
 	const statName = statistic + ' ' + getMaxNumberCustomSheet(datas.map(d => d.name), statistic)
 	// res.name = statName
-	res.type = "regression"
+	res.type = statistics.find(e => e.key === statistic).function
 	res.regression = formuladata
 	insertData(slides, dataNames, current, res, statName, onSetDataNames, onSetCurrent)
 	onSetRightSidebar('none')
-	return d
 }
 
 const Form = ({ slides, color, authUser, statistic, invalidStat, setVariables,
@@ -77,10 +76,10 @@ const Form = ({ slides, color, authUser, statistic, invalidStat, setVariables,
 	const handleSubmit = () => {
 		const { datas, data } = slides
 		onSubmit({
+			slides: JSON.stringify(spreadsheetToR(datas)),
+			names: JSON.stringify(datas.map(d => d.name)),
 			range: translateR(datarange, data.name),
 			firstrow: firstRow,
-			slides: JSON.stringify(spreadsheetToR(datas)),
-			names: JSON.stringify(datas.map(d => d.name))
 		})
 	}
 

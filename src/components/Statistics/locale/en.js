@@ -63,7 +63,7 @@ export default {
 	twowaywithinmanova: 'Two-way within subjects MANOVA',
 	twowaybetweenmanova: 'Two-way between factors MANOVA',
   bartletttest: 'Bartlett test of homogeneity of variances',
-  filgnertest: 'Filgner-Killeen test for homegenity of variances',
+  flignertest: 'Fligner-Killeen test for homegenity of variances',
   hovtest: 'Brown–Forsythe test for homegenity of variances',
   binomtest: 'Sign (binom) test',
 	ansaritest: 'Ansari-Bradley test',

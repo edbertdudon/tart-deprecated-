@@ -21,12 +21,11 @@ const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inp
   const checkIllegalChange = () => {
     if (readOnly === false) {
       setReadOnly(true)
-      for (var i=0; i<files.length; i++) {
+      let doesExist = false
+      for (let i=0; i<files.length; i++) {
         if (files[i].name === text) {
-          var doesExist = true
+          doesExist = true
           break
-        } else {
-          var doesExist = false
         }
       }
       if (!doesExist) {

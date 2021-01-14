@@ -8,7 +8,7 @@ import Editor from './editor';
 import Print from './print';
 import ContextMenu from './contextmenu';
 import Table from './table';
-import Chart from './chart2';
+import Chart, { chartInitEvents, chartMousedown, chartMouseup, chartMousemove } from './chart';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
 import SortFilter from './sort_filter';
@@ -126,12 +126,14 @@ export function selectorMove(multiple, direction) {
 
 // private methods
 function overlayerMousemove(evt) {
+  let isResize = chartMousemove.call(this.overlayerEl.el, evt);
+  if (isResize) return;
   // console.log('x:', evt.offsetX, ', y:', evt.offsetY);
   if (evt.buttons !== 0) return;
   if (evt.target.className === `${cssPrefix}-resizer-hover`) return;
   const { offsetX, offsetY } = evt;
   const {
-    rowResizer, colResizer, tableEl, data,
+    rowResizer, colResizer, tableEl, data
   } = this;
   const { rows, cols } = data;
   if (offsetX > cols.indexWidth && offsetY > rows.height) {
@@ -287,18 +289,22 @@ function sheetFreeze() {
 export function sheetReset() {
   const {
     tableEl,
+    chartEl,
     overlayerEl,
     overlayerCEl,
-    // chartEl,
     table,
     toolbar,
     selector,
     el,
-    // chart,
   } = this;
   const tOffset = this.getTableOffset();
   const vRect = this.getRect();
+  let vRectChart = {
+    width: vRect.width-30,
+    height: vRect.height-25
+  };
   tableEl.attr(vRect);
+  chartEl.attr(vRectChart);
   overlayerEl.offset(vRect);
   overlayerCEl.offset(tOffset);
   el.css('width', `${vRect.width}px`);
@@ -306,7 +312,6 @@ export function sheetReset() {
   horizontalScrollbarSet.call(this);
   sheetFreeze.call(this);
   table.render();
-  // chart.render();
   toolbar.reset();
   selector.reset();
 }
@@ -608,6 +613,7 @@ function sheetInitEvents() {
     toolbar,
     modalValidation,
     sortFilter,
+    chart,
   } = this;
   // overlayer
   overlayerEl
@@ -631,27 +637,35 @@ function sheetInitEvents() {
         editor.clear();
       // }
       contextMenu.hide();
-      // the left mouse button: mousedown → mouseup → click
-      // the right mouse button: mousedown → contenxtmenu → mouseup
-      if (evt.buttons === 2) {
-        if (this.data.xyInSelectedRect(evt.offsetX, evt.offsetY)) {
-          contextMenu.setPosition(evt.offsetX, evt.offsetY);
+
+      // charts
+      let isChart = chartMousedown.call(this, evt);
+      if (!isChart) {
+        // the left mouse button: mousedown → mouseup → click
+        // the right mouse button: mousedown → contenxtmenu → mouseup
+        if (evt.buttons === 2) {
+          if (this.data.xyInSelectedRect(evt.offsetX, evt.offsetY)) {
+            contextMenu.setPosition(evt.offsetX, evt.offsetY);
+          } else {
+            overlayerMousedown.call(this, evt);
+            contextMenu.setPosition(evt.offsetX, evt.offsetY);
+          }
+          evt.stopPropagation();
+        } else if (evt.detail === 2) {
+          editorSet.call(this);
         } else {
           overlayerMousedown.call(this, evt);
-          contextMenu.setPosition(evt.offsetX, evt.offsetY);
+          // if (start !== -1 && v.length >= 1) {
+          //   const nv = v.substring(start + 1).split(REFERENCE_REGEX)
+          //   if (nv[nv.length-1].length === 0 || nv[nv.length-1] === lastRef) {
+          //     setCellTextReference.call(this, lastRef);
+          //   }
+          // }
         }
-        evt.stopPropagation();
-      } else if (evt.detail === 2) {
-        editorSet.call(this);
-      } else {
-        overlayerMousedown.call(this, evt);
-        // if (start !== -1 && v.length >= 1) {
-        //   const nv = v.substring(start + 1).split(REFERENCE_REGEX)
-        //   if (nv[nv.length-1].length === 0 || nv[nv.length-1] === lastRef) {
-        //     setCellTextReference.call(this, lastRef);
-        //   }
-        // }
       }
+    })
+    .on('mouseup', (evt) => {
+      chartMouseup(evt);
     })
     .on('mousewheel.stop', (evt) => {
       overlayerMousescroll.call(this, evt);
@@ -912,8 +926,6 @@ export default class Sheet {
     this.data = data;
     // table
     this.tableEl = h('canvas', `${cssPrefix}-table`);
-    // chart
-    this.chartEl = h('div', `${cssPrefix}-resize-container`);
     // resizer
     this.rowResizer = new Resizer(false, data.rows.height);
     this.colResizer = new Resizer(true, data.cols.minWidth);
@@ -941,11 +953,13 @@ export default class Sheet {
       .child(this.overlayerCEl);
     // sortFilter
     this.sortFilter = new SortFilter();
+    // // chart
+    this.chartEl = h('canvas', `${cssPrefix}-chart`, `${cssPrefix}-chart`)
     // root element
     this.el.children(
       this.tableEl,
-      this.overlayerEl.el,
       this.chartEl,
+      this.overlayerEl.el,
       this.rowResizer.el,
       this.colResizer.el,
       this.verticalScrollbar.el,
@@ -957,12 +971,8 @@ export default class Sheet {
     // table
     this.table = new Table(this.tableEl.el, data, datas);
     // chart
-    this.chart = new Chart(
-      this.chartEl,
-      this.verticalScrollbar,
-      this.horizontalScrollbar,
-      this.overlayerEl
-    );
+    // this.chart = new Chart(this.chartEl.el, this.getRect());
+    chartInitEvents(this.getRect());
     sheetInitEvents.call(this);
     sheetReset.call(this);
     // init selector [0, 0]
@@ -992,13 +1002,6 @@ export default class Sheet {
     this.print.resetData(data);
     this.selector.resetData(data);
     this.table.resetData(data);
-  }
-
-  resetChart(data) {
-    // before
-    this.editor.clear();
-    // after
-    this.data = data;
   }
 
   loadData(data) {

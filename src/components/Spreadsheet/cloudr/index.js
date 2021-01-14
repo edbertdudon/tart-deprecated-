@@ -58,7 +58,7 @@ export function columnToLetter(column) {
 
 export function letterToColumn(letter) {
   var column = 0, length = letter.length;
-  for (var i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
   }
   return column;
@@ -68,12 +68,12 @@ const optionsFilterAdd = rFormulas.filter(formula => "addStart" in formula || "a
 
 function addPrefixToFunction(cell) {
   let optionsInCell = []
-  for (var i=0; i<optionsFilterAdd.length; i++) {
+  for (let i=0; i<optionsFilterAdd.length; i++) {
     if (cell.includes(optionsFilterAdd[i].key + '(')) {
       optionsInCell.push(optionsFilterAdd[i])
     }
   }
-  for (var j=0; j<optionsInCell.length; j++) {
+  for (let j=0; j<optionsInCell.length; j++) {
     if ("addStart" in optionsInCell[j]) {
       let match = cell.match(new RegExp(optionsInCell[j].key.slice(1, -1) + "\\("))
       cell = cell.replace(match, optionsInCell[j].key.slice(1) + optionsInCell[j].addStart)
@@ -87,7 +87,7 @@ export function translateR(cell, name) {
   if (match === null) return cell.replace(/'/g, "`")
   // replaces 'Sheet 1' with `Sheet 1`
   let coordinates = cell.replace(/'/g, "`")
-  for (var i=0; i<match.length; i++) {
+  for (let i=0; i<match.length; i++) {
     // R reads 1:1 as first number in row and column
     let column = letterToColumn(match[i].match(LETTERS_REFERENCE)[0])
     let row = match[i].match(NUMBERS_REFERENCE)

@@ -1168,9 +1168,9 @@ export default class DataProxy {
 
   getData() {
     const {
-      name, freeze, styles, merges, rows, cols, validations, autoFilter, type
+      name, freeze, styles, merges, rows, cols, validations, autoFilter, type, regression, optimization, chart
     } = this;
-    return {
+    let data = {
       name,
       freeze: xy2expr(freeze[1], freeze[0]),
       styles,
@@ -1179,7 +1179,11 @@ export default class DataProxy {
       cols: cols.getData(),
       validations: validations.getData(),
       autofilter: autoFilter.getData(),
-      type
+      type,
     };
+    if (regression) data.regression = regression
+    if (optimization) data.optimization = optimization
+    if (chart) data.chart = chart
+    return data
   }
 }

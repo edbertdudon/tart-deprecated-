@@ -1,2 +1,2 @@
-export const ADMIN = 'ADMIN'
-export const SUBSCRIBED = 'SUBSCRIBED'
+export const ADMIN = 'ADMIN';
+export const SUBSCRIBED = 'SUBSCRIBED';

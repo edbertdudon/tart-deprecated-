@@ -531,9 +531,9 @@ const statistics = [
 		category: 11
 	},
 	{
-		key: 'filgnertest',
-		title: tf('filgnertest'),
-		function: 'filgnertest',
+		key: 'flignertest',
+		title: tf('flignertest'),
+		function: 'flignertest',
 		description: '',
 		category: 11
 	},

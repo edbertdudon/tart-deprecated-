@@ -57,7 +57,7 @@ const Correlation = ({ slides, dataNames, current, onSetDataNames, onSetCurrent,
     }
     if (method !== 0) formuladata.method = CORRELATION_METHOD[method].charAt(0).toLowerCase()
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
+      createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)
     }).catch(err => setError(err.toString()))
   }

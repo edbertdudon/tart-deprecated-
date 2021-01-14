@@ -18,11 +18,13 @@ const View = ({ authUser, color, slides, rightSidebar, onSetRightSidebar, naviga
         setNavigator(!navigator)
         if (navigator) {
           sheet.table.el.style.marginLeft = '0'
+          sheet.chartEl.el.style.left = '30px'
           sheet.overlayerEl.el.style.left = '0'
           sheet.horizontalScrollbar.el.el.style.left = '0'
           options.showNavigator = false
         } else {
           sheet.table.el.style.marginLeft = '125px'
+          sheet.chartEl.el.style.left = '155px'
           sheet.overlayerEl.el.style.left = '125px'
           sheet.horizontalScrollbar.el.el.style.left = '125px'
           options.showNavigator = true

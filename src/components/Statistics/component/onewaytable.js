@@ -25,7 +25,7 @@ const OneWayTable = ({  slides, dataNames, current, onSetDataNames, onSetCurrent
       variablex: variables[variableX],
     }
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
+      createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)
     }).catch(err => setError(err.toString()))
   }

@@ -32,7 +32,7 @@ const OneWayManova = ({ slides, dataNames, current, onSetDataNames, onSetCurrent
       variablesy: JSON.stringify(varsy.map(v => variables[v])),
     }
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
+      createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)
     }).catch(err => setError(err.toString()))
   }

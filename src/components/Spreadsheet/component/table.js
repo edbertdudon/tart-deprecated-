@@ -22,7 +22,8 @@ function tableFixedHeaderStyle() {
   return {
     textAlign: 'center',
     textBaseline: 'middle',
-    font: `500 ${npx(12)}px Source Sans Pro`,
+    // font: `500 ${npx(12)}px Source Sans Pro`,
+    font: `500 ${npx(13)}px Helvetica`,
     // fillStyle: '#585757',
 		fillStyle: '#fff',
     lineWidth: thinLineWidth(),

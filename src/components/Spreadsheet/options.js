@@ -15,8 +15,8 @@ export const options = {
   col: {
     len: 40,
     width: 100,
-    indexWidth: 60,
-    minWidth: 60,
+    indexWidth: 30,
+    minWidth: 30,
   },
   style: {
     bgcolor: '#ffffff',

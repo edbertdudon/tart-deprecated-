@@ -46,7 +46,7 @@ const FisherExactTest = ({ slides, dataNames, current, onSetDataNames, onSetCurr
     if (alt !== 0) formuladata.alternative = ALTERNATIVES[alt].charAt(0).toLowerCase()
     if (confLevel !== 0.95) formuladata.confidencelevel = confLevel
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
+      createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)
     }).catch(err => setError(err.toString()))
   }

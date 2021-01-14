@@ -31,21 +31,21 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color,
 	const firstUpdate = useRef(true)
 
 	useLayoutEffect(() => {
-		const unsubscribe = firebase.doDownloadFile(authUser.uid, worksheetname).then(res => {
-			options.style.offcolor = OFF_COLOR[color[authUser.uid]]
+		// const unsubscribe = firebase.doDownloadFile(authUser.uid, worksheetname).then(res => {
+		// 	options.style.offcolor = OFF_COLOR[color[authUser.uid]]
 			var s = new Spreadsheet('#spreadsheet', options)
-				.loadData(res)
-				.on('cell-edited', (text, ri, ci) => {
-          setText({ text: text, ri: ri, ci: ci })
-        })
-				.on('cell-selected', (text, ri, ci) => {
-					if (text === null) {
-						setText({ text: '', ri: ri, ci: ci })
-					} else {
-						setText({ text: text.text, ri: ri, ci: ci })
-					}
-				})
-				.change(data => {
+		// 		.loadData(res)
+		// 		.on('cell-edited', (text, ri, ci) => {
+    //       setText({ text: text, ri: ri, ci: ci })
+    //     })
+		// 		.on('cell-selected', (text, ri, ci) => {
+		// 			if (text === null) {
+		// 				setText({ text: '', ri: ri, ci: ci })
+		// 			} else {
+		// 				setText({ text: text.text, ri: ri, ci: ci })
+		// 			}
+		// 		})
+		// 		.change(data => {
 					// const timer = setTimeout(() => {
 					// 	console.log(slides.getData())
 					// 	if (firstUpdate.current === false && slides.data !== null) {
@@ -58,19 +58,19 @@ const SpreadsheetWrapper = ({ firebase, authUser, slides, worksheetname, color,
 					// 	}
 					// }, 750)
 					// return () => clearTimeout(timer)
-				})
-			s.validate()
-			s.data = s.datas[0]
-			const dataNames = s.datas.map(data => data.name)
-			onSetDataNames([...dataNames])
-			onSetCurrent(0)
+				// })
+			// s.validate()
+			// s.data = s.datas[0]
+			// const dataNames = s.datas.map(data => data.name)
+			// onSetDataNames([...dataNames])
+			// onSetCurrent(0)
 			onSetSlides(s)
 			console.log(s)
 			if (firstUpdate.current) {
 				firstUpdate.current = false;
 			}
-		})
-		return () => unsubscribe
+		// })
+		// return () => unsubscribe
 	}, [])
 
 	return (

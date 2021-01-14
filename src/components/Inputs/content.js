@@ -30,7 +30,7 @@ const Content = ({ firebase, authUser, files, onSetFiles }) => {
 
   const handleUpdateAfterTrash = filename => {
 		let newFile
-			for (var i=0; i<files[authUser.uid].length; i++) {
+			for (let i=0; i<files[authUser.uid].length; i++) {
 				if (files[authUser.uid][i].name === filename) {
 					newFile = [
 						...files[authUser.uid].slice(0,i),

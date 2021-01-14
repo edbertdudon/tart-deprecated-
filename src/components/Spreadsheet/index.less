@@ -83,32 +83,22 @@ body {
   margin-left: 125px;
 }
 
-// .@{css-prefix}-chart {
-//   // html5 bottom margin bug
-//   position: absolute;
-//   top: 0;
-//   z-index: 100000;
-//   background-color: aliceblue;
-// }
-
-.@{css-prefix}-resize-image {
-  // position: absolute;
-  // z-index: 99;
-  // top: 0;
-  // max-width: 500px;
-  // max-height: 500px;
-  // width: 500px;
-  // height: 500px;
+.@{css-prefix}-chart {
+  position: absolute;
+  left: 155px;
+  top: 25px;
+  z-index: 5;
 }
 
 .@{css-prefix}-resize-container {
-  position: relative;
+  position: absolute;
   display: inline-block;
   // cursor: move;
   margin: 0 auto;
   // position: absolute;
   z-index: 99;
-  top: 0;
+  top: 35px;
+  left: 800px;
 }
 
 .@{css-prefix}-resize-container img {
@@ -160,10 +150,8 @@ body {
 .@{css-prefix}-tooltip {
   font-family: Helvetica;
   position: absolute;
-  padding: 5px 10px;
-  color: #fff;
-  border-radius: 1px;
-  background: rgba(0, 0, 0, 1);
+  padding: 5px 5px;
+  background: rgba(235,235,235);
   font-size: 12px;
   z-index: 201;
   border-radius: 5px;

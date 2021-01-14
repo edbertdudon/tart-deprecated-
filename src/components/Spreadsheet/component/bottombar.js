@@ -10,7 +10,7 @@ import { tf } from '../locale/locale';
 
 function isBefore(el1, el2) {
   if (el2.parentNode === el1.parentNode)
-    for (var cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
+    for (let cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
       if (cur === el2)
         return true;
   return false;
@@ -291,7 +291,7 @@ export default class Bottombar {
   }
 
   changeColor(item, offcolor) {
-    for (var i=0; i<this.items.length; i++) {
+    for (let i=0; i<this.items.length; i++) {
       if (this.items[i] !== item) {
         this.items[i].el.style.backgroundColor = "#fff"
       }

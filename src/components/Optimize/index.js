@@ -247,8 +247,8 @@ export const updateCellorRange = (e, setLhs, setError) => {
 //     if (ml[1] < ml[0] || mn[1] < mn[0] || ml.length > 2 || mn.length > 2) {
 //       return("Invalid range.")
 //     }
-//     for (var i=mn[0]-1; i<mn[1]; i++) {
-//       for (var j=ml[0]-1; j<ml[1]; j++) {
+//     for (let i=mn[0]-1; i<mn[1]; i++) {
+//       for (let j=ml[0]-1; j<ml[1]; j++) {
 //         const cellText = check(slides.data.getCellTextOrDefault(i,j))
 // 				if (cellText != undefined) {
 // 	        return(cellText)

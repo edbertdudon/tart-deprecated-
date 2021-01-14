@@ -57,7 +57,7 @@ const OutlierTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent,
     if (pvalue !== 0.05) formuladata.pvalue = pvalue
     if (observations !== 10) formuladata.observations = observations
     doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      slides.data = createStatistic(res, slides, formuladata, statistic, dataNames,
+      createStatistic(res, slides, formuladata, statistic, dataNames,
         current, onSetDataNames, onSetCurrent, onSetRightSidebar)
     }).catch(err => setError(err.toString()))
   }

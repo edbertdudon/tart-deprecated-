@@ -98,7 +98,7 @@ function setStatisticalFunction(
 
 function cbindDependents(dependents, variables) {
 	let stringDependents = 'cbind(`' + variables[dependents[0]] + '`'
-	for (var i=1; i<dependents.length; i++) {
+	for (let i=1; i<dependents.length; i++) {
 		stringDependents = stringDependents + ',`' + variables[dependents[i]] + '`'
 	}
 
@@ -250,7 +250,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 
 	const handleMultipleLinearRegressionVars = (dependent, selectedVariables) => {
 		let independent = '`' + variables[selectedVariables[0]] + '`'
-		for (var i=1; i<selectedVariables.length; i++) {
+		for (let i=1; i<selectedVariables.length; i++) {
 			independent.concat('+`', variables[selectedVariables[i]],'`')
 		}
 		setLinearRegressionVars('`' + variables[dependent] + '`~' + independent)
@@ -258,7 +258,7 @@ const StatisticsEditor = ({ firebase, authUser, color, slides, dataNames, curren
 
 	const handleMultipleLinearRegressionVars2 = (dependent, selectedVariables) => {
 		let independent = '`' + variables[selectedVariables[0]] + '`'
-		for (var i=1; i<selectedVariables.length; i++) {
+		for (let i=1; i<selectedVariables.length; i++) {
 			independent.concat('+`', variables[selectedVariables[i]],'`')
 		}
 		setLinearRegressionVars2('`' + variables[dependent] + '`~' + independent)

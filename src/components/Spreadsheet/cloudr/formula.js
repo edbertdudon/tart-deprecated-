@@ -1044,10 +1044,14 @@ rFormulas.forEach((f) => {
   formulam[f.key] = f;
 });
 
+const formulan = formulas
+  .map(f => f.key)
+
 export default rFormulas
 
 export {
 	formulam,
+  formulan,
 	formulas,
   rFormulas,
 }

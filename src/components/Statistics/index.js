@@ -131,7 +131,7 @@ const Statistics = ({ statistic }) => (
       //   twowaywithinmanova: <TwoWayWithinManova statistic={statistic} />,
       //   twowaybetweenmanova: <TwoWayBetweenManova statistic={statistic} />,
         bartletttest: <SimpleLinearRegression statistic={statistic} />,
-        filgnertest: <SimpleLinearRegression statistic={statistic} />,
+        flignertest: <SimpleLinearRegression statistic={statistic} />,
         // hovtest: <SimpleLinearRegression statistic={statistic} />,
       //   binomtest: <BinomTest statistic={statistic} />,
       //   ansaritest: <AnsariBradleyTest statistic={statistic} />,

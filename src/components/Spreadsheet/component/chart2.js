@@ -117,6 +117,8 @@ export default class Chart {
         .attr('src', chartpng)
         .attr('width', '500px')
         .attr('height', '500px')
+        // .attr('top', '35px')
+        // .attr('left', '800px')
         .on('mousedown', (evt) => {
           this.startMoving(evt);
         }),

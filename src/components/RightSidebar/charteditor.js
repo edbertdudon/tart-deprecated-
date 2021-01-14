@@ -23,7 +23,7 @@ function setChart(datarange, name, schart, variablex, variabley, firstRow) {
 		firstrow: firstRow,
 	}
 	if (Math.max(...schart.map(c => charts[c].variables)) > 1) {
-		chartData["variabley"] = variabley
+		data["variabley"] = variabley
 	}
 	return(data)
 }
@@ -72,7 +72,7 @@ const ChartEditor = ({ authUser, color, slides }) => {
 			variables[variableY],
 			firstRow
 		)
-		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
+		// insert chart
 	}
 
 	const handleUpdateVariableX = option => {
@@ -84,7 +84,7 @@ const ChartEditor = ({ authUser, color, slides }) => {
 			variables[option],
 			variables[variableY],
 			firstRow
-		)		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
+		)
 	}
 
 	const handleUpdateVariableY = option => {
@@ -96,7 +96,7 @@ const ChartEditor = ({ authUser, color, slides }) => {
 			variables[variableX],
 			variables[option],
 			firstRow
-		)		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
+		)
 	}
 
 	const handleAddChart = option => {
@@ -110,8 +110,6 @@ const ChartEditor = ({ authUser, color, slides }) => {
 			variables[variableY],
 			firstRow
 		)
-		console.log(chartData)
-		// dispatchSlides({function:'UPDATECHART', data: chartData, currentSlide: currentSlide})
 	}
 
 	const handleFirstrow = () => {

@@ -8,7 +8,7 @@ const Statistics = ({ setRightSidebar, setSelectedAnalysis }) => {
 
 	const handleSelectStatistic = (statistic) => {
 		let statisticNumber
-		for (var i=0; i<statistics.length; i++) {
+		for (let i=0; i<statistics.length; i++) {
 			if (statistic === statistics[i].key) {
 				statisticNumber = i
 				break;

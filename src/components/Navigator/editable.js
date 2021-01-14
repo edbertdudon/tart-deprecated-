@@ -12,7 +12,9 @@ import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { connect } from 'react-redux'
 import { compose } from 'recompose'
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu'
-
+import { formulan } from '../Spreadsheet/cloudr/formula'
+import { useOutsideAlerter } from '../../functions'
+import withModal from '../Modal'
 import { OFF_COLOR } from '../../constants/off-color'
 
 const NAVIGATOR_DROPDOWN = [
@@ -59,44 +61,22 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
   const [text, setText] = useState(value)
   const [show, setShow] = useState(false)
   const wrapperRef = useRef(null)
-	// const inputCallback = useCallback(inputRef => {
-	// 	if (inputRef) {
-	// 		inputRef.focus();
-	// 	}
-	// }, [])
+	const [error, setError] = useState(false)
+	const [errortext, setErrorText] = useState('')
 
-  const useOutsideAlerter = (ref) => {
-    const handleOutsideClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        checkIllegalChange()
-      }
-    }
-    const handleKeyPress = (event) => {
-      if (event.key === 'Enter' || event.key === 'Tab') {
-        checkIllegalChange()
-      }
-    }
-    useEffect(() => {
-      document.addEventListener("mousedown", handleOutsideClick)
-      document.addEventListener("keypress", handleKeyPress)
-      return () => {
-        document.removeEventListener("mousedown", handleOutsideClick)
-        document.removeEventListener("keypress", handleKeyPress)
-      }
-    })
-  }
-  useOutsideAlerter(wrapperRef, show)
   const checkIllegalChange = () => {
     if (show === true) {
       setShow(false)
-      for (var i=0; i<dataNames.length; i++) {
+			let doesExist = false
+      for (let i=0; i<dataNames.length; i++) {
         if (dataNames[i].name === text) {
-          var doesExist = true
+          doesExist = true
           break
-        } else {
-          var doesExist = false
         }
       }
+			if (formulan.some(formula => formula === text)) {
+				doesExist = true
+			}
       if (!doesExist) {
         slides.datas[index].name = text;
         onSetDataNames(dataNames.map((item, i) => {
@@ -108,9 +88,13 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
         }))
       } else {
         setText(value)
+				setError(true)
+				setErrorText(text)
       }
     }
   }
+
+	useOutsideAlerter(wrapperRef, checkIllegalChange)
 
 	const deleteSheet = () => {
 		if (dataNames.length > 1) {
@@ -202,6 +186,8 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
     return({color: current === index && "#fff"})
   }
 
+	const handleClose = () => setErrorText('')
+
   return (
     <>
       <ContextMenuTrigger id={'right-click' + text}>
@@ -216,9 +202,25 @@ const Editable = ({ slides, color, authUser, dataNames, current, onSetDataNames,
         </div>
       </ContextMenuTrigger>
       <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
+			<MessageWithModal
+        text={errortext}
+        isOpen={error}
+        setIsOpen={setError}
+        onSelect={handleClose}
+        style={{width: "199px", left: "Calc((100% - 199px)/2)"}}
+      />
     </>
   )
 }
+
+const Message = ({ text, onSelect }) => (
+	<form className='modal-form'>
+    <p>{"The name '" + text + "' is already taken or is a formula. Formula names are reserved."}</p>
+		<button className='modal-button' onClick={onSelect}>Ok</button>
+	</form>
+)
+
+const MessageWithModal = withModal(Message)
 
 const mapStateToProps = state => ({
 	authUser: state.sessionState.authUser,

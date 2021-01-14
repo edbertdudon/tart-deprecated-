@@ -16,7 +16,7 @@ export function setChart(slides, variables, chartsIndex, variablex, variabley) {
 	}
 	let chartTypes = []
 	let chartVariables = []
-	for (var i=0; i<chartsIndex.length; i++) {
+	for (let i=0; i<chartsIndex.length; i++) {
 		chartTypes.push(charts[chartsIndex[i]].type)
 		chartVariables.push(charts[chartsIndex[i]].variables)
 	}
@@ -39,7 +39,7 @@ const Charts = ({ authUser, color, slides, setRightSidebar, setSelectedCharts })
 	const handleSelectChart = chart => {
 		// setRightSidebar('charteditor')
 		// let chartNumber
-		// for (var i=0; i<charts.length; i++) {
+		// for (let i=0; i<charts.length; i++) {
 		// 	if (chart === charts[i].key) {
 		// 		chartNumber = i
 		// 		break;
