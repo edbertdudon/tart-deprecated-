@@ -21,7 +21,7 @@ class Cols {
 
   getData() {
     const { len } = this;
-    return Object.assign({ len }, this._);
+    return { len, ...this._ };
   }
 
   getWidth(i) {
@@ -70,7 +70,7 @@ class Cols {
   }
 
   sumWidth(min, max) {
-    return helper.rangeSum(min, max, i => this.getWidth(i));
+    return helper.rangeSum(min, max, (i) => this.getWidth(i));
   }
 
   totalWidth() {

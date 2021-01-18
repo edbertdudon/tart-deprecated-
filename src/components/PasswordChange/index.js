@@ -1,49 +1,47 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
-import { withFirebase } from '../Firebase'
+import { withFirebase } from '../Firebase';
 
 const INITIAL_STATE = {
   passwordOne: '',
   passwordTwo: '',
   error: null,
-}
+};
 
 class PasswordChangeForm extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.state = { ...INITIAL_STATE }
-
+    this.state = { ...INITIAL_STATE };
   }
 
-  onSubmit = e => {
-    const { passwordOne } = this.state
+  onSubmit = (e) => {
+    const { passwordOne } = this.state;
 
     this.props.firebase
       .doPasswordUpdate(passwordOne)
       .then(() => {
-        this.setState({ ...INITIAL_STATE })
+        this.setState({ ...INITIAL_STATE });
       })
-      .catch(error => {
-        this.setState({ error })
-      })
+      .catch((error) => {
+        this.setState({ error });
+      });
 
-    e.preventDefault()
+    e.preventDefault();
   }
 
-  onChange = e => {
-    this.setState({ [e.target.name]: e.target.value })
+  onChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   render() {
-    const { passwordOne, passwordTwo, error } = this.state
+    const { passwordOne, passwordTwo, error } = this.state;
 
-    const isInvalid = 
-    passwordOne !== passwordTwo || passwordOne === ''
+    const isInvalid = passwordOne !== passwordTwo || passwordOne === '';
 
     return (
       <form onSubmit={this.onSubmit}>
-        <div className='signin-form'>
+        <div className="signin-form">
           <input
             name="passwordOne"
             value={passwordOne}
@@ -51,7 +49,10 @@ class PasswordChangeForm extends Component {
             type="password"
             placeholder="New Password"
           />
-          <hr style={{marginLeft: "-7px", border: "none", borderTop: "1px solid #d6d6d6", width: "430px"}}/>
+          <hr style={{
+            marginLeft: '-7px', border: 'none', borderTop: '1px solid #d6d6d6', width: '430px',
+          }}
+          />
           <input
             name="passwordTwo"
             value={passwordTwo}
@@ -60,14 +61,14 @@ class PasswordChangeForm extends Component {
             placeholder="Confirm New Password"
           />
         </div>
-        <br/>
+        <br />
         <button disabled={isInvalid} type="submit">
-            Reset My Password
+          Reset My Password
         </button>
         {error && <p>{error.message}</p>}
       </form>
-    )
+    );
   }
 }
 
-export default withFirebase(PasswordChangeForm)
+export default withFirebase(PasswordChangeForm);

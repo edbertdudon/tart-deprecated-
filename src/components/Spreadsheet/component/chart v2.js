@@ -1,7 +1,7 @@
 import { h } from './element';
 import { bind, unbind } from './event';
 import { cssPrefix } from '../config';
-import chartpng from './chart.png'
+import chartpng from './chart.png';
 
 let isValid = false;
 let isDrag = false;
@@ -13,7 +13,7 @@ let offsety = 0;
 
 class Chart {
   constructor(el) {
-    this.el = el
+    this.el = el;
     this.ctx = el.getContext('2d');
     // this.x = 0;
     // this.y = 0;
@@ -27,11 +27,11 @@ class Chart {
     // this.offsetx = 0;
     // this.offsety = 0;
     if (document.defaultView && document.defaultView.getComputedStyle) {
-      let computedStyle = document.defaultView.getComputedStyle(el, null)
-      this.stylePaddingLeft = parseInt(computedStyle['paddingLeft'], 10)
-      this.stylePaddingTop = parseInt(computedStyle['paddingTop'], 10)
-      this.styleBorderLeft = parseInt(computedStyle['borderLeftWidth'], 10)
-      this.styleBorderTop = parseInt(computedStyle['borderTopWidth'], 10)
+      const computedStyle = document.defaultView.getComputedStyle(el, null);
+      this.stylePaddingLeft = parseInt(computedStyle.paddingLeft, 10);
+      this.stylePaddingTop = parseInt(computedStyle.paddingTop, 10);
+      this.styleBorderLeft = parseInt(computedStyle.borderLeftWidth, 10);
+      this.styleBorderTop = parseInt(computedStyle.borderTopWidth, 10);
     }
     this.fill = '#444444';
     // this.image = h('img', `${cssPrefix}-chart-image`)
@@ -42,7 +42,7 @@ class Chart {
     // this.image.width = 150;
     // this.image.height = 150;
     // this.charts = [this.image];
-    this.charts = []
+    this.charts = [];
     // this.isValid = false;
     // this.selection = this.charts[0];
     mySel = this.charts[0];
@@ -56,36 +56,36 @@ class Chart {
   }
 
   draw() {
-    let {
-      charts, ctx, color, lineWidth
+    const {
+      charts, ctx, color, lineWidth,
     } = this;
     const { width, height } = mySel;
     const { x, y } = mySel.el;
-    console.log(isValid)
+    console.log(isValid);
     if (isValid == false) {
-      this.clear(ctx)
-      for (let i=0; i < charts.length; i++) {
+      this.clear(ctx);
+      for (let i = 0; i < charts.length; i++) {
         ctx.drawImage(charts[i].el, 0, 0, width, height);
       }
-      console.log(mySel)
+      console.log(mySel);
       if (mySel != null) {
         ctx.strokeStyle = color;
         ctx.lineWidth = lineWidth;
-        ctx.strokeRect(x, y, width, height)
+        ctx.strokeRect(x, y, width, height);
       }
       isValid = true;
     }
   }
 
   mouseDown(e) {
-    let {
+    const {
       gctx, charts, ctx, getMouse, clear,
-      invalidate, boundMousemove
+      invalidate, boundMousemove,
     } = this.chart;
     const { width, height } = mySel;
     getMouse(e);
     clear(gctx);
-    for (let i=0; i < charts.length; i++) {
+    for (let i = 0; i < charts.length; i++) {
       gctx.drawImage(charts[i].el, 0, 0, width, height);
       const imageData = gctx.getImageData(mx, my, 1, 1);
       // const index = (x + y * imageData.width) * 4;
@@ -110,14 +110,14 @@ class Chart {
   }
 
   mouseUp(e) {
-    let { el, boundMousemove } = this.chart;
+    const { el, boundMousemove } = this.chart;
     isDrag = false;
     // unbind(this.overlayerEl.el, 'mousemove', boundMousemove);
     unbind(this.chartEl.el, 'mousemove', boundMousemove);
   }
 
   mouseMove(e) {
-    let { getMouse, invalidate } = this;
+    const { getMouse, invalidate } = this;
     if (isDrag) {
       getMouse(e);
       mySel.x = mx - offsetx;
@@ -129,9 +129,10 @@ class Chart {
   getMouse(e) {
     let {
       el, stylePaddingLeft, stylePaddingTop,
-      styleBorderLeft, styleBorderTop
+      styleBorderLeft, styleBorderTop,
     } = this;
-    let offsetX = 0, offsetY = 0;
+    let offsetX = 0; let
+      offsetY = 0;
     if (el.offsetParent) {
       do {
         offsetX += el.offsetLeft;

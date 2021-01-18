@@ -5,18 +5,20 @@ import Resizer from './resizer';
 import Scrollbar from './scrollbar';
 import Selector from './selector';
 import Editor from './editor';
-import Print from './print';
+// import Print from './print';
 import ContextMenu from './contextmenu';
 import Table from './table';
-import Chart, { chartInitEvents, chartMousedown, chartMouseup, chartMousemove } from './chart';
+import {
+  chartInitEvents, chartMousedown, chartMouseup, chartMousemove,
+} from './chart_canvas';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
 import SortFilter from './sort_filter';
 import { xtoast } from './message';
 import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
-import { formulas } from '../cloudr/formula'
-import { columnToLetter } from '../cloudr'
+import { formulas } from '../cloudr/formula';
+import { columnToLetter } from '../cloudr';
 
 /**
  * @desc throttle fn
@@ -126,14 +128,14 @@ export function selectorMove(multiple, direction) {
 
 // private methods
 function overlayerMousemove(evt) {
-  let isResize = chartMousemove.call(this.overlayerEl.el, evt);
+  const isResize = chartMousemove.call(this, evt);
   if (isResize) return;
   // console.log('x:', evt.offsetX, ', y:', evt.offsetY);
   if (evt.buttons !== 0) return;
   if (evt.target.className === `${cssPrefix}-resizer-hover`) return;
   const { offsetX, offsetY } = evt;
   const {
-    rowResizer, colResizer, tableEl, data
+    rowResizer, colResizer, tableEl, data,
   } = this;
   const { rows, cols } = data;
   if (offsetX > cols.indexWidth && offsetY > rows.height) {
@@ -204,14 +206,14 @@ function overlayerMousescroll(evt) {
       // up
       const ri = data.scroll.ri + 1;
       if (ri < rows.len) {
-        const rh = loopValue(ri, i => rows.getHeight(i));
+        const rh = loopValue(ri, (i) => rows.getHeight(i));
         verticalScrollbar.move({ top: top + rh - 1 });
       }
     } else {
       // down
       const ri = data.scroll.ri - 1;
       if (ri >= 0) {
-        const rh = loopValue(ri, i => rows.getHeight(i));
+        const rh = loopValue(ri, (i) => rows.getHeight(i));
         verticalScrollbar.move({ top: ri === 0 ? 0 : top - rh });
       }
     }
@@ -223,14 +225,14 @@ function overlayerMousescroll(evt) {
       // left
       const ci = data.scroll.ci + 1;
       if (ci < cols.len) {
-        const cw = loopValue(ci, i => cols.getWidth(i));
+        const cw = loopValue(ci, (i) => cols.getWidth(i));
         horizontalScrollbar.move({ left: left + cw - 1 });
       }
     } else {
       // right
       const ci = data.scroll.ci - 1;
       if (ci >= 0) {
-        const cw = loopValue(ci, i => cols.getWidth(i));
+        const cw = loopValue(ci, (i) => cols.getWidth(i));
         horizontalScrollbar.move({ left: ci === 0 ? 0 : left - cw });
       }
     }
@@ -299,9 +301,9 @@ export function sheetReset() {
   } = this;
   const tOffset = this.getTableOffset();
   const vRect = this.getRect();
-  let vRectChart = {
-    width: vRect.width-30,
-    height: vRect.height-25
+  const vRectChart = {
+    width: vRect.width - 30,
+    height: vRect.height - 25,
   };
   tableEl.attr(vRect);
   chartEl.attr(vRectChart);
@@ -337,7 +339,7 @@ function cut() {
 function paste(what, evt) {
   const { data } = this;
   if (data.settings.mode === 'read') return;
-  if (data.paste(what, msg => xtoast('Tip', msg))) {
+  if (data.paste(what, (msg) => xtoast('Tip', msg))) {
     sheetReset.call(this);
   } else if (evt) {
     const cdata = evt.clipboardData.getData('text/plain');
@@ -415,7 +417,7 @@ function overlayerMousedown(evt) {
       }
     }, () => {
       if (isAutofillEl && selector.arange && data.settings.mode !== 'read') {
-        if (data.autofill(selector.arange, 'all', msg => xtoast('Tip', msg))) {
+        if (data.autofill(selector.arange, 'all', (msg) => xtoast('Tip', msg))) {
           table.render();
         }
       }
@@ -541,7 +543,7 @@ function toolbarChange(type, value) {
   } else if (type === 'redo') {
     this.redo();
   } else if (type === 'print') {
-    this.print.preview();
+    // this.print.preview();
   } else if (type === 'paintformat') {
     if (value === true) copy.call(this);
     else clearClipboard.call(this);
@@ -564,10 +566,10 @@ function toolbarChange(type, value) {
   } else if (type === 'formula') {
     // formula
   } else {
-    console.log(type, value)
+    console.log(type, value);
     data.setSelectedCellAttr(type, value);
     // if (type === 'formula' && !data.selector.multiple()) {
-      // editorSet.call(this);
+    // editorSet.call(this);
     // }
     sheetReset.call(this);
   }
@@ -579,23 +581,23 @@ function sortFilterChange(ci, order, operator, value) {
   sheetReset.call(this);
 }
 
-const REFERENCE_REGEX = /\+|\-|\*|\/|\~|\,|\(/g
+const REFERENCE_REGEX = /\+|\-|\*|\/|\~|\,|\(/g;
 
 function setCellTextReference(lastRef) {
   const { editor, selector } = this;
-  const nv = editor.inputText.split(REFERENCE_REGEX)
-  let inputTextLessRef = editor.inputText
-  if (nv[nv.length-1] !== "=" && nv[nv.length-1].length !== 0) {
-    inputTextLessRef = inputTextLessRef.slice(0, -lastRef.length)
+  const nv = editor.inputText.split(REFERENCE_REGEX);
+  let inputTextLessRef = editor.inputText;
+  if (nv[nv.length - 1] !== '=' && nv[nv.length - 1].length !== 0) {
+    inputTextLessRef = inputTextLessRef.slice(0, -lastRef.length);
   }
   const {
     sri, sci, eri, eci,
   } = selector.range;
   if (sri === eri && sci === eci) {
-    const reference = columnToLetter(sci+1) + (sri+1)
+    const reference = columnToLetter(sci + 1) + (sri + 1);
     editor.setText(inputTextLessRef + reference);
   } else {
-    const reference = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
+    const reference = `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(eci + 1)}${eri + 1}`;
     editor.setText(inputTextLessRef + reference);
   }
 }
@@ -613,7 +615,6 @@ function sheetInitEvents() {
     toolbar,
     modalValidation,
     sortFilter,
-    chart,
   } = this;
   // overlayer
   overlayerEl
@@ -634,12 +635,12 @@ function sheetInitEvents() {
       //     var lastRef = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
       //   }
       // } else {
-        editor.clear();
+      editor.clear();
       // }
       contextMenu.hide();
 
       // charts
-      let isChart = chartMousedown.call(this, evt);
+      const isChart = chartMousedown.call(this, evt);
       if (!isChart) {
         // the left mouse button: mousedown → mouseup → click
         // the right mouse button: mousedown → contenxtmenu → mouseup
@@ -691,6 +692,10 @@ function sheetInitEvents() {
       overlayerTouch.call(this, direction, d);
     },
   });
+
+  // chart
+  // chartInitEvents.call(this);
+  chartInitEvents.call(this, this.getRect());
 
   // toolbar change
   toolbar.change = (type, value) => toolbarChange.call(this, type, value);
@@ -921,8 +926,9 @@ export default class Sheet {
     const { view, showToolbar, showContextmenu } = data.settings;
     this.el = h('div', `${cssPrefix}-sheet`);
     this.toolbar = new Toolbar(data, view.width, !showToolbar);
-    this.print = new Print(data);
-    targetEl.children(this.toolbar.el, this.el, this.print.el);
+    // this.print = new Print(data);
+    targetEl.children(this.toolbar.el, this.el);
+    // targetEl.children(this.toolbar.el, this.el, this.print.el);
     this.data = data;
     // table
     this.tableEl = h('canvas', `${cssPrefix}-table`);
@@ -954,7 +960,7 @@ export default class Sheet {
     // sortFilter
     this.sortFilter = new SortFilter();
     // // chart
-    this.chartEl = h('canvas', `${cssPrefix}-chart`, `${cssPrefix}-chart`)
+    this.chartEl = h('canvas', `${cssPrefix}-chart`, `${cssPrefix}-chart`);
     // root element
     this.el.children(
       this.tableEl,
@@ -971,8 +977,7 @@ export default class Sheet {
     // table
     this.table = new Table(this.tableEl.el, data, datas);
     // chart
-    // this.chart = new Chart(this.chartEl.el, this.getRect());
-    chartInitEvents(this.getRect());
+    // this.chart = new Charts(this.chartEl.el, this.getRect());
     sheetInitEvents.call(this);
     sheetReset.call(this);
     // init selector [0, 0]
@@ -999,7 +1004,7 @@ export default class Sheet {
     verticalScrollbarSet.call(this);
     horizontalScrollbarSet.call(this);
     this.toolbar.resetData(data);
-    this.print.resetData(data);
+    // this.print.resetData(data);
     this.selector.resetData(data);
     this.table.resetData(data);
   }

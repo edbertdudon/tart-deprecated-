@@ -5,58 +5,62 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
-import Form from '../core/form'
-import statistics from '../core/statisticsR'
-import { doRegress } from '../../Spreadsheet/cloudr'
-import { ALTERNATIVES, createStatistic } from '../core/form'
-import Variable from '../core/variable'
-import Alternative from '../core/alternative'
-import Number from '../../RightSidebar/number'
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import Form, { ALTERNATIVES, createStatistic } from '../core/form';
+import statistics from '../core/statisticsR';
+import { doRegress } from '../../Spreadsheet/cloudr';
 
-const CochranMantelHaenTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
-  const [variables, setVariables] = useState([])
-  const [variableX, setVariableX] = useState(null)
-  const [variableY, setVariableY] = useState(null)
-  const [variableZ, setVariableZ] = useState(null)
-  const [alt, setAlt] = useState(0)
-  const [confLevel, setConfLevel] = useState(0.95)
-  const [error, setError] = useState(null)
-  const [confLevelError, setConfLevelError] = useState(null)
+import Variable from '../core/variable';
+import Alternative from '../core/alternative';
+import Number from '../../RightSidebar/number';
 
-  const handleConfLevel = e => {
-    let input = e.target.value
-    setConfLevel(input)
+const CochranMantelHaenTest = ({
+  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
+}) => {
+  const [variables, setVariables] = useState([]);
+  const [variableX, setVariableX] = useState(null);
+  const [variableY, setVariableY] = useState(null);
+  const [variableZ, setVariableZ] = useState(null);
+  const [alt, setAlt] = useState(0);
+  const [confLevel, setConfLevel] = useState(0.95);
+  const [error, setError] = useState(null);
+  const [confLevelError, setConfLevelError] = useState(null);
+
+  const handleConfLevel = (e) => {
+    const input = e.target.value;
+    setConfLevel(input);
     if (isNaN(parseFloat(input))) {
-      setConfLevelError("Confidence level must be a number.")
+      setConfLevelError('Confidence level must be a number.');
     } else if (parseFloat(input) > 1 || parseFloat(input) < 0) {
-      setConfLevelError("Confidence Level must be between 0 and 1.")
+      setConfLevelError('Confidence Level must be between 0 and 1.');
     } else {
-      setConfLevelError(null)
+      setConfLevelError(null);
     }
-  }
+  };
 
-  const handleSubmit = e => {
+  const handleSubmit = (e) => {
     const formuladata = {
       ...e,
       variablex: variables[variableX],
       variabley: variables[variableY],
       variablez: variables[variableZ],
-    }
-    if (alt !== 0) formuladata.alternative = ALTERNATIVES[alt].charAt(0).toLowerCase()
-    if (confLevel !== 0.95) formuladata.confidencelevel = confLevel
-    doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      createStatistic(res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar)
-    }).catch(err => setError(err.toString()))
-  }
+    };
+    if (alt !== 0) formuladata.alternative = ALTERNATIVES[alt].charAt(0).toLowerCase();
+    if (confLevel !== 0.95) formuladata.confidencelevel = confLevel;
+    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
+      createStatistic(
+        res, slides, formuladata, statistic, dataNames,
+        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
+      );
+    }).catch((err) => setError(err.toString()));
+  };
 
   const isInvalid = variableX == null
     || variableY == null
     || variableZ == null
-    || confLevelError !== null
+    || confLevelError !== null;
 
   return (
     <Form
@@ -71,27 +75,27 @@ const CochranMantelHaenTest = ({ slides, dataNames, current, onSetDataNames, onS
       <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
       <Variable label="Z variable" setSelected={setVariableZ} options={variables} name={variables[variableZ]} />
       <Alternative setAlt={setAlt} alt={alt} />
-      <Number label='Confidence level' value={confLevel} onChange={handleConfLevel} error={confLevelError} />
+      <Number label="Confidence level" value={confLevel} onChange={handleConfLevel} error={confLevelError} />
     </Form>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
-	current: (state.currentState.current || 0),
-	rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  current: (state.currentState.current || 0),
+  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });
 
-const mapDispatchToProps = dispatch => ({
-  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-})
+const mapDispatchToProps = (dispatch) => ({
+  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
+});
 
 export default compose(
-	connect(
-		mapStateToProps,
-    mapDispatchToProps
-	),
-)(CochranMantelHaenTest)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  ),
+)(CochranMantelHaenTest);

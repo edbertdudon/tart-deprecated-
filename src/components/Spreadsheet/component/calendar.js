@@ -53,7 +53,7 @@ export default class Calendar {
         h('table', 'calendar-body').children(
           h('thead', '').child(
             h('tr', '').children(
-              ...t('calendar.weeks').map(week => h('th', 'cell').child(week)),
+              ...t('calendar.weeks').map((week) => h('th', 'cell').child(week)),
             ),
           ),
           this.bodyEl,

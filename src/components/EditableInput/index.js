@@ -8,51 +8,56 @@
 // Known Issues:
 // Alert users when they make an illegal change ie. same name headers, spaces within name
 //
-import React, {useState, useEffect, useRef} from 'react'
-import { useOutsideAlerter } from '../../functions'
-import withModal from '../Modal'
+import React, { useState, useEffect, useRef } from 'react';
+import { useOutsideAlerter } from '../../functions';
+import withModal from '../Modal';
 
-const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inputId, reference, setReadOnly }) => {
-  const [text, setText] = useState(value)
-  const editableinputRef = useRef(null)
-  const [error, setError] = useState(false)
-  const [errortext, setErrorText] = useState('')
+const EditableInput = ({
+  value, readOnly, onCommit, files, classname, style, inputId, reference, setReadOnly,
+}) => {
+  const [text, setText] = useState(value);
+  const editableinputRef = useRef(null);
+  const [error, setError] = useState(false);
+  const [errortext, setErrorText] = useState('');
 
   const checkIllegalChange = () => {
     if (readOnly === false) {
-      setReadOnly(true)
-      let doesExist = false
-      for (let i=0; i<files.length; i++) {
+      setReadOnly(true);
+      let doesExist = false;
+      for (let i = 0; i < files.length; i++) {
         if (files[i].name === text) {
-          doesExist = true
-          break
+          doesExist = true;
+          break;
         }
       }
       if (!doesExist) {
-        onCommit(text)
+        onCommit(text);
       } else {
-        setText(value)
-        setError(true)
-        setErrorText(text)
+        setText(value);
+        setError(true);
+        setErrorText(text);
       }
     }
-  }
+  };
 
-  useOutsideAlerter(editableinputRef, checkIllegalChange)
+  useOutsideAlerter(editableinputRef, checkIllegalChange);
 
-  const handleReadonly = () => setReadOnly(false)
+  const handleReadonly = () => setReadOnly(false);
 
-  const handleChange = e => setText(e.target.value)
+  const handleChange = (e) => setText(e.target.value);
 
-  const handleClose = () => setErrorText('')
+  const handleClose = () => setErrorText('');
 
   return (
     <>
       {readOnly
-        ? <div className={classname} onDoubleClick={handleReadonly} style={style}>
+        ? (
+          <div className={classname} onDoubleClick={handleReadonly} style={style}>
             {text}
           </div>
-        : <input
+        )
+        : (
+          <input
             type="text"
             onChange={handleChange}
             className={classname}
@@ -62,25 +67,25 @@ const EditableInput = ({ value, readOnly, onCommit, files, classname, style, inp
             id={inputId}
             autoFocus
           />
-      }
+        )}
       <MessageWithModal
         text={errortext}
         isOpen={error}
         setIsOpen={setError}
         onSelect={handleClose}
-        style={{width: "199px", left: "Calc((100% - 199px)/2)"}}
+        style={{ width: '199px', left: 'Calc((100% - 199px)/2)' }}
       />
     </>
-  )
-}
+  );
+};
 
 const Message = ({ text, onSelect }) => (
-	<form className='modal-form'>
-    <p>{"The name " + text + " is already taken."}</p>
-		<button className='modal-button' onClick={onSelect}>Ok</button>
-	</form>
-)
+  <form className="modal-form">
+    <p>{`The name ${text} is already taken.`}</p>
+    <button className="modal-button" onClick={onSelect}>Ok</button>
+  </form>
+);
 
-const MessageWithModal = withModal(Message)
+const MessageWithModal = withModal(Message);
 
-export default EditableInput
+export default EditableInput;

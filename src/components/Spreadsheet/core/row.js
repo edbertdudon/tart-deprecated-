@@ -110,20 +110,20 @@ class Rows {
   }
 
   setMatrix(ri, ci, aoa) {
-    let rows = this
+    const rows = this;
     let row;
-    aoa.forEach(function(r, i) {
-      row = rows.getOrNew(ri+i);
+    aoa.forEach((r, i) => {
+      row = rows.getOrNew(ri + i);
       r.forEach((c, j) => {
         if (!(i === 0 && j === 0)) {
           if (c === 0) {
-            row.cells[ci+j] = {text: c.toString()}
+            row.cells[ci + j] = { text: c.toString() };
           } else {
-            row.cells[ci+j] = {text: c}
+            row.cells[ci + j] = { text: c };
           }
         }
       });
-    })
+    });
   }
 
   // what: all | format | text
@@ -232,7 +232,7 @@ class Rows {
         nri += n;
         this.eachCells(ri, (ci, cell) => {
           if (cell.text && cell.text[0] === '=') {
-            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, word => expr2expr(word, 0, n, (x, y) => y >= sri));
+            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, (word) => expr2expr(word, 0, n, (x, y) => y >= sri));
           }
         });
       }
@@ -253,7 +253,7 @@ class Rows {
         ndata[nri - n] = row;
         this.eachCells(ri, (ci, cell) => {
           if (cell.text && cell.text[0] === '=') {
-            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, word => expr2expr(word, 0, -n, (x, y) => y > eri));
+            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, (word) => expr2expr(word, 0, -n, (x, y) => y > eri));
           }
         });
       }
@@ -270,7 +270,7 @@ class Rows {
         if (nci >= sci) {
           nci += n;
           if (cell.text && cell.text[0] === '=') {
-            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, word => expr2expr(word, n, 0, x => x >= sci));
+            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, (word) => expr2expr(word, n, 0, (x) => x >= sci));
           }
         }
         rndata[nci] = cell;
@@ -290,7 +290,7 @@ class Rows {
         } else if (nci > eci) {
           rndata[nci - n] = cell;
           if (cell.text && cell.text[0] === '=') {
-            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, word => expr2expr(word, -n, 0, x => x > eci));
+            cell.text = cell.text.replace(/[a-zA-Z]{1,3}\d+/g, (word) => expr2expr(word, -n, 0, (x) => x > eci));
           }
         }
       });
@@ -306,12 +306,12 @@ class Rows {
   }
 
   deleteCellsExceptFirst(cellRange, what = 'all') {
-    const { sri, sci } = cellRange
+    const { sri, sci } = cellRange;
     cellRange.each((i, j) => {
       if (!(i === sri && j === sci)) {
-        this.deleteCell(i, j, what)
+        this.deleteCell(i, j, what);
       }
-    })
+    });
   }
 
   // what: all | text | format | merge
@@ -372,7 +372,7 @@ class Rows {
 
   getData() {
     const { len } = this;
-    return Object.assign({ len }, this._);
+    return { len, ...this._ };
   }
 }
 

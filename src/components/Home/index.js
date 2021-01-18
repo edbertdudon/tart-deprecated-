@@ -1,21 +1,21 @@
-import React, { useState } from 'react'
-import { compose } from 'recompose'
-import './index.less'
+import React, { useState } from 'react';
+import { compose } from 'recompose';
+import './index.less';
 
-import { withAuthorization, withEmailVerification } from '../Session'
-import Content from './content'
-import Header from './header'
+import { withAuthorization, withEmailVerification } from '../Session';
+import Content from './content';
+import Header from './header';
 
 const Home = (props) => (
-	<div className='home'>
-		<Header />
-		<Content nextProps={props} />
-	</div>
-)
+  <div className="home">
+    <Header />
+    <Content nextProps={props} />
+  </div>
+);
 
-const condition = authUser => !!authUser
+const condition = (authUser) => !!authUser;
 
 export default compose(
-	withEmailVerification,
-	withAuthorization(condition),
-)(Home)
+  withEmailVerification,
+  withAuthorization(condition),
+)(Home);

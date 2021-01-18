@@ -1,217 +1,222 @@
-import React, { useState, useRef } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
-import XLSX from 'xlsx'
-import { useHistory } from 'react-router-dom'
-import Header from './header'
-import { stox, addCopyToName } from '../../functions'
-import ImportConnection from './importconnection'
-import ImportDatabase from '../Connectors/importdatabase'
-import { getMaxNumberCustomSheet, xtos, insertData } from '../../functions'
-import { DEFAULT_INITIAL_SLIDES } from '../../constants/default'
-import withDropdown from '../Dropdown'
-import withModal from '../Modal'
-import * as ROUTES from '../../constants/routes'
-import { withFirebase } from '../Firebase'
-import { OFF_COLOR } from '../../constants/off-color'
-import { options } from '../Spreadsheet/options'
+import React, { useState, useRef } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import XLSX from 'xlsx';
+import { useHistory } from 'react-router-dom';
+import Header from './header';
+import {
+  stox, addCopyToName, getMaxNumberCustomSheet, xtos, insertData,
+} from '../../functions';
+import ImportConnection from './importconnection';
+import ImportDatabase from '../Connectors/importdatabase';
+
+import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
+import withDropdown from '../Dropdown';
+import withModal from '../Modal';
+import * as ROUTES from '../../constants/routes';
+import { withFirebase } from '../Firebase';
+import { OFF_COLOR } from '../../constants/off-color';
+import { options } from '../Spreadsheet/options';
 
 const Papa = require('papaparse/papaparse.min.js');
 
-var re = /(?:\.([^.]+))?$/;
+const re = /(?:\.([^.]+))?$/;
 
 function papaToSpreadsheet(csv) {
-  let o = {rows:{}};
-  csv.forEach(function(r, i) {
-    var cells = {};
-    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
-    o.rows[i] = { cells: cells };
-  })
-  return o
+  const o = { rows: {} };
+  csv.forEach((r, i) => {
+    const cells = {};
+    r.forEach((c, j) => { cells[j] = ({ text: c }); });
+    o.rows[i] = { cells };
+  });
+  return o;
 }
 
 export const FILE_DROPDOWN = [
-  {key: 'New Worksheet', type: 'item'},
-  {key: 'Save', type: 'item'},
-  {key: 'Duplicate', type: 'item'},
-  {key: 'Rename...', type: 'item'},
-  {key: 'Download as Xlsx', type: 'item'},
-  {key: 'Move to Trash', type: 'item', path: ROUTES.HOME},
-  {type: 'divider'},
-  {key: 'Import csv or xlsx', type: 'item'},
-  {key: 'Import connection', type: 'item'},
-  {type: 'divider'},
-  {key: 'Connect to MySQL...', type: 'item'},
-  {key: 'Connect to SQL server...', type: 'item'},
-  {key: 'Connect to Oracle SQL...', type: 'item'},
-]
+  { key: 'New Worksheet', type: 'item' },
+  { key: 'Save', type: 'item' },
+  { key: 'Duplicate', type: 'item' },
+  { key: 'Rename...', type: 'item' },
+  { key: 'Download as Xlsx', type: 'item' },
+  { key: 'Move to Trash', type: 'item', path: ROUTES.HOME },
+  { type: 'divider' },
+  { key: 'Import csv or xlsx', type: 'item' },
+  { key: 'Import connection', type: 'item' },
+  { type: 'divider' },
+  { key: 'Connect to MySQL...', type: 'item' },
+  { key: 'Connect to SQL server...', type: 'item' },
+  { key: 'Connect to Oracle SQL...', type: 'item' },
+];
 
-const Files = ({ firebase, authUser, worksheetname, files, slides, color, dataNames, current,
-  onSetDataNames, onSetCurrent, onSetWorksheetname, setReadOnly }) => {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isOpenDatabaseMysql, setIsOpenDatabaseMysql] = useState(false)
-  const [isOpenDatabaseSqlserver, setIsOpenDatabaseSqlserver] = useState(false)
-  const [isOpenDatabaseOracle, setIsOpenDatabaseOracle] = useState(false)
-  const uploadRef = useRef(null)
-  let history = useHistory()
+const Files = ({
+  firebase, authUser, worksheetname, files, slides, color, dataNames, current,
+  onSetDataNames, onSetCurrent, onSetWorksheetname, setReadOnly,
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenDatabaseMysql, setIsOpenDatabaseMysql] = useState(false);
+  const [isOpenDatabaseSqlserver, setIsOpenDatabaseSqlserver] = useState(false);
+  const [isOpenDatabaseOracle, setIsOpenDatabaseOracle] = useState(false);
+  const uploadRef = useRef(null);
+  const history = useHistory();
 
-  const handleFile = key => {
+  const handleFile = (key) => {
     switch (key) {
       case FILE_DROPDOWN[0].key:
-        let filename = "Untitled Worksheet "
-          + getMaxNumberCustomSheet(
-            files[authUser.uid].map(file => file.name),
-            "Untitled Worksheet "
-          )
+        const filename = `Untitled Worksheet ${
+          getMaxNumberCustomSheet(
+            files[authUser.uid].map((file) => file.name),
+            'Untitled Worksheet ',
+          )}`;
         firebase.doUploadFile(
           authUser.uid,
           filename,
-          new File ([JSON.stringify(DEFAULT_INITIAL_SLIDES)], filename, {type: "application/json"})
-        ).on('state_changed', function(){}, function(){}, snapshot => {
-          onSetWorksheetname(filename)
-          window.location.reload()
-        })
+          new File([JSON.stringify(DEFAULT_INITIAL_SLIDES)], filename, { type: 'application/json' }),
+        ).on('state_changed', () => {}, () => {}, (snapshot) => {
+          onSetWorksheetname(filename);
+          window.location.reload();
+        });
         break;
       case FILE_DROPDOWN[1].key:
-        const file = new File ([JSON.stringify(slides.getData())], worksheetname, {type: "application/json"})
-        firebase.doUploadFile(authUser.uid, worksheetname, file)
+        const file = new File([JSON.stringify(slides.getData())], worksheetname, { type: 'application/json' });
+        firebase.doUploadFile(authUser.uid, worksheetname, file);
         break;
       case FILE_DROPDOWN[2].key:
         // doListFiles needed because files[authUser.uid] does not contain trash
-        firebase.doListFiles(authUser.uid).then(res => {
-          const newname = addCopyToName(res.items, worksheetname)
-          const file = new File ([JSON.stringify(slides.getData())], newname, {type: "application/json"})
-          var uploadTask = firebase.doUploadFile(authUser.uid, newname, file)
-          uploadTask.on('state_changed', function(){}, function(){}, snapshot => {
-            onSetWorksheetname(newname)
-        		window.location.reload()
-          })
-        })
+        firebase.doListFiles(authUser.uid).then((res) => {
+          const newname = addCopyToName(res.items, worksheetname);
+          const file = new File([JSON.stringify(slides.getData())], newname, { type: 'application/json' });
+          const uploadTask = firebase.doUploadFile(authUser.uid, newname, file);
+          uploadTask.on('state_changed', () => {}, () => {}, (snapshot) => {
+            onSetWorksheetname(newname);
+        		window.location.reload();
+          });
+        });
         break;
       case FILE_DROPDOWN[3].key:
-        setReadOnly(false)
+        setReadOnly(false);
         break;
       case FILE_DROPDOWN[4].key:
-        xtos(slides.getData(), worksheetname)
+        xtos(slides.getData(), worksheetname);
         break;
       case FILE_DROPDOWN[5].key:
-        let today = new Date().toLocaleDateString()
-        firebase.trash(authUser.uid).get().then(doc => {
+        const today = new Date().toLocaleDateString();
+        firebase.trash(authUser.uid).get().then((doc) => {
           if (doc.exists) {
-            firebase.trash(authUser.uid).update({ [worksheetname]: today })
+            firebase.trash(authUser.uid).update({ [worksheetname]: today });
           } else {
-            firebase.trash(authUser.uid).set({ [worksheetname]: today })
+            firebase.trash(authUser.uid).set({ [worksheetname]: today });
           }
-        })
-        history.push(ROUTES.HOME)
+        });
+        history.push(ROUTES.HOME);
         break;
       case FILE_DROPDOWN[7].key:
-        uploadRef.current.click()
+        uploadRef.current.click();
         break;
       case FILE_DROPDOWN[8].key:
-        setIsOpen(!isOpen)
+        setIsOpen(!isOpen);
         break;
       case FILE_DROPDOWN[10].key:
-        setIsOpenDatabaseMysql(true)
+        setIsOpenDatabaseMysql(true);
         break;
       case FILE_DROPDOWN[11].key:
-        setIsOpenDatabaseSqlserver(true)
+        setIsOpenDatabaseSqlserver(true);
         break;
       case FILE_DROPDOWN[12].key:
-        setIsOpenDatabaseOracle(true)
+        setIsOpenDatabaseOracle(true);
         break;
     }
-  }
+  };
 
-  const handleUpload = e => {
-    var files = e.target.files, f = files[0];
-    switch(re.exec(f.name)[1]) {
+  const handleUpload = (e) => {
+    const { files } = e.target;
+    const f = files[0];
+    switch (re.exec(f.name)[1]) {
       case 'csv':
         Papa.parse(f, {
           worker: true,
-          complete: function(results) {
+          complete(results) {
             const { data, meta } = results;
-            let o = papaToSpreadsheet(data)
-            insert(o, f.name, meta.delimiter, f.name)
-            firebase.doUploadFile(authUser.uid, f.name, f)
-          }
+            const o = papaToSpreadsheet(data);
+            insert(o, f.name, meta.delimiter, f.name);
+            firebase.doUploadFile(authUser.uid, f.name, f);
+          },
         });
         break;
       case 'xls':
       case 'xlsx':
         var reader = new FileReader();
-        reader.onload = function(e) {
-          var results = new Uint8Array(e.target.result);
-          var wb = XLSX.read(results, {type: 'array'});
-          stox(wb).forEach(o => insert(o, o.name, ",", f.name + "_" + o.name));
-          wb.SheetNames.forEach(function(name) {
-            var ws = wb.Sheets[name];
-            var aoa = new File ([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, {type: "text/csv"})
-            firebase.doUploadFile(authUser.uid, f.name + "_" + name, aoa)
+        reader.onload = function (e) {
+          const results = new Uint8Array(e.target.result);
+          const wb = XLSX.read(results, { type: 'array' });
+          stox(wb).forEach((o) => insert(o, o.name, ',', `${f.name}_${o.name}`));
+          wb.SheetNames.forEach((name) => {
+            const ws = wb.Sheets[name];
+            const aoa = new File([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, { type: 'text/csv' });
+            firebase.doUploadFile(authUser.uid, `${f.name}_${name}`, aoa);
           });
         };
         reader.readAsArrayBuffer(f);
         break;
     }
     uploadRef.current.value = '';
-  }
+  };
 
   const insert = (o, name, delimiter, filename) => {
-    o.delimiter = delimiter
-    o.filename = filename
-    insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent)
-  }
+    o.delimiter = delimiter;
+    o.filename = filename;
+    insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent);
+  };
 
   return (
     <>
-      <FileWithDropdown text='File' items={FILE_DROPDOWN} onSelect={handleFile} color={OFF_COLOR[color[authUser.uid]]}/>
-      <input type="file" className='toolbar-upload' onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef} />
+      <FileWithDropdown text="File" items={FILE_DROPDOWN} onSelect={handleFile} color={OFF_COLOR[color[authUser.uid]]} />
+      <input type="file" className="toolbar-upload" onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef} />
       <ImportConnectionWithModal
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        style={{width: "550px", left: "Calc((100% - 550px)/2)", top: "10%"}}
+        style={{ width: '550px', left: 'Calc((100% - 550px)/2)', top: '10%' }}
       />
       <ImportDatabaseWithModal
-        databaseType='MySQL'
+        databaseType="MySQL"
         isOpen={isOpenDatabaseMysql}
         setIsOpen={setIsOpenDatabaseMysql}
-        style={{width: "466px", left: "Calc((100% - 466px)/2)", top: "10%"}}
+        style={{ width: '466px', left: 'Calc((100% - 466px)/2)', top: '10%' }}
       />
       <ImportDatabaseWithModal
-        databaseType='Microsoft SQL Server'
+        databaseType="Microsoft SQL Server"
         isOpen={isOpenDatabaseSqlserver}
         setIsOpen={setIsOpenDatabaseSqlserver}
-        style={{width: "466px", left: "Calc((100% - 466px)/2)", top: "10%"}}
+        style={{ width: '466px', left: 'Calc((100% - 466px)/2)', top: '10%' }}
       />
       <ImportDatabaseWithModal
-        databaseType='OracleDB'
+        databaseType="OracleDB"
         isOpen={isOpenDatabaseOracle}
         setIsOpen={setIsOpenDatabaseOracle}
-        style={{width: "466px", left: "Calc((100% - 466px)/2)", top: "10%"}}
+        style={{ width: '466px', left: 'Calc((100% - 466px)/2)', top: '10%' }}
       />
     </>
-  )
-}
+  );
+};
 
-const FileWithDropdown = withDropdown(Header)
-const ImportConnectionWithModal = withModal(ImportConnection)
-const ImportDatabaseWithModal = withModal(ImportDatabase)
+const FileWithDropdown = withDropdown(Header);
+const ImportConnectionWithModal = withModal(ImportConnection);
+const ImportDatabaseWithModal = withModal(ImportDatabase);
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   files: (state.filesState.files || {}),
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
+  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
-})
+});
 
-const mapDispatchToProps = dispatch => ({
-  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
-  onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname })
-})
+const mapDispatchToProps = (dispatch) => ({
+  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
+});
 
 export default compose(
   connect(
@@ -219,4 +224,4 @@ export default compose(
     mapDispatchToProps,
   ),
   withFirebase,
-)(Files)
+)(Files);

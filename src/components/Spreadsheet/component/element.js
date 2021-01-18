@@ -6,7 +6,7 @@ class Element {
       this.el = document.createElement(tag);
       this.el.className = className;
       if (id.length > 0) {
-        this.el.setAttribute('id', id)
+        this.el.setAttribute('id', id);
       }
     } else {
       this.el = tag;
@@ -89,7 +89,7 @@ class Element {
     if (arguments.length === 0) {
       return this.el.childNodes;
     }
-    eles.forEach(ele => this.child(ele));
+    eles.forEach((ele) => this.child(ele));
     return this;
   }
 
@@ -147,7 +147,7 @@ class Element {
     } else if (arg instanceof Element) {
       ele = arg.el;
     }
-    this.el.insertBefore(ele, this.el.children[index])
+    this.el.insertBefore(ele, this.el.children[index]);
     return this;
   }
 
@@ -245,7 +245,7 @@ class Element {
   }
 
   cssRemoveKeys(...keys) {
-    keys.forEach(k => this.el.style.removeProperty(k));
+    keys.forEach((k) => this.el.style.removeProperty(k));
     return this;
   }
 

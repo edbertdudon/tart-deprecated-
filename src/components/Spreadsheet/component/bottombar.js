@@ -9,10 +9,7 @@ import { xtoast } from './message';
 import { tf } from '../locale/locale';
 
 function isBefore(el1, el2) {
-  if (el2.parentNode === el1.parentNode)
-    for (let cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling)
-      if (cur === el2)
-        return true;
+  if (el2.parentNode === el1.parentNode) for (let cur = el1.previousSibling; cur && cur.nodeType !== 9; cur = cur.previousSibling) if (cur === el2) return true;
   return false;
 }
 
@@ -59,7 +56,7 @@ function buildMenuItem(item) {
 }
 
 function buildMenu() {
-  return menuItems.map(it => buildMenuItem.call(this, it));
+  return menuItems.map((it) => buildMenuItem.call(this, it));
 }
 
 class ContextMenu {
@@ -102,46 +99,46 @@ export default class Bottombar {
     this.moreEl = new DropdownMore((i) => {
       this.clickSwap2(this.items[i]);
     });
-    this.clipboard = new Clipboard()
+    this.clipboard = new Clipboard();
     this.contextMenu = new ContextMenu();
-    this.contextMenu.itemClick = type => {
+    this.contextMenu.itemClick = (type) => {
       if (type === 'new-sheet') {
-        addFunc.call()
+        addFunc.call();
       } else if (type === 'rename') {
         const event = new MouseEvent('dblclick', {
-          'view': window,
-          'bubbles': true,
-          'cancelable': true
-        })
-        this.activeEl.el.dispatchEvent(event)
+          view: window,
+          bubbles: true,
+          cancelable: true,
+        });
+        this.activeEl.el.dispatchEvent(event);
       } else if (type === 'copy') {
-        copyFunc.call()
+        copyFunc.call();
       } else if (type === 'cut') {
-        deleteFunc.call()
+        deleteFunc.call();
       } else if (type === 'paste') {
-        const index = this.items.findIndex(it => it === this.deleteEl);
-        this.pasteFunc(this.clipboard.range, index)
+        const index = this.items.findIndex((it) => it === this.deleteEl);
+        this.pasteFunc(this.clipboard.range, index);
       } else if (type === 'delete') {
-        deleteFunc.call()
+        deleteFunc.call();
       } else if (type === 'duplicate') {
-        const index = this.items.findIndex(it => it === this.deleteEl);
-        this.pasteFunc(index, index)
+        const index = this.items.findIndex((it) => it === this.deleteEl);
+        this.pasteFunc(index, index);
       }
     };
     this.el = h('div', `${cssPrefix}-bottombar`, `${cssPrefix}-bottombar`)
       .children(
         this.contextMenu.el,
-        this.menuEl = h('ul', `${cssPrefix}-menu`)
+        this.menuEl = h('ul', `${cssPrefix}-menu`),
         // .child(
         //   h('li', '').children(
-            // new Icon('add').on('click', () => {
-            //   if (this.dataNames.length < 10) {
-            //     addFunc();
-            //   } else {
-            //     xtoast('tip', 'it less than or equal to 10');
-            //   }
-            // }),
-            // h('span', '').child(this.moreEl),
+        // new Icon('add').on('click', () => {
+        //   if (this.dataNames.length < 10) {
+        //     addFunc();
+        //   } else {
+        //     xtoast('tip', 'it less than or equal to 10');
+        //   }
+        // }),
+        // h('span', '').child(this.moreEl),
         //   ),
         // ),
       ).on('contextmenu', (evt) => {
@@ -157,7 +154,7 @@ export default class Bottombar {
     const item = h('li', active ? 'active' : '')
       .children(
         this.numberEl = h('div', `${cssPrefix}-slidenumber`).child(this.dataNames.length.toString()),
-        name
+        name,
       );
     item.on('click', () => {
       this.clickSwap2(item, offcolor);
@@ -172,7 +169,7 @@ export default class Bottombar {
       input.val(v);
       input.input.on('blur', ({ target }) => {
         const { value } = target;
-        const nindex = this.dataNames.findIndex(it => it === v);
+        const nindex = this.dataNames.findIndex((it) => it === v);
         this.renameItem(nindex, value);
         /*
         this.dataNames.splice(nindex, 1, value);
@@ -186,7 +183,7 @@ export default class Bottombar {
     });
     if (active) {
       this.clickSwap(item);
-      this.changeColor(item, offcolor)
+      this.changeColor(item, offcolor);
     }
     this.items.push(item);
     this.menuEl.child(item);
@@ -198,8 +195,8 @@ export default class Bottombar {
     this.moreEl.reset(this.dataNames);
     this.items[index].html('')
       .children(
-        this.numberEl = h('div', `${cssPrefix}-slidenumber`).child((index+1).toString()),
-        value
+        this.numberEl = h('div', `${cssPrefix}-slidenumber`).child((index + 1).toString()),
+        value,
       );
     this.updateFunc(index, value);
   }
@@ -216,7 +213,7 @@ export default class Bottombar {
   deleteItem() {
     const { activeEl, deleteEl } = this;
     if (this.items.length > 1) {
-      const index = this.items.findIndex(it => it === deleteEl);
+      const index = this.items.findIndex((it) => it === deleteEl);
       this.items.splice(index, 1);
       this.dataNames.splice(index, 1);
       this.menuEl.removeChild(deleteEl.el);
@@ -234,19 +231,19 @@ export default class Bottombar {
 
   copyItem() {
     const { deleteEl } = this;
-    const index = this.items.findIndex(it => it === deleteEl);
-    this.clipboard.copy(index)
+    const index = this.items.findIndex((it) => it === deleteEl);
+    this.clipboard.copy(index);
   }
 
   pasteItem(name, active, offcolor) {
     const { clipboard, deleteEl } = this;
     // if (clipboard.isClear()) return false;
-    const index = this.items.findIndex(it => it === deleteEl);
-    this.dataNames.splice(index+1, 0, name)
+    const index = this.items.findIndex((it) => it === deleteEl);
+    this.dataNames.splice(index + 1, 0, name);
     const item = h('li', active ? 'active' : '')
       .children(
-        this.numberEl = h('div', `${cssPrefix}-slidenumber`).child((index+2).toString()),
-        name
+        this.numberEl = h('div', `${cssPrefix}-slidenumber`).child((index + 2).toString()),
+        name,
       );
     item.on('click', () => {
       this.clickSwap2(item, offcolor);
@@ -260,27 +257,27 @@ export default class Bottombar {
       input.val(v);
       input.input.on('blur', ({ target }) => {
         const { value } = target;
-        const nindex = this.dataNames.findIndex(it => it === v);
+        const nindex = this.dataNames.findIndex((it) => it === v);
         this.renameItem(nindex, value);
       });
       item.html('').child(input.el);
       input.focus();
-    })
+    });
     if (active) {
       this.clickSwap(item);
-      this.changeColor(item, offcolor)
+      this.changeColor(item, offcolor);
     }
-    this.items.splice(index+1, 0, item)
-    this.menuEl.childAtIndex(item, index+1)
+    this.items.splice(index + 1, 0, item);
+    this.menuEl.childAtIndex(item, index + 1);
     // this.moreEl.reset(this.dataNames);
   }
 
   clickSwap2(item, offcolor) {
-    const index = this.items.findIndex(it => it === item);
+    const index = this.items.findIndex((it) => it === item);
     this.clickSwap(item);
     this.activeEl.toggle();
     this.swapFunc(index);
-    this.changeColor(item, offcolor)
+    this.changeColor(item, offcolor);
   }
 
   clickSwap(item) {
@@ -291,11 +288,11 @@ export default class Bottombar {
   }
 
   changeColor(item, offcolor) {
-    for (let i=0; i<this.items.length; i++) {
+    for (let i = 0; i < this.items.length; i++) {
       if (this.items[i] !== item) {
-        this.items[i].el.style.backgroundColor = "#fff"
+        this.items[i].el.style.backgroundColor = '#fff';
       }
     }
-    this.activeEl.el.style.backgroundColor = offcolor
+    this.activeEl.el.style.backgroundColor = offcolor;
   }
 }

@@ -2,7 +2,7 @@
 import { h } from './element';
 import { mouseMoveUp } from './event';
 import { cssPrefix } from '../config';
-import { options } from '../options'
+import { options } from '../options';
 
 export default class Resizer {
   constructor(vertical = false, minDistance) {
@@ -10,10 +10,10 @@ export default class Resizer {
     this.vertical = vertical;
     this.el = h('div', `${cssPrefix}-resizer ${vertical ? 'vertical' : 'horizontal'}`).children(
       this.unhideHoverEl = h('div', `${cssPrefix}-resizer-hover`)
-        .on('dblclick.stop', evt => this.mousedblclickHandler(evt))
+        .on('dblclick.stop', (evt) => this.mousedblclickHandler(evt))
         .css('position', 'absolute').hide(),
       this.hoverEl = h('div', `${cssPrefix}-resizer-hover`)
-        .on('mousedown.stop', evt => this.mousedownHandler(evt)),
+        .on('mousedown.stop', (evt) => this.mousedownHandler(evt)),
       this.lineEl = h('div', `${cssPrefix}-resizer-line`).hide(),
     ).hide();
     // cell rect

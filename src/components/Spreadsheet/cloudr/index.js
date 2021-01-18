@@ -38,16 +38,17 @@
 //  matrix with cell referencing
 //
 import _cell from '../core/cell';
-import { formulam, rFormulas } from './formula'
-import { createEmptyMatrix } from '../../../functions'
+import { formulam, rFormulas } from './formula';
+import { createEmptyMatrix } from '../../../functions';
 import { CellRange } from '../core/cell_range';
 
-var FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
-var LETTERS_REFERENCE = /\$?[A-Z]+/g;
-var NUMBERS_REFERENCE = /\$?[0-9]+/g;
+const FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
+const LETTERS_REFERENCE = /\$?[A-Z]+/g;
+const NUMBERS_REFERENCE = /\$?[0-9]+/g;
 
 export function columnToLetter(column) {
-  var temp, letter = '';
+  let temp; let
+    letter = '';
   while (column > 0) {
     temp = (column - 1) % 26;
     letter = String.fromCharCode(temp + 65) + letter;
@@ -57,226 +58,219 @@ export function columnToLetter(column) {
 }
 
 export function letterToColumn(letter) {
-  var column = 0, length = letter.length;
+  let column = 0; const
+    { length } = letter;
   for (let i = 0; i < length; i++) {
     column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
   }
   return column;
 }
 
-const optionsFilterAdd = rFormulas.filter(formula => "addStart" in formula || "addEnd" in formula)
+const optionsFilterAdd = rFormulas.filter((formula) => 'addStart' in formula || 'addEnd' in formula);
 
 function addPrefixToFunction(cell) {
-  let optionsInCell = []
-  for (let i=0; i<optionsFilterAdd.length; i++) {
-    if (cell.includes(optionsFilterAdd[i].key + '(')) {
-      optionsInCell.push(optionsFilterAdd[i])
+  const optionsInCell = [];
+  for (let i = 0; i < optionsFilterAdd.length; i++) {
+    if (cell.includes(`${optionsFilterAdd[i].key}(`)) {
+      optionsInCell.push(optionsFilterAdd[i]);
     }
   }
-  for (let j=0; j<optionsInCell.length; j++) {
-    if ("addStart" in optionsInCell[j]) {
-      let match = cell.match(new RegExp(optionsInCell[j].key.slice(1, -1) + "\\("))
-      cell = cell.replace(match, optionsInCell[j].key.slice(1) + optionsInCell[j].addStart)
+  for (let j = 0; j < optionsInCell.length; j++) {
+    if ('addStart' in optionsInCell[j]) {
+      const match = cell.match(new RegExp(`${optionsInCell[j].key.slice(1, -1)}\\(`));
+      cell = cell.replace(match, optionsInCell[j].key.slice(1) + optionsInCell[j].addStart);
     }
   }
-  return cell
+  return cell;
 }
 
 export function translateR(cell, name) {
-  let match = cell.match(FORMULA_CELL_REFERENCES)
-  if (match === null) return cell.replace(/'/g, "`")
+  const match = cell.match(FORMULA_CELL_REFERENCES);
+  if (match === null) return cell.replace(/'/g, '`');
   // replaces 'Sheet 1' with `Sheet 1`
-  let coordinates = cell.replace(/'/g, "`")
-  for (let i=0; i<match.length; i++) {
+  let coordinates = cell.replace(/'/g, '`');
+  for (let i = 0; i < match.length; i++) {
     // R reads 1:1 as first number in row and column
-    let column = letterToColumn(match[i].match(LETTERS_REFERENCE)[0])
-    let row = match[i].match(NUMBERS_REFERENCE)
+    const column = letterToColumn(match[i].match(LETTERS_REFERENCE)[0]);
+    let row = match[i].match(NUMBERS_REFERENCE);
     // if (row != null) {row = row[0] - 1} else {row = NaN}
-    if (row != null) {row = row[0]} else {row = NaN}
-    if (i !== match.length-1) {
-      let column2 = letterToColumn(match[i+1].match(LETTERS_REFERENCE)[0])
-      let row2 = match[i+1].match(NUMBERS_REFERENCE)
+    if (row != null) { row = row[0]; } else { row = NaN; }
+    if (i !== match.length - 1) {
+      const column2 = letterToColumn(match[i + 1].match(LETTERS_REFERENCE)[0]);
+      let row2 = match[i + 1].match(NUMBERS_REFERENCE);
       // if (row2 != null) {row2 = row2[0] - 1} else {row2 = NaN}
-      if (row2 != null) {row2 = row2[0]} else {row2 = NaN}
+      if (row2 != null) { row2 = row2[0]; } else { row2 = NaN; }
       if (!/\d/.test(match[i])) {
         // Check for Sheet1!B:B and replace with Sheet1[,2:2]
-        let ref5 = '[,' + column + ':' + column2 + ']'
-        let prefix5 = new RegExp('!' + match[i] + ':' + match[i+1], 'g')
-        coordinates = coordinates.replace(prefix5, ref5)
+        const ref5 = `[,${column}:${column2}]`;
+        const prefix5 = new RegExp(`!${match[i]}:${match[i + 1]}`, 'g');
+        coordinates = coordinates.replace(prefix5, ref5);
         // Check for B:B and replace with Sheet1[,2:2]
-        let ref6 = '`' + name + '`' + '[,' + column + ':' + column2 + ']'
-        let prefix6 = new RegExp(match[i] + ':' + match[i+1], 'g')
-        coordinates = coordinates.replace(prefix6, ref6)
+        const ref6 = `\`${name}\`` + `[,${column}:${column2}]`;
+        const prefix6 = new RegExp(`${match[i]}:${match[i + 1]}`, 'g');
+        coordinates = coordinates.replace(prefix6, ref6);
       }
       // replaces Sheet1!B2:C2 with Sheet1[1:1, 2:3] (Letters as Y, Numbers as X)
-      let ref4 = '[' + row + ':' + row2 + ',' + column + ':' + column2 + ']'
-      let prefix4 = new RegExp('!' + match[i] + ':' + match[i+1], 'g')
-      coordinates = coordinates.replace(prefix4, ref4)
+      const ref4 = `[${row}:${row2},${column}:${column2}]`;
+      const prefix4 = new RegExp(`!${match[i]}:${match[i + 1]}`, 'g');
+      coordinates = coordinates.replace(prefix4, ref4);
       // replaces B2:C2 with Sheet1[1:1, 2:3] (Letters as Y, Numbers as X)
-      let ref3 = '`' + name + '`' + '[' + row + ':' + row2 + ',' + column + ':' + column2 + ']'
-      let prefix3 = new RegExp(match[i] + ':' + match[i+1], 'g')
-      coordinates = coordinates.replace(prefix3, ref3)
+      const ref3 = `\`${name}\`` + `[${row}:${row2},${column}:${column2}]`;
+      const prefix3 = new RegExp(`${match[i]}:${match[i + 1]}`, 'g');
+      coordinates = coordinates.replace(prefix3, ref3);
     }
     if (/\d/.test(match[i])) {
       // replaces Sheet1!B2 with Sheet1[1,2]
-      let ref = '[' + row + ',' + column + ']'
-      let prefix = new RegExp('!' + match[i], 'g')
-      coordinates = coordinates.replace(prefix, ref)
+      const ref = `[${row},${column}]`;
+      const prefix = new RegExp(`!${match[i]}`, 'g');
+      coordinates = coordinates.replace(prefix, ref);
       // replaces B2 with Sheet1[1,2]
-      let ref2 = '`' + name + '`' + '[' + row + ',' + column + ']'
-      let prefix2 = new RegExp(match[i], 'g')
-      coordinates = coordinates.replace(prefix2, ref2)
+      const ref2 = `\`${name}\`` + `[${row},${column}]`;
+      const prefix2 = new RegExp(match[i], 'g');
+      coordinates = coordinates.replace(prefix2, ref2);
     }
   }
-  return addPrefixToFunction(coordinates)
+  return addPrefixToFunction(coordinates);
 }
 
 function mapSpreadsheet(data, cb) {
-  for (let ri=0; ri<data.length; ri++) {
-    for (let ci=0; ci<data[ri].length; ci++) {
-      data[ri][ci] = cb(ri,ci)
+  for (let ri = 0; ri < data.length; ri++) {
+    for (let ci = 0; ci < data[ri].length; ci++) {
+      data[ri][ci] = cb(ri, ci);
     }
   }
-  return data
+  return data;
 }
 
 // [[1,2],["a","b"]]
 export function spreadsheetToR(datas) {
-  let newDatas = datas.map(data => {
-    const {rows, cols } = data
-    const arows = Object.keys(rows._)
-    const nrows = Math.max(...arows)+1
-    let ncols = 0
-    arows.forEach(row => {
-      const l = Math.max(...Object.keys(rows._.[row].cells))
+  const newDatas = datas.map((data) => {
+    const { rows, cols } = data;
+    const arows = Object.keys(rows._);
+    if (arows.length < 1) return [];
+    const nrows = Math.max(...arows) + 1;
+    let ncols = 0;
+    arows.forEach((row) => {
+      const l = Math.max(...Object.keys(rows._.[row].cells));
       if (l > ncols) {
-        ncols = l
+        ncols = l;
       }
     });
-    ncols = ncols+1
-    let newData = createEmptyMatrix(nrows, ncols)
+    ncols += 1;
+    let newData = createEmptyMatrix(nrows, ncols);
     newData = mapSpreadsheet(newData, (ri, ci) => {
       if (rows._.[ri] != undefined && rows._.[ri].cells[ci] != undefined) {
-        const cell = rows._.[ri].cells[ci].text
-        if ((typeof cell === 'string' || cell instanceof String) && cell.startsWith("=") && cell != "=") {
-          return translateR(cell.slice(1), data.name)
-        } else {
-          return cell
+        const cell = rows._.[ri].cells[ci].text;
+        if ((typeof cell === 'string' || cell instanceof String) && cell.startsWith('=') && cell != '=') {
+          return translateR(cell.slice(1), data.name);
         }
-      } else {
-        return ''
+        return cell;
       }
-    })
-    return newData
+      return '';
+    });
+    return newData;
   });
-  return newDatas
+  return newDatas;
 }
 
-const fetchR = (data, func) => {
-  return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {'Content-Type': 'application/json'},
-    mode: 'cors',
-  })
-}
+const fetchR = (data, func) => fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
+  method: 'POST',
+  body: JSON.stringify(data),
+  headers: { 'Content-Type': 'application/json' },
+  mode: 'cors',
+});
 
 const removeMatrix = (data, ri, ci) => {
   if (data.matrices._.length > 0) {
-    let cr = data.matrices._.find(cr => cr.sri === ri && cr.sci === ci)
+    const cr = data.matrices._.find((cr) => cr.sri === ri && cr.sci === ci);
     if (cr !== undefined) {
-      data.removeMatrix(cr)
+      data.removeMatrix(cr);
     }
   }
-}
+};
 
-const doParse = (obj, data, ri, ci) => {
-  return fetchR(obj, "cloudR")
-    .then(res => res.json())
-    .then(res => {
-      let result = JSON.parse(res[0])
-      console.log(result)
-      if (result.length > 1 || result[0].length > 1) {
-        if (!Array.isArray(result[0])) {
-          result = [result]
-        }
-        let cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
-        data.addMatrix(cr, result)
-        return result[0][0].toString().replace(/['"]+/g, '')
-      } else {
-        removeMatrix(data, ri, ci)
-        return result[0].toString().replace(/['"]+/g, '')
+const doParse = (obj, data, ri, ci) => fetchR(obj, 'cloudR')
+  .then((res) => res.json())
+  .then((res) => {
+    let result = JSON.parse(res[0]);
+    console.log(result);
+    if (result.length > 1 || result[0].length > 1) {
+      if (!Array.isArray(result[0])) {
+        result = [result];
       }
-    })
-    .catch(err => {
-      console.log(err)
-      removeMatrix(data, ri, ci)
-      return '#ERROR!'
+      const cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
+      data.addMatrix(cr, result);
+      return result[0][0].toString().replace(/['"]+/g, '');
+    }
+    removeMatrix(data, ri, ci);
+    return result[0].toString().replace(/['"]+/g, '');
   })
+  .catch((err) => {
+    console.log(err);
+    removeMatrix(data, ri, ci);
+    return '#ERROR!';
+  });
+
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = [].slice.call(new Uint8Array(buffer));
+
+  bytes.forEach((b) => binary += String.fromCharCode(b));
+
+  return window.btoa(binary);
 }
 
-export const doChart = data => {
-  return fetchR(data, "plot")
-    .then(res => res.arrayBuffer())
-    .then(buffer => {
-      var base64Flag = 'data:image/jpeg;base64,';
-      var imageStr = arrayBufferToBase64(buffer);
-      return(base64Flag + imageStr)
-    })
-}
+export const doChart = (data) => fetchR(data, 'plot')
+  .then((res) => res.arrayBuffer())
+  .then((buffer) => {
+    const base64Flag = 'data:image/jpeg;base64,';
+    const imageStr = arrayBufferToBase64(buffer);
+    return (base64Flag + imageStr);
+  });
 
 function rToSpreadsheet(aoa) {
-  let o = {rows:{}};
-  aoa.forEach(function(r, i) {
-    var cells = {};
-    r.forEach(function(c, j) { cells[j] = ({ text: c }); });
-    o.rows[i] = { cells: cells };
-  })
-  return o
+  const o = { rows: {} };
+  aoa.forEach((r, i) => {
+    const cells = {};
+    r.forEach((c, j) => { cells[j] = ({ text: c }); });
+    o.rows[i] = { cells };
+  });
+  return o;
 }
 
 // const firstone = '[["formula.name","ChiSquare","Df","p","test"],["Variance","0.932418764519325","1","0.334235198366151","Non-constant Variance Score Test"]]'
 // const secondone = '[{"statistic":0,"p.value":1,"parameter":1,"method":"Pearson\'s Chi-squared test with Yates\' continuity correction"}]'
 // const thirdone = '[{"rowname":"Air.Flow","Air.Flow":1,"Water.Temp":0.781852332952155,"Acid.Conc.":0.500142874899459},{"rowname":"Water.Temp","Air.Flow":0.781852332952155,"Water.Temp":1,"Acid.Conc.":0.39093953782809},{"rowname":"Acid.Conc.","Air.Flow":0.500142874899459,"Water.Temp":0.39093953782809,"Acid.Conc.":1}]'
-export const doRegress = (data, type) => {
-  return fetchR(data, type)
-		.then(res => res.json())
-		.then(res => {
-      const slide = JSON.parse(res)
-      // const slide = JSON.parse(res[0])
-      if (Array.isArray(slide[0])) {
-        return rToSpreadsheet(slide)
-      } else {
-        let aoa = slide.map(row => {return Object.values(row)})
-        aoa = [Object.keys(slide[0]), ...aoa]
-        return rToSpreadsheet(aoa)
-      }
-		})
-}
+export const doRegress = (data, type) => fetchR(data, type)
+  .then((res) => res.json())
+  .then((res) => {
+    const slide = JSON.parse(res);
+    // const slide = JSON.parse(res[0])
+    if (Array.isArray(slide[0])) {
+      return rToSpreadsheet(slide);
+    }
+    let aoa = slide.map((row) => Object.values(row));
+    aoa = [Object.keys(slide[0]), ...aoa];
+    return rToSpreadsheet(aoa);
+  });
 
-export const doRegression = data => {
-  return fetchR(data, "regression")
-		.then(res => res.json())
-		.then(res => {
-			if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
-				return(res)
-			} else {
-				return rToSpreadsheet(res)
-			}
-		})
-}
+export const doRegression = (data) => fetchR(data, 'regression')
+  .then((res) => res.json())
+  .then((res) => {
+    if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
+      return (res);
+    }
+    return rToSpreadsheet(res);
+  });
 
-export const doOptimization = data => {
-  return fetchR(data, "optimization")
-    .then(res => res.json())
-    .then(res => {
-      if (typeof JSON.parse(res[0])[0] === "string" || JSON.parse(res[0])[0] instanceof String) {
-        return(res)
-      } else {
-        return robjToSrToSpreadsheetpreadsheet(res)
-      }
-    })
-}
+export const doOptimization = (data) => fetchR(data, 'optimization')
+  .then((res) => res.json())
+  .then((res) => {
+    if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
+      return (res);
+    }
+    return robjToSrToSpreadsheetpreadsheet(res);
+  });
 
 export const rRender = (src, data, datas, ri, ci) => {
   if (src[0] === '=') {
@@ -284,12 +278,11 @@ export const rRender = (src, data, datas, ri, ci) => {
       return doParse({
         cell: translateR(src.slice(1), data.name),
         slides: JSON.stringify(spreadsheetToR(datas)),
-        names: JSON.stringify(datas.map(data => data.name)),
-      }, data, ri, ci)
-    } else {
-      return _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+        names: JSON.stringify(datas.map((data) => data.name)),
+      }, data, ri, ci);
     }
+    return _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
   }
-  removeMatrix(data, ri, ci)
+  removeMatrix(data, ri, ci);
   return src;
 };

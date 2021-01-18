@@ -1,57 +1,55 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 
-import { withFirebase } from '../Firebase'
-import * as ROUTES from '../../constants/routes'
+import { withFirebase } from '../Firebase';
+import * as ROUTES from '../../constants/routes';
 
 const INITIAL_STATE = {
   passwordOne: '',
   passwordTwo: '',
   error: null,
-}
+};
 
 class PasswordResetForm extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.state = { ...INITIAL_STATE }
-
+    this.state = { ...INITIAL_STATE };
   }
 
-  onSubmit = e => {
-    const { passwordOne } = this.state
+  onSubmit = (e) => {
+    const { passwordOne } = this.state;
 
     this.props.firebase
       .doConfirmPasswordReset(this.props.actionCode, passwordOne)
       .then((resp) => {
-        this.setState({ ...INITIAL_STATE })
+        this.setState({ ...INITIAL_STATE });
         this.props.firebase.doSignInWithEmailAndPassword(this.props.email, passwordOne)
           .then(() => {
-            this.props.history.push(ROUTES.HOME)
+            this.props.history.push(ROUTES.HOME);
           })
-          .catch(error => this.setState(error))
+          .catch((error) => this.setState(error));
       })
-      .catch(error => {
-        this.setState({ error })
-      })
+      .catch((error) => {
+        this.setState({ error });
+      });
 
-    e.preventDefault()
+    e.preventDefault();
   }
 
-  onChange = e => {
-    this.setState({ [e.target.name]: e.target.value })
+  onChange = (e) => {
+    this.setState({ [e.target.name]: e.target.value });
   }
 
   render() {
-    const { passwordOne, passwordTwo, error } = this.state
+    const { passwordOne, passwordTwo, error } = this.state;
 
-    const isInvalid = 
-    passwordOne !== passwordTwo || passwordOne === ''
+    const isInvalid = passwordOne !== passwordTwo || passwordOne === '';
 
     return (
       <form onSubmit={this.onSubmit}>
-        <div className='signin-form'>
+        <div className="signin-form">
           <input
             name="passwordOne"
             value={passwordOne}
@@ -59,7 +57,10 @@ class PasswordResetForm extends Component {
             type="password"
             placeholder="New Password"
           />
-          <hr style={{marginLeft: "-7px", border: "none", borderTop: "1px solid #d6d6d6", width: "430px"}}/>
+          <hr style={{
+            marginLeft: '-7px', border: 'none', borderTop: '1px solid #d6d6d6', width: '430px',
+          }}
+          />
           <input
             name="passwordTwo"
             value={passwordTwo}
@@ -69,17 +70,17 @@ class PasswordResetForm extends Component {
           />
 
         </div>
-        <br/>
+        <br />
         <button disabled={isInvalid} type="submit">
           Reset My Password
         </button>
         {error && <p>{error.message}</p>}
       </form>
-    )
+    );
   }
 }
 
 export default compose(
   withFirebase,
   withRouter,
-)(PasswordResetForm)
+)(PasswordResetForm);

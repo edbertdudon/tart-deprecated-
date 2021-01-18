@@ -3,7 +3,7 @@ import { h } from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import { cssPrefix } from '../config';
-import { selectorMove } from './sheet'
+import { selectorMove } from './sheet';
 // import { mouseMoveUp } from '../event';
 
 function resetTextareaSize() {
@@ -13,7 +13,7 @@ function resetTextareaSize() {
       textlineEl, textEl, areaOffset,
     } = this;
     const txts = inputText.split('\n');
-    const maxTxtSize = Math.max(...txts.map(it => it.length));
+    const maxTxtSize = Math.max(...txts.map((it) => it.length));
     const tlOffset = textlineEl.offset();
     const fontWidth = tlOffset.width / inputText.length;
     const tlineWidth = (maxTxtSize + 1) * fontWidth + 5;
@@ -46,7 +46,7 @@ function insertText({ target }, itxt) {
   resetTextareaSize.call(this);
 }
 
-const OPERATORS_REGEX = /\+|\-|%\*%|\*|\/|\~/g
+const OPERATORS_REGEX = /\+|\-|%\*%|\*|\/|\~/g;
 
 function keydownEventHandler(evt) {
   const { keyCode, altKey } = evt;
@@ -56,14 +56,14 @@ function keydownEventHandler(evt) {
     evt.stopPropagation();
   }
   if ((keyCode === 13 || keyCode === 9) && !altKey) {
-    const v = evt.target.value
+    const v = evt.target.value;
     const start = v.lastIndexOf('=');
     if (start !== -1 && v.length > 1) {
-      const nv = v.substring(start + 1).split(OPERATORS_REGEX)
-      const begin = nv[nv.length-1].lastIndexOf('(')
-      const end = nv[nv.length-1].lastIndexOf(')')
+      const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+      const begin = nv[nv.length - 1].lastIndexOf('(');
+      const end = nv[nv.length - 1].lastIndexOf(')');
       if (end === -1 && begin !== -1) {
-        insertText.call(this, evt, ')')
+        insertText.call(this, evt, ')');
       }
     }
     evt.preventDefault();
@@ -87,8 +87,8 @@ function inputEventHandler(evt) {
       } else {
         const start = v.lastIndexOf('=');
         if (start !== -1 && v.length > 1) {
-          let nv = v.substring(start + 1).split(OPERATORS_REGEX)
-          suggest.search(nv[nv.length-1]);
+          const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+          suggest.search(nv[nv.length - 1]);
           // suggest.search(v.substring(start + 1));
         } else {
           suggest.hide();
@@ -111,8 +111,8 @@ function inputEventHandler(evt) {
     } else {
       const start = v.lastIndexOf('=');
       if (start !== -1 && v.length > 1) {
-        let nv = v.substring(start + 1).split(OPERATORS_REGEX)
-        suggest.search(nv[nv.length-1]);
+        const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+        suggest.search(nv[nv.length - 1]);
         // suggest.search(v.substring(start + 1));
       } else {
         suggest.hide();
@@ -152,8 +152,8 @@ function suggestItemClick(it) {
     const start = inputText.lastIndexOf('=');
     const sit = inputText.substring(0, start + 1);
     let eit = inputText.substring(start + 1);
-    let nv = eit.split(OPERATORS_REGEX);
-    let [l] = nv.slice(nv.length-1);
+    const nv = eit.split(OPERATORS_REGEX);
+    const [l] = nv.slice(nv.length - 1);
     eit = l;
     if (eit.length < 1) {
       // When does this occur? Before changes to suggest requiring 1 character after '='?
@@ -165,9 +165,9 @@ function suggestItemClick(it) {
       position = this.inputText.length;
       this.inputText += `)${eit}`;
     } else {
-      let formula = `${it.key}`
+      let formula = `${it.key}`;
       if (formula !== '%*%') {
-        formula += '('
+        formula += '(';
       }
       this.inputText = this.inputText.slice(0, this.inputText.length - l.length) + formula;
       position = this.inputText.length;
@@ -206,9 +206,9 @@ export default class Editor {
     this.areaEl = h('div', `${cssPrefix}-editor-area`)
       .children(
         this.textEl = h('textarea', '')
-          .on('input', evt => inputEventHandler.call(this, evt))
+          .on('input', (evt) => inputEventHandler.call(this, evt))
           .on('paste.stop', () => {})
-          .on('keydown', evt => keydownEventHandler.call(this, evt)),
+          .on('keydown', (evt) => keydownEventHandler.call(this, evt)),
         this.textlineEl = h('div', 'textline'),
         this.suggest.el,
         this.datepicker.el,

@@ -5,35 +5,39 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
-import Form from '../core/form'
-import statistics from '../core/statisticsR'
-import { doRegress } from '../../Spreadsheet/cloudr'
-import { createStatistic } from '../core/form'
-import Variable from '../core/variable'
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import Form, { createStatistic } from '../core/form';
+import statistics from '../core/statisticsR';
+import { doRegress } from '../../Spreadsheet/cloudr';
 
-const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic }) => {
-  const [variables, setVariables] = useState([])
-  const [variableX, setVariableX] = useState(null)
-  const [variableY, setVariableY] = useState(null)
-  const [error, setError] = useState(null)
+import Variable from '../core/variable';
 
-  const handleSubmit = e => {
+const ChiSquareTest = ({
+  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
+}) => {
+  const [variables, setVariables] = useState([]);
+  const [variableX, setVariableX] = useState(null);
+  const [variableY, setVariableY] = useState(null);
+  const [error, setError] = useState(null);
+
+  const handleSubmit = (e) => {
     const formuladata = {
       ...e,
       variablex: variables[variableX],
       variabley: variables[variableY],
-    }
-    doRegress(formuladata, statistics.find(e => e.key === statistic).function).then(res => {
-      createStatistic(res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar)
-    }).catch(err => setError(err.toString()))
-  }
+    };
+    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
+      createStatistic(
+        res, slides, formuladata, statistic, dataNames,
+        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
+      );
+    }).catch((err) => setError(err.toString()));
+  };
 
   const isInvalid = variableX == null
-    || variableY == null
+    || variableY == null;
 
   return (
     <Form
@@ -47,25 +51,25 @@ const ChiSquareTest = ({ slides, dataNames, current, onSetDataNames, onSetCurren
       <Variable label="X variable" setSelected={setVariableX} options={variables} name={variables[variableX]} />
       <Variable label="Y variable" setSelected={setVariableY} options={variables} name={variables[variableY]} />
     </Form>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
-	current: (state.currentState.current || 0),
-	rightSidebar: (state.rightSidebarState.rightSidebar || "none"),
+  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  current: (state.currentState.current || 0),
+  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });
 
-const mapDispatchToProps = dispatch => ({
-  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: rightSidebar => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-})
+const mapDispatchToProps = (dispatch) => ({
+  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
+});
 
 export default compose(
-	connect(
-		mapStateToProps,
-    mapDispatchToProps
-	),
-)(ChiSquareTest)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  ),
+)(ChiSquareTest);

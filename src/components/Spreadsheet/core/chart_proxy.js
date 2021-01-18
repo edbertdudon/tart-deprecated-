@@ -1,4 +1,4 @@
-import { doChart, spreadsheetToR } from '../cloudr'
+import { doChart, spreadsheetToR } from '../cloudr';
 
 export default class ChartProxy {
   constructor(name, d) {
@@ -9,18 +9,18 @@ export default class ChartProxy {
     this.variabley = d.variabley || '';
     this.firstrow = d.firstrow || true;
     this.source = '';
-    this.type = "chart";
+    this.type = 'chart';
   }
 
   setData(d, datas) {
-    d.slides = JSON.stringify(spreadsheetToR(datas))
-    d.names = JSON.stringify(datas.map(data => data.name))
-    console.log(d)
-    doChart(d).then(src => {
-      console.log(src)
-      this.source = src
-    }).catch(err => {
-      console.log(err)
-    })
+    d.slides = JSON.stringify(spreadsheetToR(datas));
+    d.names = JSON.stringify(datas.map((data) => data.name));
+    console.log(d);
+    doChart(d).then((src) => {
+      console.log(src);
+      this.source = src;
+    }).catch((err) => {
+      console.log(err);
+    });
   }
 }

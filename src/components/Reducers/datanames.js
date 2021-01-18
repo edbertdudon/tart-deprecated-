@@ -4,7 +4,7 @@ const INITIAL_STATE = {
 
 const applySetDataNames = (state, action) => ({
   ...state,
-  dataNames: action.dataNames
+  dataNames: action.dataNames,
 });
 
 function dataNamesReducer(state = INITIAL_STATE, action) {

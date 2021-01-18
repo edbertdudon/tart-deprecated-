@@ -6,7 +6,7 @@ import History from './history';
 import Clipboard from './clipboard';
 import AutoFilter from './auto_filter';
 import { Merges } from './merge';
-import { Matrices } from './matrices'
+import { Matrices } from './matrices';
 import helper from './helper';
 import { Rows } from './row';
 import { Cols } from './col';
@@ -14,6 +14,9 @@ import { Validations } from './validation';
 import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
+import { Chart } from '../component/chart_canvas';
+import charts from '../../Chart/chartsR';
+import { columnToLetter, spreadsheetToR, doChart } from '../cloudr';
 
 // private methods
 /*
@@ -108,7 +111,6 @@ const defaultSettings = {
 
 const toolbarHeight = 41;
 const bottombarHeight = 41;
-
 
 // src: cellRange
 // dst: cellRange
@@ -211,7 +213,7 @@ function setStyleBorders({ mode, style, color }) {
             }
           }
         }
-        mergeIndexes.forEach(it => merges.splice(it, 1));
+        mergeIndexes.forEach((it) => merges.splice(it, 1));
         if (ci > eci) break;
         // jump merges -- end
         const cell = rows.getCell(ri, ci);
@@ -315,7 +317,7 @@ function getCellColByX(x, scrollOffsetx) {
     inits,
     cols.indexWidth,
     x,
-    i => cols.getWidth(i),
+    (i) => cols.getWidth(i),
   );
   if (left <= 0) {
     return { ci: -1, left: 0, width: cols.indexWidth };
@@ -330,6 +332,7 @@ export default class DataProxy {
     this.name = name || 'sheet';
     this.freeze = [0, 0];
     this.styles = []; // Array<Style>
+    this.charts = [];
     this.merges = new Merges(); // [CellRange, ...]
     this.matrices = new Matrices();
     this.rows = new Rows(this.settings.row);
@@ -393,7 +396,7 @@ export default class DataProxy {
 
   undo() {
     this.history.undo(this.getData(), (d) => {
-      console.log(d)
+      console.log(d);
       this.setData(d);
     });
   }
@@ -430,7 +433,7 @@ export default class DataProxy {
   }
 
   pasteFromText(txt) {
-    const lines = txt.split('\r\n').map(it => it.replace(/"/g, '').split('\t'));
+    const lines = txt.split('\r\n').map((it) => it.replace(/"/g, '').split('\t'));
     if (lines.length > 0) lines.length -= 1;
     const { rows, selector } = this;
     this.changeData(() => {
@@ -570,7 +573,7 @@ export default class DataProxy {
     if (autoFilter.active()) {
       const filter = autoFilter.getFilter(ci);
       if (filter) {
-        const vIndex = filter.value.findIndex(v => v === oldText);
+        const vIndex = filter.value.findIndex((v) => v === oldText);
         if (vIndex >= 0) {
           filter.value.splice(vIndex, 1, text);
         }
@@ -733,16 +736,16 @@ export default class DataProxy {
   }
 
   addMatrix(cellRange, aoa) {
-    const { sri, sci } = cellRange
-    this.matrices.add(cellRange)
+    const { sri, sci } = cellRange;
+    this.matrices.add(cellRange);
     // this.rows.deleteCells(cr)
-    this.rows.setMatrix(sri, sci, aoa)
+    this.rows.setMatrix(sri, sci, aoa);
   }
 
   removeMatrix(cellRange) {
-    const { sri, sci } = cellRange
-    this.rows.deleteCellsExceptFirst(cellRange)
-    this.matrices.deleteWithin(cellRange)
+    const { sri, sci } = cellRange;
+    this.rows.deleteCellsExceptFirst(cellRange);
+    this.matrices.deleteWithin(cellRange);
   }
 
   canAutofilter() {
@@ -863,7 +866,7 @@ export default class DataProxy {
     const [, fci] = freeze;
     const [
       ci, left, width,
-    ] = helper.rangeReduceIf(fci, cols.len, 0, 0, x, i => cols.getWidth(i));
+    ] = helper.rangeReduceIf(fci, cols.len, 0, 0, x, (i) => cols.getWidth(i));
     // console.log('fci:', fci, ', ci:', ci);
     let x1 = left;
     if (x > 0) x1 += width;
@@ -879,7 +882,7 @@ export default class DataProxy {
     const [fri] = freeze;
     const [
       ri, top, height,
-    ] = helper.rangeReduceIf(fri, rows.len, 0, 0, y, i => rows.getHeight(i));
+    ] = helper.rangeReduceIf(fri, rows.len, 0, 0, y, (i) => rows.getHeight(i));
     let y1 = top;
     if (y > 0) y1 += height;
     // console.log('ri:', ri, ' ,y:', y1);
@@ -1063,7 +1066,7 @@ export default class DataProxy {
 
   eachMergesInView(viewRange, cb) {
     this.merges.filterIntersects(viewRange)
-      .forEach(it => cb(it));
+      .forEach((it) => cb(it));
   }
 
   hideRowsOrCols() {
@@ -1143,6 +1146,57 @@ export default class DataProxy {
     return styles.length - 1;
   }
 
+  addChart(datas, range, type, variables) {
+    const c = new Chart();
+    const {
+      sri, sci, eri, eci,
+    } = range;
+    const rRange = `\`${this.name}\`` + `[${sri + 1}:${eri + 1},${sci + 1}:${eci + 1}]`;
+    c.range = rRange;
+    c.types = [type];
+    const { rows, charts } = this;
+    if (Object.keys(rows._).length !== 0) {
+      const rownames = Object.values(rows._[0].cells)
+      	.map((cell) => cell.text);
+      const isFirstRowHeader = rownames.some(isNaN);
+      c.firstrow = isFirstRowHeader;
+      c.variablex = isFirstRowHeader
+        ? rownames[0]
+        : `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(sci + 1)}${eci + 1}`;
+      if (variables > 1 && rownames.length > 1) {
+        c.variabley = isFirstRowHeader
+          ? rownames[1]
+          : `${columnToLetter(sci + 2) + (sri + 1)}:${columnToLetter(sci + 2)}${eci + 1}`;
+      }
+    }
+    this.setChart(c, datas).then((chart) => {
+      charts.push(chart);
+    });
+  }
+
+  setChart(c, datas) {
+    const { charts } = this;
+    console.log(charts);
+    if (c.variablex.length < 1) {
+      return doChart({ variablex: 'na' }).then((uri) => {
+        console.log(uri);
+        c.image.attr('src', uri);
+      });
+    }
+    const data = {
+      slides: JSON.stringify(spreadsheetToR(datas)),
+      names: JSON.stringify(datas.map((data) => data.name)),
+      range: c.range,
+      firstrow: c.firstrow,
+      types: JSON.stringify(c.types),
+      variablex: c.variablex,
+    };
+    if (c.variabley) data.variabley = c.variabley;
+    return doChart(data).then((uri) => {
+      c.image.attr('src', uri);
+    });
+  }
+
   changeData(cb) {
     this.history.add(this.getData());
     cb();
@@ -1168,9 +1222,9 @@ export default class DataProxy {
 
   getData() {
     const {
-      name, freeze, styles, merges, rows, cols, validations, autoFilter, type, regression, optimization, chart
+      name, freeze, styles, merges, rows, cols, validations, autoFilter, type, regression, optimization, chart,
     } = this;
-    let data = {
+    const data = {
       name,
       freeze: xy2expr(freeze[1], freeze[0]),
       styles,
@@ -1181,9 +1235,9 @@ export default class DataProxy {
       autofilter: autoFilter.getData(),
       type,
     };
-    if (regression) data.regression = regression
-    if (optimization) data.optimization = optimization
-    if (chart) data.chart = chart
-    return data
+    if (regression) data.regression = regression;
+    if (optimization) data.optimization = optimization;
+    if (chart) data.chart = chart;
+    return data;
   }
 }

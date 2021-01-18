@@ -81,17 +81,17 @@ export default class SortFilter {
     if (it === 'all') {
       if (children.length === filterValues.length) {
         this.filterValues = [];
-        children.forEach(i => h(i).checked(false));
+        children.forEach((i) => h(i).checked(false));
       } else {
         this.filterValues = Array.from(values);
-        children.forEach(i => h(i).checked(true));
+        children.forEach((i) => h(i).checked(true));
       }
     } else {
       const checked = h(children[index]).toggle('checked');
       if (checked) {
         filterValues.push(it);
       } else {
-        filterValues.splice(filterValues.findIndex(i => i === it), 1);
+        filterValues.splice(filterValues.findIndex((i) => i === it), 1);
       }
     }
     resetFilterHeader.call(this);

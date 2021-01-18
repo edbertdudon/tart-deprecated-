@@ -15,7 +15,7 @@ export default class ModalValidation extends Modal {
       new FormSelect('cell',
         ['cell'], // cell|row|column
         '100%',
-        it => t(`dataValidation.modeType.${it}`)),
+        (it) => t(`dataValidation.modeType.${it}`)),
       { required: true },
       `${t('dataValidation.range')}:`,
       fieldLabelWidth,
@@ -28,8 +28,8 @@ export default class ModalValidation extends Modal {
       new FormSelect('list',
         ['list', 'number', 'date', 'phone', 'email'],
         '100%',
-        it => t(`dataValidation.type.${it}`),
-        it => this.criteriaSelected(it)),
+        (it) => t(`dataValidation.type.${it}`),
+        (it) => this.criteriaSelected(it)),
       { required: true },
       `${t('dataValidation.criteria')}:`,
       fieldLabelWidth,
@@ -40,8 +40,8 @@ export default class ModalValidation extends Modal {
       new FormSelect('be',
         ['be', 'nbe', 'eq', 'neq', 'lt', 'lte', 'gt', 'gte'],
         '160px',
-        it => t(`dataValidation.operator.${it}`),
-        it => this.criteriaOperatorSelected(it)),
+        (it) => t(`dataValidation.operator.${it}`),
+        (it) => this.criteriaOperatorSelected(it)),
       { required: true },
     ).hide();
     // min, max

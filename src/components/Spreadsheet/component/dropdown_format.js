@@ -23,7 +23,7 @@ export default class DropdownFormat extends Dropdown {
             e.target.style.background = options.style.offcolor;
           })
           .on('mouseleave', (e) => {
-            e.target.style.background = "";
+            e.target.style.background = '';
           });
         if (it.label) item.child(h('div', 'label').html(it.label));
       }

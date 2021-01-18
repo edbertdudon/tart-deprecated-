@@ -10,7 +10,7 @@ class Merges {
   }
 
   deleteWithin(cr) {
-    this._ = this._.filter(it => !it.within(cr));
+    this._ = this._.filter((it) => !it.within(cr));
   }
 
   getFirstIncludes(ri, ci) {
@@ -24,7 +24,7 @@ class Merges {
   }
 
   filterIntersects(cellRange) {
-    return new Merges(this._.filter(it => it.intersects(cellRange)));
+    return new Merges(this._.filter((it) => it.intersects(cellRange)));
   }
 
   intersects(cellRange) {
@@ -93,12 +93,12 @@ class Merges {
   }
 
   setData(merges) {
-    this._ = merges.map(merge => CellRange.valueOf(merge));
+    this._ = merges.map((merge) => CellRange.valueOf(merge));
     return this;
   }
 
   getData() {
-    return this._.map(merge => merge.toString());
+    return this._.map((merge) => merge.toString());
   }
 }
 

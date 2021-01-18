@@ -32,14 +32,14 @@ function inputMouseEnter(index, description) {
   if (filterItems.length <= 0) return;
   if (this.itemIndex >= 0) {
     filterItems[this.itemIndex].toggle();
-    filterItems[this.itemIndex].css('height', '26px')
+    filterItems[this.itemIndex].css('height', '26px');
   }
   this.itemIndex = index;
   filterItems[this.itemIndex].toggle();
   if (description.length > 53) {
-    filterItems[this.itemIndex].css('height', '54px')
+    filterItems[this.itemIndex].css('height', '54px');
   } else {
-    filterItems[this.itemIndex].css('height', '40px')
+    filterItems[this.itemIndex].css('height', '40px');
   }
 }
 
@@ -113,7 +113,7 @@ export default class Suggest {
   search(word) {
     let { items } = this;
     if (!/^\s*$/.test(word)) {
-      items = items.filter(it => (it.key || it).startsWith(word.toLowerCase()));
+      items = items.filter((it) => (it.key || it).startsWith(word.toLowerCase()));
     }
     items = items.map((it, index) => {
       let { title, description } = it;
@@ -125,7 +125,7 @@ export default class Suggest {
         title = it;
       }
       const desc = h('div', `${cssPrefix}-description`)
-        .child(description)
+        .child(description);
       const item = h('div', `${cssPrefix}-item`)
         // .child(title)
         .children(title, desc)
@@ -134,19 +134,19 @@ export default class Suggest {
           this.hide();
         })
         .on('mouseenter', (evt) => {
-          inputMouseEnter.call(this, index, description)
+          inputMouseEnter.call(this, index, description);
         });
       if (it.label) {
         item.child(h('div', 'label').html(it.label));
       }
       if (items.length === 1 && description.length > 53) {
-        item.css('height', '54px')
+        item.css('height', '54px');
       }
       return item;
     });
     this.filterItems = items;
     if (items.length <= 0) {
-      this.hide()
+      this.hide();
       return;
     }
     const { el } = this;
@@ -156,6 +156,6 @@ export default class Suggest {
   }
 
   bindInputEvents(input) {
-    input.on('keydown', evt => inputKeydownHandler.call(this, evt));
+    input.on('keydown', (evt) => inputKeydownHandler.call(this, evt));
   }
 }

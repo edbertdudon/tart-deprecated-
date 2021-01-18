@@ -1,10 +1,10 @@
 import { stringAt } from '../core/alphabet';
 import { getFontSizePxByPt } from '../core/font';
 import _cell from '../core/cell';
-import { formulam } from '../cloudr/formula'
+import { formulam } from '../cloudr/formula';
 // import { formulam } from '../core/formula'
-import { formatm } from '../core/format'
-import { rRender } from '../cloudr'
+import { formatm } from '../core/format';
+import { rRender } from '../cloudr';
 
 import {
   Draw, DrawBox, thinLineWidth, npx,
@@ -25,7 +25,7 @@ function tableFixedHeaderStyle() {
     // font: `500 ${npx(12)}px Source Sans Pro`,
     font: `500 ${npx(13)}px Helvetica`,
     // fillStyle: '#585757',
-		fillStyle: '#fff',
+    fillStyle: '#fff',
     lineWidth: thinLineWidth(),
     strokeStyle: '#e6e6e6',
   };
@@ -65,7 +65,7 @@ export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0,
 
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
-  let cellText = rRender(cell.text || '', data, datas, rindex, cindex)
+  let cellText = rRender(cell.text || '', data, datas, rindex, cindex);
   // let cellText = await rRender(cell.text || '', data, datas, rindex, cindex)
   // yoffset = 25
   // xoffset = 60
@@ -89,7 +89,7 @@ export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0,
       // console.log(data.formatm, '>>', cell.format);
       cellText = formatm[style.format].render(cellText);
     }
-    const font = Object.assign({}, style.font);
+    const font = { ...style.font };
     font.size = getFontSizePxByPt(font.size);
     // console.log('style:', style);
     draw.text(cellText, dbox, {
@@ -149,9 +149,8 @@ function renderContent(viewRange, fw, fh, tx, ty) {
   draw.translate(0, -exceptRowTotalHeight);
   viewRange.each((ri, ci) => {
     renderCell(draw, data, datas, ri, ci);
-  }, ri => filteredTranslateFunc(ri));
+  }, (ri) => filteredTranslateFunc(ri));
   draw.restore();
-
 
   // 2 render mergeCell
   const rset = new Set();
@@ -256,7 +255,7 @@ function renderFixedLeftTopCell(fw, fh) {
   draw.save();
   // left-top-cell
   // draw.attr({ fillStyle: '#f4f5f8' })
-	draw.attr({ fillStyle: '#353535' })
+  draw.attr({ fillStyle: '#353535' })
     .fillRect(0, 0, fw, fh);
   draw.restore();
 }
@@ -309,7 +308,7 @@ class Table {
     this.el = el;
     this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
     this.data = data;
-		this.datas = datas;
+    this.datas = datas;
   }
 
   resetData(data) {

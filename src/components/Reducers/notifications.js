@@ -4,7 +4,7 @@ const INITIAL_STATE = {
 
 const applySetNotifications = (state, action) => ({
   ...state,
-  notifications:action.notifications
+  notifications: action.notifications,
 });
 
 function notificationsReducer(state = INITIAL_STATE, action) {

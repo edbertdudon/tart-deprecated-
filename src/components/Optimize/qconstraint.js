@@ -5,75 +5,77 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
+import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import Icon from '@mdi/react';
-import { mdiClose } from '@mdi/js'
-import { updateRangeNotOne, updateCellorSingleRange } from './index'
+import { mdiClose } from '@mdi/js';
+import { updateRangeNotOne, updateCellorSingleRange } from './index';
 
-const Qconstraint = ({ slides, quadratic, linear, dir, rhs, error, setQuadratic, setLinear, setDir, setRhs, setError, onClose }) => {
-  const handleUpdateQuadratic = e => updateRangeNotOne(e, setQuadratic, setError)
+const Qconstraint = ({
+  slides, quadratic, linear, dir, rhs, error, setQuadratic, setLinear, setDir, setRhs, setError, onClose,
+}) => {
+  const handleUpdateQuadratic = (e) => updateRangeNotOne(e, setQuadratic, setError);
 
-  const handleUpdateLinear = e => updateCellorSingleRange(e, setLinear, setError)
+  const handleUpdateLinear = (e) => updateCellorSingleRange(e, setLinear, setError);
 
-  const handleUpdateDir = e => updateCellorSingleRange(e, setDir, setError)
+  const handleUpdateDir = (e) => updateCellorSingleRange(e, setDir, setError);
 
-  const handleUpdateRhs = e => updateCellorSingleRange(e, setRhs, setError)
+  const handleUpdateRhs = (e) => updateCellorSingleRange(e, setRhs, setError);
 
-  const handleClose = () => onClose(3)
+  const handleClose = () => onClose(3);
 
   return (
     <>
-      <div className='rightsidebar-label'>Quadratic constraints</div>
-      <button className='rightsidebar-label-close' onClick={handleClose}>
-        <Icon path={mdiClose} size={0.8}/>
+      <div className="rightsidebar-label">Quadratic constraints</div>
+      <button className="rightsidebar-label-close" onClick={handleClose}>
+        <Icon path={mdiClose} size={0.8} />
       </button>
-      <div className='rightsidebar-input-text-2part1'>Quadratic matrix</div>
-      <div className='rightsidebar-input-text-2part2'>Linear matrix</div>
+      <div className="rightsidebar-input-text-2part1">Quadratic matrix</div>
+      <div className="rightsidebar-input-text-2part2">Linear matrix</div>
       <input
         type="text"
-        className='rightsidebar-input-2part1'
+        className="rightsidebar-input-2part1"
         onChange={handleUpdateQuadratic}
         value={quadratic}
         placeholder="A1:A2"
       />
       <input
         type="text"
-        className='rightsidebar-input-2part2'
+        className="rightsidebar-input-2part2"
         onChange={handleUpdateLinear}
         value={linear}
         placeholder="B1:B2"
       />
-      <div className='rightsidebar-input-text-2part1'>direction range</div>
-      <div className='rightsidebar-input-text-2part2'>Numeric range</div>
+      <div className="rightsidebar-input-text-2part1">direction range</div>
+      <div className="rightsidebar-input-text-2part2">Numeric range</div>
       <input
         type="text"
-        className='rightsidebar-input-2part1'
+        className="rightsidebar-input-2part1"
         onChange={handleUpdateDir}
         value={dir}
         placeholder="C1:C2"
       />
       <input
         type="text"
-        className='rightsidebar-input-2part2'
+        className="rightsidebar-input-2part2"
         onChange={handleUpdateRhs}
         value={rhs}
         placeholder="D1:D2"
       />
-      <div className='rightsidebar-text'>
-        {error && <div className='rightsidebar-error'>{error}</div>}
+      <div className="rightsidebar-text">
+        {error && <div className="rightsidebar-error">{error}</div>}
       </div>
     </>
-  )
-}
+  );
+};
 
-const mapStateToProps = state => ({
-	slides: (state.slidesState.slides || {}),
+const mapStateToProps = (state) => ({
+  slides: (state.slidesState.slides || {}),
 });
 
 export default compose(
-	connect(
-		mapStateToProps,
-	),
-)(Qconstraint)
+  connect(
+    mapStateToProps,
+  ),
+)(Qconstraint);

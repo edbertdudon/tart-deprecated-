@@ -42,10 +42,10 @@ export default class BorderPalette {
         h('td', `${cssPrefix}-border-palette-left`).child(
           buildTable(
             h('tr', '').children(
-              ...['all', 'inside', 'horizontal', 'vertical', 'outside'].map(it => buildTd.call(this, it)),
+              ...['all', 'inside', 'horizontal', 'vertical', 'outside'].map((it) => buildTd.call(this, it)),
             ),
             h('tr', '').children(
-              ...['left', 'top', 'right', 'bottom', 'none'].map(it => buildTd.call(this, it)),
+              ...['left', 'top', 'right', 'bottom', 'none'].map((it) => buildTd.call(this, it)),
             ),
           ),
         ),

@@ -4,7 +4,7 @@ const INITIAL_STATE = {
 
 const applySetCurrent = (state, action) => ({
   ...state,
-  current: action.current
+  current: action.current,
 });
 
 function currentReducer(state = INITIAL_STATE, action) {

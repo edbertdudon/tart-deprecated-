@@ -1,13 +1,13 @@
 /* global window, document */
 import { h } from './component/element';
 import DataProxy from './core/data_proxy';
-import ChartProxy from './core/chart_proxy';
+import { Chart } from './component/chart_canvas';
 import Sheet from './component/sheet';
 // import Bottombar from './component/bottombar';
 import Clipboard from './core/clipboard';
 import { cssPrefix } from './config';
 import { locale } from './locale/locale';
-import { getMaxNumberCustomSheet } from '../../functions'
+import { getMaxNumberCustomSheet } from '../../functions';
 import './index.less';
 
 class Spreadsheet {
@@ -37,11 +37,11 @@ class Spreadsheet {
     // });
     this.data = this.addSheet();
     const rootEl = h('div', `${cssPrefix}`)
-      .on('contextmenu', evt => evt.preventDefault());
+      .on('contextmenu', (evt) => evt.preventDefault());
     // create canvas element
     targetEl.appendChild(rootEl.el);
     this.sheet = new Sheet(rootEl, this.data, this.datas);
-    this.clipboard = new Clipboard()
+    this.clipboard = new Clipboard();
     // rootEl.child(this.bottombar.el);
   }
 
@@ -54,7 +54,7 @@ class Spreadsheet {
     if (current == undefined) {
       this.datas.push(d);
     } else {
-      this.datas.splice(current+1, 0, d)
+      this.datas.splice(current + 1, 0, d);
     }
     // console.log('d:', n, d, this.datas);
     // this.bottombar.addItem(n, active, this.options.style.offcolor);
@@ -71,34 +71,31 @@ class Spreadsheet {
   }
 
   copySheet(index) {
-    this.clipboard.copy(index)
+    this.clipboard.copy(index);
   }
 
   pasteSheet(dataNames, index, isDuplicate, active = true) {
-    let data
+    let data;
     if (isDuplicate) {
-      data = this.datas[index]
+      data = this.datas[index];
     } else {
-      data = this.datas[this.clipboard.range]
+      data = this.datas[this.clipboard.range];
     }
-    let d = new DataProxy('temp', this.options)
-    d.setData(data.getData())
-    d.name = data.name + ' ' + getMaxNumberCustomSheet(dataNames, data.name)
-    this.datas.splice(index+1, 0, d)
+    const d = new DataProxy('temp', this.options);
+    d.setData(data.getData());
+    d.name = `${data.name} ${getMaxNumberCustomSheet(dataNames, data.name)}`;
+    this.datas.splice(index + 1, 0, d);
     // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
-    this.sheetIndex = index + 1
-    this.sheet.resetData(d)
-    return d
+    this.sheetIndex = index + 1;
+    this.sheet.resetData(d);
+    return d;
   }
 
-  insertChart(dataNames, current, o, name) {
-    const n = name || `chart${this.sheetIndex}`;
-    let d = new ChartProxy(n, o);
-    d.setData(o, this.datas);
-    this.datas.splice(current+1, 0, d)
-    this.sheetIndex = current + 1
-    this.sheet.resetData(d)
-    return d
+  insertChart(type, variables) {
+    const { data, sheet, datas } = this;
+    const { name } = data;
+    const { range } = sheet.selector;
+    data.addChart(datas, range, type, variables);
   }
 
   insertData(dataNames, current, o, name, isEmptyData) {
@@ -112,21 +109,21 @@ class Spreadsheet {
     if (ncols > col.len) {
       col.len = ncols;
     }
-    let d = new DataProxy('temp', this.options)
-    d.setData(o)
-    let n = getMaxNumberCustomSheet(dataNames, name)
+    const d = new DataProxy('temp', this.options);
+    d.setData(o);
+    const n = getMaxNumberCustomSheet(dataNames, name);
     if (n !== 1) {
-      name = name + ' ' + n
+      name = `${name} ${n}`;
     }
-    d.name = name
+    d.name = name;
     if (isEmptyData) {
-      this.datas.splice(current, 1, d)
+      this.datas.splice(current, 1, d);
     } else {
-      this.datas.splice(current+1, 0, d)
-      this.sheetIndex = current + 1  
+      this.datas.splice(current + 1, 0, d);
+      this.sheetIndex = current + 1;
     }
-    this.sheet.resetData(d)
-    return d
+    this.sheet.resetData(d);
+    return d;
   }
 
   loadData(data) {
@@ -147,7 +144,7 @@ class Spreadsheet {
   }
 
   getData() {
-    return this.datas.map(it => it.getData());
+    return this.datas.map((it) => it.getData());
   }
 
   cellText(ri, ci, text, sheetIndex = 0) {

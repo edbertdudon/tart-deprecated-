@@ -23,9 +23,9 @@ import Undo from './undo';
 import Print from './print';
 import Textwrap from './textwrap';
 import More from './more';
-import Chart from './chart'
-import Statistics from './statistics'
-import Optimize from './optimize'
+import Chart from './chart';
+import Statistics from './statistics';
+import Optimize from './optimize';
 
 import { h } from '../element';
 import { cssPrefix } from '../../config';
@@ -140,7 +140,7 @@ export default class Toolbar {
       buildDivider(),
       [
         this.moreEl = new More(),
-      ]
+      ],
       // buildSpace(),
       // [
       //   this.functionEl = new Function(),

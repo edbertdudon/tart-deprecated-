@@ -14,1026 +14,1027 @@ import { tf } from '../locale/locale';
 
 /** @type {Formula[]} */
 const rFormulas = [
-	// Math
-	{
-		key: 'sin',
-		title: tf('formula.sin'),
-		syntax:'sin(value)',
-		description: 'sine in radians',
-    category: 0
-	},
-	{
-		key: 'cos',
-		title: tf('formula.cos'),
-		syntax:'cos(value)',
-		description: 'cosine in radians',
-    category: 0
-	},
-	{
-		key: 'tan',
-		title: tf('formula.tan'),
-		syntax:'tan(value)',
-		description: 'tangent in radians',
-    category: 0
-	},
-	{
-		key: 'asin',
-		title: tf('formula.asin'),
-		syntax:'asin(value)',
-		description: 'arc-sine in radians',
-    category: 0
-	},
-	{
-		key: 'acos',
-		title: tf('formula.acos'),
-		syntax:'acos(value)',
-		description: 'arc-cosine in radians',
-    category: 0
-	},
-	{
-		key: 'atan',
-		title: tf('formula.atan'),
-		syntax:'atan(value)',
-		description: 'arc-tangent in radians',
-    category: 0
-	},
-	{
-		key: 'atan2',
-		title: tf('formula.atan2'),
-		syntax:'atan2(y,x)',
-		description: 'two-argument arc-tangent in radians',
-    category: 0
-	},
-	{
-		key: 'log',
-		title: tf('formula.log'),
-		syntax:'log(value, base)',
-		description: 'logarithms, by default natural logarithms',
-    category: 0
-	},
-	{
-		key: 'log10',
-		title: tf('formula.log10'),
-		syntax:'log10(value)',
-		description: 'common (i.e., base 10) logarithms',
-    category: 0
-	},
-	{
-		key: 'log2',
-		title: tf('formula.log2'),
-		syntax:'log2(value)',
-		description: 'binary (i.e., base 2) logarithms',
-    category: 0
-	},
+  // Math
+  {
+    key: 'sin',
+    title: tf('formula.sin'),
+    syntax: 'sin(value)',
+    description: 'sine in radians',
+    category: 0,
+  },
+  {
+    key: 'cos',
+    title: tf('formula.cos'),
+    syntax: 'cos(value)',
+    description: 'cosine in radians',
+    category: 0,
+  },
+  {
+    key: 'tan',
+    title: tf('formula.tan'),
+    syntax: 'tan(value)',
+    description: 'tangent in radians',
+    category: 0,
+  },
+  {
+    key: 'asin',
+    title: tf('formula.asin'),
+    syntax: 'asin(value)',
+    description: 'arc-sine in radians',
+    category: 0,
+  },
+  {
+    key: 'acos',
+    title: tf('formula.acos'),
+    syntax: 'acos(value)',
+    description: 'arc-cosine in radians',
+    category: 0,
+  },
+  {
+    key: 'atan',
+    title: tf('formula.atan'),
+    syntax: 'atan(value)',
+    description: 'arc-tangent in radians',
+    category: 0,
+  },
+  {
+    key: 'atan2',
+    title: tf('formula.atan2'),
+    syntax: 'atan2(y,x)',
+    description: 'two-argument arc-tangent in radians',
+    category: 0,
+  },
+  {
+    key: 'log',
+    title: tf('formula.log'),
+    syntax: 'log(value, base)',
+    description: 'logarithms, by default natural logarithms',
+    category: 0,
+  },
+  {
+    key: 'log10',
+    title: tf('formula.log10'),
+    syntax: 'log10(value)',
+    description: 'common (i.e., base 10) logarithms',
+    category: 0,
+  },
+  {
+    key: 'log2',
+    title: tf('formula.log2'),
+    syntax: 'log2(value)',
+    description: 'binary (i.e., base 2) logarithms',
+    category: 0,
+  },
   {
     key: 'log1p',
     title: tf('formula.log1p'),
-    syntax:'log1p(value)',
+    syntax: 'log1p(value)',
     description: 'computes log(1+x)',
-    category: 0
+    category: 0,
   },
-	{
-		key: 'exp',
-		title: tf('formula.exp'),
-		syntax:'exp(value)',
-		description: 'exponent',
-    category: 0
-	},
+  {
+    key: 'exp',
+    title: tf('formula.exp'),
+    syntax: 'exp(value)',
+    description: 'exponent',
+    category: 0,
+  },
   {
     key: 'expm1',
     title: tf('formula.expm1'),
-    syntax:'expm1(value)',
+    syntax: 'expm1(value)',
     description: 'computes exp(x) - 1',
-    category: 0
+    category: 0,
   },
-	{
-		key: 'max',
-		title: tf('formula.max'),
-		syntax:'max(value1, [value2, ...])',
-		description: 'maximum of the elements',
-    category: 0
-	},
-	{
-		key: 'min',
-		title: tf('formula.min'),
-		syntax:'min(value1, [value2, ...])',
-		description: 'minimum of the elements',
-    category: 0
-	},
-	{
-		key: 'range',
+  {
+    key: 'max',
+    title: tf('formula.max'),
+    syntax: 'max(value1, [value2, ...])',
+    description: 'maximum of the elements',
+    category: 0,
+  },
+  {
+    key: 'min',
+    title: tf('formula.min'),
+    syntax: 'min(value1, [value2, ...])',
+    description: 'minimum of the elements',
+    category: 0,
+  },
+  {
+    key: 'range',
     title: tf('formula.range'),
-    syntax:'range(range)',
-		description: 'the minimum and maximum of all the given arguments',
-    category: 0
-	},
-	{
-		key: 'sum',
-		title: tf('formula.sum'),
-		syntax:'sum(value1, [value2, ...])',
-		description: 'sum of the elements',
-    category: 0
-	},
-	{
-		key: 'diff',
-		title: tf('formula.diff'),
-		syntax:'diff(value, lag, differences)',
-		description: 'lagged and iterated differences of vector',
-    category: 0
-	},
-	{
-		key: 'prod',
-		title: tf('formula.prod'),
-		syntax:'prod(value1, [value2, ...])',
-		description: 'product of the elements',
-    category: 0
-	},
-	{
-		key: 'mean',
-		title: tf('formula.mean'),
-		syntax:'mean(value1, [value2, ...])',
-		description: 'mean of the elements',
-    category: 0
+    syntax: 'range(range)',
+    description: 'the minimum and maximum of all the given arguments',
+    category: 0,
   },
-	{
-		key: 'median',
-		title: tf('formula.median'),
-		syntax:'median(value1, [value2, ...])',
-		description: 'median of the elements',
-    category: 0
+  {
+    key: 'sum',
+    title: tf('formula.sum'),
+    syntax: 'sum(value1, [value2, ...])',
+    description: 'sum of the elements',
+    category: 0,
   },
-	{
-		key: 'quantile',
-    syntax:'median(range)',
-		description: 'sample quantiles corresponding to the given probabilities (defaults to 0,.25,.5,.75,1)',
-    category: 0
-	},
-	{
-		key: 'weighted.mean',
-		title: tf('formula.weightedmean'),
-		syntax:'max(values, weights)',
-		description: 'Compute a weighted mean, (values, weights). Values and weights must have the same length.',
-    category: 0
+  {
+    key: 'diff',
+    title: tf('formula.diff'),
+    syntax: 'diff(value, lag, differences)',
+    description: 'lagged and iterated differences of vector',
+    category: 0,
   },
-	{
-		key: 'rank',
+  {
+    key: 'prod',
+    title: tf('formula.prod'),
+    syntax: 'prod(value1, [value2, ...])',
+    description: 'product of the elements',
+    category: 0,
+  },
+  {
+    key: 'mean',
+    title: tf('formula.mean'),
+    syntax: 'mean(value1, [value2, ...])',
+    description: 'mean of the elements',
+    category: 0,
+  },
+  {
+    key: 'median',
+    title: tf('formula.median'),
+    syntax: 'median(value1, [value2, ...])',
+    description: 'median of the elements',
+    category: 0,
+  },
+  {
+    key: 'quantile',
+    syntax: 'median(range)',
+    description: 'sample quantiles corresponding to the given probabilities (defaults to 0,.25,.5,.75,1)',
+    category: 0,
+  },
+  {
+    key: 'weighted.mean',
+    title: tf('formula.weightedmean'),
+    syntax: 'max(values, weights)',
+    description: 'Compute a weighted mean, (values, weights). Values and weights must have the same length.',
+    category: 0,
+  },
+  {
+    key: 'rank',
     title: tf('formula.rank'),
-		description: 'ranks of the elements',
-    category: 0
-	},
-	{
-		key: 'var',
-		title: tf('formula.var'),
-		syntax:'var(range1, [range2])',
-		description: 'variance of the elements (calculated on n − 1)',
-    category: 0
+    description: 'ranks of the elements',
+    category: 0,
   },
-	{
-		key: 'cov',
-		title: tf('formula.cov'),
-		syntax:'cov(range1, [range2])',
-		description: 'compute the covariance',
-    category: 0
+  {
+    key: 'var',
+    title: tf('formula.var'),
+    syntax: 'var(range1, [range2])',
+    description: 'variance of the elements (calculated on n − 1)',
+    category: 0,
   },
-	{
-		key: 'sd',
-		title: tf('formula.sd'),
-		syntax:'sd(value1, [value2, ...])',
-		description: 'standard deviation',
-    category: 0
+  {
+    key: 'cov',
+    title: tf('formula.cov'),
+    syntax: 'cov(range1, [range2])',
+    description: 'compute the covariance',
+    category: 0,
   },
-	{
-		key: 'cor',
-		title: tf('formula.cor'),
-		syntax:'cor(range1, [range2])',
-		description: 'compute the correlation',
-    category: 0
+  {
+    key: 'sd',
+    title: tf('formula.sd'),
+    syntax: 'sd(value1, [value2, ...])',
+    description: 'standard deviation',
+    category: 0,
+  },
+  {
+    key: 'cor',
+    title: tf('formula.cor'),
+    syntax: 'cor(range1, [range2])',
+    description: 'compute the correlation',
+    category: 0,
   },
   {
     key: 'ceiling',
     title: tf('formula.ceiling'),
-    syntax:'ceiling(value)',
+    syntax: 'ceiling(value)',
     description: 'the smallest integers not less than the corresponding elements',
-    category: 0
+    category: 0,
   },
   {
     key: 'floor',
     title: tf('formula.floor'),
-    syntax:'floor(value)',
+    syntax: 'floor(value)',
     description: 'the largest integers not greater than the corresponding elements',
-    category: 0
+    category: 0,
   },
   {
     key: 'trunc',
     title: tf('formula.trunc'),
-    syntax:'trunc(value)',
+    syntax: 'trunc(value)',
     description: 'the integers formed by truncating the values toward 0',
-    category: 0
+    category: 0,
   },
-	{
-		key: 'round',
-		title: tf('formula.round'),
-		syntax:'round(value, digits)',
-		description: 'rounds the values in its first argument to the specified number of decimal places',
-    category: 0
+  {
+    key: 'round',
+    title: tf('formula.round'),
+    syntax: 'round(value, digits)',
+    description: 'rounds the values in its first argument to the specified number of decimal places',
+    category: 0,
   },
   {
     key: 'signif',
     title: tf('formula.signif'),
-    syntax:'signif(value, digits)',
+    syntax: 'signif(value, digits)',
     description: 'rounds the values in its first argument to the specified number of significant digits',
-    category: 0
+    category: 0,
   },
-	{
-		key: 'scale',
+  {
+    key: 'scale',
     title: tf('formula.scale'),
-    syntax:'scale(range)',
-		description: 'centers and reduces the data',
-    category: 0
-	},
-	{
-		key: 'pmin',
-		title: tf('formula.pmin'),
-		syntax:'pmin(value1, [value2, ...])',
-		description: 'a vector which ith element is the minimum',
-    category: 0
+    syntax: 'scale(range)',
+    description: 'centers and reduces the data',
+    category: 0,
   },
-	{
-		key: 'pmax',
-		title: tf('formula.pmax'),
-		syntax:'pmax(value1, [value2, ...])',
-		description: 'a vector which ith element is the maximum',
-    category: 0
+  {
+    key: 'pmin',
+    title: tf('formula.pmin'),
+    syntax: 'pmin(value1, [value2, ...])',
+    description: 'a vector which ith element is the minimum',
+    category: 0,
   },
-	{
-		key: 'cumsum',
+  {
+    key: 'pmax',
+    title: tf('formula.pmax'),
+    syntax: 'pmax(value1, [value2, ...])',
+    description: 'a vector which ith element is the maximum',
+    category: 0,
+  },
+  {
+    key: 'cumsum',
     title: tf('formula.cumsum'),
-    syntax:'cumsum(range)',
-		description: 'a vector whose elements are the cumulative sums of the elements',
-    category: 0
-	},
+    syntax: 'cumsum(range)',
+    description: 'a vector whose elements are the cumulative sums of the elements',
+    category: 0,
+  },
   {
     key: 'cumprod',
     title: tf('formula.cumprod'),
-    syntax:'cumprod(range)',
+    syntax: 'cumprod(range)',
     description: 'a vector whose elements are the cumulative products of the elements',
-    category: 0
+    category: 0,
   },
   {
     key: 'cummax',
     title: tf('formula.cummax'),
-    syntax:'cummax(range)',
+    syntax: 'cummax(range)',
     description: 'a vector whose elements are the cumulative maxima of the elements',
-    category: 0
+    category: 0,
   },
-	{
-		key: 'cummin',
+  {
+    key: 'cummin',
     title: tf('formula.cummin'),
-    syntax:'cummin(range)',
-		description: 'a vector whose elements are the cumulative minima of the elements',
-    category: 0
-	},
-	{
-		key: 'union',
+    syntax: 'cummin(range)',
+    description: 'a vector whose elements are the cumulative minima of the elements',
+    category: 0,
+  },
+  {
+    key: 'union',
     title: tf('formula.union'),
-    syntax:'union(range, range)',
-		description: 'set union',
-    category: 0
-	},
-	{
-		key: 'intersect',
+    syntax: 'union(range, range)',
+    description: 'set union',
+    category: 0,
+  },
+  {
+    key: 'intersect',
     title: tf('formula.intersect'),
-    syntax:'intersect(range, range)',
-		description: 'set intersection',
-    category: 0
-	},
-	{
-		key: 'setdiff',
+    syntax: 'intersect(range, range)',
+    description: 'set intersection',
+    category: 0,
+  },
+  {
+    key: 'setdiff',
     title: tf('formula.setdiff'),
-    syntax:'setdiff(range, range)',
-		description: 'set (asymmetric!) difference',
-    category: 0
-	},
-	{
-		key: 'setequal',
+    syntax: 'setdiff(range, range)',
+    description: 'set (asymmetric!) difference',
+    category: 0,
+  },
+  {
+    key: 'setequal',
     title: tf('formula.setequal'),
-    syntax:'setequal(range, range)',
-		description: 'set equality',
-    category: 0
-	},
-	// {
-	// 	key: 'is.element',
+    syntax: 'setequal(range, range)',
+    description: 'set equality',
+    category: 0,
+  },
+  // {
+  // 	key: 'is.element',
   //   title: tf('formula.iselement'),
   //   syntax:'is.element(range, range)',
-	// 	description: 'set membership',
-  //   category: 0
-	// },
+  // 	description: 'set membership',
+  //   category: 0,
+  // },
   {
     key: 'complex',
     title: tf('formula.complex'),
-    syntax:'complex(length, real, imaginary, modulus, argument)',
+    syntax: 'complex(length, real, imaginary, modulus, argument)',
     description: 'create complex number(s)',
-    category: 0
+    category: 0,
   },
-	{
-		key: 'Re',
+  {
+    key: 'Re',
     title: tf('formula.Re'),
-    syntax:'Re(complex)',
-		description: 'real part of a complex number',
-    category: 0
-	},
-	{
-		key: 'Im',
+    syntax: 'Re(complex)',
+    description: 'real part of a complex number',
+    category: 0,
+  },
+  {
+    key: 'Im',
     title: tf('formula.Im'),
-    syntax:'Im(complex)',
-		description: 'imaginary part of a complex number',
-    category: 0
-	},
-	{
-		key: 'Mod',
+    syntax: 'Im(complex)',
+    description: 'imaginary part of a complex number',
+    category: 0,
+  },
+  {
+    key: 'Mod',
     title: tf('formula.Mod'),
-    syntax:'Mod(complex)',
-		description: 'modulus of a complex number',
-    category: 0
-	},
-	{
-		key: 'abs',
+    syntax: 'Mod(complex)',
+    description: 'modulus of a complex number',
+    category: 0,
+  },
+  {
+    key: 'abs',
     title: tf('formula.abs'),
-    syntax:'abs(complex)',
-		description: 'modulus of a complex number',
-    category: 0
-	},
-	{
-		key: 'Arg',
+    syntax: 'abs(complex)',
+    description: 'modulus of a complex number',
+    category: 0,
+  },
+  {
+    key: 'Arg',
     title: tf('formula.Arg'),
-    syntax:'Arg(complex)',
-		description: 'angle in radians of the complex number',
-    category: 0
-	},
-	{
-		key: 'Conj',
+    syntax: 'Arg(complex)',
+    description: 'angle in radians of the complex number',
+    category: 0,
+  },
+  {
+    key: 'Conj',
     title: tf('formula.Conj'),
-    syntax:'Conj(complex)',
-		description: 'complex conjugate of a complex number',
-    category: 0
-	},
-	{
-		key: 'convolve',
+    syntax: 'Conj(complex)',
+    description: 'complex conjugate of a complex number',
+    category: 0,
+  },
+  {
+    key: 'convolve',
     title: tf('formula.convolve'),
-    syntax:'convolve(range, range)',
-		description: 'Fast Fourier Transform to compute the several kinds of convolutions of two sequences',
-    category: 0
-	},
-	{
-		key: 'fft',
+    syntax: 'convolve(range, range)',
+    description: 'Fast Fourier Transform to compute the several kinds of convolutions of two sequences',
+    category: 0,
+  },
+  {
+    key: 'fft',
     title: tf('formula.fft'),
-    syntax:'fft(range)',
-		description: 'Fast Fourier Transform of an array',
-    category: 0
-	},
-	{
-		key: 'mvfft',
+    syntax: 'fft(range)',
+    description: 'Fast Fourier Transform of an array',
+    category: 0,
+  },
+  {
+    key: 'mvfft',
     title: tf('formula.mvfft'),
-    syntax:'mvfft(range)',
-		description: 'Fast Fourier Transform of each column of a matrix',
-    category: 0
-	},
-	// {
-	// 	key: 'filter',
+    syntax: 'mvfft(range)',
+    description: 'Fast Fourier Transform of each column of a matrix',
+    category: 0,
+  },
+  // {
+  // 	key: 'filter',
   //   title: tf('formula.filter'),
   //   syntax:'filter()',
-	// 	description: 'applies linear filtering to a univariate time series or to each series separately of a multivariate time series',
-  //   category: 0
-	// },
-
-	// Matrices
-	{
-		key: 't',
-		title: tf('formula.t'),
-		syntax:'t(range)',
-		description: 'Transpose matrix',
-    category: 1
-  },
-	{
-		key: 'diag',
-		title: tf('formula.diag'),
-		syntax:'diag(range)',
-		description: 'Diagonal of matrix',
-    category: 1
-  },
-	{
-		key: '%*%',
-		title: tf('formula.%*%'),
-		syntax:'range %*% range',
-		description: 'Matrix multiplication',
-    category: 1
-  },
-	{
-		key: 'solve',
-		title: tf('formula.solve'),
-		syntax:'solve(range, [range2])',
-		description: 'Solves equation range %*% x = range2. Supply one argument to get the inverse matrix.',
-    category: 1
-  },
-	// {
-	// 	key: 'solve',
-	// 	title: tf('formula.solve'),
-	// 	syntax:'solve(range)',
-	// 	description: 'Inverse matrix',
-  //   category: 1
+  // 	description: 'applies linear filtering to a univariate time series or to each series separately of a multivariate time series',
+  //   category: 0,
   // },
-	{
-		key: 'rowSums',
-		title: tf('formula.rowSums'),
-		syntax:'rowSums(range)',
-		description: 'Sum of matrix rows',
-    category: 1
+
+  // Matrices
+  {
+    key: 't',
+    title: tf('formula.t'),
+    syntax: 't(range)',
+    description: 'Transpose matrix',
+    category: 1,
   },
-	{
-		key: 'colSums',
-		title: tf('formula.colSums'),
-		syntax:'colSums(range)',
-		description: 'Sum of matrix columns',
-    category: 1
+  {
+    key: 'diag',
+    title: tf('formula.diag'),
+    syntax: 'diag(range)',
+    description: 'Diagonal of matrix',
+    category: 1,
   },
-	{
-		key: 'rowMeans',
-		title: tf('formula.rowMeans'),
-		syntax:'rowMeans(range)',
-		description: 'Mean of matrix rows',
-    category: 1
+  {
+    key: '%*%',
+    title: tf('formula.%*%'),
+    syntax: 'range %*% range',
+    description: 'Matrix multiplication',
+    category: 1,
   },
-	{
-		key: 'colMeans',
-		title: tf('formula.colMeans'),
-		syntax:'colMeans(range)',
-		description: 'Mean of matrix columns',
-    category: 1
+  {
+    key: 'solve',
+    title: tf('formula.solve'),
+    syntax: 'solve(range, [range2])',
+    description: 'Solves equation range %*% x = range2. Supply one argument to get the inverse matrix.',
+    category: 1,
+  },
+  // {
+  // 	key: 'solve',
+  // 	title: tf('formula.solve'),
+  // 	syntax:'solve(range)',
+  // 	description: 'Inverse matrix',
+  //   category: 1,
+  // },
+  {
+    key: 'rowSums',
+    title: tf('formula.rowSums'),
+    syntax: 'rowSums(range)',
+    description: 'Sum of matrix rows',
+    category: 1,
+  },
+  {
+    key: 'colSums',
+    title: tf('formula.colSums'),
+    syntax: 'colSums(range)',
+    description: 'Sum of matrix columns',
+    category: 1,
+  },
+  {
+    key: 'rowMeans',
+    title: tf('formula.rowMeans'),
+    syntax: 'rowMeans(range)',
+    description: 'Mean of matrix rows',
+    category: 1,
+  },
+  {
+    key: 'colMeans',
+    title: tf('formula.colMeans'),
+    syntax: 'colMeans(range)',
+    description: 'Mean of matrix columns',
+    category: 1,
   },
 
-	// Distributions
-	{
-		key: 'dnorm',
-		title: tf('formula.dnorm'),
-		syntax:'dnorm(quantile, mean, sd)',
-		description: 'Density for the normal distribution',
-    category: 2
-  },
-	{
-		key: 'pnorm',
-		title: tf('formula.pnorm'),
-		syntax:'pnorm(quantile, mean, sd)',
-		description: 'Distribution function for the normal distribution',
-    category: 2
-  },
-	{
-		key: 'qnorm',
-		title: tf('formula.qnorm'),
-		syntax:'qnorm(probability, mean, sd)',
-		description: 'Quantile function for the normal distribution',
-    category: 2
-  },
-	{
-		key: 'rnorm',
-		title: tf('formula.rnorm'),
-		syntax:'rnorm(mean, sd)',
-		description: 'Random generation for the normal distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dexp',
-		title: tf('formula.dexp'),
-		syntax:'dexp(quantile, rate)',
-		description: 'Density for the exponential distribution',
-    category: 2
-  },
-	{
-		key: 'pexp',
-		title: tf('formula.pexp'),
-		syntax:'pexp(quantile, rate)',
-		description: 'Distribution function for the exponential distribution',
-    category: 2
-  },
-	{
-		key: 'qexp',
-		title: tf('formula.qexp'),
-		syntax:'qexp(probability, rate)',
-		description: 'Quantile function for the exponential distribution',
-    category: 2
-  },
-	{
-		key: 'rexp',
-		title: tf('formula.rexp'),
-		syntax:'rexp(rate)',
-		description: 'Random generation for the exponential distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dgamma',
-		title: tf('formula.dgamma'),
-		syntax:'dgamma(quantile, shape, scale)',
-		description: 'Density for the Gamma distribution',
-    category: 2
-  },
-	{
-		key: 'pgamma',
-		title: tf('formula.pgamma'),
-		syntax:'pgamma(quantile, shape, scale)',
-		description: 'Distribution function for the Gamma distribution',
-    category: 2
-  },
-	{
-		key: 'qgamma',
-		title: tf('formula.qgamma'),
-		syntax:'qgamma(probability, shape, scale)',
-		description: 'Quantile function for the Gamma distribution',
-    category: 2
-  },
-	{
-		key: 'rgamma',
-		title: tf('formula.rgamma'),
-		syntax:'rgamma(shape, scale)',
-		description: 'Random generation for the Gamma distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dpois',
-		title: tf('formula.dpois'),
-		syntax:'dpois(quantile, lambda)',
-		description: 'Density for the Poisson distribution',
-    category: 2
-  },
-	{
-		key: 'ppois',
-		title: tf('formula.ppois'),
-		syntax:'ppois(quantile, lambda)',
-		description: 'Distribution function for the Poisson distribution',
-    category: 2
-  },
-	{
-		key: 'qpois',
-		title: tf('formula.qpois'),
-		syntax:'qpois(probability, lambda)',
-		description: 'Quantile function for the Poisson distribution',
-    category: 2
-  },
-	{
-		key: 'rpois',
-		title: tf('formula.rpois'),
-		syntax:'rpois(lambda)',
-		description: 'Random generation for the Poisson distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dweibull',
-		title: tf('formula.dweibull'),
-		syntax:'dweibull(quantile, shape, scale)',
-		description: 'Density for the Weibull distribution',
-    category: 2
-  },
-	{
-		key: 'pweibull',
-		title: tf('formula.pweibull'),
-		syntax:'pweibull(quantile, shape, scale)',
-		description: 'Distribution function for the Weibull distribution',
-    category: 2
-  },
-	{
-		key: 'qweibull',
-		title: tf('formula.qweibull'),
-		syntax:'qweibull(probability, shape, scale)',
-		description: 'Quantile function for the Weibull distribution',
-    category: 2
-  },
-	{
-		key: 'rweibull',
-		title: tf('formula.rweibull'),
-		syntax:'rweibull(shape, scale)',
-		description: 'Random generation for the Weibull distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dcauchy',
-		title: tf('formula.dcauchy'),
-		syntax:'dcauchy(quantile, location, scale)',
-		description: 'Density for the Cauchy distribution',
-    category: 2
-  },
-	{
-		key: 'pcauchy',
-		title: tf('formula.pcauchy'),
-		syntax:'pcauchy(quantile, location, scale)',
-		description: 'Distribution function for the Cauchy distribution',
-    category: 2
-  },
-	{
-		key: 'qcauchy',
-		title: tf('formula.qcauchy'),
-		syntax:'qcauchy(probability, location, scale)',
-		description: 'Quantile function for the Cauchy distribution',
-    category: 2
-  },
-	{
-		key: 'rcauchy',
-		title: tf('formula.rcauchy'),
-		syntax:'rcauchy(location, scale)',
-		description: 'Random generation for the Cauchy distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dbeta',
-		title: tf('formula.dbeta'),
-		syntax:'dbeta(quantile, shape1, shape2, [non-centrality])',
-		description: 'Density for the Beta distribution',
-    category: 2
-  },
-	{
-		key: 'pbeta',
-		title: tf('formula.pbeta'),
-		syntax:'pbeta(quantile, shape1, shape2, [non-centrality])',
-		description: 'Distribution function for the Beta distribution',
-    category: 2
-  },
-	{
-		key: 'qbeta',
-		title: tf('formula.qbeta'),
-		syntax:'qbeta(probability, shape1, shape2, [non-centrality])',
-		description: 'Quantile function for the Beta distribution',
-    category: 2
-  },
-	{
-		key: 'rbeta',
-		title: tf('formula.rbeta'),
-		syntax:'rbeta(shape1, shape2, [non-centrality])',
-		description: 'Random generation for the Beta distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dt',
-		title: tf('formula.dt'),
-		syntax:'dt(quantile, degrees of freedom, [non-centrality])',
-		description: 'Density for the t distribution',
-    category: 2
-  },
-	{
-		key: 'pt',
-		title: tf('formula.pt'),
-		syntax:'pt(quantile, degrees of freedom, [non-centrality])',
-		description: 'Distribution function for the t distribution',
-    category: 2
-  },
-	{
-		key: 'qt',
-		title: tf('formula.qt'),
-		syntax:'qt(probability, degrees of freedom, [non-centrality])',
-		description: 'Quantile function for the t distribution',
-    category: 2
-  },
-	{
-		key: 'rt',
-		title: tf('formula.rt'),
-		syntax:'rt(degrees of freedom, [non-centrality])',
-		description: 'Random generation for the t distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'df',
-		title: tf('formula.df'),
-		syntax:'df(quantile, degrees of freedom1, degrees of freedom2, [non-centrality])',
-		description: 'Density for the F distribution',
-    category: 2
-  },
-	{
-		key: 'pf',
-		title: tf('formula.pf'),
-		syntax:'pf(quantile, degrees of freedom1, degrees of freedom2, [non-centrality])',
-		description: 'Distribution function for the F distribution',
-    category: 2
-  },
-	{
-		key: 'qf',
-		title: tf('formula.qf'),
-		syntax:'qf(probability, degrees of freedom1, degrees of freedom2, [non-centrality])',
-		description: 'Quantile function for the F distribution',
-    category: 2
-  },
-	{
-		key: 'rf',
-		title: tf('formula.rf'),
-		syntax:'rf(degrees of freedom1, degrees of freedom2, [non-centrality])',
-		description: 'Random generation for the F distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dbinom',
-		title: tf('formula.dbinom'),
-		syntax:'dbinom(quantile, number of trials, probability of success)',
-		description: 'Density for the binomial distribution',
-    category: 2
-  },
-	{
-		key: 'pbinom',
-		title: tf('formula.pbinom'),
-		syntax:'pbinom(quantile, number of trials, probability of success)',
-		description: 'Distribution function for the binomial distribution',
-    category: 2
-  },
-	{
-		key: 'qbinom',
-		title: tf('formula.qbinom'),
-		syntax:'qbinom(probability, number of trials, probability of success)',
-		description: 'Quantile function for the binomial distribution',
-    category: 2
-  },
-	{
-		key: 'rbinom',
-		title: tf('formula.rbinom'),
-		syntax:'rbinom(number of trials, probability of success)',
-		description: 'Random generation for the binomial distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dgeom',
-		title: tf('formula.dgeom'),
-		syntax:'dgeom(quantile, probability of success)',
-		description: 'Density for the geometric distribution',
-    category: 2
-  },
-	{
-		key: 'pgeom',
-		title: tf('formula.pgeom'),
-		syntax:'pgeom(quantile, probability of success)',
-		description: 'Distribution function for the geometric distribution',
-    category: 2
-  },
-	{
-		key: 'qgeom',
-		title: tf('formula.qgeom'),
-		syntax:'qgeom(probability, probability of success)',
-		description: 'Quantile function for the geometric distribution',
-    category: 2
-  },
-	{
-		key: 'rgeom',
-		title: tf('formula.rgeom'),
-		syntax:'rgeom(probability of success)',
-		description: 'Random generation for the geometric distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dhyper',
-		title: tf('formula.dhyper'),
-		syntax:'dhyper(quantile, white balls, black balls, balls drawn)',
-		description: 'Density for the hypergeometric distribution',
-    category: 2
-  },
-	{
-		key: 'phyper',
-		title: tf('formula.phyper'),
-		syntax:'phyper(quantile, white balls, black balls, balls drawn)',
-		description: 'Distribution function for the hypergeometric distribution',
-    category: 2
-  },
-	{
-		key: 'qhyper',
-		title: tf('formula.qhyper'),
-		syntax:'qhyper(probability, white balls, black balls, balls drawn)',
-		description: 'Quantile function for the hypergeometric distribution',
-    category: 2
-  },
-	{
-		key: 'rhyper',
-		title: tf('formula.rhyper'),
-		syntax:'rhyper(white balls, black balls, balls drawn)',
-		description: 'Random generation for the hypergeometric distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dlogis',
-		title: tf('formula.dlogis'),
-		syntax:'dlogis(quantile, location, scale)',
-		description: 'Density for the logistic distribution',
-    category: 2
-  },
-	{
-		key: 'plogis',
-		title: tf('formula.plogis'),
-		syntax:'plogis(quantile, location, scale)',
-		description: 'Distribution function for the logistic distribution',
-    category: 2
-  },
-	{
-		key: 'qlogis',
-		title: tf('formula.qlogis'),
-		syntax:'qlogis(probability, location, scale)',
-		description: 'Quantile function for the logistic distribution',
-    category: 2
-  },
-	{
-		key: 'rlogis',
-		title: tf('formula.rlogis'),
-		syntax:'rlogis(location, scale)',
-		description: 'Random generation for the logistic distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dlnorm',
-		title: tf('formula.dlnorm'),
-		syntax:'dlnorm(quantile, mean log, standard deviation log)',
-		description: 'Density for the log normal distribution',
-    category: 2
-  },
-	{
-		key: 'plnorm',
-		title: tf('formula.plnorm'),
-		syntax:'plnorm(quantile, mean log, standard deviation log)',
-		description: 'Distribution function for the log normal distribution',
-    category: 2
-  },
-	{
-		key: 'qlnorm',
-		title: tf('formula.qlnorm'),
-		syntax:'qlnorm(probability, mean log, standard deviation log)',
-		description: 'Quantile function for the log normal distribution',
-    category: 2
-  },
-	{
-		key: 'rlnorm',
-		title: tf('formula.rlnorm'),
-		syntax:'rlnorm(mean log, standard deviation log)',
-		description: 'Random generation for the log normal distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dnbinom',
-		title: tf('formula.dnbinom'),
-		syntax:'dnbinom(quantile, number of trials, probability of success)',
-		description: 'Density for the negative binomial distribution',
-    category: 2
-  },
-	{
-		key: 'pnbinom',
-		title: tf('formula.pnbinom'),
-		syntax:'pnbinom(quantile, number of trials, probability of success)',
-		description: 'Distribution function for the negative binomial distribution',
-    category: 2
-  },
-	{
-		key: 'qnbinom',
-		title: tf('formula.qnbinom'),
-		syntax:'qnbinom(probability, number of trials, probability of success)',
-		description: 'Quantile function for the negative binomial distribution',
-    category: 2
-  },
-	{
-		key: 'rnbinom',
-		title: tf('formula.rnbinom'),
-		syntax:'rnbinom(number of trials, probability of success)',
-		description: 'Random generation for the negative binomial distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dunif',
-		title: tf('formula.dunif'),
-		syntax:'dunif(quantile, min, max)',
-		description: 'Density for the uniform distribution',
-    category: 2
-  },
-	{
-		key: 'punif',
-		title: tf('formula.punif'),
-		syntax:'punif(quantile, min, max)',
-		description: 'Distribution function for the uniform distribution',
-    category: 2
-  },
-	{
-		key: 'qunif',
-		title: tf('formula.qunif'),
-		syntax:'qunif(probability, min, max)',
-		description: 'Quantile function for the uniform distribution',
-    category: 2
-  },
-	{
-		key: 'runif',
-		title: tf('formula.runif'),
-		syntax:'runif(min, max)',
-		description: 'Random generation for the uniform distribution',
-		addStart: '1,',
-    category: 2
-  },
-	{
-		key: 'dwilcox',
-		title: tf('formula.dwilcox'),
-		syntax:'dunif(quantile, number of observations 1, number of observations 2)',
-		description: 'Density for the distribution of the Wilcoxon rank sum statistic',
-    category: 2
-  },
-	{
-		key: 'pwilcox',
-		title: tf('formula.pwilcox'),
-		syntax:'punif(quantile, number of observations 1, number of observations 2)',
-		description: 'Distribution function for the distribution of the Wilcoxon rank sum statistic',
-    category: 2
-  },
-	{
-		key: 'qwilcox',
-		title: tf('formula.qwilcox'),
-		syntax:'qunif(probability, number of observations 1, number of observations 2)',
-		description: 'Quantile function for the distribution of the Wilcoxon rank sum statistic',
-    category: 2
-  },
-	{key: 'rwilcox',
-		title: tf('formula.rwilcox'),
-		syntax:'runif(number of observations 1, number of observations 2)',
-		description: 'Random generation for the distribution of the Wilcoxon rank sum statistic',
-		addStart: '1,',
-    category: 2
+  // Distributions
+  {
+    key: 'dnorm',
+    title: tf('formula.dnorm'),
+    syntax: 'dnorm(quantile, mean, sd)',
+    description: 'Density for the normal distribution',
+    category: 2,
+  },
+  {
+    key: 'pnorm',
+    title: tf('formula.pnorm'),
+    syntax: 'pnorm(quantile, mean, sd)',
+    description: 'Distribution function for the normal distribution',
+    category: 2,
+  },
+  {
+    key: 'qnorm',
+    title: tf('formula.qnorm'),
+    syntax: 'qnorm(probability, mean, sd)',
+    description: 'Quantile function for the normal distribution',
+    category: 2,
+  },
+  {
+    key: 'rnorm',
+    title: tf('formula.rnorm'),
+    syntax: 'rnorm(mean, sd)',
+    description: 'Random generation for the normal distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dexp',
+    title: tf('formula.dexp'),
+    syntax: 'dexp(quantile, rate)',
+    description: 'Density for the exponential distribution',
+    category: 2,
+  },
+  {
+    key: 'pexp',
+    title: tf('formula.pexp'),
+    syntax: 'pexp(quantile, rate)',
+    description: 'Distribution function for the exponential distribution',
+    category: 2,
+  },
+  {
+    key: 'qexp',
+    title: tf('formula.qexp'),
+    syntax: 'qexp(probability, rate)',
+    description: 'Quantile function for the exponential distribution',
+    category: 2,
+  },
+  {
+    key: 'rexp',
+    title: tf('formula.rexp'),
+    syntax: 'rexp(rate)',
+    description: 'Random generation for the exponential distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dgamma',
+    title: tf('formula.dgamma'),
+    syntax: 'dgamma(quantile, shape, scale)',
+    description: 'Density for the Gamma distribution',
+    category: 2,
+  },
+  {
+    key: 'pgamma',
+    title: tf('formula.pgamma'),
+    syntax: 'pgamma(quantile, shape, scale)',
+    description: 'Distribution function for the Gamma distribution',
+    category: 2,
+  },
+  {
+    key: 'qgamma',
+    title: tf('formula.qgamma'),
+    syntax: 'qgamma(probability, shape, scale)',
+    description: 'Quantile function for the Gamma distribution',
+    category: 2,
+  },
+  {
+    key: 'rgamma',
+    title: tf('formula.rgamma'),
+    syntax: 'rgamma(shape, scale)',
+    description: 'Random generation for the Gamma distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dpois',
+    title: tf('formula.dpois'),
+    syntax: 'dpois(quantile, lambda)',
+    description: 'Density for the Poisson distribution',
+    category: 2,
+  },
+  {
+    key: 'ppois',
+    title: tf('formula.ppois'),
+    syntax: 'ppois(quantile, lambda)',
+    description: 'Distribution function for the Poisson distribution',
+    category: 2,
+  },
+  {
+    key: 'qpois',
+    title: tf('formula.qpois'),
+    syntax: 'qpois(probability, lambda)',
+    description: 'Quantile function for the Poisson distribution',
+    category: 2,
+  },
+  {
+    key: 'rpois',
+    title: tf('formula.rpois'),
+    syntax: 'rpois(lambda)',
+    description: 'Random generation for the Poisson distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dweibull',
+    title: tf('formula.dweibull'),
+    syntax: 'dweibull(quantile, shape, scale)',
+    description: 'Density for the Weibull distribution',
+    category: 2,
+  },
+  {
+    key: 'pweibull',
+    title: tf('formula.pweibull'),
+    syntax: 'pweibull(quantile, shape, scale)',
+    description: 'Distribution function for the Weibull distribution',
+    category: 2,
+  },
+  {
+    key: 'qweibull',
+    title: tf('formula.qweibull'),
+    syntax: 'qweibull(probability, shape, scale)',
+    description: 'Quantile function for the Weibull distribution',
+    category: 2,
+  },
+  {
+    key: 'rweibull',
+    title: tf('formula.rweibull'),
+    syntax: 'rweibull(shape, scale)',
+    description: 'Random generation for the Weibull distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dcauchy',
+    title: tf('formula.dcauchy'),
+    syntax: 'dcauchy(quantile, location, scale)',
+    description: 'Density for the Cauchy distribution',
+    category: 2,
+  },
+  {
+    key: 'pcauchy',
+    title: tf('formula.pcauchy'),
+    syntax: 'pcauchy(quantile, location, scale)',
+    description: 'Distribution function for the Cauchy distribution',
+    category: 2,
+  },
+  {
+    key: 'qcauchy',
+    title: tf('formula.qcauchy'),
+    syntax: 'qcauchy(probability, location, scale)',
+    description: 'Quantile function for the Cauchy distribution',
+    category: 2,
+  },
+  {
+    key: 'rcauchy',
+    title: tf('formula.rcauchy'),
+    syntax: 'rcauchy(location, scale)',
+    description: 'Random generation for the Cauchy distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dbeta',
+    title: tf('formula.dbeta'),
+    syntax: 'dbeta(quantile, shape1, shape2, [non-centrality])',
+    description: 'Density for the Beta distribution',
+    category: 2,
+  },
+  {
+    key: 'pbeta',
+    title: tf('formula.pbeta'),
+    syntax: 'pbeta(quantile, shape1, shape2, [non-centrality])',
+    description: 'Distribution function for the Beta distribution',
+    category: 2,
+  },
+  {
+    key: 'qbeta',
+    title: tf('formula.qbeta'),
+    syntax: 'qbeta(probability, shape1, shape2, [non-centrality])',
+    description: 'Quantile function for the Beta distribution',
+    category: 2,
+  },
+  {
+    key: 'rbeta',
+    title: tf('formula.rbeta'),
+    syntax: 'rbeta(shape1, shape2, [non-centrality])',
+    description: 'Random generation for the Beta distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dt',
+    title: tf('formula.dt'),
+    syntax: 'dt(quantile, degrees of freedom, [non-centrality])',
+    description: 'Density for the t distribution',
+    category: 2,
+  },
+  {
+    key: 'pt',
+    title: tf('formula.pt'),
+    syntax: 'pt(quantile, degrees of freedom, [non-centrality])',
+    description: 'Distribution function for the t distribution',
+    category: 2,
+  },
+  {
+    key: 'qt',
+    title: tf('formula.qt'),
+    syntax: 'qt(probability, degrees of freedom, [non-centrality])',
+    description: 'Quantile function for the t distribution',
+    category: 2,
+  },
+  {
+    key: 'rt',
+    title: tf('formula.rt'),
+    syntax: 'rt(degrees of freedom, [non-centrality])',
+    description: 'Random generation for the t distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'df',
+    title: tf('formula.df'),
+    syntax: 'df(quantile, degrees of freedom1, degrees of freedom2, [non-centrality])',
+    description: 'Density for the F distribution',
+    category: 2,
+  },
+  {
+    key: 'pf',
+    title: tf('formula.pf'),
+    syntax: 'pf(quantile, degrees of freedom1, degrees of freedom2, [non-centrality])',
+    description: 'Distribution function for the F distribution',
+    category: 2,
+  },
+  {
+    key: 'qf',
+    title: tf('formula.qf'),
+    syntax: 'qf(probability, degrees of freedom1, degrees of freedom2, [non-centrality])',
+    description: 'Quantile function for the F distribution',
+    category: 2,
+  },
+  {
+    key: 'rf',
+    title: tf('formula.rf'),
+    syntax: 'rf(degrees of freedom1, degrees of freedom2, [non-centrality])',
+    description: 'Random generation for the F distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dbinom',
+    title: tf('formula.dbinom'),
+    syntax: 'dbinom(quantile, number of trials, probability of success)',
+    description: 'Density for the binomial distribution',
+    category: 2,
+  },
+  {
+    key: 'pbinom',
+    title: tf('formula.pbinom'),
+    syntax: 'pbinom(quantile, number of trials, probability of success)',
+    description: 'Distribution function for the binomial distribution',
+    category: 2,
+  },
+  {
+    key: 'qbinom',
+    title: tf('formula.qbinom'),
+    syntax: 'qbinom(probability, number of trials, probability of success)',
+    description: 'Quantile function for the binomial distribution',
+    category: 2,
+  },
+  {
+    key: 'rbinom',
+    title: tf('formula.rbinom'),
+    syntax: 'rbinom(number of trials, probability of success)',
+    description: 'Random generation for the binomial distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dgeom',
+    title: tf('formula.dgeom'),
+    syntax: 'dgeom(quantile, probability of success)',
+    description: 'Density for the geometric distribution',
+    category: 2,
+  },
+  {
+    key: 'pgeom',
+    title: tf('formula.pgeom'),
+    syntax: 'pgeom(quantile, probability of success)',
+    description: 'Distribution function for the geometric distribution',
+    category: 2,
+  },
+  {
+    key: 'qgeom',
+    title: tf('formula.qgeom'),
+    syntax: 'qgeom(probability, probability of success)',
+    description: 'Quantile function for the geometric distribution',
+    category: 2,
+  },
+  {
+    key: 'rgeom',
+    title: tf('formula.rgeom'),
+    syntax: 'rgeom(probability of success)',
+    description: 'Random generation for the geometric distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dhyper',
+    title: tf('formula.dhyper'),
+    syntax: 'dhyper(quantile, white balls, black balls, balls drawn)',
+    description: 'Density for the hypergeometric distribution',
+    category: 2,
+  },
+  {
+    key: 'phyper',
+    title: tf('formula.phyper'),
+    syntax: 'phyper(quantile, white balls, black balls, balls drawn)',
+    description: 'Distribution function for the hypergeometric distribution',
+    category: 2,
+  },
+  {
+    key: 'qhyper',
+    title: tf('formula.qhyper'),
+    syntax: 'qhyper(probability, white balls, black balls, balls drawn)',
+    description: 'Quantile function for the hypergeometric distribution',
+    category: 2,
+  },
+  {
+    key: 'rhyper',
+    title: tf('formula.rhyper'),
+    syntax: 'rhyper(white balls, black balls, balls drawn)',
+    description: 'Random generation for the hypergeometric distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dlogis',
+    title: tf('formula.dlogis'),
+    syntax: 'dlogis(quantile, location, scale)',
+    description: 'Density for the logistic distribution',
+    category: 2,
+  },
+  {
+    key: 'plogis',
+    title: tf('formula.plogis'),
+    syntax: 'plogis(quantile, location, scale)',
+    description: 'Distribution function for the logistic distribution',
+    category: 2,
+  },
+  {
+    key: 'qlogis',
+    title: tf('formula.qlogis'),
+    syntax: 'qlogis(probability, location, scale)',
+    description: 'Quantile function for the logistic distribution',
+    category: 2,
+  },
+  {
+    key: 'rlogis',
+    title: tf('formula.rlogis'),
+    syntax: 'rlogis(location, scale)',
+    description: 'Random generation for the logistic distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dlnorm',
+    title: tf('formula.dlnorm'),
+    syntax: 'dlnorm(quantile, mean log, standard deviation log)',
+    description: 'Density for the log normal distribution',
+    category: 2,
+  },
+  {
+    key: 'plnorm',
+    title: tf('formula.plnorm'),
+    syntax: 'plnorm(quantile, mean log, standard deviation log)',
+    description: 'Distribution function for the log normal distribution',
+    category: 2,
+  },
+  {
+    key: 'qlnorm',
+    title: tf('formula.qlnorm'),
+    syntax: 'qlnorm(probability, mean log, standard deviation log)',
+    description: 'Quantile function for the log normal distribution',
+    category: 2,
+  },
+  {
+    key: 'rlnorm',
+    title: tf('formula.rlnorm'),
+    syntax: 'rlnorm(mean log, standard deviation log)',
+    description: 'Random generation for the log normal distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dnbinom',
+    title: tf('formula.dnbinom'),
+    syntax: 'dnbinom(quantile, number of trials, probability of success)',
+    description: 'Density for the negative binomial distribution',
+    category: 2,
+  },
+  {
+    key: 'pnbinom',
+    title: tf('formula.pnbinom'),
+    syntax: 'pnbinom(quantile, number of trials, probability of success)',
+    description: 'Distribution function for the negative binomial distribution',
+    category: 2,
+  },
+  {
+    key: 'qnbinom',
+    title: tf('formula.qnbinom'),
+    syntax: 'qnbinom(probability, number of trials, probability of success)',
+    description: 'Quantile function for the negative binomial distribution',
+    category: 2,
+  },
+  {
+    key: 'rnbinom',
+    title: tf('formula.rnbinom'),
+    syntax: 'rnbinom(number of trials, probability of success)',
+    description: 'Random generation for the negative binomial distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dunif',
+    title: tf('formula.dunif'),
+    syntax: 'dunif(quantile, min, max)',
+    description: 'Density for the uniform distribution',
+    category: 2,
+  },
+  {
+    key: 'punif',
+    title: tf('formula.punif'),
+    syntax: 'punif(quantile, min, max)',
+    description: 'Distribution function for the uniform distribution',
+    category: 2,
+  },
+  {
+    key: 'qunif',
+    title: tf('formula.qunif'),
+    syntax: 'qunif(probability, min, max)',
+    description: 'Quantile function for the uniform distribution',
+    category: 2,
+  },
+  {
+    key: 'runif',
+    title: tf('formula.runif'),
+    syntax: 'runif(min, max)',
+    description: 'Random generation for the uniform distribution',
+    addStart: '1,',
+    category: 2,
+  },
+  {
+    key: 'dwilcox',
+    title: tf('formula.dwilcox'),
+    syntax: 'dunif(quantile, number of observations 1, number of observations 2)',
+    description: 'Density for the distribution of the Wilcoxon rank sum statistic',
+    category: 2,
+  },
+  {
+    key: 'pwilcox',
+    title: tf('formula.pwilcox'),
+    syntax: 'punif(quantile, number of observations 1, number of observations 2)',
+    description: 'Distribution function for the distribution of the Wilcoxon rank sum statistic',
+    category: 2,
+  },
+  {
+    key: 'qwilcox',
+    title: tf('formula.qwilcox'),
+    syntax: 'qunif(probability, number of observations 1, number of observations 2)',
+    description: 'Quantile function for the distribution of the Wilcoxon rank sum statistic',
+    category: 2,
+  },
+  {
+    key: 'rwilcox',
+    title: tf('formula.rwilcox'),
+    syntax: 'runif(number of observations 1, number of observations 2)',
+    description: 'Random generation for the distribution of the Wilcoxon rank sum statistic',
+    addStart: '1,',
+    category: 2,
   },
   // Data
-	// {
-	// 	key: 'c',
-	// 	title: tf('formula.c'),
-	// 	syntax:'c(range, [range])',
-	// 	description: 'a generic function which combines its arguments',
-  //   category: 3
-	// },
+  // {
+  // 	key: 'c',
+  // 	title: tf('formula.c'),
+  // 	syntax:'c(range, [range])',
+  // 	description: 'a generic function which combines its arguments',
+  //   category: 3,
+  // },
   {
     key: 'seq',
     title: tf('formula.seq'),
-    syntax:'seq(from, to)',
+    syntax: 'seq(from, to)',
     description: 'generates a sequence',
-    category: 3
+    category: 3,
   },
   {
     key: 'rep',
     title: tf('formula.rep'),
-    syntax:'rep(value, times)',
+    syntax: 'rep(value, times)',
     description: 'replicates value',
-    category: 3
+    category: 3,
   },
   // {
   //   key: 'list',
   //   title: tf('formula.list'),
   //   syntax:'list(range, [range])',
   //   description: 'create a list',
-  //   category: 3
+  //   category: 3,
   // },
   // {
   //   key: 'array',
   //   title: tf('formula.array'),
   //   syntax:'array(range, dimension)',
   //   description: 'array',
-  //   category: 3
+  //   category: 3,
   // },
   // {
   //   key: 'matrix',
   //   title: tf('formula.matrix'),
   //   syntax:'matrix(range, rows, columns)',
   //   description: 'matrix',
-  //   category: 3
+  //   category: 3,
   // },
   // {
   //   key: 'factor',
   //   title: tf('formula.factor'),
   //   syntax:'factor(range, levels)',
   //   description: 'generates a factor',
-  //   category: 3
+  //   category: 3,
   // },
   // {
   //   key: 'gl',
   //   title: tf('formula.gl'),
   //   syntax:'gl(replications, levels, length, labels)',
   //   description: 'generates levels (factors) by specifying the pattern of their levels',
-  //   category: 3
+  //   category: 3,
   // },
   // {
   //   key: 'rbind',
   //   title: tf('formula.rbind'),
   //   syntax:'rbind(range, [range])',
   //   description: 'combine arguments by rows',
-  //   category: 3
+  //   category: 3,
   // },
   // {
   //   key: 'cbind',
   //   title: tf('formula.cbind'),
   //   syntax:'cbind(range, [range])',
   //   description: 'combine arguments by columns',
-  //   category: 3
+  //   category: 3,
   // },
 ];
 
@@ -1045,13 +1046,13 @@ rFormulas.forEach((f) => {
 });
 
 const formulan = formulas
-  .map(f => f.key)
+  .map((f) => f.key);
 
-export default rFormulas
+export default rFormulas;
 
 export {
-	formulam,
+  formulam,
   formulan,
-	formulas,
+  formulas,
   rFormulas,
-}
+};

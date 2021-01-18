@@ -6,7 +6,7 @@ export default class FormInput {
     this.vchange = () => {};
     this.el = h('div', `${cssPrefix}-form-input`);
     this.input = h('input', '').css('width', width)
-      .on('input', evt => this.vchange(evt))
+      .on('input', (evt) => this.vchange(evt))
       .attr('placeholder', hint);
     this.el.child(this.input);
   }

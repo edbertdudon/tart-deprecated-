@@ -1,648 +1,648 @@
 import { tf } from '../locale';
 
 const statistics = [
-	// Descriptive Statistics
-	{
-		key: 'statdesc',
-		title: tf('statdesc'),
-		function: 'statdesc',
-		arguments: ['columns'],
-		description: '',
-		category: 0
-	},
-	// Frequency tables
-	{
-		key: 'onewaytable',
-		title: tf('onewaytable'),
-		function: 'ftable',
-		description: '',
-		category: 1
-	},
-	{
-		key: 'twowaytable',
-		title: tf('twowaytable'),
-		function: 'ftable',
-		description: '',
-		category: 1
-	},
-	{
-		key: 'threewaytable',
-		title: tf('threewaytable'),
-		function: 'ftable',
-		description: '',
-		category: 1
-	},
-	// Two-Way Cross Tabulation
-	// Tests of Independence
-	{
-		key: 'chisqtest',
-		title: tf('chisqtest'),
-		function: 'chisqtest',
-		arguments: ['xvariable', 'yvariable', 'correct', 'probs'],
-		description: '',
-		category: 2
-	},
-	{
-		key: 'fishertest',
-		title: tf('fishertest'),
-		function: 'fishertest',
-		arguments: ['xvariable', 'yvariable', 'alt', 'conf'],
-		description: '',
-		category: 2
-	},
-	{
-		key: 'mantelhaentest',
-		title: tf('mantelhaentest'),
-		function: 'mantelhaentest',
-		arguments: ['xvariable', 'yvariable', 'zvariable', 'alt', 'conf'],
-		description: '',
-		category: 2
-	},
-	// Correlations
-	{
-		key: 'cor',
-		title: tf('cor'),
-		function: 'correlation',
-		arguments: ['matrix', 'corr'],
-		description: '',
-		category: 3
-	},
-	{
-		key: 'cov',
-		title: tf('cov'),
-		function: 'covariance',
-		arguments: ['matrix' ,'corr'],
-		description: '',
-		category: 3
-	},
-	{
-		key: 'cortest',
-		title: tf('cortest'),
-		function: 'cortest',
-		arguments: ['xvariable', 'yvariable' ,'alt', 'method'],
-		description: '',
-		category: 3
-	},
-	// t-tests
-	{
-		key: 'onettest',
-		title: tf('onettest'),
-		function: 'ttest',
-		arguments: ['xvariable', 'alt', 'varEqual', 'mu', 'conf'],
-		description: '',
-		category: 4
-	},
-	{
-		key: 'pairedttest',
-		title: tf('pairedttest'),
-		function: 'pairedttest',
-		arguments: ['xvariable', 'yvariable', 'alt', 'varEqual', 'conf'],
-		description: '',
-		category: 4
-	},
-	{
-		key: 'independentttest',
-		title: tf('independentttest'),
-		function: 'independentttest',
-		arguments: ['xvariable', 'yvariable', 'alt', 'varEqual', 'conf'],
-		description: '',
-		category: 4
-	},
-	// {
-	// 	key: 'pairwisettest',
-	// 	title: tf('pairwisettest'),
-	// function: 'pairwise.t.test(',
-	// arguments: ['xvariable', 'groups', 'alt'],
-	// 	description: '',
-	// 	category: 4
-	// },
-	// {
-	// 	key: 'proptest',
-	// 	title: tf('proptest'),
-	// 	function: 'prop.test(',
-	// 	arguments: ['successes', 'trials', 'prob', 'alt', 'conf', 'correct'],
-	// 	description: '',
-	// 	category: 4
-	// },
-	// {key: 'F test to compare two variances', function: 'var.test(', category: 2},
-	// Nonparametric Tests of Group Differences
-	{
-		key: 'wilcoxtest',
-		title: tf('wilcoxtest'),
-		function: 'wilcoxtest',
-		arguments: ['xvariable', 'yvariable', 'alt'],
-		description: '',
-		category: 5
-	},
-	{
-		key: 'pairedwilcoxtest',
-		title: tf('pairedwilcoxtest'),
-		function: 'pairedwilcoxtest',
-		arguments: ['xvariable', 'yvariable', 'alt'],
-		description: '',
-		category: 5
-	},
-	// {
-	// 	key: 'pairwisewilcoxtext',
-	// 	title: tf('pairwisewilcoxtext'),
-	// 	function: 'pairwise.wilcox.test(',
-	// 	arguments: ['xvariable', 'groups', 'padj'],
-	// 	description: '',
-	// 	category: 5
-	// },
-	{
-		key: 'kruskaltest',
-		title: tf('kruskaltest'),
-		function: 'kruskaltest',
-		arguments: ['xvariable', 'groups'],
-		description: '',
-		category: 5
-	},
-	{
-		key: 'friedmantest',
-		title: tf('friedmantest'),
-		function: 'friedmantest',
-		arguments: ['yvariable', 'groups', 'blocks'],
-		description: '',
-		category: 5
-	},
-	// Fitting Linear Models Tools
-	{
-		key: 'coef',
-		title: tf('coef'),
-		function: 'coef',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	{
-		key: 'confint',
-		title: tf('confint'),
-		function: 'confint',
-		arguments: ['formula', 'conf'],
-		description: '',
-		category: 6
-	},
-	{
-		key: 'fitted',
-		title: tf('fitted'),
-		function: 'fitted',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	{
-		key: 'residuals',
-		title: tf('residuals'),
-		function: 'residuals',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	{
-		key: 'vcov',
-		title: tf('vcov'),
-		function: 'vcov',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	{
-		key: 'aic',
-		title: tf('aic'),
-		function: 'aic',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	{
-		key: 'predict',
-		title: tf('predict'),
-		function: 'predict',
-		arguments: ['formula'],
-		description: '',
-		category: 6
-	},
-	// Regressions
-	{
-		key: 'simplelinreg',
-		title: tf('simplelinreg'),
-		function: 'simplelinreg',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'linreg',
-		title: tf('linreg'),
-		function: 'linreg',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'binomreg',
-		title: tf('binomreg'),
-		function: 'glm(family=binomial(),',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	// {
-	// 	key: 'gaussianreg',
-		// title: tf('gaussianreg'),
-	// 	function: 'glm(family=gaussian,',
-	// 	arguments: ['formula'],
-	// 	category: 7
-	// },
-	{
-		key: 'gammareg',
-		title: tf('gammareg'),
-		function: 'glm(family=Gamma,',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'inversegammareg',
-		title: tf('inversegammareg'),
-		function: 'glm(family=inverse.gaussian,',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'poissonreg',
-		title: tf('poissonreg'),
-		function: 'glm(family=poisson,',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'quasireg',
-		title: tf('quasireg'),
-		function: 'glm(family=quasi,',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'quasibinomreg',
-		title: tf('quasibinomreg'),
-		function: 'glm(family=quasibinomial,',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	{
-		key: 'quasipoissonreg',
-		title: tf('quasipoissonreg'),
-		function: 'glm(family=quasipoisson,',
-		arguments: ['formula'],
-		description: '',
-		category: 7
-	},
-	// {
-	// 	key: 'influence',
-	// 	title: tf('influence'),
-	// 	function: 'influence(',
-	// 	arguments: ['multipleLinearRegression'],
-	// 	description: '',
-	// 	category: 9
-	// },
-	// {
-	// 	key: 'companova',
-	// 	title: tf('companova'),
-	// 	function: 'anova(',
-	// 	arguments: ['multipleLinearRegression', 'multipleLinearRegression2'],
-	// 	description: 'Tests the models against one another in the order specified.',
-	// 	category: 9
-	// },
-	// Cross Validation
-	// Variable Selection
-	// Relative Importance
-	// Nonlinear regression
-	// Robust regression
-	// Regression Diagnostics
-	{
-		key: 'durbinwatson',
-		title: tf('durbinwatson'),
-		function: 'durbinwatson',
-		description: '',
-		category: 8
-	},
-	{
-		key: 'ncvtest',
-		title: tf('ncvtest'),
-		function: 'ncvtest',
-		description: '',
-		category: 8
-	},
-	{
-		key: 'outliertest',
-		title: tf('outliertest'),
-		function: 'outliertest',
-		description: '',
-		category: 8
-	},
-	{
-		key: 'varianceinflation',
-		title: tf('varianceinflation'),
-		function: 'varianceinflation',
-		description: '',
-		category: 8
-	},
-	// qqPlot()
-	// crPlot()
-	// spreadLevelPlot()
-	// influencePlot()
-	// scatterplot()
-	// scatterplotMatrix()
-	// ANOVA
-	{
-		key: 'anova',
-		title: tf('anova'),
-		function: 'anova',
-		arguments: ['formula'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'onewayaov',
-		title: tf('onewayaov'),
-		function: 'onewayaov',
-		arguments: ['oneWayAnova'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'tukeyhsd',
-		title: tf('tukeyhsd'),
-		function: 'tukeyhsd',
-		arguments: ['tukeyhsd'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'ancovawith1cov',
-		title: tf('ancovawith1cov'),
-		function: 'ancovawith1cov',
-		arguments: ['ancovawith1cov'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'twowayaov',
-		title: tf('twowayaov'),
-		function: 'twowayaov',
-		arguments: ['twoWayAnova'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'twowayancovawith2cov',
-		title: tf('twowayancovawith2cov'),
-		function: 'twowayancovawith2cov',
-		arguments: ['twowayancovawith2cov'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'randomaov',
-		title: tf('randomaov'),
-		function: 'randomaov',
-		arguments: ['randomizedBlockDesign'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'onewaywithinaov',
-		title: tf('onewaywithinaov'),
-		function: 'onewaywithinaov',
-		arguments: ['oneWayWithin'],
-		description: '',
-		category: 9
-	},
-	{
-		key: 'repeatedmeasuresaov',
-		title: tf('repeatedmeasuresaov'),
-		function: 'repeatedmeasuresaov',
-		arguments: ['repeatedmeasuresaov'],
-		description: '',
-		category: 9
-	},
-	// {
-	// 	key: 'twowaywithinaov',
-	// 	title: tf('twowaywithinaov'),
-	// 	function: 'aov(',
-	// 	arguments: ['twoWayWithin'],
-	// 	description: '',
-	// 	category: 9
-	// },
-	// {
-	// 	key: 'twowaybetweenaov',
-	// 	title: tf('twowaybetweenaov'),
-	// 	function: 'aov(',
-	// 	arguments: ['twoWayBetween'],
-	// 	description: '',
-	// 	category: 9
-	// },
-	// MANOVA
-	{
-		key: 'manova',
-		title: tf('manova'),
-		function: 'manova',
-		arguments: ['manova'],
-		description: '',
-		category: 10
-	},
-	{
-		key: 'onewayman',
-		title: tf('onewayman'),
-		function: 'onewayman',
-		arguments: ['oneWayManova'],
-		description: '',
-		category: 10
-	},
-	{
-		key: 'robustonewayman',
-		title: tf('robustonewayman'),
-		function: 'robustonewayman',
-		arguments: ['robustonewayman'],
-		description: '',
-		category: 10
-	},
-	// {
-	// 	key: 'randommanova',
-	// 	title: tf('randommanova'),
-	// 	function: 'manova(',
-	// 	arguments: ['randomizedBlockDesignManova'],
-	// 	description: '',
-	// 	category: 10
-	// },
-	// {
-	// 	key: 'twowaymanova',
-	// 	title: tf('twowaymanova'),
-	// 	function: 'manova(',
-	// 	arguments: ['twoWayManova'],
-	// 	description: '',
-	// 	category: 10
-	// },
-	// {
-	// 	key: 'covmanova',
-	// 	title: tf('covmanova'),
-	// 	function: 'manova(',
-	// 	arguments: ['mancova'],
-	// 	description: '',
-	// 	category: 10
-	// },
-	// {
-	// 	key: 'onewaywithinmanova',
-	// 	title: tf('onewaywithinmanova'),
-	// 	function: 'manova(',
-	// 	arguments: ['oneWayWithinManova'],
-	// 	description: '',
-	// 	category: 10
-	// },
-	// {
-	// 	key: 'twowaywithinmanova',
-	// 	title: tf('twowaywithinmanova'),
-	// 	function: 'manova(',
-	// 	arguments: ['twoWayWithinManova'],
-	// 	description: '',
-	// 	category: 10
-	// },
-	// {
-	// 	key: 'twowaybetweenmanova',
-	// 	title: tf('twowaybetweenmanova'),
-	// 	function: 'manova(',
-	// 	arguments: ['twoWayBetweenManova'],
-	// 	description: '',
-	// 	category: 10
-	// },
-	// contrasts() contr.helmert contr.poly contr.sum contr.treatment contr.SAS
-	// Equality of Variances Test
-	{
-		key: 'bartletttest',
-		title: tf('bartletttest'),
-		function: 'bartletttest',
-		description: '',
-		category: 11
-	},
-	{
-		key: 'flignertest',
-		title: tf('flignertest'),
-		function: 'flignertest',
-		description: '',
-		category: 11
-	},
-	// {
-	// 	key: 'hovtest',
-	// 	title: tf('hovtest'),
-	// 	function: 'hovtest',
-	// 	description: '',
-	// 	category: 11
-	// },
-	// Power Analysis
-	// 	key: 'poweranovatest',
-		// title: tf('poweranovatest'),
-	// 	function: 'power.anova.test(',
-	// 	category: 12
-	// },
-	// {
-	// 	key: 'powerttest',
-		// title: tf('powerttest'),
-	// 	function: 'power.t.test(',
-	// 	category: 12
-	// },
-	// Fitting
-	{
-		key: 'binomtest',
-		title: tf('binomtest'),
-		function: 'binom.test(',
-		arguments: ['successes', 'trials', 'prob', 'alt', 'conf'],
-		description: '',
-		category: 13
-	},
-	{
-		key: 'ansaritest',
-		title: tf('ansaritest'),
-		function: 'ansari.test(',
-		description: '',
-		category: 13
-	},
-	// {
-	// 	key: 'boxtest',
-		// title: tf('boxtest'),
-	// 	function: 'Box.test(',
-	// 	category: 12
-	// },
-	// {
-	// 	key: 'kstest',
-		// title: tf('kstest'),
-	// 	function: 'ks.test(',
-	// 	category: 12
-	// },
-	// {
-	// 	key: 'mauchlytest',
-		// title: tf('mauchlytest'),
-	// 	function: 'mauchly.test(',
-	// 	category: 12
-	// },
-	// {
-	// 	key: 'mcnemartest',
-		// title: tf('mcnemartest'),
-	// 	function: 'mcnemar.test(',
-	// 	category: 12
-	// },
-	{
-		key: 'moodtest',
-		title: tf('moodtest'),
-		function: 'mood.test(',
-		description: '',
-		category: 13
-	},
-	{
-		key: 'onewaytest',
-		title: tf('onewaytest'),
-		function: 'oneway.test(',
-		description: '',
-		category: 13
-	},
+  // Descriptive Statistics
+  {
+    key: 'statdesc',
+    title: tf('statdesc'),
+    function: 'statdesc',
+    arguments: ['columns'],
+    description: '',
+    category: 0,
+  },
+  // Frequency tables
+  {
+    key: 'onewaytable',
+    title: tf('onewaytable'),
+    function: 'ftable',
+    description: '',
+    category: 1,
+  },
+  {
+    key: 'twowaytable',
+    title: tf('twowaytable'),
+    function: 'ftable',
+    description: '',
+    category: 1,
+  },
+  {
+    key: 'threewaytable',
+    title: tf('threewaytable'),
+    function: 'ftable',
+    description: '',
+    category: 1,
+  },
+  // Two-Way Cross Tabulation
+  // Tests of Independence
+  {
+    key: 'chisqtest',
+    title: tf('chisqtest'),
+    function: 'chisqtest',
+    arguments: ['xvariable', 'yvariable', 'correct', 'probs'],
+    description: '',
+    category: 2,
+  },
+  {
+    key: 'fishertest',
+    title: tf('fishertest'),
+    function: 'fishertest',
+    arguments: ['xvariable', 'yvariable', 'alt', 'conf'],
+    description: '',
+    category: 2,
+  },
+  {
+    key: 'mantelhaentest',
+    title: tf('mantelhaentest'),
+    function: 'mantelhaentest',
+    arguments: ['xvariable', 'yvariable', 'zvariable', 'alt', 'conf'],
+    description: '',
+    category: 2,
+  },
+  // Correlations
+  {
+    key: 'cor',
+    title: tf('cor'),
+    function: 'correlation',
+    arguments: ['matrix', 'corr'],
+    description: '',
+    category: 3,
+  },
+  {
+    key: 'cov',
+    title: tf('cov'),
+    function: 'covariance',
+    arguments: ['matrix', 'corr'],
+    description: '',
+    category: 3,
+  },
+  {
+    key: 'cortest',
+    title: tf('cortest'),
+    function: 'cortest',
+    arguments: ['xvariable', 'yvariable', 'alt', 'method'],
+    description: '',
+    category: 3,
+  },
+  // t-tests
+  {
+    key: 'onettest',
+    title: tf('onettest'),
+    function: 'ttest',
+    arguments: ['xvariable', 'alt', 'varEqual', 'mu', 'conf'],
+    description: '',
+    category: 4,
+  },
+  {
+    key: 'pairedttest',
+    title: tf('pairedttest'),
+    function: 'pairedttest',
+    arguments: ['xvariable', 'yvariable', 'alt', 'varEqual', 'conf'],
+    description: '',
+    category: 4,
+  },
+  {
+    key: 'independentttest',
+    title: tf('independentttest'),
+    function: 'independentttest',
+    arguments: ['xvariable', 'yvariable', 'alt', 'varEqual', 'conf'],
+    description: '',
+    category: 4,
+  },
+  // {
+  // 	key: 'pairwisettest',
+  // 	title: tf('pairwisettest'),
+  // function: 'pairwise.t.test(',
+  // arguments: ['xvariable', 'groups', 'alt'],
+  // 	description: '',
+  // 	category: 4,
+  // },
+  // {
+  // 	key: 'proptest',
+  // 	title: tf('proptest'),
+  // 	function: 'prop.test(',
+  // 	arguments: ['successes', 'trials', 'prob', 'alt', 'conf', 'correct'],
+  // 	description: '',
+  // 	category: 4,
+  // },
+  // {key: 'F test to compare two variances', function: 'var.test(', category: 2,},
+  // Nonparametric Tests of Group Differences
+  {
+    key: 'wilcoxtest',
+    title: tf('wilcoxtest'),
+    function: 'wilcoxtest',
+    arguments: ['xvariable', 'yvariable', 'alt'],
+    description: '',
+    category: 5,
+  },
+  {
+    key: 'pairedwilcoxtest',
+    title: tf('pairedwilcoxtest'),
+    function: 'pairedwilcoxtest',
+    arguments: ['xvariable', 'yvariable', 'alt'],
+    description: '',
+    category: 5,
+  },
+  // {
+  // 	key: 'pairwisewilcoxtext',
+  // 	title: tf('pairwisewilcoxtext'),
+  // 	function: 'pairwise.wilcox.test(',
+  // 	arguments: ['xvariable', 'groups', 'padj'],
+  // 	description: '',
+  // 	category: 5,
+  // },
+  {
+    key: 'kruskaltest',
+    title: tf('kruskaltest'),
+    function: 'kruskaltest',
+    arguments: ['xvariable', 'groups'],
+    description: '',
+    category: 5,
+  },
+  {
+    key: 'friedmantest',
+    title: tf('friedmantest'),
+    function: 'friedmantest',
+    arguments: ['yvariable', 'groups', 'blocks'],
+    description: '',
+    category: 5,
+  },
+  // Fitting Linear Models Tools
+  {
+    key: 'coef',
+    title: tf('coef'),
+    function: 'coef',
+    arguments: ['formula'],
+    description: '',
+    category: 6,
+  },
+  {
+    key: 'confint',
+    title: tf('confint'),
+    function: 'confint',
+    arguments: ['formula', 'conf'],
+    description: '',
+    category: 6,
+  },
+  {
+    key: 'fitted',
+    title: tf('fitted'),
+    function: 'fitted',
+    arguments: ['formula'],
+    description: '',
+    category: 6,
+  },
+  {
+    key: 'residuals',
+    title: tf('residuals'),
+    function: 'residuals',
+    arguments: ['formula'],
+    description: '',
+    category: 6,
+  },
+  {
+    key: 'vcov',
+    title: tf('vcov'),
+    function: 'vcov',
+    arguments: ['formula'],
+    description: '',
+    category: 6,
+  },
+  {
+    key: 'aic',
+    title: tf('aic'),
+    function: 'aic',
+    arguments: ['formula'],
+    description: '',
+    category: 6,
+  },
+  {
+    key: 'predict',
+    title: tf('predict'),
+    function: 'predict',
+    arguments: ['formula'],
+    description: '',
+    category: 6,
+  },
+  // Regressions
+  {
+    key: 'simplelinreg',
+    title: tf('simplelinreg'),
+    function: 'simplelinreg',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'linreg',
+    title: tf('linreg'),
+    function: 'linreg',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'binomreg',
+    title: tf('binomreg'),
+    function: 'glm(family=binomial(),',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  // {
+  // 	key: 'gaussianreg',
+  // title: tf('gaussianreg'),
+  // 	function: 'glm(family=gaussian,',
+  // 	arguments: ['formula'],
+  // 	category: 7,
+  // },
+  {
+    key: 'gammareg',
+    title: tf('gammareg'),
+    function: 'glm(family=Gamma,',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'inversegammareg',
+    title: tf('inversegammareg'),
+    function: 'glm(family=inverse.gaussian,',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'poissonreg',
+    title: tf('poissonreg'),
+    function: 'glm(family=poisson,',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'quasireg',
+    title: tf('quasireg'),
+    function: 'glm(family=quasi,',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'quasibinomreg',
+    title: tf('quasibinomreg'),
+    function: 'glm(family=quasibinomial,',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  {
+    key: 'quasipoissonreg',
+    title: tf('quasipoissonreg'),
+    function: 'glm(family=quasipoisson,',
+    arguments: ['formula'],
+    description: '',
+    category: 7,
+  },
+  // {
+  // 	key: 'influence',
+  // 	title: tf('influence'),
+  // 	function: 'influence(',
+  // 	arguments: ['multipleLinearRegression'],
+  // 	description: '',
+  // 	category: 9,
+  // },
+  // {
+  // 	key: 'companova',
+  // 	title: tf('companova'),
+  // 	function: 'anova(',
+  // 	arguments: ['multipleLinearRegression', 'multipleLinearRegression2'],
+  // 	description: 'Tests the models against one another in the order specified.',
+  // 	category: 9,
+  // },
+  // Cross Validation
+  // Variable Selection
+  // Relative Importance
+  // Nonlinear regression
+  // Robust regression
+  // Regression Diagnostics
+  {
+    key: 'durbinwatson',
+    title: tf('durbinwatson'),
+    function: 'durbinwatson',
+    description: '',
+    category: 8,
+  },
+  {
+    key: 'ncvtest',
+    title: tf('ncvtest'),
+    function: 'ncvtest',
+    description: '',
+    category: 8,
+  },
+  {
+    key: 'outliertest',
+    title: tf('outliertest'),
+    function: 'outliertest',
+    description: '',
+    category: 8,
+  },
+  {
+    key: 'varianceinflation',
+    title: tf('varianceinflation'),
+    function: 'varianceinflation',
+    description: '',
+    category: 8,
+  },
+  // qqPlot()
+  // crPlot()
+  // spreadLevelPlot()
+  // influencePlot()
+  // scatterplot()
+  // scatterplotMatrix()
+  // ANOVA
+  {
+    key: 'anova',
+    title: tf('anova'),
+    function: 'anova',
+    arguments: ['formula'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'onewayaov',
+    title: tf('onewayaov'),
+    function: 'onewayaov',
+    arguments: ['oneWayAnova'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'tukeyhsd',
+    title: tf('tukeyhsd'),
+    function: 'tukeyhsd',
+    arguments: ['tukeyhsd'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'ancovawith1cov',
+    title: tf('ancovawith1cov'),
+    function: 'ancovawith1cov',
+    arguments: ['ancovawith1cov'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'twowayaov',
+    title: tf('twowayaov'),
+    function: 'twowayaov',
+    arguments: ['twoWayAnova'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'twowayancovawith2cov',
+    title: tf('twowayancovawith2cov'),
+    function: 'twowayancovawith2cov',
+    arguments: ['twowayancovawith2cov'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'randomaov',
+    title: tf('randomaov'),
+    function: 'randomaov',
+    arguments: ['randomizedBlockDesign'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'onewaywithinaov',
+    title: tf('onewaywithinaov'),
+    function: 'onewaywithinaov',
+    arguments: ['oneWayWithin'],
+    description: '',
+    category: 9,
+  },
+  {
+    key: 'repeatedmeasuresaov',
+    title: tf('repeatedmeasuresaov'),
+    function: 'repeatedmeasuresaov',
+    arguments: ['repeatedmeasuresaov'],
+    description: '',
+    category: 9,
+  },
+  // {
+  // 	key: 'twowaywithinaov',
+  // 	title: tf('twowaywithinaov'),
+  // 	function: 'aov(',
+  // 	arguments: ['twoWayWithin'],
+  // 	description: '',
+  // 	category: 9,
+  // },
+  // {
+  // 	key: 'twowaybetweenaov',
+  // 	title: tf('twowaybetweenaov'),
+  // 	function: 'aov(',
+  // 	arguments: ['twoWayBetween'],
+  // 	description: '',
+  // 	category: 9,
+  // },
+  // MANOVA
+  {
+    key: 'manova',
+    title: tf('manova'),
+    function: 'manova',
+    arguments: ['manova'],
+    description: '',
+    category: 10,
+  },
+  {
+    key: 'onewayman',
+    title: tf('onewayman'),
+    function: 'onewayman',
+    arguments: ['oneWayManova'],
+    description: '',
+    category: 10,
+  },
+  {
+    key: 'robustonewayman',
+    title: tf('robustonewayman'),
+    function: 'robustonewayman',
+    arguments: ['robustonewayman'],
+    description: '',
+    category: 10,
+  },
+  // {
+  // 	key: 'randommanova',
+  // 	title: tf('randommanova'),
+  // 	function: 'manova(',
+  // 	arguments: ['randomizedBlockDesignManova'],
+  // 	description: '',
+  // 	category: 10,
+  // },
+  // {
+  // 	key: 'twowaymanova',
+  // 	title: tf('twowaymanova'),
+  // 	function: 'manova(',
+  // 	arguments: ['twoWayManova'],
+  // 	description: '',
+  // 	category: 10,
+  // },
+  // {
+  // 	key: 'covmanova',
+  // 	title: tf('covmanova'),
+  // 	function: 'manova(',
+  // 	arguments: ['mancova'],
+  // 	description: '',
+  // 	category: 10,
+  // },
+  // {
+  // 	key: 'onewaywithinmanova',
+  // 	title: tf('onewaywithinmanova'),
+  // 	function: 'manova(',
+  // 	arguments: ['oneWayWithinManova'],
+  // 	description: '',
+  // 	category: 10,
+  // },
+  // {
+  // 	key: 'twowaywithinmanova',
+  // 	title: tf('twowaywithinmanova'),
+  // 	function: 'manova(',
+  // 	arguments: ['twoWayWithinManova'],
+  // 	description: '',
+  // 	category: 10,
+  // },
+  // {
+  // 	key: 'twowaybetweenmanova',
+  // 	title: tf('twowaybetweenmanova'),
+  // 	function: 'manova(',
+  // 	arguments: ['twoWayBetweenManova'],
+  // 	description: '',
+  // 	category: 10,
+  // },
+  // contrasts() contr.helmert contr.poly contr.sum contr.treatment contr.SAS
+  // Equality of Variances Test
+  {
+    key: 'bartletttest',
+    title: tf('bartletttest'),
+    function: 'bartletttest',
+    description: '',
+    category: 11,
+  },
+  {
+    key: 'flignertest',
+    title: tf('flignertest'),
+    function: 'flignertest',
+    description: '',
+    category: 11,
+  },
+  // {
+  // 	key: 'hovtest',
+  // 	title: tf('hovtest'),
+  // 	function: 'hovtest',
+  // 	description: '',
+  // 	category: 11,
+  // },
+  // Power Analysis
+  // 	key: 'poweranovatest',
+  // title: tf('poweranovatest'),
+  // 	function: 'power.anova.test(',
+  // 	category: 12,
+  // },
+  // {
+  // 	key: 'powerttest',
+  // title: tf('powerttest'),
+  // 	function: 'power.t.test(',
+  // 	category: 12,
+  // },
+  // Fitting
+  {
+    key: 'binomtest',
+    title: tf('binomtest'),
+    function: 'binom.test(',
+    arguments: ['successes', 'trials', 'prob', 'alt', 'conf'],
+    description: '',
+    category: 13,
+  },
+  {
+    key: 'ansaritest',
+    title: tf('ansaritest'),
+    function: 'ansari.test(',
+    description: '',
+    category: 13,
+  },
+  // {
+  // 	key: 'boxtest',
+  // title: tf('boxtest'),
+  // 	function: 'Box.test(',
+  // 	category: 12,
+  // },
+  // {
+  // 	key: 'kstest',
+  // title: tf('kstest'),
+  // 	function: 'ks.test(',
+  // 	category: 12,
+  // },
+  // {
+  // 	key: 'mauchlytest',
+  // title: tf('mauchlytest'),
+  // 	function: 'mauchly.test(',
+  // 	category: 12,
+  // },
+  // {
+  // 	key: 'mcnemartest',
+  // title: tf('mcnemartest'),
+  // 	function: 'mcnemar.test(',
+  // 	category: 12,
+  // },
+  {
+    key: 'moodtest',
+    title: tf('moodtest'),
+    function: 'mood.test(',
+    description: '',
+    category: 13,
+  },
+  {
+    key: 'onewaytest',
+    title: tf('onewaytest'),
+    function: 'oneway.test(',
+    description: '',
+    category: 13,
+  },
 
-	// {
-	// 	key: 'poissontest',
-		// title: tf('poissontest'),
-	// 	function: 'poisson.test(',
-	// 	category: 12
-	// },
-	// {
-	// {
-	// 	key: 'PPtest',
-		// title: tf('PPtest'),
-	// 	function: 'PP.test(',
-	// 	category: 12
-	// },
-	// {
-	// 	key: 'printhtest',
-		// title: tf('printhtest'),
-	// 	function: 'print.htest(',
-	// 	category: 12
-	// },
-	{
-		key: 'quadetest',
-		title: tf('quadetest'),
-		function: 'quade.test(',
-		description: '',
-		category: 13
-	},
-	// {
-	// 	key: 'shapirotest',
-	// title: tf('shapirotest'),
-	// 	function: 'shapiro.test(',
-	// 	category: 12
-	// },
-]
+  // {
+  // 	key: 'poissontest',
+  // title: tf('poissontest'),
+  // 	function: 'poisson.test(',
+  // 	category: 12,
+  // },
+  // {
+  // {
+  // 	key: 'PPtest',
+  // title: tf('PPtest'),
+  // 	function: 'PP.test(',
+  // 	category: 12,
+  // },
+  // {
+  // 	key: 'printhtest',
+  // title: tf('printhtest'),
+  // 	function: 'print.htest(',
+  // 	category: 12,
+  // },
+  {
+    key: 'quadetest',
+    title: tf('quadetest'),
+    function: 'quade.test(',
+    description: '',
+    category: 13,
+  },
+  // {
+  // 	key: 'shapirotest',
+  // title: tf('shapirotest'),
+  // 	function: 'shapiro.test(',
+  // 	category: 12,
+  // },
+];
 
-export default statistics
+export default statistics;

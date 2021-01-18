@@ -29,7 +29,7 @@ export default class DropdownLineType extends Dropdown {
         e.target.style.background = options.style.offcolor;
       })
       .on('mouseleave', (e) => {
-        e.target.style.background = "";
+        e.target.style.background = '';
       })
       .child(
         h('div', `${cssPrefix}-line-type`).html(it[1]),

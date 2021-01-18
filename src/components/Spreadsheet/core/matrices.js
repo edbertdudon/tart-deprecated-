@@ -10,7 +10,7 @@ class Matrices {
   }
 
   deleteWithin(cr) {
-    this._ = this._.filter(it => !it.within(cr));
+    this._ = this._.filter((it) => !it.within(cr));
   }
 
   getFirstIncludes(ri, ci) {
@@ -24,7 +24,7 @@ class Matrices {
   }
 
   filterIntersects(cellRange) {
-    return new Matrix(this._.filter(it => it.intersects(cellRange)));
+    return new Matrix(this._.filter((it) => it.intersects(cellRange)));
   }
 
   intersects(cellRange) {
@@ -93,12 +93,12 @@ class Matrices {
   }
 
   setData(matrices) {
-    this._ = matrices.map(matrix => CellRange.valueOf(matrix));
+    this._ = matrices.map((matrix) => CellRange.valueOf(matrix));
     return this;
   }
 
   getData() {
-    return this._.map(matrix => matrix.toString());
+    return this._.map((matrix) => matrix.toString());
   }
 }
 

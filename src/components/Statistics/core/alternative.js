@@ -1,46 +1,50 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
-import { ALTERNATIVES } from './form'
+import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { ALTERNATIVES } from './form';
 
-const Alternative = ({ authUser, color, setAlt, alt }) => {
+const Alternative = ({
+  authUser, color, setAlt, alt,
+}) => {
+  const handleAlt0 = () => setAlt(0);
 
-	const handleAlt0 = () => setAlt(0)
+  const handleAlt1 = () => setAlt(1);
 
-	const handleAlt1 = () => setAlt(1)
+  const handleAlt2 = () => setAlt(2);
 
-	const handleAlt2 = () => setAlt(2)
+  return (
+    <>
+      <div className="rightsidebar-label">Alternative Hypothesis</div>
+      <Button onClick={handleAlt0} condition={alt === 0} text={ALTERNATIVES[0]} color={color[authUser.uid]} />
+      <Button onClick={handleAlt1} condition={alt === 1} text={ALTERNATIVES[1]} color={color[authUser.uid]} />
+      <Button onClick={handleAlt2} condition={alt === 2} text={ALTERNATIVES[2]} color={color[authUser.uid]} />
+    </>
+  );
+};
 
-	return (
-		<>
-			<div className='rightsidebar-label'>Alternative Hypothesis</div>
-	    <Button onClick={handleAlt0} condition={alt === 0} text={ALTERNATIVES[0]} color={color[authUser.uid]} />
-	    <Button onClick={handleAlt1} condition={alt === 1} text={ALTERNATIVES[1]} color={color[authUser.uid]} />
-			<Button onClick={handleAlt2} condition={alt === 2} text={ALTERNATIVES[2]} color={color[authUser.uid]} />
-		</>
-	)
-}
+const Button = ({
+  onClick, condition, text, color,
+}) => (
+  <div className="rightsidebar-buttonwrapper" onClick={onClick}>
+    <button
+      className="rightsidebar-button"
+      style={{
+			  backgroundColor: condition === true && color,
+			  boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
+			  border: condition === true ? `1px solid ${color}` : '1px solid #fff',
+      }}
+    />
+    <div className="rightsidebar-buttontext-3part">{text}</div>
+  </div>
+);
 
-const Button = ({ onClick, condition, text, color }) => (
-	<div className='rightsidebar-buttonwrapper' onClick={onClick}>
-		<button className='rightsidebar-button'
-			style={{
-				backgroundColor: condition === true && color,
-				boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-				border: condition === true ? '1px solid '+ color : '1px solid #fff'
-			}}
-		></button>
-		<div className='rightsidebar-buttontext-3part'>{text}</div>
-	</div>
-)
-
-const mapStateToProps = state => ({
-	authUser: state.sessionState.authUser,
+const mapStateToProps = (state) => ({
+  authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
 });
 
 export default compose(
-	connect(
-		mapStateToProps,
-	),
-)(Alternative)
+  connect(
+    mapStateToProps,
+  ),
+)(Alternative);

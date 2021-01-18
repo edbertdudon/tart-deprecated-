@@ -5,7 +5,7 @@ export const options = {
   showContextmenu: true,
   showNavigator: true,
   view: {
-    height: () => document.documentElement.clientHeight-31,
+    height: () => document.documentElement.clientHeight - 31,
     width: () => document.documentElement.clientWidth,
   },
   row: {
@@ -33,4 +33,4 @@ export const options = {
       italic: false,
     },
   },
-}
+};

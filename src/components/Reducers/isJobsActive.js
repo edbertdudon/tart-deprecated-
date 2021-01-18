@@ -3,18 +3,18 @@ const INITIAL_STATE = {
 };
 
 const applySetIsJobsActive = (state, action) => ({
-	...state,
-    isJobsActive:action.isJobsActive
+  ...state,
+  isJobsActive: action.isJobsActive,
 });
 
 function isJobsActiveReducer(state = INITIAL_STATE, action) {
-	switch (action.type) {
-		case 'ISJOBSACTIVE_SET': {
-			return applySetIsJobsActive(state, action);
-		}
-		default:
-			return state;
-	}
+  switch (action.type) {
+    case 'ISJOBSACTIVE_SET': {
+      return applySetIsJobsActive(state, action);
+    }
+    default:
+      return state;
+  }
 }
 
 export default isJobsActiveReducer;

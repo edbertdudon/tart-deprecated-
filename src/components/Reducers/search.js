@@ -4,7 +4,7 @@ const INITIAL_STATE = {
 
 const applySetSearch = (state, action) => ({
   ...state,
-  search:action.search
+  search: action.search,
 });
 
 function searchReducer(state = INITIAL_STATE, action) {

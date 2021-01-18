@@ -1,4 +1,4 @@
-import { formulaen } from './formulaen'
+import { formulaen } from './formulaen';
 
 export default {
   toolbar: {

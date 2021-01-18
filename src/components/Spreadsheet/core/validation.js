@@ -28,7 +28,7 @@ class Validation {
       const cr = CellRange.valueOf(it);
       if (cr.intersects(cellRange)) {
         const crs = cr.difference(cellRange);
-        crs.forEach(it1 => nrefs.push(it1.toString()));
+        crs.forEach((it1) => nrefs.push(it1.toString()));
       } else {
         nrefs.push(it);
       }
@@ -121,15 +121,15 @@ class Validations {
   }
 
   each(cb) {
-    this._.forEach(it => cb(it));
+    this._.forEach((it) => cb(it));
   }
 
   getData() {
-    return this._.filter(it => it.refs.length > 0).map(it => it.getData());
+    return this._.filter((it) => it.refs.length > 0).map((it) => it.getData());
   }
 
   setData(d) {
-    this._ = d.map(it => Validation.valueOf(it));
+    this._ = d.map((it) => Validation.valueOf(it));
   }
 }
 

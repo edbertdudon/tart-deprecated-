@@ -2,7 +2,7 @@ import { h } from './element';
 import { bindClickoutside, unbindClickoutside } from './event';
 import { cssPrefix } from '../config';
 import { tf } from '../locale/locale';
-import { options } from '../options'
+import { options } from '../options';
 
 const menuItems = [
   { key: 'copy', title: tf('contextmenu.copy'), label: 'Ctrl+C' },
@@ -41,7 +41,7 @@ function buildMenuItem(item) {
       e.target.style.background = options.style.offcolor;
     })
     .on('mouseleave', (e) => {
-      e.target.style.background = "";
+      e.target.style.background = '';
     })
     .children(
       item.title(),
@@ -50,7 +50,7 @@ function buildMenuItem(item) {
 }
 
 function buildMenu() {
-  return menuItems.map(it => buildMenuItem.call(this, it));
+  return menuItems.map((it) => buildMenuItem.call(this, it));
 }
 
 export default class ContextMenu {

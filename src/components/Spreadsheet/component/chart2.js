@@ -1,7 +1,7 @@
 import { h } from './element';
 import { bind, unbind } from './event';
 import { cssPrefix } from '../config';
-import chartpng from './chart.png'
+import chartpng from './chart.png';
 
 // function startResize(e) {
 //   const { overlayerEl, boundResizing, boundEndResize } = this;
@@ -136,21 +136,23 @@ export default class Chart {
   startResize(e) {
     e.preventDefault();
     e.stopPropagation();
-    this.saveEventState(e)
-    bind(this.overlayerEl.el, 'mousemove', this.boundResizing)
-    bind(this.overlayerEl.el, 'mouseup', this.boundEndResize)
+    this.saveEventState(e);
+    bind(this.overlayerEl.el, 'mousemove', this.boundResizing);
+    bind(this.overlayerEl.el, 'mouseup', this.boundEndResize);
   }
 
   endResize(e) {
     e.preventDefault();
-    unbind(this.overlayerEl.el, 'mouseup', this.boundEndResize)
-    unbind(this.overlayerEl.el, 'touchend', this.boundEndResize)
-    unbind(this.overlayerEl.el, 'mousemove', this.boundResizing)
-    unbind(this.overlayerEl.el, 'touchmove', this.boundResizing)
+    unbind(this.overlayerEl.el, 'mouseup', this.boundEndResize);
+    unbind(this.overlayerEl.el, 'touchend', this.boundEndResize);
+    unbind(this.overlayerEl.el, 'mousemove', this.boundResizing);
+    unbind(this.overlayerEl.el, 'touchmove', this.boundResizing);
   }
 
   saveEventState(e) {
-    const { event_state, $container, horizontalScrollbar, verticalScrollbar } = this;
+    const {
+      event_state, $container, horizontalScrollbar, verticalScrollbar,
+    } = this;
     // Save the initial event details and container state
     event_state.container_width = $container.offset().width;
     event_state.container_height = $container.offset().height;
@@ -176,24 +178,24 @@ export default class Chart {
     const {
       $container, constrain, orig_src, min_width, min_height,
       max_width, max_height, event_state, verticalScrollbar,
-      horizontalScrollbar
+      horizontalScrollbar,
     } = this;
-    var mouse={},
-      width,
-      height,
-      cleft,
-      ctop,
-      offset=$container.offset();
+    const mouse = {};
+    let width;
+    let height;
+    let cleft;
+    let ctop;
+    const offset = $container.offset();
     mouse.x = (e.clientX || e.pageX || e.originalEvent.touches[0].clientX) + horizontalScrollbar.scroll().left;
     mouse.y = (e.clientY || e.pageY || e.originalEvent.touches[0].clientY) + verticalScrollbar.scroll().top;
 
     // Position image differently depending on the corner dragged and constraints
     // if (event_state.evnt.target.classList.contains('resize-handle-se')) {
-      width = mouse.x - event_state.container_left;
-      height = mouse.y  - event_state.container_top;
-      cleft = event_state.container_left;
-      ctop = event_state.container_top;
-      console.log(width, height, cleft, ctop)
+    width = mouse.x - event_state.container_left;
+    height = mouse.y - event_state.container_top;
+    cleft = event_state.container_left;
+    ctop = event_state.container_top;
+    console.log(width, height, cleft, ctop);
     // } else if (event_state.evnt.target.classList.contains('resize-handle-sw')) {
     //   width = event_state.container_width - (mouse.x - event_state.container_left);
     //   height = mouse.y  - event_state.container_top;
@@ -217,14 +219,14 @@ export default class Chart {
     //   }
     // }
 
-    if(constrain || e.shiftKey){
-        height = width / orig_src.width * orig_src.height;
+    if (constrain || e.shiftKey) {
+      height = width / orig_src.width * orig_src.height;
     }
 
     // if(width > min_width && height > min_height && width < max_width && height < max_height) {
-      this.resizeImage(width, height);
-      // Without this Firefox will not re-calculate the the image dimensions until drag end
-      $container.offset({'left': cleft, 'top': ctop});
+    this.resizeImage(width, height);
+    // Without this Firefox will not re-calculate the the image dimensions until drag end
+    $container.offset({ left: cleft, top: ctop });
     // }
   }
 
@@ -233,36 +235,38 @@ export default class Chart {
     resize_canvas.width = width;
     resize_canvas.height = height;
     resize_canvas.getContext('2d').drawImage(orig_src, 0, 0, width, height);
-    image_target.attr('src', resize_canvas.toDataURL("image/png"));
-  };
+    image_target.attr('src', resize_canvas.toDataURL('image/png'));
+  }
 
   startMoving(e) {
     e.preventDefault();
     e.stopPropagation();
-    this.saveEventState(e)
+    this.saveEventState(e);
     // bind(this.overlayerEl.el, 'mousemove', this.boundMoving)
     // bind(this.overlayerEl.el, 'mouseup', this.boundEndMoving)
-    this.overlayerEl.on('mousemove', this.boundMoving)
-    this.overlayerEl.on('mouseup', this.boundEndMoving)
-  };
+    this.overlayerEl.on('mousemove', this.boundMoving);
+    this.overlayerEl.on('mouseup', this.boundEndMoving);
+  }
 
   endMoving(e) {
     e.preventDefault();
-    unbind(this.overlayerEl.el, 'mouseup', this.boundEndMoving)
-    unbind(this.overlayerEl.el, 'mousemove', this.boundMoving)
-    console.log('unbinded moving')
-  };
+    unbind(this.overlayerEl.el, 'mouseup', this.boundEndMoving);
+    unbind(this.overlayerEl.el, 'mousemove', this.boundMoving);
+    console.log('unbinded moving');
+  }
 
   moving(e) {
-    const { $container, event_state, horizontalScrollbar, verticalScrollbar } = this;
-    var  mouse={};
+    const {
+      $container, event_state, horizontalScrollbar, verticalScrollbar,
+    } = this;
+    const mouse = {};
     e.preventDefault();
     e.stopPropagation();
     mouse.x = (e.clientX || e.pageX) + horizontalScrollbar.scroll().left;
     mouse.y = (e.clientY || e.pageY) + verticalScrollbar.scroll().top;
     $container.offset({
-      'left': mouse.x - ( event_state.mouse_x - event_state.container_left ),
-      'top': mouse.y - ( event_state.mouse_y - event_state.container_top )
+      left: mouse.x - (event_state.mouse_x - event_state.container_left),
+      top: mouse.y - (event_state.mouse_y - event_state.container_top),
     });
-  };
+  }
 }

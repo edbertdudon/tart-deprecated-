@@ -11,7 +11,7 @@ function buildItemWithIcon(iconName) {
 export default class DropdownAlign extends Dropdown {
   constructor(aligns, align) {
     const icon = new Icon(`align-${align}`);
-    const naligns = aligns.map(it => buildItemWithIcon(`align-${it}`)
+    const naligns = aligns.map((it) => buildItemWithIcon(`align-${it}`)
       .on('click', () => {
         this.setTitle(it);
         this.change(it);
@@ -20,7 +20,7 @@ export default class DropdownAlign extends Dropdown {
         e.target.style.background = options.style.offcolor;
       })
       .on('mouseleave', (e) => {
-        e.target.style.background = "";
+        e.target.style.background = '';
       }));
     super(icon, 'auto', true, 'bottom-left', ...naligns);
   }

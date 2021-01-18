@@ -4,7 +4,7 @@ const INITIAL_STATE = {
 
 const applySetRightSidebar = (state, action) => ({
   ...state,
-  rightSidebar: action.rightSidebar
+  rightSidebar: action.rightSidebar,
 });
 
 function rightSidebarReducer(state = INITIAL_STATE, action) {

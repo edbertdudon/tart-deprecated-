@@ -4,7 +4,7 @@ const INITIAL_STATE = {
 
 const applySetJobs = (state, action) => ({
   ...state,
-  jobs:action.jobs
+  jobs: action.jobs,
 });
 
 function jobsReducer(state = INITIAL_STATE, action) {

@@ -5,14 +5,14 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd'
-import './index.less'
+import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import './index.less';
 
-import Editable from './editable'
-import { OFF_COLOR } from '../../constants/off-color'
+import Editable from './editable';
+import { OFF_COLOR } from '../../constants/off-color';
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -21,66 +21,65 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const Navigator = ({ slides, color, authUser, dataNames, current, onSetDataNames, onSetCurrent }) => {
-	const handleDragEnd = (result) => {
-		if (!result.destination) return
-    const destination = result.destination.index
-    const source = result.source.index
-		if (destination === source) return;
-		const dn = reorder(dataNames, source, destination);
-		onSetDataNames(dn)
-		if (source === current) {
-			onSetCurrent(destination)
-		} else {
-			onSetCurrent(source)
-		}
-    slides.datas = reorder(slides.datas, source, destination)
-	}
+const Navigator = ({
+  slides, color, authUser, dataNames, current, onSetDataNames, onSetCurrent,
+}) => {
+  const handleDragEnd = (result) => {
+    if (!result.destination) return;
+    const destination = result.destination.index;
+    const source = result.source.index;
+    if (destination === source) return;
+    const dn = reorder(dataNames, source, destination);
+    onSetDataNames(dn);
+    if (source === current) {
+      onSetCurrent(destination);
+    } else {
+      onSetCurrent(source);
+    }
+    slides.datas = reorder(slides.datas, source, destination);
+  };
 
-	const List = () => {
-		return dataNames.map((name, index) => (
-			<div key={'navigator-item-' + index}>
-				<Draggable key={'draggable-' + index} draggableId={'draggable-' + index} index={index}>
-					{provided => (
-						<div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className='navigator-slidewrapper'>
-							<Editable value={name} index={index} key={name} />
-						</div>
-					)}
-				</Draggable>
-			</div>
-		))
-	}
+  const List = () => dataNames.map((name, index) => (
+    <div key={`navigator-item-${index}`}>
+      <Draggable key={`draggable-${index}`} draggableId={`draggable-${index}`} index={index}>
+        {(provided) => (
+          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="navigator-slidewrapper">
+            <Editable value={name} index={index} key={name} />
+          </div>
+        )}
+      </Draggable>
+    </div>
+  ));
 
   return (
-		<DragDropContext onDragEnd={handleDragEnd}>
-			<Droppable droppableId="list">
-				{provided => (
-			    <div className='navigator' ref={provided.innerRef} {...provided.droppableProps}>
-						<List />
-			    </div>
-				)}
-			</Droppable>
-		</DragDropContext>
-  )
-}
+    <DragDropContext onDragEnd={handleDragEnd}>
+      <Droppable droppableId="list">
+        {(provided) => (
+          <div className="navigator" ref={provided.innerRef} {...provided.droppableProps}>
+            <List />
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
+  );
+};
 
-const mapStateToProps = state => ({
-	authUser: state.sessionState.authUser,
+const mapStateToProps = (state) => ({
+  authUser: state.sessionState.authUser,
   slides: (state.slidesState.slides || {}),
-	color: (state.colorState.colors || {}),
-	dataNames: (state.dataNamesState.dataNames || ["sheet1"]),
-	current: (state.currentState.current || 0),
-})
+  color: (state.colorState.colors || {}),
+  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  current: (state.currentState.current || 0),
+});
 
-const mapDispatchToProps = dispatch => ({
-  onSetDataNames: dataNames => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: current => dispatch({ type: 'CURRENT_SET', current }),
-})
-
+const mapDispatchToProps = (dispatch) => ({
+  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+});
 
 export default compose(
   connect(
     mapStateToProps,
-		mapDispatchToProps,
+    mapDispatchToProps,
   ),
-)(Navigator)
+)(Navigator);

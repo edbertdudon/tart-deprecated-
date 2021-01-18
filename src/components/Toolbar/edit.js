@@ -1,45 +1,45 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import { compose } from 'recompose'
+import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 
-import Header from './header'
-import { sheetReset } from '../Spreadsheet/component/sheet'
-import withDropdown from '../Dropdown'
-import { OFF_COLOR } from '../../constants/off-color'
+import Header from './header';
+import { sheetReset } from '../Spreadsheet/component/sheet';
+import withDropdown from '../Dropdown';
+import { OFF_COLOR } from '../../constants/off-color';
 
 export const EDIT_DROPDOWN = [
-  {key: 'Undo', type: 'item'},
-  {key: 'Redo', type: 'item'},
-  {type: 'divider'},
-  {key: 'Cut', type: 'item'},
-  {key: 'Copy', type: 'item'},
-  {key: 'Paste', type: 'item'},
-  {type: 'divider'},
-  {key: 'Delete', type: 'item'},
-]
+  { key: 'Undo', type: 'item' },
+  { key: 'Redo', type: 'item' },
+  { type: 'divider' },
+  { key: 'Cut', type: 'item' },
+  { key: 'Copy', type: 'item' },
+  { key: 'Paste', type: 'item' },
+  { type: 'divider' },
+  { key: 'Delete', type: 'item' },
+];
 
 const Edit = ({ color, authUser, slides }) => {
-  const handleEdit = key => {
-    const { data, sheet } = slides
+  const handleEdit = (key) => {
+    const { data, sheet } = slides;
     switch (key) {
       case EDIT_DROPDOWN[0].key:
-        data.undo()
-        sheetReset.call(sheet)
+        data.undo();
+        sheetReset.call(sheet);
         break;
       case EDIT_DROPDOWN[1].key:
-        data.redo()
-        sheetReset.call(sheet)
+        data.redo();
+        sheetReset.call(sheet);
         break;
       case EDIT_DROPDOWN[3].key:
-        data.cut()
+        data.cut();
         sheet.selector.showClipboard();
         break;
       case EDIT_DROPDOWN[4].key:
-        data.copy()
+        data.copy();
         sheet.selector.showClipboard();
         break;
       case EDIT_DROPDOWN[5].key:
-        data.paste()
+        data.paste();
         // if (data.settings.mode === 'read') return;
         // if (data.paste('all', msg => xtoast('Tip', msg))) {
         //   sheetReset.call(sheet);
@@ -50,27 +50,27 @@ const Edit = ({ color, authUser, slides }) => {
         // }
         break;
       case EDIT_DROPDOWN[7].key:
-        data.deleteCell()
+        data.deleteCell();
         break;
     }
-    slides.reRender()
-  }
+    slides.reRender();
+  };
 
   return (
-    <EditWithDropdown text='Edit' items={EDIT_DROPDOWN} onSelect={handleEdit} color={OFF_COLOR[color[authUser.uid]]} />
-  )
-}
+    <EditWithDropdown text="Edit" items={EDIT_DROPDOWN} onSelect={handleEdit} color={OFF_COLOR[color[authUser.uid]]} />
+  );
+};
 
-const EditWithDropdown = withDropdown(Header)
+const EditWithDropdown = withDropdown(Header);
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
-})
+});
 
 export default compose(
   connect(
     mapStateToProps,
   ),
-)(Edit)
+)(Edit);

@@ -6,7 +6,7 @@ import { options } from '../options';
 
 export default class DropdownFontSize extends Dropdown {
   constructor() {
-    const nfontSizes = fontSizes.map(it => h('div', `${cssPrefix}-item`)
+    const nfontSizes = fontSizes.map((it) => h('div', `${cssPrefix}-item`)
       .on('click', () => {
         this.setTitle(`${it.pt}`);
         this.change(it);
@@ -15,7 +15,7 @@ export default class DropdownFontSize extends Dropdown {
         e.target.style.background = options.style.offcolor;
       })
       .on('mouseleave', (e) => {
-        e.target.style.background = "";
+        e.target.style.background = '';
       })
       .child(`${it.pt}`));
     super('10', '60px', true, 'bottom-left', ...nfontSizes);
