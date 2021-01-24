@@ -27,7 +27,8 @@ const DATASOURCE_DROPDOWN = [
 ];
 
 const DataTrash = ({
-  firebase, authUser, color, filename, onReload, connections,
+  firebase, authUser, color, name, trash,
+  connections, onSetTrash, onSetConnections,
 }) => {
   const [hoverDropdown, setHoverDropdown] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -38,30 +39,39 @@ const DataTrash = ({
         setIsOpen(!isOpen);
         break;
       case 'Move back':
-        firebase.doDeleteTrashField(authUser.uid, filename);
-        onReload(filename);
+        // firebase.doDeleteTrashField(authUser.uid, name);
+        // onReload(name);
         break;
     }
   };
 
   const handleMoveBack = () => {
-    firebase.doDeleteTrashField(authUser.uid, filename);
-    onReload(filename);
+    // firebase.doDeleteTrashField(authUser.uid, name);
+    // onReload(name);
   };
 
   const handleDelete = () => {
-    if (connections.includes(filename)) {
-      firebase.doDeleteConnectionsField(authUser.uid, filename);
+    if (connections.includes(name)) {
+      firebase.doDeleteConnectionsField(authUser.uid, name);
+      const ws = connections.findIndex((c) => c.name === name)
+      onSetConnections([
+        ...connections.slice(0, ws),
+        ...connections.slice(ws + 1),
+      ])
     } else {
-      firebase.doDeleteFile(authUser.uid, filename);
+      firebase.doDeleteTrash(authUser.uid, name);
+      const ws = trash.findIndex((t) => t.name === name)
+      onSetTrash([
+        ...trash.slice(0, ws),
+        ...trash.slice(ws + 1),
+      ])
     }
-    onReload(filename);
   };
 
   const handleOpen = () => setIsOpen(true);
 
   const ContextMenuDropdown = () => (
-    <ContextMenu id={`right-click${filename}`}>
+    <ContextMenu id={`right-click${name}`}>
       <MenuItem onClick={handleOpen}>Delete</MenuItem>
       <MenuItem onClick={handleMoveBack}>Move Back</MenuItem>
     </ContextMenu>
@@ -69,11 +79,11 @@ const DataTrash = ({
 
   return (
     <div className="datasource-thumbnail">
-      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${filename}`}>
+      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${name}`}>
         <div className="datasource-icon">
-          {connections.includes(filename)
+          {connections.includes(name)
 						  ? <Icon path={mdiDatabase} size={5} />
-						  : (/[.]/.exec(filename) == null)
+						  : (/[.]/.exec(name) == null)
 						    ? <Icon path={mdilTable} size={5} />
 						    : <Icon path={mdilFile} size={5} />}
         </div>
@@ -86,11 +96,11 @@ const DataTrash = ({
             style={{ left: '13px' }}
           />
         </div>
-        <div className="datasource-editabletext">{filename.replace(/\.[^/.]+$/, '')}</div>
+        <div className="datasource-editabletext">{name.replace(/\.[^/.]+$/, '')}</div>
       </ContextMenuTrigger>
       <ContextMenuDropdown />
       <VerifyDeleteWithModal
-        filename={filename}
+        name={name}
         color={color[authUser.uid]}
         onSelect={handleDelete}
         isOpen={isOpen}
@@ -116,10 +126,10 @@ const Option = ({
 );
 
 const VerifyDelete = ({
-  filename, color, onClose, onSelect,
+  name, color, onClose, onSelect,
 }) => (
   <form className="modal-form">
-    <h3>{`Are you sure you want to delete "${filename}"?`}</h3>
+    <h3>{`Are you sure you want to delete "${name}"?`}</h3>
     <p>This item will be deleted immediately. You cannot undo this action.</p>
     <input
       className="modal-button"

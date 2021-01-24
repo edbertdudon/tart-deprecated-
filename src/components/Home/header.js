@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { Link } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiClockTimeNine } from '@mdi/js';
 

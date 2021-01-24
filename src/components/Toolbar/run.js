@@ -21,10 +21,15 @@ const Run = ({
 
   const handleRun = (key) => {
     switch (key) {
-      case RUN_DROPDOWN[0].key:
+      case RUN_DROPDOWN[0].key: {
         onSetIsJobsActive(true);
-    		onSetJobs(submitJob(worksheetname, jobs));
-    		onSetNotifications(notifications.concat({ key: `Job started: ${worksheetname}`, type: 'notification' }));
+    		onSetJobs(
+          submitJob(worksheetname, jobs)
+        );
+    		onSetNotifications(
+          notifications.concat({ key: `Job started: ${worksheetname}`, type: 'notification' })
+        );
+
         firebase.doRunWorksheet(
           authUser.uid,
           worksheetname,
@@ -34,21 +39,28 @@ const Run = ({
         ).then((jobResp) => {
           if (jobResp === 'failed job') {
             const runId = getJobId(worksheetname.replace(/\s/g, '').toLowerCase(), jobs);
-            onSetJobs(cancelJob(runId, jobs));
-        		onSetNotifications(notifications.concat({ key: `Job cancelled: ${worksheetname}`, type: 'notification' }));
+
+            onSetJobs(
+              cancelJob(runId, jobs)
+            );
+        		onSetNotifications(
+              notifications.concat({ key: `Job cancelled: ${worksheetname}`, type: 'notification' })
+            );
           }
         });
+
         history.push(ROUTES.HOME);
         break;
+      }
     }
   };
 
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select);
-    } else {
-      onSetRightSidebar('none');
+      return;
     }
+    onSetRightSidebar('none');
   };
 
   return (

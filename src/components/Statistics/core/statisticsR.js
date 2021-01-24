@@ -14,24 +14,24 @@ const statistics = [
   {
     key: 'onewaytable',
     title: tf('onewaytable'),
-    function: 'ftable',
+    function: 'onewaytable',
     description: '',
     category: 1,
   },
   {
     key: 'twowaytable',
     title: tf('twowaytable'),
-    function: 'ftable',
+    function: 'twowaytable',
     description: '',
     category: 1,
   },
-  {
-    key: 'threewaytable',
-    title: tf('threewaytable'),
-    function: 'ftable',
-    description: '',
-    category: 1,
-  },
+  // {
+  //   key: 'threewaytable',
+  //   title: tf('threewaytable'),
+  //   function: 'threewaytable',
+  //   description: '',
+  //   category: 1,
+  // },
   // Two-Way Cross Tabulation
   // Tests of Independence
   {
@@ -134,14 +134,14 @@ const statistics = [
     description: '',
     category: 5,
   },
-  {
-    key: 'pairedwilcoxtest',
-    title: tf('pairedwilcoxtest'),
-    function: 'pairedwilcoxtest',
-    arguments: ['xvariable', 'yvariable', 'alt'],
-    description: '',
-    category: 5,
-  },
+  // {
+  //   key: 'pairedwilcoxtest',
+  //   title: tf('pairedwilcoxtest'),
+  //   function: 'pairedwilcoxtest',
+  //   arguments: ['xvariable', 'yvariable', 'alt'],
+  //   description: '',
+  //   category: 5,
+  // },
   // {
   // 	key: 'pairwisewilcoxtext',
   // 	title: tf('pairwisewilcoxtext'),

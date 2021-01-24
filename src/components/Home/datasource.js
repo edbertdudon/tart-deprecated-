@@ -31,8 +31,8 @@ const DATASOURCE_DROPDOWN = [
 
 const Item = ({ text, onDropdown }) => <MenuItem onClick={() => onDropdown(text)}>{text}</MenuItem>;
 
-const ContextMenuDropdown = ({ filename, onDropdown }) => (
-  <ContextMenu id={`right-click${filename}`}>
+const ContextMenuDropdown = ({ name, onDropdown }) => (
+  <ContextMenu id={`right-click${name}`}>
     <MenuItem onClick={() => onDropdown(DATASOURCE_DROPDOWN[0].key)} onContextMenu={(e) => e.preventPropognation()}>
       {DATASOURCE_DROPDOWN[0].key}
     </MenuItem>
@@ -44,94 +44,115 @@ const ContextMenuDropdown = ({ filename, onDropdown }) => (
 );
 
 const DataSource = ({
-  firebase, authUser, color, files, jobs, onSetWorksheetname, onSetJobs,
-  filename, onReload, runId, onJobSubmit, onJobCancel, onListFilesLessTrash, filesWithTrash,
+  firebase, authUser, color, filename, worksheets, onSetWorksheetname,
+  onSetWorksheets, runId, onJobSubmit, onJobCancel,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [name, setName] = useState(filename);
   const [hover, setHover] = useState(false);
   const [hoverDropdown, setHoverDropdown] = useState(false);
   const [readOnly, setReadOnly] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   const handleDropdown = (key) => {
     switch (key) {
-      case DATASOURCE_DROPDOWN[0].key:
-        onSetWorksheetname(filename);
-        document.getElementById(`link-app-${filename}`).click();
+      case DATASOURCE_DROPDOWN[0].key: {
+        onSetWorksheetname(name);
+
+        document.getElementById(`link-app-${name}`).click();
         break;
-      case DATASOURCE_DROPDOWN[1].key:
-        const newname = addCopyToName(filesWithTrash, filename);
-        firebase.doDownloadFile(authUser.uid, filename).then((slide) => {
-          const file = new File([JSON.stringify(slide)], newname, { type: 'application/json' });
-          const uploadTask = firebase.doUploadFile(authUser.uid, newname, file);
+      }
+      case DATASOURCE_DROPDOWN[1].key: {
+        const newname = addCopyToName(worksheets, name);
+
+        firebase.doDownloadWorksheet(authUser.uid, name).then((slide) => {
+          const file = new File(
+            [JSON.stringify(slide)],
+            newname,
+            { type: 'application/json' }
+          );
+
+          const uploadTask = firebase.doUploadWorksheet(authUser.uid, newname, file);
           uploadTask.on('state_changed', () => {}, () => {}, (snapshot) => {
-            onListFilesLessTrash();
+            firebase.doListWorksheets(authUser.uid).then((res) => {
+              onSetWorksheets(res.items);
+            });
           });
         });
+
         break;
-      case DATASOURCE_DROPDOWN[2].key:
+      }
+      case DATASOURCE_DROPDOWN[2].key: {
         setReadOnly(false);
         break;
-      case DATASOURCE_DROPDOWN[3].key:
-        firebase.doDownloadFile(authUser.uid, filename).then((slide) => {
-          xtos(slide, filename);
+      }
+      case DATASOURCE_DROPDOWN[3].key: {
+        firebase.doDownloadWorksheet(authUser.uid, name).then((slide) => {
+          xtos(slide, name);
         });
         break;
-      case DATASOURCE_DROPDOWN[4].key:
-        const today = new Date().toLocaleDateString();
-        firebase.trash(authUser.uid).get().then((doc) => {
-          if (doc.exists) {
-            firebase.trash(authUser.uid).update({ [filename]: today });
-          } else {
-            firebase.trash(authUser.uid).set({ [filename]: today });
-          }
-        });
-        onReload(filename);
+      }
+      case DATASOURCE_DROPDOWN[4].key: {
+        // const today = new Date().toLocaleDateString();
+        // firebase.trash(authUser.uid).get().then((doc) => {
+        //   if (doc.exists) {
+        //     firebase.trash(authUser.uid).update({ [name]: today });
+        //   } else {
+        //     firebase.trash(authUser.uid).set({ [name]: today });
+        //   }
+        // });
+
+        const ws = worksheets.findIndex((worksheet) => worksheet.name === name)
+        onSetWorksheets([
+          ...worksheets.slice(0, ws),
+          ...worksheets.slice(ws + 1),
+        ])
         break;
+      }
     }
   };
 
   const handleRun = () => {
-    onJobSubmit(filename);
+    onJobSubmit(name);
+
     firebase.doRunWorksheet(
       authUser.uid,
-      filename,
-      `user/${authUser.uid}/${filename}`,
+      name,
+      `user/${authUser.uid}/${name}`,
       `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`,
       'gs://tart-90ca2.appspot.com/scripts/sparkR.R',
     ).then((jobResp) => {
-      if (jobResp === 'failed job') onJobCancel(runId);
+      if (jobResp === 'failed job') {
+        onJobCancel(runId);
+      };
     });
   };
 
   const handleCancel = () => {
     onJobCancel(runId);
-    firebase.doCancelWorksheet(
-      runId,
-      authUser.uid,
-      filename.replace(/\s/g, '').toLowerCase(),
-    );
+
+    const ws = name.replace(/\s/g, '').toLowerCase()
+    firebase.doCancelWorksheet(runId, authUser.uid, ws);
   };
 
   const handleCommitRename = (n) => {
-    setLoading(true);
-    setName(n);
-    firebase.doDownloadFile(authUser.uid, filename).then((slide) => {
-      firebase.doUploadFile(
-        authUser.uid,
-        n,
-        new File([JSON.stringify(slide)], n, { type: 'application/json' }),
-      ).then(() => {
-        firebase.doDeleteFile(authUser.uid, filename).then(() => {
-          // onListFilesLessTrash()
-          setLoading(false);
-          // onSetWorksheetname(n)
-        });
-      });
-    });
+    // setLoading(true);
+    // setName(n);
+    // firebase.doDownloadWorksheet(authUser.uid, name).then((slide) => {
+    //   firebase.doUploadWorksheet(
+    //     authUser.uid,
+    //     n,
+    //     new File([JSON.stringify(slide)], n, { type: 'application/json' }),
+    //   ).then(() => {
+    //     firebase.doDeleteWorksheet(authUser.uid, name).then(() => {
+    //       // onListFilesLessTrash()
+    //       setLoading(false);
+    //       // onSetWorksheetname(n)
+    //     });
+    //   });
+    // });
   };
 
-  const handleOpen = () => onSetWorksheetname(filename);
+  const handleOpen = () => onSetWorksheetname(name);
 
   const handleClose = () => setError('');
 
@@ -156,7 +177,7 @@ const DataSource = ({
   );
 
   const LinkToApp = () => (
-    <Link to={{ pathname: ROUTES.WORKSHEET, filename }} onClick={handleOpen} id={`link-app-${filename}`}>
+    <Link to={{ pathname: ROUTES.WORKSHEET, filename: name }} onClick={handleOpen} id={`link-app-${name}`}>
       <div className="datasource-icon">
         {runId === undefined || runId === ''
 				  ? <Icon path={mdilTable} size={5} />
@@ -168,7 +189,7 @@ const DataSource = ({
   return (
     <div className="datasource-thumbnail">
       {loading && <div className="datasource-loading-overlay" />}
-      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${filename}`}>
+      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${name}`}>
         <LinkToApp />
         <div className="datasource-buttons-wrapper">
           <Run />
@@ -184,13 +205,12 @@ const DataSource = ({
           value={name}
           readOnly={readOnly}
           onCommit={handleCommitRename}
-          files={filesWithTrash}
           classname="datasource-editabletext"
           setReadOnly={setReadOnly}
-          inputId={`datasource-editabletext-${filename}`}
+          inputId={`datasource-editabletext-${name}`}
         />
       </ContextMenuTrigger>
-      <ContextMenuDropdown filename={filename} onDropdown={handleDropdown} />
+      <ContextMenuDropdown name={name} onDropdown={handleDropdown} />
     </div>
   );
 };
@@ -213,15 +233,14 @@ const OptionWithDropdown = withDropdown(Option);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  worksheetname: (state.worksheetnameState.worksheetname || ''),
+  name: (state.worksheetnameState.name || ''),
   color: (state.colorState.colors || {}),
-  files: (state.filesState.files || {}),
-  jobs: (state.jobsState.jobs || [{ status: 'failed list jobs' }]),
+  worksheets: (state.worksheetsState.worksheets || []),
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
-  onSetJobs: (jobs) => dispatch({ type: 'JOBS_SET', jobs }),
+  onSetWorksheetname: (name) => dispatch({ type: 'WORKSHEETNAME_SET', name }),
+  onSetWorksheets: (worksheets) => dispatch({ type: 'WORKSHEETS_SET', worksheets }),
 });
 
 export default compose(

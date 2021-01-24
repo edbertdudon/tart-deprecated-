@@ -12,19 +12,21 @@ import * as ROUTES from '../../constants/routes';
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
 
 const NewDataSource = ({
-  firebase, authUser, files, onSetWorksheetname,
+  firebase, authUser, worksheets, onSetWorksheetname,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const history = useHistory();
 
   const handleOpen = () => {
     setIsLoading(true);
+
     const filename = `Untitled Worksheet ${
 			 getMaxNumberCustomSheet(
-			  files[authUser.uid].map((file) => file.name),
+			  worksheets.map((worksheet) => worksheet.name),
 			  'Untitled Worksheet ',
       )}`;
-    firebase.doUploadFile(
+
+    firebase.doUploadWorksheet(
       authUser.uid,
       filename,
       new File(
@@ -47,14 +49,13 @@ const NewDataSource = ({
 					  : <Icon path={mdilPlus} size={5} />}
         </div>
       </div>
-      {/* <div className='datasource-text'>Add worksheet</div> */}
     </div>
   );
 };
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  files: (state.filesState.files || {}),
+  worksheets: (state.worksheetsState.worksheets || []),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
 });
 

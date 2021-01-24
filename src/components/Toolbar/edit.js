@@ -22,23 +22,27 @@ const Edit = ({ color, authUser, slides }) => {
   const handleEdit = (key) => {
     const { data, sheet } = slides;
     switch (key) {
-      case EDIT_DROPDOWN[0].key:
+      case EDIT_DROPDOWN[0].key: {
         data.undo();
         sheetReset.call(sheet);
         break;
-      case EDIT_DROPDOWN[1].key:
+      }
+      case EDIT_DROPDOWN[1].key: {
         data.redo();
         sheetReset.call(sheet);
         break;
-      case EDIT_DROPDOWN[3].key:
+      }
+      case EDIT_DROPDOWN[3].key: {
         data.cut();
         sheet.selector.showClipboard();
         break;
-      case EDIT_DROPDOWN[4].key:
+      }
+      case EDIT_DROPDOWN[4].key: {
         data.copy();
         sheet.selector.showClipboard();
         break;
-      case EDIT_DROPDOWN[5].key:
+      }
+      case EDIT_DROPDOWN[5].key: {
         data.paste();
         // if (data.settings.mode === 'read') return;
         // if (data.paste('all', msg => xtoast('Tip', msg))) {
@@ -49,10 +53,13 @@ const Edit = ({ color, authUser, slides }) => {
         //   sheetReset.call(sheet);
         // }
         break;
-      case EDIT_DROPDOWN[7].key:
+      }
+      case EDIT_DROPDOWN[7].key: {
         data.deleteCell();
         break;
+      }
     }
+    
     slides.reRender();
   };
 

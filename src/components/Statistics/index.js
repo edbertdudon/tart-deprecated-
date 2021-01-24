@@ -8,6 +8,7 @@
 import React from 'react';
 import StatisticDescription from './component/statisticdescription';
 import OneWayTable from './component/onewaytable';
+import TwoWayTable from './component/twowaytable';
 import ChiSquareTest from './component/chisqtest';
 import FisherExactTest from './component/fishertest';
 import CochranMantelHaenTest from './component/mantelhaentest';
@@ -69,7 +70,7 @@ const Statistics = ({ statistic }) => (
       {
         statdesc: <StatisticDescription statistic={statistic} />,
         onewaytable: <OneWayTable statistic={statistic} />,
-        // twowaytable: <TwoWayTable statistic={statistic} />,
+        twowaytable: <TwoWayTable statistic={statistic} />,
         // threewaytable: <ThreeWayTable statistic={statistic} />,
         chisqtest: <ChiSquareTest statistic={statistic} />,
         fishertest: <FisherExactTest statistic={statistic} />,

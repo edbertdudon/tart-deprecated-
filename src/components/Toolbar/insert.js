@@ -21,38 +21,46 @@ const Insert = ({
 
   const handleInsert = (key) => {
     switch (key) {
-      case INSERT_DROPDOWN[0].key:
+      case INSERT_DROPDOWN[0].key: {
         var d = slides.addSheet(undefined, undefined, current);
         slides.sheet.resetData(d);
+
         onSetDataNames([
           ...dataNames.slice(0, current + 1),
           d.name,
           ...dataNames.slice(current + 1),
         ]);
+
         onSetCurrent(current + 1);
+
         slides.data = d;
         break;
-      case INSERT_DROPDOWN[1].key:
+      }
+      case INSERT_DROPDOWN[1].key: {
 			  document.getElementById('chartstoggle').click();
         break;
-      case INSERT_DROPDOWN[2].key:
+      }
+      case INSERT_DROPDOWN[2].key: {
         document.getElementById('statisticstoggle').click();
         break;
-      case INSERT_DROPDOWN[3].key:
+      }
+      case INSERT_DROPDOWN[3].key: {
         document.getElementById('formulastoggle').click();
         break;
-      case INSERT_DROPDOWN[4].key:
+      }
+      case INSERT_DROPDOWN[4].key: {
         handleToggle('optimize');
         break;
+      }
     }
   };
 
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select);
-    } else {
-      onSetRightSidebar('none');
+      return
     }
+    onSetRightSidebar('none');
   };
 
   return (

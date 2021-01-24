@@ -98,8 +98,8 @@ class SignUpFormBase extends Component {
         this.setState({ ...INITIAL_STATE });
 
         // Create example documents in Firebase storage
-        // this.props.firebase.doUploadFile(authUser.user.uid, 'Sample Worksheet', SAMPLE_WORKSHEET)
-        // this.props.firebase.doUploadFile(authUser.user.uid, 'Sample Worksheet run', SAMPLE_RUN)
+        // this.props.firebase.doUploadWorksheet(authUser.user.uid, 'Sample Worksheet', SAMPLE_WORKSHEET)
+        // this.props.firebase.doUploadWorksheet(authUser.user.uid, 'Sample Worksheet run', SAMPLE_RUN)
         // this.props.firebase.doCopySample(authUser.user.uid)
 
         this.props.history.push(ROUTES.HOME);

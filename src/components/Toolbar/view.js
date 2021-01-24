@@ -16,8 +16,9 @@ const View = ({
   const handleView = (key) => {
     const { sheet, options } = slides;
     switch (key) {
-      case VIEW_DROPDOWN[0].key:
+      case VIEW_DROPDOWN[0].key: {
         setNavigator(!navigator);
+
         if (navigator) {
           sheet.table.el.style.marginLeft = '0';
           sheet.chartEl.el.style.left = '30px';
@@ -32,22 +33,29 @@ const View = ({
           options.showNavigator = true;
         }
         break;
-      case VIEW_DROPDOWN[1].key:
+      }
+      case VIEW_DROPDOWN[1].key: {
         handleToggle('chart');
         break;
+      }
     }
   };
 
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select);
-    } else {
-      onSetRightSidebar('none');
+      return;
     }
+    onSetRightSidebar('none');
   };
 
   return (
-    <ViewWithDropdown text="View" items={VIEW_DROPDOWN} onSelect={handleView} color={OFF_COLOR[color[authUser.uid]]} />
+    <ViewWithDropdown
+      text="View"
+      items={VIEW_DROPDOWN}
+      onSelect={handleView}
+      color={OFF_COLOR[color[authUser.uid]]}
+    />
   );
 };
 

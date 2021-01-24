@@ -87,20 +87,27 @@ class Firebase {
 
   // *** Storage API ***
 
-  doUploadFile = (uid, filename, file) => this.storage.ref(`user/${uid}/${filename}`).put(file)
+  doListWorksheets = (uid) => this.storage.ref(`user/${uid}/worksheets`).listAll()
 
-  doListFiles = (uid) => this.storage.ref(`user/${uid}`).listAll()
+  doUploadWorksheet = (uid, filename, file) => this.storage.ref(`user/${uid}/worksheets/${filename}`).put(file)
 
-  doDownloadFile = (uid, filename) => this.storage.ref(`user/${uid}/${filename}`).getDownloadURL()
+  doDownloadWorksheet = (uid, filename) => this.storage.ref(`user/${uid}/worksheets/${filename}`).getDownloadURL()
     .then((url) => fetch(url, { method: 'GET' })
       .then((res) => res.json())
-      .then((res) => res),
-      // .catch(err => console.log(err))
-    )
+      .then((res) => res))
     .then((res) => res)
-  // .catch(err => console.log(err))
 
-  doDeleteFile = (uid, filename) => this.storage.ref(`user/${uid}/${filename}`).delete()
+  doDeleteWorksheet = (uid, filename) => this.storage.ref(`user/${uid}/worksheets/${filename}`).delete()
+
+  doListInputs = (uid) => this.storage.ref(`user/${uid}/inputs`).listAll()
+
+  doUploadInputs = (uid, filename, file) => this.storage.ref(`user/${uid}/inputs/${filename}`).put(file)
+
+  doListTrash = (uid) => this.storage.ref(`user/${uid}/trash`).listAll()
+
+  doUploadTrash = (uid, filename, file) => this.storage.ref(`user/${uid}/trash/${filename}`).put(file)
+
+  doDeleteTrash = (uid, filename) => this.storage.ref(`user/${uid}/trash/${filename}`).delete()
 
   // *** Dataproc API ***
 
@@ -136,37 +143,11 @@ class Firebase {
   doGetTableSample = (data, connector) => this.auth.currentUser.getIdToken().then((authToken) => fetchG(connector, data, authToken)
     .then((res) => res.json()).then((res) => res))
 
-  // *** Jobs Tracker API ***
-
-	job = (uid) => this.db.collection('jobs').doc(uid)
-
-	jobs = () => this.db.collection('jobs')
-
-	doDeleteJobField = (uid, filename) => this.db.collection('jobs').doc(uid).update({ [filename]: app.firestore.FieldValue.delete() })
-
-	// *** User API ***
+  // *** User API ***
 
 	user = (uid) => this.db.collection('users').doc(uid)
 
 	users = () => this.db.collection('users')
-
-	// *** Message API ***
-
-	message = (uid) => this.db.collection('messages').doc(uid)
-
-	messages = () => this.db.collection('messages')
-
-	// *** Color API ***
-
-	color = (uid) => this.db.collection('colors').doc(uid)
-
-	colors = () => this.db.collection('colors')
-
-	// *** Worksheet API ***
-
-	worksheet = (uid) => this.db.collection('worksheets').doc(uid)
-
-	worksheets = () => this.db.collection('worksheets')
 
 	// *** Database Connections API ***
 
@@ -178,7 +159,6 @@ class Firebase {
 
 	// *** Trash API ***
 
-	// trashs isn't a word but oh well
 	trash = (uid) => this.db.collection('trash').doc(uid)
 
 	trashs = () => this.db.collection('trash')

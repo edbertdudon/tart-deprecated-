@@ -4,6 +4,7 @@ export const DEFAULT_INITIAL_SLIDES = [{
   freeze: 'A1',
   merges: [],
   name: 'Sheet1',
+  charts: [],
   rows: {},
   styles: [],
   type: 'sheet',

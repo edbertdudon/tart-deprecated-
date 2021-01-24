@@ -49,6 +49,9 @@ export default {
     rename: 'Rename',
     duplicate: 'Duplicate',
   },
+  contextmenuchart: {
+    edit: 'Edit Chart',
+  },
   print: {
     size: 'Paper size',
     orientation: 'Page orientation',

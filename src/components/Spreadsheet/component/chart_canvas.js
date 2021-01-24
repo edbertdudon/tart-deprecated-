@@ -58,8 +58,8 @@ class Chart {
     this.types = [];
     this.variablex = '';
     this.variabley = '';
-    this.image = h('img', `${cssPrefix}-chart-image`)
-      .attr('src', chartpng);
+    this.image = h('img', `${cssPrefix}-chart-image`);
+    // .attr('src', chartpng);
   }
 
   draw(context, optionalColor) {
@@ -167,7 +167,7 @@ function chartInitEvents(vRect) {
     selectionHandles.push(rect);
   }
 
-  addRect(0, 0, 500, 500, 'rgba(0,205,0,0.7)', charts);
+  // addRect(0, 0, 500, 500, 'rgba(0,205,0,0.7)', charts);
 }
 
 function clear(c) {
@@ -319,6 +319,33 @@ function chartMouseup() {
   expectResize = -1;
 }
 
+function chartScrollVertical(top) {
+  const { charts } = this.data;
+  const l = charts.length;
+  for (let i = l - 1; i >= 0; i--) {
+    charts[i].y = charts[i].y - top;
+    invalidate();
+  }
+}
+
+function chartScrollHorizontal(left) {
+  const { charts } = this.data;
+  const l = charts.length;
+  for (let i = l - 1; i >= 0; i--) {
+    charts[i].x = charts[i].x + left;
+    invalidate();
+  }
+}
+
+function select(chart) {
+  mySel = chart;
+  offsetx = mx - mySel.x;
+  offsety = my - mySel.y;
+  mySel.x = mx - offsetx;
+  mySel.y = my - offsety;
+  invalidate();
+}
+
 function invalidate() {
   isValid = false;
 }
@@ -344,8 +371,12 @@ function getMouse(e) {
 
 export {
   Chart,
+  invalidate,
+  select,
   chartInitEvents,
   chartMousedown,
   chartMouseup,
   chartMousemove,
+  chartScrollVertical,
+  chartScrollHorizontal,
 };

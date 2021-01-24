@@ -1,7 +1,7 @@
 import { combineReducers } from 'redux';
 import sessionReducer from './session';
 import worksheetnameReducer from './worksheetname';
-import filesReducer from './files';
+import worksheetsReducer from './worksheets';
 import slidesReducer from './slides';
 import dataNamesReducer from './datanames';
 import currentReducer from './current';
@@ -15,7 +15,7 @@ import notificationsReducer from './notifications';
 const rootReducer = combineReducers({
   sessionState: sessionReducer,
   worksheetnameState: worksheetnameReducer,
-  filesState: filesReducer,
+  worksheetsState: worksheetsReducer,
   slidesState: slidesReducer,
   dataNamesState: dataNamesReducer,
   currentState: currentReducer,

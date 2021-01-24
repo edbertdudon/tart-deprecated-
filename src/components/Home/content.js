@@ -8,209 +8,173 @@
 //  Notes:
 //  - Jobs must persist to stay as loading -- use redux-persist
 //  - Jobs is fetched every minute if there are jobs -- isJobsActive to track
-//  - listJobs waits for cluster to be active, use job_filler as replacement in case cluster is not yet active
+//  - listJobs waits for cluster to be active, use jobFiller as replacement in case cluster is not yet active
 //
 //  Known Issues:
-//  - how to keep files in redux for app instance even after refresh
-//  - useRecursiveTimeout is inefficient. Listing Files even if theres no change
+//  - how to keep worksheets in redux for app instance even after refresh
+//  - useRecursiveTimeout is inefficient. Listing Worksheets even if theres no change
 //  - clicking RUN repetitively sometimes set loading indicator off -- runId gets rerendered a second time.
 //
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-
-import DataSource from '../Datasource/datasource';
-import LoadingDataSource from '../Datasource/loadingdatasource';
-import NewDataSource from '../Datasource/newdatasource';
+import DataSource from './datasource';
+import LoadingDataSource from './loadingdatasource';
+import NewDataSource from './newdatasource';
 import useRecursiveTimeout from './useRecursiveTimeout.ts';
 import { withFirebase } from '../Firebase';
 
 const terminalStates = new Set(['DONE', 'ERROR', 'CANCELLED']);
+
 const queueStates = new Set(['PENDING', 'SETUP_DONE', 'RUNNING']);
 
-export const shouldReloadTimer = (jobs) => {
-  if (jobs[0].status === 'failed list jobs') {
-    return (false);
-  }
-  let shouldReload = false;
-  for (let i = 0; i < jobs.length; i++) {
-    if (!terminalStates.has(jobs[i].status.state)) {
-      shouldReload = true;
-    }
-  }
-  return (shouldReload);
-};
+export function shouldReloadTimer(jobs) {
+  if (jobs[0].status === 'failed list jobs') return(false);
 
-export const getJobId = (filename, jobs) => {
+  return jobs.some((job) => !terminalStates.has(job.status.state));
+}
+
+export function getJobId(worksheetname, jobs) {
   if (jobs[0].status !== 'failed list jobs') {
     for (let i = 0; i < jobs.length; i++) {
-      if (filename === jobs[i].labels.worksheet) {
-        if (queueStates.has(jobs[i].status.state)) {
-          return jobs[i].reference.jobId;
-        }
+      if (worksheetname === jobs[i].labels.worksheet
+        && queueStates.has(jobs[i].status.state)) {
+        return jobs[i].reference.jobId;
       }
     }
   }
-};
-
-// Checks for changes in job before downloading new files created
-export const checkJobChanges = (res) => {
-  let isChanged = false;
-  for (let i = 0; i < res.length; i++) {
-    if (terminalStates.has(res[i].status.state)) {
-      isChanged = true;
-    }
-  }
-  return isChanged;
-};
+}
 
 // Set Temporary Job and then useRecursiveTimeout runs listJobs -- waits for cluster to be active in server
-export const submitJob = (filename, jobs) => {
+export function submitJob(worksheetname, jobs) {
   const fillerJobs = [];
   if (jobs[0].status !== 'failed list jobs') {
     for (let i = 0; i < jobs.length; i++) {
       if (jobs[i].reference.jobId.startsWith('filler job')) fillerJobs.push(jobs[i]);
     }
   }
-  const job_filler = {
+
+  const jobFiller = {
     status: { state: 'PENDING' },
-    labels: { worksheet: filename.replace(/\s/g, '').toLowerCase() },
+    labels: { worksheet: worksheetname.replace(/\s/g, '').toLowerCase() },
     reference: { jobId: `filler job ${fillerJobs.length + 1}` },
   };
+
   if (jobs[0].status === 'failed list jobs') {
-    return ([job_filler]);
+    return ([jobFiller]);
   }
-  return ([...jobs, job_filler]);
-};
+
+  return ([...jobs, jobFiller]);
+}
 
 // Deletes temporary Job and then list Jobs then useRecursiveTimeout will be called once more (unless theres different jobs running)
-export const cancelJob = (runid, jobs) => {
+export function cancelJob(runid, jobs) {
   let currentJob;
   for (let i = 0; i < jobs.length; i++) {
     if (jobs[i].reference.jobId === runId) {
       currentJob = i;
     }
   }
+
   let newJobs = [
     ...jobs.slice(0, currentJob),
     ...jobs.slice(currentJob + 1),
   ];
-  if (newJobs.length < 1) newJobs = [{ status: 'failed list jobs' }];
-  return newJobs;
-};
 
-export const updateFilesAfterTrash = (filename, files) => {
-  let newFile;
-  for (let i = 0; i < files.length; i++) {
-    if (files[i].name === filename) {
-      newFile = [
-        ...files.slice(0, i),
-        ...files.slice(i + 1),
-      ];
-      break;
-    }
-  }
-  return newFile;
-};
+  if (newJobs.length < 1) newJobs = [{ status: 'failed list jobs' }];
+
+  return newJobs;
+}
 
 const Content = ({
-  firebase, authUser, files, jobs, notifications, onSetFiles, onSetJobs, isJobsActive, onSetIsJobsActive,
-  onSetNotifications,
+  firebase, authUser, worksheets, jobs, notifications, onSetWorksheets,
+  onSetJobs, isJobsActive, onSetIsJobsActive, onSetNotifications,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [filesWithTrash, setFilesWithTrash] = useState([]);
 
   useEffect(() => {
     setLoading(true);
-    listFilesLessTrash();
+
+    firebase.doListWorksheets(authUser.uid).then((res) => {
+      onSetWorksheets(res.items);
+      setLoading(false);
+    });
+
     firebase.doListJobs(authUser.uid)
       .then((res) => {
         if (!('error' in res)) {
           onSetJobs(res);
         }
       })
-      .then(() => onSetIsJobsActive(shouldReloadTimer(jobs)));
+      .then(() => onSetIsJobsActive(
+        shouldReloadTimer(jobs)
+      ));
   }, []);
 
   // Checks every ** 1 minutes *** for finished jobs
   useRecursiveTimeout(() => {
     if (isJobsActive === false) return;
+
     // Wait for promise to complete before scheduling the next iteration (synchronous)
-    firebase.doListJobs(authUser.uid)
-      .then((res) => {
-        if (checkJobChanges(res)) {
-          listFilesLessTrash();
-        }
-        return res;
-      })
-      .then((res) => onSetJobs(res))
-      .then(() => onSetIsJobsActive(shouldReloadTimer(jobs)));
+    firebase.doListJobs(authUser.uid).then((res) => {
+      // Checks for changes in job before downloading new worksheets created
+      if (res.some((job) => terminalStates.has(job.status.state))) {
+        firebase.doListWorksheets(authUser.uid).then((res) => {
+          onSetWorksheets(res.items);
+        });
+      }
+      return res;
+    })
+    .then((res) => onSetJobs(res))
+    .then(() => onSetIsJobsActive(
+      shouldReloadTimer(jobs)
+    ));
   }, 60000);
 
-  const handleUpdateAfterTrash = (filename) => {
-    onSetFiles(
-      updateFilesAfterTrash(filename, files[authUser.uid]),
-      authUser.uid,
+  const handleJobSubmit = (worksheetname) => {
+    onSetIsJobsActive(true);
+
+    onSetJobs(
+      submitJob(worksheetname, jobs)
+    );
+
+    onSetNotifications(
+      notifications.concat({
+        key: `Job started: ${worksheetname}`,
+        type: 'notification',
+      })
     );
   };
 
-  const handleJobSubmit = (filename) => {
-    onSetIsJobsActive(true);
-    onSetJobs(submitJob(filename, jobs));
-    onSetNotifications(notifications.concat({ key: `Job started: ${filename}`, type: 'notification' }));
-  };
-
   const handleJobCancel = (runId) => {
-    onSetJobs(cancelJob(runId, jobs));
-    onSetNotifications(notifications.concat({ key: `Job cancelled: ${filename}`, type: 'notification' }));
-  };
+    onSetJobs(
+      cancelJob(runId, jobs)
+    );
 
-  const listFilesLessTrash = () => {
-    firebase.doListFiles(authUser.uid).then((res) => {
-      const allFiles = res.items;
-      setFilesWithTrash(allFiles);
-      firebase.trash(authUser.uid).get().then((doc) => {
-        if (doc.exists) {
-          const list = Object.keys(doc.data());
-          const filesLessTrash = allFiles.filter((file) => {
-            if (!list.includes(file.name)) {
-              return file.name;
-            }
-          });
-          setLoading(false);
-          onSetFiles(filesLessTrash, authUser.uid);
-        }
-      });
-    });
-  };
-
-  const Files = () => {
-    if (files[authUser.uid] === undefined) return null;
-    return (
-      <>
-        {files[authUser.uid].map((file) => (
-				  (/[.]/.exec(file.name) === null)
-						&& (
-<DataSource
-  filename={file.name}
-  onReload={handleUpdateAfterTrash}
-  runId={getJobId(file.name.replace(/\s/g, '').toLowerCase(), jobs)}
-  onJobSubmit={handleJobSubmit}
-  onJobCancel={handleJobCancel}
-  key={file.name}
-  onListFilesLessTrash={listFilesLessTrash}
-  filesWithTrash={filesWithTrash}
-/>
-						)
-        ))}
-      </>
+    onSetNotifications(
+      notifications.concat({
+        key: `Job started: ${worksheetname}`,
+        type: 'notification',
+      })
     );
   };
 
   return (
     <div className="home-content">
-      {/* {loading && <LoadingDataSource />} */}
-      <Files />
+      {loading
+        ? <LoadingDataSource />
+        : <>
+            {worksheets.map((worksheet) => (
+              <DataSource
+                filename={worksheet.name}
+                runId={getJobId(worksheet.name.replace(/\s/g, '').toLowerCase(), jobs)}
+                onJobSubmit={handleJobSubmit}
+                onJobCancel={handleJobCancel}
+                key={worksheet.name}
+              />
+            ))}
+          </>
+      }
       <NewDataSource />
     </div>
   );
@@ -218,14 +182,14 @@ const Content = ({
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  files: (state.filesState.files || {}),
+  worksheets: (state.worksheetsState.worksheets || []),
   jobs: (state.jobsState.jobs || [{ status: 'failed list jobs' }]),
   isJobsActive: (state.isJobsActiveState.isJobsActive || false),
   notifications: (state.notificationsState.notifications || []),
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  onSetFiles: (files, uid) => dispatch({ type: 'FILES_SET', files, uid }),
+  onSetWorksheets: (worksheets) => dispatch({ type: 'WORKSHEETS_SET', worksheets }),
   onSetJobs: (jobs) => dispatch({ type: 'JOBS_SET', jobs }),
   onSetIsJobsActive: (isJobsActive) => dispatch({ type: 'ISJOBSACTIVE_SET', isJobsActive }),
   onSetNotifications: (notifications) => dispatch({ type: 'NOTIFICATIONS_SET', notifications }),

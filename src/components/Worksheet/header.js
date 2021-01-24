@@ -16,26 +16,26 @@ const USER_DROPDOWN = [
 ];
 
 const Header = ({
-  firebase, authUser, color, worksheetname, files, slides, onSetFiles, onSetWorksheetname,
+  firebase, authUser, color, worksheetname, worksheets, slides, onSetWorksheets, onSetWorksheetname,
   saving, setSaving, readOnly, setReadOnly,
 }) => {
   useEffect(() => {
-    if (files[authUser.uid] === undefined) {
-      firebase.doListFiles(authUser.uid).then((res) => {
-        onSetFiles(res.items, authUser.uid);
+    if (worksheets === undefined) {
+      firebase.doListWorksheets(authUser.uid).then((res) => {
+        onSetWorksheets(res.items);
       });
     }
   }, []);
 
   const handleCommit = (name) => {
     setSaving(true);
-    const file = new File([JSON.stringify(slides.getData())], name, { type: 'application/json' });
-    firebase.doUploadFile(authUser.uid, name, file);
-    firebase.doDeleteFile(authUser.uid, worksheetname)
-      .then(() => {
-        setSaving(false);
-        onSetWorksheetname(name);
-      });
+    // const file = new File([JSON.stringify(slides.getData())], name, { type: 'application/json' });
+    // firebase.doUploadWorksheet(authUser.uid, name, file);
+    // firebase.doDeleteWorksheet(authUser.uid, worksheetname)
+    //   .then(() => {
+    //     setSaving(false);
+    //     onSetWorksheetname(name);
+    //   });
   };
 
   const handleDropdown = (i) => firebase.doSignOut();
@@ -57,7 +57,7 @@ const Header = ({
             value={worksheetname.replace(/\.[^/.]+$/, '')}
             readOnly={readOnly}
             onCommit={handleCommit}
-            files={files[authUser.uid]}
+            worksheets={worksheets}
             classname="worksheet-header-filename"
             setReadOnly={setReadOnly}
           />
@@ -87,14 +87,14 @@ const UserWithDropdown = withDropdown(User);
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   worksheetname: (state.worksheetnameState.worksheetname || ''),
-  files: (state.filesState.files || {}),
+  worksheets: (state.worksheetsState.worksheets || []),
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
-  onSetFiles: (files, uid) => dispatch({ type: 'FILES_SET', files, uid }),
+  onSetWorksheets: (worksheets) => dispatch({ type: 'WORKSHEETS_SET', worksheets }),
 });
 
 export default compose(

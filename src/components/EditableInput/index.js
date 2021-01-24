@@ -9,27 +9,32 @@
 // Alert users when they make an illegal change ie. same name headers, spaces within name
 //
 import React, { useState, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import { useOutsideAlerter } from '../../functions';
 import withModal from '../Modal';
 
 const EditableInput = ({
-  value, readOnly, onCommit, files, classname, style, inputId, reference, setReadOnly,
+  value, readOnly, onCommit, worksheets,
+  classname, style, inputId, setReadOnly,
 }) => {
   const [text, setText] = useState(value);
-  const editableinputRef = useRef(null);
   const [error, setError] = useState(false);
   const [errortext, setErrorText] = useState('');
+  const editableinputRef = useRef(null);
 
   const checkIllegalChange = () => {
     if (readOnly === false) {
       setReadOnly(true);
       let doesExist = false;
-      for (let i = 0; i < files.length; i++) {
-        if (files[i].name === text) {
+
+      for (let i = 0; i < worksheets.length; i++) {
+        if (worksheets[i].name === text) {
           doesExist = true;
           break;
         }
       }
+
       if (!doesExist) {
         onCommit(text);
       } else {
@@ -88,4 +93,12 @@ const Message = ({ text, onSelect }) => (
 
 const MessageWithModal = withModal(Message);
 
-export default EditableInput;
+const mapStateToProps = (state) => ({
+  worksheets: (state.worksheetsState.worksheets || []),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(EditableInput);

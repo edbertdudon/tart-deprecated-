@@ -10,6 +10,7 @@ import ContextMenu from './contextmenu';
 import Table from './table';
 import {
   chartInitEvents, chartMousedown, chartMouseup, chartMousemove,
+  chartScrollVertical, chartScrollHorizontal,
 } from './chart_canvas';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
@@ -49,19 +50,23 @@ function scrollbarMove() {
   const tableOffset = this.getTableOffset();
   // console.log(',l:', l, ', left:', left, ', tOffset.left:', tableOffset.width);
   if (Math.abs(left) + width > tableOffset.width) {
+    chartScrollHorizontal.call(this, -25);
     horizontalScrollbar.move({ left: l + width - tableOffset.width });
   } else {
     const fsw = data.freezeTotalWidth();
     if (left < fsw) {
+      chartScrollHorizontal.call(this, 25);
       horizontalScrollbar.move({ left: l - 1 - fsw });
     }
   }
   // console.log('top:', top, ', height:', height, ', tof.height:', tableOffset.height);
   if (Math.abs(top) + height > tableOffset.height) {
+    chartScrollVertical.call(this, 25);
     verticalScrollbar.move({ top: t + height - tableOffset.height - 1 });
   } else {
     const fsh = data.freezeTotalHeight();
     if (top < fsh) {
+      chartScrollVertical.call(this, -25);
       verticalScrollbar.move({ top: t - 1 - fsh });
     }
   }
@@ -207,6 +212,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri + 1;
       if (ri < rows.len) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
+        chartScrollVertical.call(this, rh);
         verticalScrollbar.move({ top: top + rh - 1 });
       }
     } else {
@@ -214,6 +220,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri - 1;
       if (ri >= 0) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
+        chartScrollVertical.call(this, -rh);
         verticalScrollbar.move({ top: ri === 0 ? 0 : top - rh });
       }
     }
@@ -226,6 +233,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci + 1;
       if (ci < cols.len) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
+        chartScrollHorizontal.call(this, -cw);
         horizontalScrollbar.move({ left: left + cw - 1 });
       }
     } else {
@@ -233,6 +241,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci - 1;
       if (ci >= 0) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
+        chartScrollHorizontal.call(this, cw);
         horizontalScrollbar.move({ left: ci === 0 ? 0 : left - cw });
       }
     }
@@ -612,6 +621,7 @@ function sheetInitEvents() {
     horizontalScrollbar,
     editor,
     contextMenu,
+    contextMenuChart,
     toolbar,
     modalValidation,
     sortFilter,
@@ -638,21 +648,29 @@ function sheetInitEvents() {
       editor.clear();
       // }
       contextMenu.hide();
+      contextMenuChart.hide();
 
       // charts
       const isChart = chartMousedown.call(this, evt);
+      // the left mouse button: mousedown → mouseup → click
+      // the right mouse button: mousedown → contenxtmenu → mouseup
+      if (evt.buttons === 2) {
+        const x = evt.offsetX + 125;
+        if (isChart) {
+          chartMouseup(evt);
+          contextMenuChart.setPosition(x, evt.offsetY);
+        } else if (this.data.xyInSelectedRect(evt.offsetX, evt.offsetY)) {
+          contextMenu.setPosition(x, evt.offsetY);
+        } else {
+          overlayerMousedown.call(this, evt);
+          contextMenu.setPosition(x, evt.offsetY);
+        }
+        evt.stopPropagation();
+        return;
+      }
+
       if (!isChart) {
-        // the left mouse button: mousedown → mouseup → click
-        // the right mouse button: mousedown → contenxtmenu → mouseup
-        if (evt.buttons === 2) {
-          if (this.data.xyInSelectedRect(evt.offsetX, evt.offsetY)) {
-            contextMenu.setPosition(evt.offsetX, evt.offsetY);
-          } else {
-            overlayerMousedown.call(this, evt);
-            contextMenu.setPosition(evt.offsetX, evt.offsetY);
-          }
-          evt.stopPropagation();
-        } else if (evt.detail === 2) {
+        if (evt.detail === 2) {
           editorSet.call(this);
         } else {
           overlayerMousedown.call(this, evt);
@@ -668,7 +686,7 @@ function sheetInitEvents() {
     .on('mouseup', (evt) => {
       chartMouseup(evt);
     })
-    .on('mousewheel.stop', (evt) => {
+    .on('wheel.stop', (evt) => {
       overlayerMousescroll.call(this, evt);
     })
     .on('mouseout', (evt) => {
@@ -676,7 +694,7 @@ function sheetInitEvents() {
       if (offsetY <= 0) colResizer.hide();
       if (offsetX <= 0) rowResizer.hide();
     })
-    .on('mousewheel', (evt) => {
+    .on('wheel', (evt) => {
       evt.stopPropagation();
       evt.preventDefault();
     });
@@ -862,6 +880,7 @@ function sheetInitEvents() {
           break;
         case 27: // esc
           contextMenu.hide();
+          contextMenuChart.hide();
           clearClipboard.call(this);
           break;
         case 37: // left
@@ -918,6 +937,16 @@ function sheetInitEvents() {
       }
     }
   });
+
+  // contextMenuChart
+  contextMenuChart.itemClick = (type) => {
+    switch (type) {
+      case 'edit': {
+        // open format drawer
+        break;
+      }
+    }
+  };
 }
 
 export default class Sheet {
@@ -947,7 +976,8 @@ export default class Sheet {
     // data validation
     this.modalValidation = new ModalValidation();
     // contextMenu
-    this.contextMenu = new ContextMenu(() => this.getRect(), !showContextmenu);
+    this.contextMenu = new ContextMenu('sheet', () => this.getRect(), !showContextmenu);
+    this.contextMenuChart = new ContextMenu('chart', () => this.getRect(), !showContextmenu);
     // selector
     this.selector = new Selector(data);
     this.overlayerCEl = h('div', `${cssPrefix}-overlayer-content`)
@@ -971,6 +1001,7 @@ export default class Sheet {
       this.verticalScrollbar.el,
       this.horizontalScrollbar.el,
       this.contextMenu.el,
+      this.contextMenuChart.el,
       this.modalValidation.el,
       this.sortFilter.el,
     );

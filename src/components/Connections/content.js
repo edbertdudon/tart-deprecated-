@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-
-import LoadingDataSource from '../Datasource/loadingdatasource';
 import DataConnection from './dataconnection';
 import { withFirebase } from '../Firebase';
 
@@ -12,6 +10,7 @@ const Content = ({ firebase, authUser }) => {
 
   useEffect(() => {
     setLoading(true);
+
     firebase.connection(authUser.uid).get()
       .then((docC) => {
         if (docC.exists) {
@@ -32,39 +31,21 @@ const Content = ({ firebase, authUser }) => {
       });
   }, []);
 
-  const handleReloadAfterDelete = (filename) => {
-    let newConnection;
-    for (let i = 0; i < connections.length; i++) {
-      if (connections[i] === filename) {
-        newConnection = [
-          ...connections.slice(0, i),
-          ...connections.slice(i + 1),
-        ];
-        break;
-      }
-    }
-    setConnections(newConnection);
-  };
-
   return (
     <div className="home-content">
-      {connections.length < 1
-        ?	(
-          <div className="home-content-search">
-            Your uploaded files will appear here
-          </div>
-        )
-        :	(
-          <div>
+      {(connections.length < 1
+        ? <div className="home-content-search">Your connections will appear here</div>
+        : <div>
             {connections.map((host) => (
               <DataConnection
-                filename={host}
+                name={host}
+                connections={connections}
+                onSetConnections={setConnections}
                 key={host}
-                onReload={handleReloadAfterDelete}
               />
             ))}
           </div>
-        )}
+      )}
     </div>
   );
 };

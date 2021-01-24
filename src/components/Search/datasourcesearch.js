@@ -22,55 +22,59 @@ import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const DataSourceSearch = ({
-  firebase, authUser, color, onJobSubmit, onJobCancel, onSetWorksheet, filename, connections, runId,
+  firebase, authUser, color, onJobSubmit, onJobCancel, onSetWorksheet, name, connections, runId,
 }) => {
   const [hover, setHover] = useState(false);
 
   const handleRun = () => {
-    onJobSubmit(filename);
+    onJobSubmit(name);
+
     const jobFilePath = 'gs://tart-90ca2.appspot.com/scripts/sparkR.R';
-    const jobFileArgument = `user/${authUser.uid}/${filename}`;
+    const jobFileArgument = `user/${authUser.uid}/${name}`;
     const jobFileSave = `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`;
-    firebase.doRunWorksheet(authUser.uid, filename, jobFileArgument, jobFileSave, jobFilePath)
-      .then((jobResp) => {
-        if (jobResp === 'failed job') onJobCancel(runId);
-      });
+
+    firebase.doRunWorksheet(
+      authUser.uid, name, jobFileArgument, jobFileSave, jobFilePath
+    ).then((jobResp) => {
+      if (jobResp === 'failed job') onJobCancel(runId);
+    });
   };
 
   const handleCancel = () => {
     onJobCancel(runId);
-    firebase.doCancelWorksheet(runId, authUser.uid, filename.replace(/\s/g, '').toLowerCase());
+
+    firebase.doCancelWorksheet(
+      runId, authUser.uid, name.replace(/\s/g, '').toLowerCase()
+    );
   };
 
   const handleOpen = () => {
-    document.getElementById(`link-app-${filename}`).click();
-    onSetWorksheet(filename, authUser.uid);
+    document.getElementById(`link-app-${name}`).click();
+    onSetWorksheet(name);
   };
 
   const Run = () => (
-    (runId === undefined || runId === '')
-      ?	(
-        <button
-          className="datasource-button"
-          onClick={handleRun}
-          style={{ backgroundColor: hover && color[authUser.uid] }}
-          onMouseEnter={() => setHover(!hover)}
-          onMouseLeave={() => setHover(!hover)}
-        >
-          RUN
-        </button>
-      )
-      :	(
-        <button className="datasource-button" onClick={handleCancel} style={{ backgroundColor: color[authUser.uid] }}>
-          <Icon path={mdiStop} size={1} />
-        </button>
-      )
+    (runId === undefined || runId === '') ?	(
+      <button
+        className="datasource-button"
+        onClick={handleRun}
+        style={{ backgroundColor: hover && color[authUser.uid] }}
+        onMouseEnter={() => setHover(!hover)}
+        onMouseLeave={() => setHover(!hover)}
+      >
+        RUN
+      </button>
+    ) :	(
+      <button className="datasource-button" onClick={handleCancel} style={{ backgroundColor: color[authUser.uid] }}>
+        <Icon path={mdiStop} size={1} />
+      </button>
+    )
   );
 
   const LinkToApp = () => (
-    <Link to={{ pathname: ROUTES.WORKSHEET, filename }} onClick={handleOpen} id={`link-app-${filename}`}>
+    <Link to={{ pathname: ROUTES.WORKSHEET, filename: name }} onClick={handleOpen} id={`link-app-${name}`}>
       <div className="datasource-icon">
-        {connections.includes(filename)
+        {connections.includes(name)
 				  ? <Icon path={mdiDatabase} size={5} />
 				  : runId === undefined || runId === ''
 				    ? <Icon path={mdilTable} size={5} />
@@ -85,7 +89,7 @@ const DataSourceSearch = ({
       <div className="datasource-buttons-wrapper">
         <Run />
       </div>
-      <div className="datasource-editabletext">{filename.replace(/\.[^/.]+$/, '')}</div>
+      <div className="datasource-editabletext">{name.replace(/\.[^/.]+$/, '')}</div>
     </div>
   );
 };

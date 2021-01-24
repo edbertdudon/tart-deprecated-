@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { compose } from 'recompose';
 import './index.less';
 

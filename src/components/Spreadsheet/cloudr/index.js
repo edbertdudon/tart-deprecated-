@@ -238,7 +238,8 @@ function rToSpreadsheet(aoa) {
   return o;
 }
 
-// const firstone = '[["formula.name","ChiSquare","Df","p","test"],["Variance","0.932418764519325","1","0.334235198366151","Non-constant Variance Score Test"]]'
+// Applicable Types of data
+// const firstone = '[["formula.name","ChiSquare","Df","p","test"],["Variance","0.932418764519325","1","0.334235198366151","Non-constant Variance Score Test"]]';
 // const secondone = '[{"statistic":0,"p.value":1,"parameter":1,"method":"Pearson\'s Chi-squared test with Yates\' continuity correction"}]'
 // const thirdone = '[{"rowname":"Air.Flow","Air.Flow":1,"Water.Temp":0.781852332952155,"Acid.Conc.":0.500142874899459},{"rowname":"Water.Temp","Air.Flow":0.781852332952155,"Water.Temp":1,"Acid.Conc.":0.39093953782809},{"rowname":"Acid.Conc.","Air.Flow":0.500142874899459,"Water.Temp":0.39093953782809,"Acid.Conc.":1}]'
 export const doRegress = (data, type) => fetchR(data, type)

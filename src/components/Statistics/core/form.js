@@ -16,12 +16,13 @@ import DataRange, {
   getRownames, getCols, getVars, setVariablesRange,
 } from '../../RightSidebar/datarange';
 import Button from '../../RightSidebar/button';
-
 import { getMaxNumberCustomSheet, insertData } from '../../../functions';
 
 export const ALTERNATIVES = ['Two-sided', 'Greater', 'Less'];
 export const ALTERNATIVES_AUTOCORRELATION = ['Two-sided', 'Positive', 'Negative'];
-export const CORRELATION_METHOD = ['Pearson', 'Spearman', 'Kendall'];
+// Kendall doesn't work with corrr::correlate
+// export const CORRELATION_METHOD = ['Pearson', 'Spearman', 'Kendall'];
+export const CORRELATION_METHOD = ['Pearson', 'Spearman'];
 export const BOOTSTRAP_METHOD = ['Resample', 'Normal'];
 export const WILKS_METHOD = ['c (standard)', 'MCD', 'Rank'];
 export const WILKS_APPROXIMATION = ['Bartlett', 'Rao', 'Empirical'];
@@ -31,7 +32,6 @@ export function createStatistic(res, slides, formuladata, statistic, dataNames, 
   delete formuladata.slides;
   delete formuladata.names;
   const statName = `${statistic} ${getMaxNumberCustomSheet(datas.map((d) => d.name), statistic)}`;
-  // res.name = statName
   res.type = statistics.find((e) => e.key === statistic).function;
   res.regression = formuladata;
   insertData(slides, dataNames, current, res, statName, onSetDataNames, onSetCurrent);

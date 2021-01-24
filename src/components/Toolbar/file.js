@@ -49,7 +49,7 @@ export const FILE_DROPDOWN = [
 ];
 
 const Files = ({
-  firebase, authUser, worksheetname, files, slides, color, dataNames, current,
+  firebase, authUser, worksheetname, worksheets, slides, color, dataNames, current,
   onSetDataNames, onSetCurrent, onSetWorksheetname, setReadOnly,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,69 +61,85 @@ const Files = ({
 
   const handleFile = (key) => {
     switch (key) {
-      case FILE_DROPDOWN[0].key:
-        const filename = `Untitled Worksheet ${
-          getMaxNumberCustomSheet(
-            files[authUser.uid].map((file) => file.name),
-            'Untitled Worksheet ',
-          )}`;
-        firebase.doUploadFile(
-          authUser.uid,
-          filename,
-          new File([JSON.stringify(DEFAULT_INITIAL_SLIDES)], filename, { type: 'application/json' }),
-        ).on('state_changed', () => {}, () => {}, (snapshot) => {
-          onSetWorksheetname(filename);
-          window.location.reload();
-        });
-        break;
-      case FILE_DROPDOWN[1].key:
-        const file = new File([JSON.stringify(slides.getData())], worksheetname, { type: 'application/json' });
-        firebase.doUploadFile(authUser.uid, worksheetname, file);
-        break;
-      case FILE_DROPDOWN[2].key:
-        // doListFiles needed because files[authUser.uid] does not contain trash
-        firebase.doListFiles(authUser.uid).then((res) => {
-          const newname = addCopyToName(res.items, worksheetname);
-          const file = new File([JSON.stringify(slides.getData())], newname, { type: 'application/json' });
-          const uploadTask = firebase.doUploadFile(authUser.uid, newname, file);
-          uploadTask.on('state_changed', () => {}, () => {}, (snapshot) => {
-            onSetWorksheetname(newname);
-        		window.location.reload();
+      case FILE_DROPDOWN[0].key: {
+        const ws = worksheets[authUser.uid].map((file) => file.name)
+        const max = getMaxNumberCustomSheet(ws, 'Untitled Worksheet ')
+        const filename = 'Untitled Worksheet ' + max;
+        const initial = [JSON.stringify(DEFAULT_INITIAL_SLIDES)]
+        const newFile = new File(initial, filename, { type: 'application/json' })
+
+        firebase.doUploadWorksheet(authUser.uid, filename, newFile)
+          .on('state_changed', () => {}, () => {}, (snapshot) => {
+            onSetWorksheetname(filename);
+            window.location.reload();
           });
+        break;
+      }
+      case FILE_DROPDOWN[1].key: {
+        const data = [JSON.stringify(slides.getData())]
+        const file = new File(data, worksheetname, { type: 'application/json' });
+
+        firebase.doUploadWorksheet(authUser.uid, worksheetname, file);
+        break;
+      }
+      case FILE_DROPDOWN[2].key: {
+      const data = [JSON.stringify(slides.getData())]
+
+        // doListWorksheets needed because worksheets[authUser.uid] does not contain trash
+        firebase.doListWorksheets(authUser.uid).then((res) => {
+          const newname = addCopyToName(res.items, worksheetname);
+          const file = new File(data, newname, { type: 'application/json' });
+
+          firebase.doUploadWorksheet(authUser.uid, newname, file)
+            .on('state_changed', () => {}, () => {}, (snapshot) => {
+              onSetWorksheetname(newname);
+          		window.location.reload();
+            });
         });
         break;
-      case FILE_DROPDOWN[3].key:
+      }
+      case FILE_DROPDOWN[3].key: {
         setReadOnly(false);
         break;
-      case FILE_DROPDOWN[4].key:
+      }
+      case FILE_DROPDOWN[4].key: {
         xtos(slides.getData(), worksheetname);
         break;
-      case FILE_DROPDOWN[5].key:
-        const today = new Date().toLocaleDateString();
-        firebase.trash(authUser.uid).get().then((doc) => {
-          if (doc.exists) {
-            firebase.trash(authUser.uid).update({ [worksheetname]: today });
-          } else {
-            firebase.trash(authUser.uid).set({ [worksheetname]: today });
-          }
-        });
-        history.push(ROUTES.HOME);
+      }
+      case FILE_DROPDOWN[5].key: {
+        // const today = new Date().toLocaleDateString();
+        //
+        // firebase.trash(authUser.uid).get().then((doc) => {
+        //   if (doc.exists) {
+        //     firebase.trash(authUser.uid).update({ [worksheetname]: today });
+        //   } else {
+        //     firebase.trash(authUser.uid).set({ [worksheetname]: today });
+        //   }
+        // });
+        //
+        // history.push(ROUTES.HOME);
         break;
-      case FILE_DROPDOWN[7].key:
+      }
+      case FILE_DROPDOWN[7].key: {
         uploadRef.current.click();
         break;
-      case FILE_DROPDOWN[8].key:
+      }
+      case FILE_DROPDOWN[8].key: {
         setIsOpen(!isOpen);
         break;
-      case FILE_DROPDOWN[10].key:
+      }
+      case FILE_DROPDOWN[10].key: {
         setIsOpenDatabaseMysql(true);
         break;
-      case FILE_DROPDOWN[11].key:
+      }
+      case FILE_DROPDOWN[11].key: {
         setIsOpenDatabaseSqlserver(true);
         break;
-      case FILE_DROPDOWN[12].key:
+      }
+      case FILE_DROPDOWN[12].key: {
         setIsOpenDatabaseOracle(true);
         break;
+      }
     }
   };
 
@@ -131,30 +147,38 @@ const Files = ({
     const { files } = e.target;
     const f = files[0];
     switch (re.exec(f.name)[1]) {
-      case 'csv':
+      case 'csv': {
         Papa.parse(f, {
           worker: true,
           complete(results) {
             const { data, meta } = results;
             const o = papaToSpreadsheet(data);
+
             insert(o, f.name, meta.delimiter, f.name);
-            firebase.doUploadFile(authUser.uid, f.name, f);
+
+            firebase.doUploadWorksheet(authUser.uid, f.name, f);
           },
         });
         break;
+      }
       case 'xls':
       case 'xlsx':
         var reader = new FileReader();
+
         reader.onload = function (e) {
           const results = new Uint8Array(e.target.result);
           const wb = XLSX.read(results, { type: 'array' });
+
           stox(wb).forEach((o) => insert(o, o.name, ',', `${f.name}_${o.name}`));
+
           wb.SheetNames.forEach((name) => {
             const ws = wb.Sheets[name];
             const aoa = new File([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, { type: 'text/csv' });
-            firebase.doUploadFile(authUser.uid, `${f.name}_${name}`, aoa);
+
+            firebase.doUploadWorksheet(authUser.uid, `${f.name}_${name}`, aoa);
           });
         };
+
         reader.readAsArrayBuffer(f);
         break;
     }
@@ -164,6 +188,7 @@ const Files = ({
   const insert = (o, name, delimiter, filename) => {
     o.delimiter = delimiter;
     o.filename = filename;
+
     insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent);
   };
 
@@ -205,7 +230,7 @@ const ImportDatabaseWithModal = withModal(ImportDatabase);
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   worksheetname: (state.worksheetnameState.worksheetname || ''),
-  files: (state.filesState.files || {}),
+  worksheets: (state.worksheetsState.worksheets || []),
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),

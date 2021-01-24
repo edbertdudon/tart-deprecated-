@@ -37,55 +37,68 @@ const Format = ({
     const { data, sheet } = slides;
     const { toolbar } = slides.sheet;
     switch (key) {
-      case FORMAT_DROPDOWN[0].key:
+      case FORMAT_DROPDOWN[0].key: {
         data.setSelectedCellAttr('font-bold', toolbar.boldEl.toggle());
         break;
-      case FORMAT_DROPDOWN[1].key:
+      }
+      case FORMAT_DROPDOWN[1].key: {
         data.setSelectedCellAttr('font-italic', toolbar.italicEl.toggle());
         break;
-      case FORMAT_DROPDOWN[2].key:
+      }
+      case FORMAT_DROPDOWN[2].key: {
         data.setSelectedCellAttr('font-underline', toolbar.underlineEl.toggle());
         break;
-      case FORMAT_DROPDOWN[3].key:
+      }
+      case FORMAT_DROPDOWN[3].key: {
         data.setSelectedCellAttr('strike', toolbar.strikeEl.toggle());
         break;
-      case FORMAT_DROPDOWN[5].key:
+      }
+      case FORMAT_DROPDOWN[5].key: {
         handleToggle('chart');
         break;
-      case FORMAT_DROPDOWN[7].key:
+      }
+      case FORMAT_DROPDOWN[7].key: {
         toolbar.fontSizeEl.setState(second);
         data.setSelectedCellAttr('font-size', second);
         break;
-      case FORMAT_DROPDOWN[9].key:
+      }
+      case FORMAT_DROPDOWN[9].key: {
         data.setSelectedCellAttr('align', 'left');
         break;
-      case FORMAT_DROPDOWN[10].key:
+      }
+      case FORMAT_DROPDOWN[10].key: {
         data.setSelectedCellAttr('align', 'center');
         break;
-      case FORMAT_DROPDOWN[11].key:
+      }
+      case FORMAT_DROPDOWN[11].key: {
         data.setSelectedCellAttr('align', 'right');
         break;
-      case FORMAT_DROPDOWN[13].key:
+      }
+      case FORMAT_DROPDOWN[13].key: {
         data.setSelectedCellAttr('valign', 'top');
         break;
-      case FORMAT_DROPDOWN[14].key:
+      }
+      case FORMAT_DROPDOWN[14].key: {
         data.setSelectedCellAttr('valign', 'middle');
         break;
-      case FORMAT_DROPDOWN[14].key:
+      }
+      case FORMAT_DROPDOWN[14].key: {
         data.setSelectedCellAttr('valign', 'bottom');
         break;
-      case FORMAT_DROPDOWN[17].key:
+      }
+      case FORMAT_DROPDOWN[17].key: {
         data.setSelectedCellAttr('textwrap', toolbar.textwrapEl.toggle());
         break;
+      }
     }
   };
 
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select);
-    } else {
-      onSetRightSidebar('none');
+      return
     }
+    onSetRightSidebar('none');
   };
 
   return (

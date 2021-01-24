@@ -14,27 +14,18 @@ const withJobsContentNull = (Component) => (props) => (props.jobs[0].status === 
   :	<Component {...props} />);
 
 const JobsContentRunning = ({
-  files, jobs, onSetJobs, firebase, authUser, isJobsActive, onSetIsJobsActive, onSetFiles,
+  firebase, authUser, worksheets, jobs, isJobsActive, onSetJobs, onSetIsJobsActive, onSetWorksheets,
 }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setLoading(true);
-    firebase.doListFiles(authUser.uid).then((res) => {
-      const allFiles = res.items;
-      firebase.trash(authUser.uid).get().then((doc) => {
-        if (doc.exists) {
-          const list = Object.keys(doc.data());
-          const filesLessTrash = allFiles.filter((file) => {
-            if (!list.includes(file.name)) {
-              return file.name;
-            }
-          });
-          onSetFiles(filesLessTrash, authUser.uid);
-        }
-        setLoading(false);
-      });
+
+    firebase.doListWorksheets(authUser.uid).then((res) => {
+      onSetWorksheets(res.items);
+      setLoading(false);
     });
+
     firebase.doListJobs(authUser.uid)
       .then((res) => onSetJobs(res))
       .then(() => onSetIsJobsActive(shouldReloadTimer(jobs)));
@@ -43,12 +34,13 @@ const JobsContentRunning = ({
   // Checks every ** 1 minutes *** for finished jobs
   useRecursiveTimeout(() => {
     if (isJobsActive === false) return;
+
     // Wait for promise to complete before scheduling the next iteration (synchronous)
     firebase.doListJobs(authUser.uid)
       .then((res) => {
         if (checkJobChanges(res)) {
-          firebase.doListFiles(authUser.uid).then((res) => {
-            onSetFiles(res.items, authUser.uid);
+          firebase.doListWorksheets(authUser.uid).then((res) => {
+            onSetWorksheets(res.items);
           });
         }
         return res;
@@ -66,43 +58,39 @@ const JobsContentRunning = ({
 
   return (
     <div>
-      {files[authUser.uid] !== undefined && files[authUser.uid]
-			  .filter((file) => {
-			    const fileLabel = file.name.replace(/\s/g, '').toLowerCase();
-			    if (jobs[0].status !== 'failed list jobs') {
-			      const jobsList = jobs.map((job) => job.labels.worksheet);
-			      if (jobsList.includes(fileLabel)) {
-			        return file;
-			      }
-			    }
-			  }).map((job, index) => (
-			    (/[.]/.exec(job.name) === null)
-						&& (
-<DataSourceJobs
-  filename={job.name}
-  runId={getJobId(job.name.replace(/\s/g, '').toLowerCase(), jobs)}
-  onJobSubmit={handleJobSubmit}
-  onJobCancel={handleJobCancel}
-/>
-						)
-			  ))}
+      {worksheets.filter((worksheet) => {
+		    const label = worksheet.name.replace(/\s/g, '').toLowerCase();
+		    if (jobs[0].status !== 'failed list jobs') {
+		      const jobsList = jobs.map((job) => job.labels.worksheet);
+		      if (jobsList.includes(label)) {
+		        return worksheet;
+		      }
+		    }
+		  }).map((worksheet, index) => (
+  <DataSourceJobs
+    file={worksheet.name}
+    runId={getJobId(worksheet.name.replace(/\s/g, '').toLowerCase(), jobs)}
+    onJobSubmit={handleJobSubmit}
+    onJobCancel={handleJobCancel}
+  />
+		  ))}
     </div>
   );
 };
 
 const JobsContent = ({
-  firebase, authUser, jobs, files, onSetJobs, isJobsActive, onSetIsJobsActive, onSetFiles,
+  firebase, authUser, jobs, worksheets, onSetJobs, isJobsActive, onSetIsJobsActive, onSetWorksheets,
 }) => (
   <div className="home-content">
     <JobsContentWithConditionalRendering
       firebase={firebase}
       authUser={authUser}
       jobs={jobs}
-      files={files}
+      worksheets={worksheets}
       onSetJobs={onSetJobs}
       isJobsActive={isJobsActive}
       onSetIsJobsActive={onSetIsJobsActive}
-      onSetFiles={onSetFiles}
+      onSetWorksheets={onSetWorksheets}
     />
   </div>
 );
@@ -117,13 +105,13 @@ const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   jobs: (state.jobsState.jobs || [{ status: 'failed list jobs' }]),
   isJobsActive: (state.isJobsActiveState.isJobsActive || false),
-  files: (state.filesState.files || {}),
+  worksheets: (state.worksheetsState.worksheets || []),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetJobs: (jobs) => dispatch({ type: 'JOBS_SET', jobs }),
   onSetIsJobsActive: (isJobsActive) => dispatch({ type: 'ISJOBSACTIVE_SET', isJobsActive }),
-  onSetFiles: (files, uid) => dispatch({ type: 'FILES_SET', files, uid }),
+  onSetWorksheets: (worksheets) => dispatch({ type: 'WORKSHEETS_SET', worksheets }),
 });
 
 export default compose(

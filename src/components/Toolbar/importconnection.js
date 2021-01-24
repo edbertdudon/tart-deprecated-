@@ -300,7 +300,7 @@ const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
-  files: (state.filesState.files || {}),
+  worksheets: (state.worksheetsState.worksheets || []),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
 });

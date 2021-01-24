@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
-import LoadingDataSource from '../Datasource/loadingdatasource';
+import LoadingDataSource from '../Home/loadingdatasource';
 import DataTrash from './datatrash';
 import { withFirebase } from '../Firebase';
 
@@ -13,51 +13,41 @@ const Content = ({ firebase, authUser }) => {
 
   useEffect(() => {
     setLoading(true);
-    firebase.trash(authUser.uid).get().then((doc) => {
-      if (doc.exists) {
-        const list = Object.keys(doc.data());
-        setTrash(list);
-        setLoading(false);
-      }
-    });
-    firebase.connection(authUser.uid).get()
-      .then((doc) => {
-        if (doc.exists) {
-          const list = Object.keys(doc.data());
-          setConnections(list);
-        }
-      });
-  }, []);
 
-  const handleUpdateAfterDelete = (filename) => {
-    let newFile;
-    for (let i = 0; i < trash.length; i++) {
-      if (trash[i] === filename) {
-        newFile = [
-          ...trash.slice(0, i),
-          ...trash.slice(i + 1),
-        ];
-        break;
-      }
-    }
-    setTrash(newFile);
-  };
+    firebase.doListTrash(authUser.uid).then((res) => {
+      setTrash(res.items);
+      setLoading(false);
+    });
+
+    // firebase.connection(authUser.uid).get()
+    //   .then((doc) => {
+    //     if (doc.exists) {
+    //       const list = Object.keys(doc.data());
+    //       setConnections(list);
+    //     }
+    //   });
+  }, []);
 
   return (
     <div className="home-content">
       {loading
         ? <LoadingDataSource />
-        : (
-          <>
-            {connections.length < 1
-              ?	<div className="home-content-search">Trash is empty</div>
-              :	(
-                <div>
-                  {trash.map((file, index) => <DataTrash filename={file} onReload={handleUpdateAfterDelete} key={index} connections={connections} />)}
-                </div>
-              )}
-          </>
-        )}
+        : ((connections.length < 1 && trash.length < 1)
+          ? <div className="home-content-search">Trash is empty</div>
+          : <div>
+              {trash.map((file, index) => (
+                <DataTrash
+                  name={file.name}
+                  trash={trash}
+                  connections={connections}
+                  onSetTrash={setTrash}
+                  onSetConnections={setConnections}
+                  key={index}
+                />
+              ))}
+            </div>
+        )
+      }
     </div>
   );
 };

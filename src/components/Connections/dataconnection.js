@@ -19,32 +19,36 @@ const DATASOURCE_DROPDOWN = [
 ];
 
 const DataConnection = ({
-  firebase, authUser, color, filename, onReload,
+  firebase, authUser, color, name, connections, onSetConnections,
 }) => {
   const [hover, setHover] = useState(false);
   const [hoverDropdown, setHoverDropdown] = useState(false);
 
   const handleTrash = () => {
-    const today = new Date().toLocaleDateString();
-    firebase.trash(authUser.uid).get().then((doc) => {
-      if (doc.exists) {
-        firebase.trash(authUser.uid).update({ [filename]: today });
-      } else {
-        firebase.trash(authUser.uid).set({ [filename]: today });
-      }
-    });
-    onReload(filename);
+    // const today = new Date().toLocaleDateString();
+    // firebase.trash(authUser.uid).get().then((doc) => {
+    //   if (doc.exists) {
+    //     firebase.trash(authUser.uid).update({ [name]: today });
+    //   } else {
+    //     firebase.trash(authUser.uid).set({ [name]: today });
+    //   }
+    // });
+    // const ws = connections.findIndex((connection) => connection.name === name)
+    // onSetWorksheets([
+    //   ...connections.slice(0, ws),
+    //   ...connections.slice(ws + 1),
+    // ])
   };
 
   const ContextMenuDropdown = () => (
-    <ContextMenu id={`right-click${filename}`}>
+    <ContextMenu id={`right-click${name}`}>
       <MenuItem onClick={handleTrash}>Move to Trash</MenuItem>
     </ContextMenu>
   );
 
   return (
     <div className="datasource-thumbnail">
-      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${filename}`}>
+      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${name}`}>
         <div className="datasource-icon">
           <Icon path={mdiDatabase} size={5} />
         </div>
@@ -57,7 +61,7 @@ const DataConnection = ({
             style={{ left: '13px' }}
           />
         </div>
-        <div className="datasource-editabletext">{filename}</div>
+        <div className="datasource-editabletext">{name}</div>
       </ContextMenuTrigger>
       <ContextMenuDropdown />
     </div>

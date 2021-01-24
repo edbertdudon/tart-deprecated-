@@ -14,7 +14,9 @@ import { Validations } from './validation';
 import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
-import { Chart } from '../component/chart_canvas';
+import {
+  Chart, invalidate, select,
+} from '../component/chart_canvas';
 import charts from '../../Chart/chartsR';
 import { columnToLetter, spreadsheetToR, doChart } from '../cloudr';
 
@@ -1162,25 +1164,25 @@ export default class DataProxy {
       c.firstrow = isFirstRowHeader;
       c.variablex = isFirstRowHeader
         ? rownames[0]
-        : `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(sci + 1)}${eci + 1}`;
+        : `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(sci + 1)}${eri + 1}`;
       if (variables > 1 && rownames.length > 1) {
         c.variabley = isFirstRowHeader
           ? rownames[1]
-          : `${columnToLetter(sci + 2) + (sri + 1)}:${columnToLetter(sci + 2)}${eci + 1}`;
+          : `${columnToLetter(sci + 2) + (sri + 1)}:${columnToLetter(sci + 2)}${eri + 1}`;
       }
     }
     this.setChart(c, datas).then((chart) => {
       charts.push(chart);
+      // invalidate();
     });
   }
 
   setChart(c, datas) {
     const { charts } = this;
-    console.log(charts);
     if (c.variablex.length < 1) {
       return doChart({ variablex: 'na' }).then((uri) => {
-        console.log(uri);
         c.image.attr('src', uri);
+        return c;
       });
     }
     const data = {
@@ -1192,8 +1194,10 @@ export default class DataProxy {
       variablex: c.variablex,
     };
     if (c.variabley) data.variabley = c.variabley;
+    console.log(data);
     return doChart(data).then((uri) => {
       c.image.attr('src', uri);
+      return c;
     });
   }
 
@@ -1222,7 +1226,7 @@ export default class DataProxy {
 
   getData() {
     const {
-      name, freeze, styles, merges, rows, cols, validations, autoFilter, type, regression, optimization, chart,
+      name, freeze, styles, merges, rows, cols, validations, autoFilter, type, regression, optimization, charts,
     } = this;
     const data = {
       name,
@@ -1237,7 +1241,7 @@ export default class DataProxy {
     };
     if (regression) data.regression = regression;
     if (optimization) data.optimization = optimization;
-    if (chart) data.chart = chart;
+    if (charts.length > 0) data.charts = charts;
     return data;
   }
 }

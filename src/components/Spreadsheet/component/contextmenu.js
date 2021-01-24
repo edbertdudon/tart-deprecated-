@@ -28,6 +28,10 @@ const menuItems = [
   { key: 'cell-non-editable', title: tf('contextmenu.cellnoneditable') },
 ];
 
+const menuChart = [
+  { key: 'edit', title: tf('contextmenuchart.edit') },
+];
+
 function buildMenuItem(item) {
   if (item.key === 'divider') {
     return h('div', `${cssPrefix}-item divider`);
@@ -49,13 +53,20 @@ function buildMenuItem(item) {
     );
 }
 
-function buildMenu() {
-  return menuItems.map((it) => buildMenuItem.call(this, it));
+function buildMenu(type) {
+  if (type === 'sheet') {
+    return menuItems.map((it) => buildMenuItem.call(this, it));
+  }
+
+  if (type === 'chart') {
+    return menuChart.map((it) => buildMenuItem.call(this, it));
+  }
 }
 
 export default class ContextMenu {
-  constructor(viewFn, isHide = false) {
-    this.menuItems = buildMenu.call(this);
+  constructor(type, viewFn, isHide = false) {
+    this.type = type;
+    this.menuItems = buildMenu.call(this, type);
     this.el = h('div', `${cssPrefix}-contextmenu`)
       .children(...this.menuItems)
       .hide();
@@ -68,11 +79,13 @@ export default class ContextMenu {
   // row-col: the whole rows or the whole cols
   // range: select range
   setMode(mode) {
-    const hideEl = this.menuItems[12];
-    if (mode === 'row-col') {
-      hideEl.show();
-    } else {
-      hideEl.hide();
+    if (this.type === 'sheet') {
+      const hideEl = this.menuItems[12];
+      if (mode === 'row-col') {
+        hideEl.show();
+      } else {
+        hideEl.hide();
+      }
     }
   }
 

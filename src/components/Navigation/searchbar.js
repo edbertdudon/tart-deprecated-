@@ -10,47 +10,43 @@ import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const SearchBar = ({
-  onSetSearch, files, authUser, firebase, onSetFiles, search,
+  firebase, worksheets, authUser, search, onSetWorksheets, onSetSearch,
 }) => {
-  const [library, setLibrary] = useState([]);
+  const [inputs, setInputs] = useState([]);
+  const [connections, setConnections] = useState([]);
 
   useEffect(() => {
-    // Files + connections - trash
-    firebase.doListFiles(authUser.uid).then((res) => {
-      // onSetFiles(res.items, authUser.uid)
-      const list = res.items.map((file) => file.name);
-      firebase.connection(authUser.uid).get().then((docC) => {
-        if (docC.exists) {
-          const connections = Object.keys(docC.data());
-          const allFiles = [...list, ...connections];
-          firebase.trash(authUser.uid).get().then((docT) => {
-            if (docT.exists) {
-              const trash = Object.keys(docT.data());
-              const filesLessTrash = allFiles.filter((file) => {
-                if (!trash.includes(file)) {
-                  return file;
-                }
-              });
-              setLibrary(filesLessTrash);
-            }
-          });
-        }
-      });
+    firebase.doListWorksheets(authUser.uid).then((res) => {
+      onSetWorksheets(res.items);
+    });
+
+    firebase.doListInputs(authUser.uid).then((res) => {
+      const is = res.items.map((input) => input.name)
+      setInputs(is);
+    });
+
+    firebase.connection(authUser.uid).get().then((docC) => {
+      if (docC.exists) {
+        setConnections(Object.keys(docC.data()));
+      };
     });
   }, []);
 
   const handleChange = (e) => {
     const input = e.target.value;
-    const filter = library.filter((file) => file.toLowerCase().includes(input.toLowerCase()));
-    if (input.length > 0) {
-      if (filter.length > 0) {
-        onSetSearch({ input, filter });
-      } else {
-        onSetSearch({ input, filter: [] });
-      }
-    } else {
-      onSetSearch({});
-    }
+    const ws = worksheets
+      .map((worksheet) => worksheet.name)
+      .filter((file) => file.toLowerCase().includes(input.toLowerCase()))
+
+    const is = inputs.filter((file) =>
+      file.toLowerCase().includes(input.toLowerCase())
+    )
+
+    const cs = connections.filter((file) =>
+      file.toLowerCase().includes(input.toLowerCase())
+    )
+    console.log(ws,is,cs)
+    onSetSearch({ input, ws, is, cs })
   };
 
   return (
@@ -58,6 +54,7 @@ const SearchBar = ({
       <Icon path={mdilMagnify} size={1.2} />
       <input
         type="text"
+        value={search.input}
         name="search"
         placeholder="Search"
         onChange={handleChange}
@@ -68,13 +65,13 @@ const SearchBar = ({
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  search: (state.searchState.search || {}),
-  files: (state.filesState.files || {}),
+  search: (state.searchState.search || { input: '', ws: [], is:[], cs:[] }),
+  worksheets: (state.worksheetsState.worksheets || []),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetSearch: (search) => dispatch({ type: 'SEARCH_SET', search }),
-  onSetFiles: (files, uid) => dispatch({ type: 'FILES_SET', files, uid }),
+  onSetWorksheets: (worksheets) => dispatch({ type: 'WORKSHEETS_SET', worksheets }),
 });
 
 const condition = (authUser) => !!authUser;

@@ -25,40 +25,55 @@ const Table = ({ color, authUser, slides }) => {
   const handleTable = (key) => {
     const { data } = slides;
     switch (key) {
-      case TABLE_DROPDOWN[0].key:
+      case TABLE_DROPDOWN[0].key: {
         data.insert('row');
         break;
-      case TABLE_DROPDOWN[1].key:
+      }
+      case TABLE_DROPDOWN[1].key: {
         data.insert('column');
         break;
-      case TABLE_DROPDOWN[3].key:
+      }
+      case TABLE_DROPDOWN[3].key: {
         data.delete('row');
         break;
-      case TABLE_DROPDOWN[4].key:
+      }
+      case TABLE_DROPDOWN[4].key: {
         data.delete('column');
         break;
-      case TABLE_DROPDOWN[6].key:
+      }
+      case TABLE_DROPDOWN[6].key: {
         data.merge();
         break;
-      case TABLE_DROPDOWN[7].key:
+      }
+      case TABLE_DROPDOWN[7].key: {
         data.unmerge();
         break;
-      case TABLE_DROPDOWN[9].key:
+      }
+      case TABLE_DROPDOWN[9].key: {
         const { ri, ci } = data.selector;
         data.setFreeze(ri, ci);
         break;
-      case TABLE_DROPDOWN[10].key:
+      }
+      case TABLE_DROPDOWN[10].key: {
         data.setFreeze(0, 0);
         break;
-      case TABLE_DROPDOWN[12].key:
+      }
+      case TABLE_DROPDOWN[12].key: {
         data.autofilter();
         break;
+      }
     }
+
     slides.reRender();
   };
 
   return (
-    <TableWithDropdown text="Table" items={TABLE_DROPDOWN} onSelect={handleTable} color={OFF_COLOR[color[authUser.uid]]} />
+    <TableWithDropdown
+      text="Table"
+      items={TABLE_DROPDOWN}
+      onSelect={handleTable}
+      color={OFF_COLOR[color[authUser.uid]]}
+    />
   );
 };
 
