@@ -9,10 +9,8 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import './index.less';
-
 import Editable from './editable';
-import { OFF_COLOR } from '../../constants/off-color';
+import './index.less';
 
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
@@ -22,7 +20,7 @@ const reorder = (list, startIndex, endIndex) => {
 };
 
 const Navigator = ({
-  slides, color, authUser, dataNames, current, onSetDataNames, onSetCurrent,
+  slides, dataNames, current, onSetDataNames, onSetCurrent,
 }) => {
   const handleDragEnd = (result) => {
     if (!result.destination) return;
@@ -65,9 +63,7 @@ const Navigator = ({
 };
 
 const mapStateToProps = (state) => ({
-  authUser: state.sessionState.authUser,
   slides: (state.slidesState.slides || {}),
-  color: (state.colorState.colors || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
 });

@@ -14,7 +14,7 @@ import { doRegress } from '../../Spreadsheet/cloudr';
 
 import Matrix from '../core/matrix';
 import Alternative from '../core/alternativecorrelation';
-import { getRownames, getCols, getVars } from '../../RightSidebar/datarange';
+import { getRownames, getVarsAsColumns } from '../../RightSidebar/datarange';
 
 const Correlation = ({
   slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
@@ -26,15 +26,21 @@ const Correlation = ({
   const firstUpdate = useRef(true);
 
   useEffect(() => {
-    const { data } = slides;
-	  if ((data.type === 'sheet' || data.type === 'input') && '0' in data.rows._) {
-	    let rownames = getRownames(data);
-	    if (rownames.every(isNaN)) {
-        rownames = rownames.map((v, i) => i);
-	      setVarsx(rownames);
+    const { data, sheet } = slides;
+    const { type, rows } = data;
+    const { range } = sheet.selector;
+
+	  if (type === 'sheet' || type === 'input') {
+      const rowNames = getRownames(rows._, range);
+	    if (rowNames.some(isNaN)) {
+	      setVarsx(
+          rowNames.map((v, i) => i),
+        );
 	    } else {
-        const cols = getVars(data, getCols(rownames)).map((v, i) => i);
-	      setVarsx(cols);
+	      setVarsx(
+          getVarsAsColumns(rows._, rows.len, range)
+            .map((v, i) => i),
+        );
 	    }
 	  }
   }, []);

@@ -22,19 +22,19 @@ import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 
 const DataSourceSearch = ({
-  firebase, authUser, color, onJobSubmit, onJobCancel, onSetWorksheet, name, connections, runId,
+  firebase, authUser, color, onJobSubmit, onJobCancel, onSetWorksheet, filename, connections, runId,
 }) => {
   const [hover, setHover] = useState(false);
 
   const handleRun = () => {
-    onJobSubmit(name);
+    onJobSubmit(filename);
 
     const jobFilePath = 'gs://tart-90ca2.appspot.com/scripts/sparkR.R';
-    const jobFileArgument = `user/${authUser.uid}/${name}`;
+    const jobFileArgument = `user/${authUser.uid}/${filename}`;
     const jobFileSave = `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`;
 
     firebase.doRunWorksheet(
-      authUser.uid, name, jobFileArgument, jobFileSave, jobFilePath
+      authUser.uid, filename, jobFileArgument, jobFileSave, jobFilePath,
     ).then((jobResp) => {
       if (jobResp === 'failed job') onJobCancel(runId);
     });
@@ -44,13 +44,13 @@ const DataSourceSearch = ({
     onJobCancel(runId);
 
     firebase.doCancelWorksheet(
-      runId, authUser.uid, name.replace(/\s/g, '').toLowerCase()
+      runId, authUser.uid, filename.replace(/\s/g, '').toLowerCase(),
     );
   };
 
   const handleOpen = () => {
-    document.getElementById(`link-app-${name}`).click();
-    onSetWorksheet(name);
+    document.getElementById(`link-app-${filename}`).click();
+    onSetWorksheet(filename);
   };
 
   const Run = () => (
@@ -72,9 +72,9 @@ const DataSourceSearch = ({
   );
 
   const LinkToApp = () => (
-    <Link to={{ pathname: ROUTES.WORKSHEET, filename: name }} onClick={handleOpen} id={`link-app-${name}`}>
+    <Link to={{ pathname: ROUTES.WORKSHEET, filename }} onClick={handleOpen} id={`link-app-${filename}`}>
       <div className="datasource-icon">
-        {connections.includes(name)
+        {connections.includes(filename)
 				  ? <Icon path={mdiDatabase} size={5} />
 				  : runId === undefined || runId === ''
 				    ? <Icon path={mdilTable} size={5} />
@@ -89,7 +89,7 @@ const DataSourceSearch = ({
       <div className="datasource-buttons-wrapper">
         <Run />
       </div>
-      <div className="datasource-editabletext">{name.replace(/\.[^/.]+$/, '')}</div>
+      <div className="datasource-editabletext">{filename.replace(/\.[^/.]+$/, '')}</div>
     </div>
   );
 };

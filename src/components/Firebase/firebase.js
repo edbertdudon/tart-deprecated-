@@ -101,7 +101,7 @@ class Firebase {
 
   doListInputs = (uid) => this.storage.ref(`user/${uid}/inputs`).listAll()
 
-  doUploadInputs = (uid, filename, file) => this.storage.ref(`user/${uid}/inputs/${filename}`).put(file)
+  doUploadInput = (uid, filename, file) => this.storage.ref(`user/${uid}/inputs/${filename}`).put(file)
 
   doListTrash = (uid) => this.storage.ref(`user/${uid}/trash`).listAll()
 

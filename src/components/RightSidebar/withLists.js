@@ -26,20 +26,20 @@ const withLists = (Component) => (props) => {
         {props.name}
       </div>
       {(showOptions && props.options.length > 0)
-				&& (
-<div className="rightsidebar-dropdown-content">
-  {props.options.map((option, index) => (
-    <div
-      className="rightsidebar-dropdown-item"
-      key={index}
-      onClick={handleSelectComponent}
-      onMouseEnter={() => toggleHover(index)}
-    >
-      <Component option={option} />
-    </div>
-  ))}
-</div>
-				)}
+        && (
+        <div className="rightsidebar-dropdown-content">
+          {props.options.map((option, index) => (
+            <div
+              className="rightsidebar-dropdown-item"
+              key={index}
+              onClick={handleSelectComponent}
+              onMouseEnter={() => toggleHover(index)}
+            >
+              <Component option={option} />
+            </div>
+          ))}
+        </div>
+        )}
     </div>
   );
 };

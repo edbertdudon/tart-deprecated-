@@ -51,6 +51,8 @@ export default {
   },
   contextmenuchart: {
     edit: 'Edit Chart',
+    delete: 'Delete Chart',
+    move: 'Chart as Sheet',
   },
   print: {
     size: 'Paper size',

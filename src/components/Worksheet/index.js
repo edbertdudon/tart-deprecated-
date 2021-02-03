@@ -21,13 +21,12 @@ import { withAuthorization, withEmailVerification } from '../Session';
 const Worksheet = () => {
   const [readOnly, setReadOnly] = useState(true);
   const [text, setText] = useState({ text: '', ri: 0, ci: 0 });
-  const [saving, setSaving] = useState(false);
   const [navigator, setNavigator] = useState(true);
   const [statistic, setStatistic] = useState('statdesc');
 
   return (
     <div className="worksheet" onContextMenu={(e) => { e.preventDefault(); return false; }}>
-      <Header saving={saving} setSaving={setSaving} readOnly={readOnly} setReadOnly={setReadOnly} />
+      <Header readOnly={readOnly} setReadOnly={setReadOnly} />
       <Toolbar
         navigator={navigator}
         setNavigator={setNavigator}
@@ -38,7 +37,7 @@ const Worksheet = () => {
       <Formulabar text={text} />
       {navigator && <Navigator />}
       <RightSidebar statistic={statistic} />
-      <SpreadsheetWrapper setSaving={setSaving} setText={setText} />
+      <SpreadsheetWrapper setText={setText} />
     </div>
   );
 };

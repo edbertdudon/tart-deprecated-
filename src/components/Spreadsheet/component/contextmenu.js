@@ -30,6 +30,8 @@ const menuItems = [
 
 const menuChart = [
   { key: 'edit', title: tf('contextmenuchart.edit') },
+  { key: 'delete', title: tf('contextmenuchart.delete') },
+  // { key: 'move', title: tf('contextmenuchart.move') },
 ];
 
 function buildMenuItem(item) {
@@ -41,12 +43,12 @@ function buildMenuItem(item) {
       this.itemClick(item.key);
       this.hide();
     })
-    .on('mouseenter', (e) => {
-      e.target.style.background = options.style.offcolor;
-    })
-    .on('mouseleave', (e) => {
-      e.target.style.background = '';
-    })
+    // .on('mouseenter', (e) => {
+    //   e.target.style.background = options.style.offcolor;
+    // })
+    // .on('mouseleave', (e) => {
+    //   e.target.style.background = '';
+    // })
     .children(
       item.title(),
       h('div', 'label').child(item.label || ''),

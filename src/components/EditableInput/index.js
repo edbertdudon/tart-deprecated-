@@ -56,13 +56,10 @@ const EditableInput = ({
   return (
     <>
       {readOnly
-        ? (
-          <div className={classname} onDoubleClick={handleReadonly} style={style}>
+        ? <div className={classname} onDoubleClick={handleReadonly} style={style}>
             {text}
           </div>
-        )
-        : (
-          <input
+        : <input
             type="text"
             onChange={handleChange}
             className={classname}
@@ -72,20 +69,19 @@ const EditableInput = ({
             id={inputId}
             autoFocus
           />
-        )}
+      }
       <MessageWithModal
         text={errortext}
         isOpen={error}
         setIsOpen={setError}
         onSelect={handleClose}
-        style={{ width: '199px', left: 'Calc((100% - 199px)/2)' }}
       />
     </>
   );
 };
 
 const Message = ({ text, onSelect }) => (
-  <form className="modal-form">
+  <form className="modal-form-editableinput">
     <p>{`The name ${text} is already taken.`}</p>
     <button className="modal-button" onClick={onSelect}>Ok</button>
   </form>

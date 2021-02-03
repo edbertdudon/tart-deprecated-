@@ -1,3 +1,10 @@
+//
+//  view.js
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -6,7 +13,7 @@ import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
 
 const View = ({
-  authUser, color, slides, rightSidebar, onSetRightSidebar, navigator, setNavigator,
+  slides, rightSidebar, onSetRightSidebar, navigator, setNavigator,
 }) => {
   const VIEW_DROPDOWN = [
     { key: 'Navigator', type: 'toggle', visibility: navigator },
@@ -21,13 +28,13 @@ const View = ({
 
         if (navigator) {
           sheet.table.el.style.marginLeft = '0';
-          sheet.chartEl.el.style.left = '30px';
+          // sheet.chartEl.el.style.left = '30px';
           sheet.overlayerEl.el.style.left = '0';
           sheet.horizontalScrollbar.el.el.style.left = '0';
           options.showNavigator = false;
         } else {
           sheet.table.el.style.marginLeft = '125px';
-          sheet.chartEl.el.style.left = '155px';
+          // sheet.chartEl.el.style.left = '155px';
           sheet.overlayerEl.el.style.left = '125px';
           sheet.horizontalScrollbar.el.el.style.left = '125px';
           options.showNavigator = true;
@@ -51,10 +58,11 @@ const View = ({
 
   return (
     <ViewWithDropdown
+      classname="dropdown-content"
       text="View"
       items={VIEW_DROPDOWN}
       onSelect={handleView}
-      color={OFF_COLOR[color[authUser.uid]]}
+      // color={OFF_COLOR[color[authUser.uid]]}
     />
   );
 };
@@ -62,8 +70,8 @@ const View = ({
 const ViewWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
-  authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
+  // authUser: state.sessionState.authUser,
+  // color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });

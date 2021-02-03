@@ -15,9 +15,10 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import { formulan } from '../Spreadsheet/cloudr/formula';
-import { useOutsideAlerter } from '../../functions';
-import withModal from '../Modal';
+import { useOutsideAlerter, createFile } from '../../functions';
 import { OFF_COLOR } from '../../constants/off-color';
+import withModal from '../Modal';
+import { withFirebase } from '../Firebase';
 
 const NAVIGATOR_DROPDOWN = [
   { key: 'New sheet', type: 'item' },
@@ -41,7 +42,7 @@ const Item = ({ text, onSelect, color }) => {
       onClick={() => onSelect(text)}
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
-      style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
+      // style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
     >
       {text}
     </div>
@@ -62,7 +63,8 @@ const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 );
 
 const Editable = ({
-  slides, color, authUser, dataNames, current, onSetDataNames, onSetCurrent, value, index,
+  firebase, authUser, worksheetname, slides, dataNames, current,
+  saving, color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
   const [text, setText] = useState(value);
   const [show, setShow] = useState(false);
@@ -73,6 +75,7 @@ const Editable = ({
   const checkIllegalChange = () => {
     if (show === true) {
       setShow(false);
+
       let doesExist = false;
       for (let i = 0; i < dataNames.length; i++) {
         if (dataNames[i].name === text) {
@@ -83,6 +86,7 @@ const Editable = ({
       if (formulan.some((formula) => formula === text)) {
         doesExist = true;
       }
+
       if (!doesExist) {
         slides.datas[index].name = text;
         onSetDataNames(dataNames.map((item, i) => {
@@ -91,6 +95,8 @@ const Editable = ({
           }
           return item;
         }));
+
+        save();
       } else {
         setText(value);
         setError(true);
@@ -120,6 +126,8 @@ const Editable = ({
         slides.deleteSheet(index, -1);
       }
     }
+
+    save();
   };
 
   const paste = (d) => {
@@ -130,6 +138,8 @@ const Editable = ({
     ]);
     onSetCurrent(index + 1);
     slides.data = d;
+
+    save();
   };
 
   const handleDropdown = (key) => {
@@ -137,6 +147,7 @@ const Editable = ({
       case NAVIGATOR_DROPDOWN[0].key:
         var d = slides.addSheet(undefined, undefined, current);
         slides.sheet.resetData(d);
+
         onSetDataNames([
 		      ...dataNames.slice(0, current + 1),
 		      d.name,
@@ -144,6 +155,8 @@ const Editable = ({
 		    ]);
         onSetCurrent(current + 1);
         slides.data = d;
+
+        save();
         break;
       case NAVIGATOR_DROPDOWN[1].key:
         // Not working as expected
@@ -183,21 +196,50 @@ const Editable = ({
     }
   };
 
-  const backgroundColor = () => ({ backgroundColor: current === index && OFF_COLOR[color[authUser.uid]] });
+  const backgroundColor = () => ({ backgroundColor: current === index && 'rgb(0,0,0,0.05)' });
+  // const backgroundColor = () => ({ backgroundColor: current === index && OFF_COLOR[color[authUser.uid]] });
 
-  const whiteText = () => ({ color: current === index && '#fff' });
+  // const whiteText = () => ({ color: current === index && '#fff' });
 
   const handleClose = () => setErrorText('');
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   return (
     <>
       <ContextMenuTrigger id={`right-click${text}`}>
-        <div className="navigator-slide" onClick={handleSelect} style={backgroundColor()} ref={wrapperRef}>
-          <div className="navigator-number" style={whiteText()}>{index + 1}</div>
+        <div
+          className="navigator-slide"
+          onClick={handleSelect}
+          style={backgroundColor()}
+          ref={wrapperRef}
+        >
+          <div
+            className="navigator-number"
+            // style={whiteText()}
+          >
+            {index + 1}
+          </div>
           {show
-            ? <input type="text" onChange={handleChange} className="navigator-input" value={text} autoFocus />
+            ? (
+              <input
+                type="text"
+                onChange={handleChange}
+                className="navigator-input"
+                value={text}
+                autoFocus
+              />
+            )
             :	(
-              <div className="navigator-text" style={{ ...backgroundColor(index), ...whiteText(index) }} onDoubleClick={handleShow}>
+              <div
+                className="navigator-text"
+                // style={{ ...backgroundColor(index), ...whiteText(index) }}
+                onDoubleClick={handleShow}
+              >
                 {text}
               </div>
             )}
@@ -209,14 +251,13 @@ const Editable = ({
         isOpen={error}
         setIsOpen={setError}
         onSelect={handleClose}
-        style={{ width: '199px', left: 'Calc((100% - 199px)/2)' }}
       />
     </>
   );
 };
 
 const Message = ({ text, onSelect }) => (
-  <form className="modal-form">
+  <form className="modal-form-navigator-editable">
     <p>{`The name '${text}' is already taken or is a formula. Formula names are reserved.`}</p>
     <button className="modal-button" onClick={onSelect}>Ok</button>
   </form>
@@ -226,18 +267,22 @@ const MessageWithModal = withModal(Message);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  slides: (state.slidesState.slides || {}),
   color: (state.colorState.colors || {}),
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
+  slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
 });
 
 export default compose(
+  withFirebase,
   connect(
     mapStateToProps,
     mapDispatchToProps,

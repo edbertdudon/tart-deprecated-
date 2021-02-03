@@ -1,6 +1,12 @@
 import { useEffect } from 'react';
 import XLSX from 'xlsx';
 
+export const LETTERS_REFERENCE = /\$?[A-Z]+/g;
+export const NUMBERS_REFERENCE = /\$?[0-9]+/g;
+export const FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
+
+// *** General Functions ***
+
 function range(end) {
   const start = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 0;
   const step = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 1;
@@ -46,7 +52,34 @@ export function useOutsideAlerter(ref, customFunction) {
   });
 }
 
-// *** File Organization API ***
+export function useOutsideClick(ref, setIsOpen) {
+  const handleOutsideClick = (event) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setIsOpen(false);
+    }
+  };
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  });
+}
+
+export function getTextWidth(text, font) {
+  // re-use canvas object for better performance
+  const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
+  const context = canvas.getContext('2d');
+  context.font = font;
+  const metrics = context.measureText(text);
+  return metrics.width;
+}
+
+// *** File Organization ***
+
+export function createFile(slides, worksheetname) {
+  return new File([JSON.stringify(slides.getData())], worksheetname, { type: 'application/json' });
+}
 
 export function getMaxNumberCustomSheet(dataNames, prefix) {
   const v = dataNames.filter((name) => name.startsWith(prefix));
@@ -116,25 +149,4 @@ export function addCopyToName(files, prefix) {
     	newname = next;
   }
   return (newname);
-}
-
-export function insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent) {
-  const currentData = slides.data.rows._;
-  const isEmptyData = Object.keys(currentData).length === 0 && currentData.constructor === Object;
-  const d = slides.insertData(dataNames, current, o, name, isEmptyData);
-  if (isEmptyData) {
-    onSetDataNames([
-      ...dataNames.slice(0, current),
-      d.name,
-      ...dataNames.slice(current + 1),
-    ]);
-  } else {
-    onSetDataNames([
-      ...dataNames.slice(0, current + 1),
-      d.name,
-      ...dataNames.slice(current + 1),
-    ]);
-    onSetCurrent(current + 1);
-  }
-  slides.data = d;
 }

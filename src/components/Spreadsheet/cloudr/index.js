@@ -39,14 +39,12 @@
 //
 import _cell from '../core/cell';
 import { formulam, rFormulas } from './formula';
-import { createEmptyMatrix } from '../../../functions';
+import {
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, createEmptyMatrix,
+} from '../../../functions';
 import { CellRange } from '../core/cell_range';
 
-const FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
-const LETTERS_REFERENCE = /\$?[A-Z]+/g;
-const NUMBERS_REFERENCE = /\$?[0-9]+/g;
-
-export function columnToLetter(column) {
+function columnToLetter(column) {
   let temp; let
     letter = '';
   while (column > 0) {
@@ -57,7 +55,7 @@ export function columnToLetter(column) {
   return letter;
 }
 
-export function letterToColumn(letter) {
+function letterToColumn(letter) {
   let column = 0; const
     { length } = letter;
   for (let i = 0; i < length; i++) {
@@ -84,7 +82,7 @@ function addPrefixToFunction(cell) {
   return cell;
 }
 
-export function translateR(cell, name) {
+function translateR(cell, name) {
   const match = cell.match(FORMULA_CELL_REFERENCES);
   if (match === null) return cell.replace(/'/g, '`');
   // replaces 'Sheet 1' with `Sheet 1`
@@ -143,7 +141,7 @@ function mapSpreadsheet(data, cb) {
 }
 
 // [[1,2],["a","b"]]
-export function spreadsheetToR(datas) {
+function spreadsheetToR(datas) {
   const newDatas = datas.map((data) => {
     const { rows, cols } = data;
     const arows = Object.keys(rows._);
@@ -173,43 +171,50 @@ export function spreadsheetToR(datas) {
   return newDatas;
 }
 
-const fetchR = (data, func) => fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
-  method: 'POST',
-  body: JSON.stringify(data),
-  headers: { 'Content-Type': 'application/json' },
-  mode: 'cors',
-});
+function fetchR(data, func) {
+  return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'cors',
+  });
+}
 
-const removeMatrix = (data, ri, ci) => {
+function removeMatrix(data, ri, ci) {
   if (data.matrices._.length > 0) {
     const cr = data.matrices._.find((cr) => cr.sri === ri && cr.sci === ci);
     if (cr !== undefined) {
       data.removeMatrix(cr);
     }
   }
-};
+}
 
-const doParse = (obj, data, ri, ci) => fetchR(obj, 'cloudR')
-  .then((res) => res.json())
-  .then((res) => {
-    let result = JSON.parse(res[0]);
-    console.log(result);
-    if (result.length > 1 || result[0].length > 1) {
-      if (!Array.isArray(result[0])) {
-        result = [result];
+function doParse(obj, data, ri, ci) {
+  return fetchR(obj, 'cloudR')
+    .then((res) => res.json())
+    .then((res) => {
+      let result = JSON.parse(res[0]);
+      if (result.length > 1 || result[0].length > 1) {
+        if (!Array.isArray(result[0])) {
+          result = [result];
+        }
+        const cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
+        data.addMatrix(cr, result);
+        return result[0][0].toString().replace(/['"]+/g, '');
+        // return {
+        //   value: result[0][0].toString().replace(/['"]+/g, ''),
+        //   hasMatrix: true,
+        // };
       }
-      const cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
-      data.addMatrix(cr, result);
-      return result[0][0].toString().replace(/['"]+/g, '');
-    }
-    removeMatrix(data, ri, ci);
-    return result[0].toString().replace(/['"]+/g, '');
-  })
-  .catch((err) => {
-    console.log(err);
-    removeMatrix(data, ri, ci);
-    return '#ERROR!';
-  });
+      removeMatrix(data, ri, ci);
+      return result[0].toString().replace(/['"]+/g, '');
+    })
+    .catch((err) => {
+      console.log(err);
+      removeMatrix(data, ri, ci);
+      return '#ERROR!';
+    });
+}
 
 function arrayBufferToBase64(buffer) {
   let binary = '';
@@ -220,13 +225,15 @@ function arrayBufferToBase64(buffer) {
   return window.btoa(binary);
 }
 
-export const doChart = (data) => fetchR(data, 'plot')
-  .then((res) => res.arrayBuffer())
-  .then((buffer) => {
-    const base64Flag = 'data:image/jpeg;base64,';
-    const imageStr = arrayBufferToBase64(buffer);
-    return (base64Flag + imageStr);
-  });
+function doChart(data) {
+  return fetchR(data, 'plot')
+    .then((res) => res.arrayBuffer())
+    .then((buffer) => {
+      const base64Flag = 'data:image/jpeg;base64,';
+      const imageStr = arrayBufferToBase64(buffer);
+      return (base64Flag + imageStr);
+    });
+}
 
 function rToSpreadsheet(aoa) {
   const o = { rows: {} };
@@ -242,38 +249,44 @@ function rToSpreadsheet(aoa) {
 // const firstone = '[["formula.name","ChiSquare","Df","p","test"],["Variance","0.932418764519325","1","0.334235198366151","Non-constant Variance Score Test"]]';
 // const secondone = '[{"statistic":0,"p.value":1,"parameter":1,"method":"Pearson\'s Chi-squared test with Yates\' continuity correction"}]'
 // const thirdone = '[{"rowname":"Air.Flow","Air.Flow":1,"Water.Temp":0.781852332952155,"Acid.Conc.":0.500142874899459},{"rowname":"Water.Temp","Air.Flow":0.781852332952155,"Water.Temp":1,"Acid.Conc.":0.39093953782809},{"rowname":"Acid.Conc.","Air.Flow":0.500142874899459,"Water.Temp":0.39093953782809,"Acid.Conc.":1}]'
-export const doRegress = (data, type) => fetchR(data, type)
-  .then((res) => res.json())
-  .then((res) => {
-    const slide = JSON.parse(res);
-    // const slide = JSON.parse(res[0])
-    if (Array.isArray(slide[0])) {
-      return rToSpreadsheet(slide);
-    }
-    let aoa = slide.map((row) => Object.values(row));
-    aoa = [Object.keys(slide[0]), ...aoa];
-    return rToSpreadsheet(aoa);
-  });
+function doRegress(data, type) {
+  return fetchR(data, type)
+    .then((res) => res.json())
+    .then((res) => {
+      const slide = JSON.parse(res);
+      // const slide = JSON.parse(res[0])
+      if (Array.isArray(slide[0])) {
+        return rToSpreadsheet(slide);
+      }
+      let aoa = slide.map((row) => Object.values(row));
+      aoa = [Object.keys(slide[0]), ...aoa];
+      return rToSpreadsheet(aoa);
+    });
+}
 
-export const doRegression = (data) => fetchR(data, 'regression')
-  .then((res) => res.json())
-  .then((res) => {
-    if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
-      return (res);
-    }
-    return rToSpreadsheet(res);
-  });
+function doRegression(data) {
+  return fetchR(data, 'regression')
+    .then((res) => res.json())
+    .then((res) => {
+      if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
+        return (res);
+      }
+      return rToSpreadsheet(res);
+    });
+}
 
-export const doOptimization = (data) => fetchR(data, 'optimization')
-  .then((res) => res.json())
-  .then((res) => {
-    if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
-      return (res);
-    }
-    return robjToSrToSpreadsheetpreadsheet(res);
-  });
+function doOptimization(data) {
+  return fetchR(data, 'optimization')
+    .then((res) => res.json())
+    .then((res) => {
+      if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
+        return (res);
+      }
+      return robjToSrToSpreadsheetpreadsheet(res);
+    });
+}
 
-export const rRender = (src, data, datas, ri, ci) => {
+function rRender(src, data, datas, ri, ci) {
   if (src[0] === '=') {
     if (/[a-z]+/i.test(src)) {
       return doParse({
@@ -286,4 +299,17 @@ export const rRender = (src, data, datas, ri, ci) => {
   }
   removeMatrix(data, ri, ci);
   return src;
+}
+
+export {
+  columnToLetter,
+  letterToColumn,
+  translateR,
+  spreadsheetToR,
+  removeMatrix,
+  doChart,
+  doRegress,
+  doRegression,
+  doOptimization,
+  rRender,
 };

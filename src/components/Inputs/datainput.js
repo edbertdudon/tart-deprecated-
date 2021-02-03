@@ -33,7 +33,7 @@ const DataInput = ({
     //     firebase.trash(authUser.uid).set({ [name]: today });
     //   }
     // });
-    // 
+    //
     // const ws = inputs.findIndex((input) => input.name === name)
     // onSetInputs([
     //   ...inputs.slice(0, ws),
@@ -55,11 +55,11 @@ const DataInput = ({
         </div>
         <div className="datasource-buttons-wrapper">
           <OptionWithDropdown
+            classname="dropdown-content-datasource"
             text={<Icon path={mdiDotsHorizontal} size={0.9} />}
             items={DATASOURCE_DROPDOWN}
             onSelect={handleTrash}
             color={OFF_COLOR[color[authUser.uid]]}
-            style={{ left: '13px' }}
           />
         </div>
         <div className="datasource-editabletext">{name}</div>

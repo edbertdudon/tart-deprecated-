@@ -1,3 +1,10 @@
+//
+//  file.js
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -5,9 +12,9 @@ import XLSX from 'xlsx';
 import { useHistory } from 'react-router-dom';
 import Header from './header';
 import {
-  stox, addCopyToName, getMaxNumberCustomSheet, xtos, insertData,
+  stox, addCopyToName, createFile, getMaxNumberCustomSheet, xtos,
 } from '../../functions';
-import ImportConnection from './importconnection';
+import ImportConnection from '../Connectors/importconnection';
 import ImportDatabase from '../Connectors/importdatabase';
 
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
@@ -15,7 +22,7 @@ import withDropdown from '../Dropdown';
 import withModal from '../Modal';
 import * as ROUTES from '../../constants/routes';
 import { withFirebase } from '../Firebase';
-import { OFF_COLOR } from '../../constants/off-color';
+// import { OFF_COLOR } from '../../constants/off-color';
 import { options } from '../Spreadsheet/options';
 
 const Papa = require('papaparse/papaparse.min.js');
@@ -49,8 +56,8 @@ export const FILE_DROPDOWN = [
 ];
 
 const Files = ({
-  firebase, authUser, worksheetname, worksheets, slides, color, dataNames, current,
-  onSetDataNames, onSetCurrent, onSetWorksheetname, setReadOnly,
+  firebase, authUser, worksheetname, worksheets, slides, dataNames, current, saving,
+  setReadOnly, onSetDataNames, onSetCurrent, onSetSaving, onSetWorksheetname,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpenDatabaseMysql, setIsOpenDatabaseMysql] = useState(false);
@@ -62,11 +69,11 @@ const Files = ({
   const handleFile = (key) => {
     switch (key) {
       case FILE_DROPDOWN[0].key: {
-        const ws = worksheets[authUser.uid].map((file) => file.name)
-        const max = getMaxNumberCustomSheet(ws, 'Untitled Worksheet ')
-        const filename = 'Untitled Worksheet ' + max;
-        const initial = [JSON.stringify(DEFAULT_INITIAL_SLIDES)]
-        const newFile = new File(initial, filename, { type: 'application/json' })
+        const ws = worksheets[authUser.uid].map((file) => file.name);
+        const max = getMaxNumberCustomSheet(ws, 'Untitled Worksheet ');
+        const filename = `Untitled Worksheet ${max}`;
+        const initial = [JSON.stringify(DEFAULT_INITIAL_SLIDES)];
+        const newFile = new File(initial, filename, { type: 'application/json' });
 
         firebase.doUploadWorksheet(authUser.uid, filename, newFile)
           .on('state_changed', () => {}, () => {}, (snapshot) => {
@@ -76,15 +83,11 @@ const Files = ({
         break;
       }
       case FILE_DROPDOWN[1].key: {
-        const data = [JSON.stringify(slides.getData())]
-        const file = new File(data, worksheetname, { type: 'application/json' });
-
-        firebase.doUploadWorksheet(authUser.uid, worksheetname, file);
+        save();
         break;
       }
       case FILE_DROPDOWN[2].key: {
-      const data = [JSON.stringify(slides.getData())]
-
+        const data = [JSON.stringify(slides.getData())];
         // doListWorksheets needed because worksheets[authUser.uid] does not contain trash
         firebase.doListWorksheets(authUser.uid).then((res) => {
           const newname = addCopyToName(res.items, worksheetname);
@@ -107,6 +110,7 @@ const Files = ({
         break;
       }
       case FILE_DROPDOWN[5].key: {
+        console.log(JSON.stringify(slides.data.charts));
         // const today = new Date().toLocaleDateString();
         //
         // firebase.trash(authUser.uid).get().then((doc) => {
@@ -153,10 +157,9 @@ const Files = ({
           complete(results) {
             const { data, meta } = results;
             const o = papaToSpreadsheet(data);
-
             insert(o, f.name, meta.delimiter, f.name);
-
-            firebase.doUploadWorksheet(authUser.uid, f.name, f);
+            save();
+            // firebase.doUploadInput(authUser.uid, f.name, f);
           },
         });
         break;
@@ -168,15 +171,14 @@ const Files = ({
         reader.onload = function (e) {
           const results = new Uint8Array(e.target.result);
           const wb = XLSX.read(results, { type: 'array' });
-
           stox(wb).forEach((o) => insert(o, o.name, ',', `${f.name}_${o.name}`));
-
-          wb.SheetNames.forEach((name) => {
-            const ws = wb.Sheets[name];
-            const aoa = new File([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, { type: 'text/csv' });
-
-            firebase.doUploadWorksheet(authUser.uid, `${f.name}_${name}`, aoa);
-          });
+          save();
+          // wb.SheetNames.forEach((name) => {
+          //   const ws = wb.Sheets[name];
+          //   const aoa = new File([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, { type: 'text/csv' });
+          //
+          //   firebase.doUploadInput(authUser.uid, `${f.name}_${name}`, aoa);
+          // });
         };
 
         reader.readAsArrayBuffer(f);
@@ -185,16 +187,32 @@ const Files = ({
     uploadRef.current.value = '';
   };
 
-  const insert = (o, name, delimiter, filename) => {
+  function insert(o, name, delimiter, filename) {
     o.delimiter = delimiter;
     o.filename = filename;
 
-    insertData(slides, dataNames, current, o, name, onSetDataNames, onSetCurrent);
-  };
+    const isEmpty = slides.insertData(current, o, name);
+    onSetDataNames(slides.datas.map((it) => it.name));
+    if (!isEmpty) {
+      onSetCurrent(slides.sheetIndex);
+    }
+  }
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   return (
     <>
-      <FileWithDropdown text="File" items={FILE_DROPDOWN} onSelect={handleFile} color={OFF_COLOR[color[authUser.uid]]} />
+      <FileWithDropdown
+        classname="dropdown-content"
+        text="File"
+        items={FILE_DROPDOWN}
+        onSelect={handleFile}
+        // color={OFF_COLOR[color[authUser.uid]]}
+      />
       <input type="file" className="toolbar-upload" onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef} />
       <ImportConnectionWithModal
         isOpen={isOpen}
@@ -229,18 +247,20 @@ const ImportDatabaseWithModal = withModal(ImportDatabase);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
+  // color: (state.colorState.colors || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   worksheets: (state.worksheetsState.worksheets || []),
-  color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
   onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
-  onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
 });
 
 export default compose(

@@ -12,7 +12,6 @@
 //
 //  Known Issues:
 //  - how to keep worksheets in redux for app instance even after refresh
-//  - useRecursiveTimeout is inefficient. Listing Worksheets even if theres no change
 //  - clicking RUN repetitively sometimes set loading indicator off -- runId gets rerendered a second time.
 //
 import React, { useState, useEffect } from 'react';
@@ -21,7 +20,7 @@ import { compose } from 'recompose';
 import DataSource from './datasource';
 import LoadingDataSource from './loadingdatasource';
 import NewDataSource from './newdatasource';
-import useRecursiveTimeout from './useRecursiveTimeout.ts';
+import useRecursiveTimeout from '../../functions/useRecursiveTimeout.ts';
 import { withFirebase } from '../Firebase';
 
 const terminalStates = new Set(['DONE', 'ERROR', 'CANCELLED']);
@@ -29,7 +28,7 @@ const terminalStates = new Set(['DONE', 'ERROR', 'CANCELLED']);
 const queueStates = new Set(['PENDING', 'SETUP_DONE', 'RUNNING']);
 
 export function shouldReloadTimer(jobs) {
-  if (jobs[0].status === 'failed list jobs') return(false);
+  if (jobs[0].status === 'failed list jobs') return (false);
 
   return jobs.some((job) => !terminalStates.has(job.status.state));
 }
@@ -94,7 +93,6 @@ const Content = ({
 
   useEffect(() => {
     setLoading(true);
-
     firebase.doListWorksheets(authUser.uid).then((res) => {
       onSetWorksheets(res.items);
       setLoading(false);
@@ -107,7 +105,7 @@ const Content = ({
         }
       })
       .then(() => onSetIsJobsActive(
-        shouldReloadTimer(jobs)
+        shouldReloadTimer(jobs),
       ));
   }, []);
 
@@ -125,37 +123,37 @@ const Content = ({
       }
       return res;
     })
-    .then((res) => onSetJobs(res))
-    .then(() => onSetIsJobsActive(
-      shouldReloadTimer(jobs)
-    ));
+      .then((res) => onSetJobs(res))
+      .then(() => onSetIsJobsActive(
+        shouldReloadTimer(jobs),
+      ));
   }, 60000);
 
   const handleJobSubmit = (worksheetname) => {
     onSetIsJobsActive(true);
 
     onSetJobs(
-      submitJob(worksheetname, jobs)
+      submitJob(worksheetname, jobs),
     );
 
     onSetNotifications(
       notifications.concat({
         key: `Job started: ${worksheetname}`,
         type: 'notification',
-      })
+      }),
     );
   };
 
   const handleJobCancel = (runId) => {
     onSetJobs(
-      cancelJob(runId, jobs)
+      cancelJob(runId, jobs),
     );
 
     onSetNotifications(
       notifications.concat({
         key: `Job started: ${worksheetname}`,
         type: 'notification',
-      })
+      }),
     );
   };
 
@@ -163,7 +161,8 @@ const Content = ({
     <div className="home-content">
       {loading
         ? <LoadingDataSource />
-        : <>
+        : (
+          <>
             {worksheets.map((worksheet) => (
               <DataSource
                 filename={worksheet.name}
@@ -174,7 +173,7 @@ const Content = ({
               />
             ))}
           </>
-      }
+        )}
       <NewDataSource />
     </div>
   );

@@ -9,45 +9,101 @@ import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { updateCellorRange } from '../Optimize';
-import { useOutsideAlerter } from '../../functions';
+import { LETTERS_REFERENCE, NUMBERS_REFERENCE, useOutsideAlerter } from '../../functions';
 import { letterToColumn, columnToLetter } from '../Spreadsheet/cloudr';
 
-const LETTERS_REFERENCE = /\$?[A-Z]+/g;
+function getRangeIndex(range) {
+  const mn = range.match(NUMBERS_REFERENCE).map((ref) => parseInt(ref) - 1);
+  const ml = range.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
+  return {
+    sri: mn[0],
+    sci: ml[0],
+    eri: mn[1],
+    eci: ml[1],
+  };
+}
 
-export const getRownames = (data) => Object.values(data.rows._[0].cells).map((cell) => cell.text);
-
-export const getCols = (rownames) => rownames.map((t, i) => columnToLetter(i + 1));
-
-export const getVars = (data, cols) => {
-  const rows = Object.keys(data.rows._).map((row) => parseInt(row) + 1);
-  return cols.map((col) => `${col + rows[0]}:${col}${rows[rows.length - 1]}`);
-};
-
-export const setVariablesRange = (data, firstRow, datarange, setVariables) => {
-  if ((data.type === 'sheet' || data.type === 'input') && '0' in data.rows._) {
-    const rownames = getRownames(data);
-    const cols = getCols(rownames);
-    const ml = datarange.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
-    if (firstRow) {
-      setVariables(rownames.slice(ml[0], ml[1] + 1));
-    } else {
-      setVariables(
-        getVars(data, cols).slice(ml[0], ml[1] + 1),
-      );
-    }
+function getRownames(rows, range) {
+  if (!(range.sri in rows)) {
+    return [];
   }
-};
+
+  const { cells } = rows[range.sri];
+  const cols = Object.keys(cells)
+    .filter((t) => t < range.sci || t > range.eci);
+
+  cols.forEach((t) => delete cells[t]);
+
+  return Object.values(cells)
+    .map((cell) => cell.text);
+}
+
+function getCols(rows, range) {
+  if (!(range.sri in rows)) {
+    return [];
+  }
+  return Object.keys(rows[range.sri].cells)
+    .filter((t) => t >= range.sci && t <= range.eci)
+    .map((t) => columnToLetter(parseInt(t) + 1));
+}
+
+function getRange(len, range) {
+  const {
+    sri, sci, eri, eci,
+  } = range;
+
+  const colStart = columnToLetter(sci + 1);
+  if (sri === eri && sci === eci) {
+    return `${colStart + (sri + 1)}`;
+  }
+  const colEnd = columnToLetter(eci + 1);
+  if (len === eri + 1) {
+    return (`${colStart}:${colEnd}`);
+  }
+  return (`${colStart + (sri + 1)}:${colEnd + (eri + 1)}`);
+}
+
+function getVarsAsColumns(rows, len, range) {
+  const {
+    sri, sci, eri, eci,
+  } = range;
+  const cols = getCols(rows, range);
+  if (len === eri + 1) {
+    return cols.map((col) => `${col}:${col}`);
+  }
+  return cols.map((col) => `${col + (sri + 1)}:${col + (eri + 1)}`);
+}
+
+// function setVariablesRange(firstRow, rows, len, range) {
+//   if (firstRow) {
+//     return getRownames(rows, slides.sheet.selector.range);
+//   }
+//   return getVarsAsColumns(rows, len, range);
+// }
 
 const DataRange = ({
   slides, firstRow, datarange, setVariables, setDatarange, error, setError,
 }) => {
   const datarangeRef = useRef(null);
 
-  const handleSetVariablesRange = () => setVariablesRange(slides.data, firstRow, datarange, setVariables);
+  const handleRange = () => {
+    if (datarangeRef.current === document.activeElement) {
+      const { rows } = slides.data;
+      const range = getRangeIndex(datarange);
 
-  useOutsideAlerter(datarangeRef, handleSetVariablesRange);
+      if (firstRow) {
+        setVariables(getRownames(rows._, range));
+      } else {
+        setVariables(getVarsAsColumns(rows._, rows.len, range));
+      }
+    }
+  };
 
-  const handleUpdateDatarange = (e) => updateCellorRange(e, setDatarange, setError);
+  useOutsideAlerter(datarangeRef, handleRange);
+
+  const handleUpdateDatarange = (e) => {
+    updateCellorRange(e, setDatarange, setError);
+  };
 
   return (
     <>
@@ -76,3 +132,12 @@ export default compose(
     mapStateToProps,
   ),
 )(DataRange);
+
+export {
+  getRangeIndex,
+  getRownames,
+  getCols,
+  getRange,
+  getVarsAsColumns,
+  // setVariablesRange,
+};

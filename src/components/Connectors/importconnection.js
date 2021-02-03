@@ -5,21 +5,30 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-//	Commands:
-//	docker restart 67a02d931c58 (SQL server) a5bafc14065b (OracleDB)
-//	sqlcmd -S 0.0.0.0:1433 -U sa -P MyNewPass! -Q "CREATE DATABASE SampleDB;"
+//	Commands
+//  list containers: docker ps
+//  SQL Server:
+//    docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=yourStrong(!)Password' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
+//    docker restart 67a02d931c58
+//    sqlcmd -S 0.0.0.0:1433 -U sa -P MyNewPass! -Q "CREATE DATABASE SampleDB;"
+//  OracleDB:
+//    https://medium.com/@mfofana/how-to-install-oracle-database-on-mac-os-sierra-10-12-or-above-c0b350fd2f2c
+//    docker run -d -p 8080:8080 -p 1521:1521 -v ~/oracle_data/:/u01/app/oracle truevoly/oracle-12c
+//    Downloads > sqlcl > bin > sqlcl
+//    Username: system
+//    Password: oracle
 //
 import React, { useState, useEffect } from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import Icon from '@mdi/react';
-import { mdilChevronLeft, mdilChevronRight } from '@mdi/light-js';
+import { mdilChevronLeft, mdilChevronRight, mdilMagnify } from '@mdi/light-js';
 import { mdiLoading } from '@mdi/js';
 
-import { databaseList } from '../Connectors/databaseList';
-import { tablesList } from '../Connectors/tablesList';
-import { getTableSample } from '../Connectors/getTableSample';
-import { getMaxNumberCustomSheet, insertData } from '../../functions';
+import { databaseList } from './databaseList';
+import { tablesList } from './tablesList';
+import { getTableSample } from './getTableSample';
+import { createFile, getMaxNumberCustomSheet } from '../../functions';
 import { withFirebase } from '../Firebase';
 
 function aoaToSpreadsheet(aoa) {
@@ -49,9 +58,32 @@ const LEVELS_STATES = [
   'connections', 'databases', 'tables',
 ];
 
+const Levels = ({
+  option, level, onSelectConnection, onSelectDatabase, onSelectTable,
+}) => (
+  <div>
+    {
+        {
+          connections:
+  <div className="filexplorer-content-text" onClick={() => onSelectConnection(option)}>
+    <p>{option}</p>
+  </div>,
+          databases:
+  <div className="filexplorer-content-text" onClick={() => onSelectDatabase(option)}>
+    <p>{option}</p>
+  </div>,
+          tables:
+  <div className="filexplorer-content-text" onClick={() => onSelectTable(option)}>
+    <p>{option}</p>
+  </div>,
+    		}[LEVELS_STATES[level]]
+      }
+  </div>
+);
+
 const ImportConnection = ({
-  firebase, authUser, color, slides, files, onClose, onSelect,
- 	dataNames, current, onSetDataNames, onSetCurrent,
+  firebase, authUser, color, worksheetname, slides, dataNames, current, saving,
+  files, onClose, onSelect, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
   const [loading, setLoading] = useState(false);
   const [level, setLevel] = useState(0);
@@ -89,7 +121,8 @@ const ImportConnection = ({
   };
 
   const handleForward = () => {
-    if (level < 2) {
+    if ((level === 0 && databases.length > 0)
+        || (level === 1 && tables.length > 0)) {
       setLevel(level + 1);
       setFilteredOption(handleSelectLibrary(level + 1));
     }
@@ -176,6 +209,7 @@ const ImportConnection = ({
   const handleSelectTable = (table) => {
     if (level !== 2) return;
     setLoading(true);
+
     const data = { ...config, table };
     getTableSample(config.connector, data, firebase).then((res) => {
       if ('status' in res) {
@@ -185,37 +219,30 @@ const ImportConnection = ({
           return;
         }
       }
-      let tablenumber = getMaxNumberCustomSheet(files[authUser.uid].map((file) => file.name), table);
-      if (tablenumber === 1) {
-        tablenumber = '';
-      } else {
-        tablenumber = ` ${tablenumber}`;
+
+      switch (config.connector) {
+        case 'MySQL': {
+          const out = mysqlToSpreadsheet(res);
+          out.delimiter = 'mySQL';
+          break;
+        }
+        case 'Microsoft SQL Server': {
+          const out = mysqlToSpreadsheet(res);
+          out.delimiter = 'SQLServer';
+          break;
+        }
+        case 'Oracle SQL': {
+          const out = oracledbToSpreadsheet(res);
+          out.delimiter = 'OracleDB';
+          break;
+        }
       }
-      if (config.connector === 'MySQL') {
-        const out = mysqlToSpreadsheet(res);
-        out.delimiter = 'mySQL';
-        out.connection = `${config.host}.${config.port}`;
-        out.database = config.database;
-        out.fileName = table;
-        const name = table.split('.').slice(0, -1).join('.') + tablenumber;
-        insertData(slides, dataNames, current, out, name, onSetDataNames, onSetCurrent);
-      } else if (config.connector === 'Microsoft SQL Server') {
-        const out = mysqlToSpreadsheet(res);
-        out.delimiter = 'SQLServer';
-        out.connection = `${config.host}.${config.port}`;
-        out.database = config.database;
-        out.fileName = table;
-        const name = table.split('.').slice(0, -1).join('.') + tablenumber;
-        insertData(slides, dataNames, current, out, name, onSetDataNames, onSetCurrent);
-      } else if (config.connector === 'Oracle SQL') {
-        const out = oracledbToSpreadsheet(res);
-        out.delimiter = 'OracleDB';
-        out.connection = `${config.host}.${config.port}`;
-        out.database = config.database;
-        out.fileName = table;
-        const name = table.split('.').slice(0, -1).join('.') + tablenumber;
-        insertData(slides, dataNames, current, out, name, onSetDataNames, onSetCurrent);
-      }
+
+      out.connection = `${config.host}.${config.port}`;
+      out.database = config.database;
+      out.table = table;
+      insert(out, table);
+
       onSelect();
       handleClose();
       setLevel(0);
@@ -223,15 +250,19 @@ const ImportConnection = ({
     });
   };
 
-  // const isInvalid = false
-  // <input
-  // 	disabled={isInvalid}
-  // 	className='modal-button'
-  // 	type="button"
-  // 	value="Open"
-  // 	onClick={handleSelectTable}
-  // 	style={{color: isInvalid ? "rgb(0, 0, 0, 0.5)" : color}}
-  // />
+  const insert = (o, table) => {
+    const name = table.split('.').slice(0, -1).join('.');
+
+    const isEmpty = slides.insertData(current, o, name);
+    onSetDataNames(slides.datas.map((it) => it.name));
+    if (!isEmpty) {
+      onSetCurrent(slides.sheetIndex);
+    }
+
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  };
 
   return (
     <>
@@ -239,26 +270,30 @@ const ImportConnection = ({
         <Icon path={mdilChevronLeft} size={1.5} onClick={handleBack} />
         <Icon path={mdilChevronRight} size={1.5} onClick={handleForward} />
         {loading && <Icon path={mdiLoading} size={1.5} spin />}
-        <input
-          type="text"
-          name="search"
-          className="filexplorer-search"
-          placeholder="Search"
-          onChange={handleSearch}
-          onClick={handleSearch}
-        />
+        <div className="filexplorer-search">
+          <Icon path={mdilMagnify} size={1} />
+          <input
+            type="text"
+            name="search"
+            placeholder="Search"
+            onChange={handleSearch}
+            onClick={handleSearch}
+          />
+        </div>
       </div>
       {error && <p className="filexplorer-error">{error}</p>}
-      <Levels
-        level={level}
-        connections={connections}
-        databases={databases}
-        tables={tables}
-        filteredOption={filteredOption}
-        onSelectConnection={handleSelectConnection}
-        onSelectDatabase={handleSelectDatabase}
-        onSelectTable={handleSelectTable}
-      />
+      <div className="filexplorer-content">
+        {filteredOption.map((option) => (
+          <Levels
+            option={option}
+            level={level}
+            onSelectConnection={handleSelectConnection}
+            onSelectDatabase={handleSelectDatabase}
+            onSelectTable={handleSelectTable}
+            key={option}
+          />
+        ))}
+      </div>
       <br />
       <input
         className="modal-button"
@@ -270,44 +305,20 @@ const ImportConnection = ({
   );
 };
 
-const Levels = ({
-  level, filteredOption, onSelectConnection, onSelectDatabase, onSelectTable,
-}) => (
-  <div className="filexplorer-content">
-    {
-			{
-			  connections: filteredOption.map((connection, index) => (
-  <div className="filexplorer-content-text" onClick={() => onSelectConnection(connection)} key={index}>
-    <p>{connection}</p>
-  </div>
-			  )),
-			  databases: filteredOption.map((database, index) => (
-  <div className="filexplorer-content-text" onClick={() => onSelectDatabase(database)} key={index}>
-    <p>{database}</p>
-  </div>
-			  )),
-			  tables: filteredOption.map((table, index) => (
-  <div className="filexplorer-content-text" onClick={() => onSelectTable(table)} key={index}>
-    <p>{table}</p>
-  </div>
-			  )),
-			}[LEVELS_STATES[level]]
-		}
-  </div>
-);
-
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
-  worksheets: (state.worksheetsState.worksheets || []),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
 });
 
 export default compose(

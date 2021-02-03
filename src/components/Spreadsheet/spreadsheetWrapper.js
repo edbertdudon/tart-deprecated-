@@ -15,65 +15,71 @@
 //  Headers within headers? Drilldown
 //  hover shade selected formula after "=..."
 //
-import React, { useRef, useEffect, useLayoutEffect } from 'react';
+import React, {
+  useState, useRef, useEffect, useLayoutEffect,
+} from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-
+import useDebounce from '../../functions/useDebounce.ts';
 import { rRender } from './cloudr';
 import Spreadsheet from './index.js';
 import { options } from './options.js';
-import { withFirebase } from '../Firebase';
+import { createFile } from '../../functions';
+
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
 import { OFF_COLOR } from '../../constants/off-color';
+import { withFirebase } from '../Firebase';
 
 const SpreadsheetWrapper = ({
-  firebase, authUser, slides, worksheetname, color,
-  onSetSlides, onSetDataNames, onSetCurrent, setSaving, setText,
+  firebase, authUser, slides, worksheetname, color, setText, onSetSaving,
+  onSetSlides, onSetDataNames, onSetCurrent, onSetRightSidebar, onSetChartSelect,
 }) => {
+  const [pendingSave, setPendingSave] = useState({});
+  const debouncePendingSave = useDebounce(pendingSave, 750);
   const firstUpdate = useRef(true);
 
   useLayoutEffect(() => {
-    // const unsubscribe = firebase.doDownloadWorksheet(authUser.uid, worksheetname).then(res => {
-    	// options.style.offcolor = OFF_COLOR[color[authUser.uid]]
-      const s = new Spreadsheet('#spreadsheet', options);
-    		// .loadData(res)
-    		// .on('cell-edited', (text, ri, ci) => {
-        //   setText({ text: text, ri: ri, ci: ci })
-        // })
-    		// .on('cell-selected', (text, ri, ci) => {
-    		// 	if (text === null) {
-    		// 		setText({ text: '', ri: ri, ci: ci })
-    		// 	} else {
-    		// 		setText({ text: text.text, ri: ri, ci: ci })
-    		// 	}
-    		// })
-    		// .change(data => {
-        //   const timer = setTimeout(() => {
-        //   	console.log(slides.getData())
-        //   	if (firstUpdate.current === false && slides.data !== null) {
-        //   		setSaving(true)
-        //   		firebase.doUploadWorksheet(
-        //   			authUser.uid,
-        //   			worksheetname,
-        //   			new File ([JSON.stringify(slides.getData())], worksheetname, {type: "application/json"})
-        //   		).then(() => setSaving(false))
-        //   	}
-        //   }, 750)
-        //   return () => clearTimeout(timer)
-        // })
-      // s.validate()
-      // s.data = s.datas[0]
-      const dataNames = s.datas.map(data => data.name)
-      onSetDataNames([...dataNames])
-      onSetCurrent(0)
+    const unsubscribe = firebase.doDownloadWorksheet(authUser.uid, worksheetname).then((res) => {
+    	// options.style.offcolor = OFF_COLOR[color[authUser.uid]];
+      const s = new Spreadsheet('#spreadsheet', options)
+    		.loadData(res)
+    		.on('cell-edited', (text, ri, ci) => setText({ text, ri, ci }))
+    		.on('cell-selected', (text, ri, ci) => {
+    			if (text === null) {
+    				setText({ text: '', ri, ci });
+    			} else {
+    				setText({ text: text.text, ri, ci });
+    			}
+    		})
+        .on('show-editor', () => onSetRightSidebar('chart'))
+        .on('chart-select', (chart) => onSetChartSelect(chart))
+    		.change((data) => {
+          console.log(data);
+          setPendingSave(data);
+        });
+
+      s.validate();
+      s.data = s.datas[0];
+      onSetDataNames([...s.datas.map((data) => data.name)]);
+      onSetCurrent(0);
       onSetSlides(s);
       console.log(s);
+
       if (firstUpdate.current) {
         firstUpdate.current = false;
       }
-    // })
-    // return () => unsubscribe
+    });
+
+    return () => unsubscribe;
   }, []);
+
+  useEffect(() => {
+    if (debouncePendingSave && firstUpdate.current === false) {
+    	onSetSaving(true);
+    	firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+        .then(() => onSetSaving(false));
+    }
+  }, [debouncePendingSave]);
 
   return (
     <div id="spreadsheet" />
@@ -82,17 +88,23 @@ const SpreadsheetWrapper = ({
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  slides: (state.slidesState.slides || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
-  color: (state.colorState.colors || {}),
+  slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
+  color: (state.colorState.colors || {}),
+  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
+  chartSelect: (state.chartSelectState.chartSelect || null),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetSlides: (slides) => dispatch({ type: 'SLIDES_SET', slides }),
   onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
+  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
+  onSetChartSelect: (chartSelect) => dispatch({ type: 'CHARTSELECT_SET', chartSelect }),
 });
 
 export default compose(

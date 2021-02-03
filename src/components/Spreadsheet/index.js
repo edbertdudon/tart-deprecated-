@@ -1,7 +1,6 @@
 /* global window, document */
 import { h } from './component/element';
 import DataProxy from './core/data_proxy';
-import { Chart } from './component/chart_canvas';
 import Sheet from './component/sheet';
 // import Bottombar from './component/bottombar';
 import Clipboard from './core/clipboard';
@@ -46,7 +45,7 @@ class Spreadsheet {
   }
 
   addSheet(name, active = true, current) {
-    const n = name || `sheet${this.sheetIndex}`;
+    const n = name || `Sheet${this.sheetIndex}`;
     const d = new DataProxy(n, this.options);
     d.change = (...args) => {
       this.sheet.trigger('change', ...args);
@@ -86,19 +85,25 @@ class Spreadsheet {
     d.name = `${data.name} ${getMaxNumberCustomSheet(dataNames, data.name)}`;
     this.datas.splice(index + 1, 0, d);
     // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
-    this.sheetIndex = index + 1;
+    // this.sheetIndex = index + 1;
     this.sheet.resetData(d);
     return d;
   }
 
-  insertChart(type, variables) {
-    const { data, sheet, datas } = this;
-    const { name } = data;
-    const { range } = sheet.selector;
-    data.addChart(datas, range, type, variables);
+  insertChart(type) {
+    this.data.addChart(type, this.datas, this.sheet.selector.range)
+      .then((d) => {
+        this.sheet.resetData(d);
+        this.sheet.trigger('chart-select', d.chartSelect);
+      });
   }
 
-  insertData(dataNames, current, o, name, isEmptyData) {
+  editChart(c) {
+    this.data.changeChart(c, this.datas, this.sheet.selector.range)
+      .then((d) => this.sheet.resetData(d));
+  }
+
+  insertData(current, o, name) {
     const { row, col } = this.options;
     const { rows } = o;
     const nrows = Object.keys(rows).length;
@@ -109,21 +114,30 @@ class Spreadsheet {
     if (ncols > col.len) {
       col.len = ncols;
     }
+
+    const { datas } = this;
     const d = new DataProxy('temp', this.options);
     d.setData(o);
-    const n = getMaxNumberCustomSheet(dataNames, name);
+    const names = datas.map((it) => it.name);
+    const n = getMaxNumberCustomSheet(names, name);
+
     if (n !== 1) {
       name = `${name} ${n}`;
     }
     d.name = name;
-    if (isEmptyData) {
-      this.datas.splice(current, 1, d);
+
+    const { _ } = this.data.rows;
+    const isEmpty = Object.keys(_).length === 0 && _.constructor === Object;
+    if (isEmpty) {
+      datas.splice(current, 1, d);
     } else {
-      this.datas.splice(current + 1, 0, d);
+      datas.splice(current + 1, 0, d);
       this.sheetIndex = current + 1;
     }
     this.sheet.resetData(d);
-    return d;
+    this.data = d;
+
+    return isEmpty;
   }
 
   loadData(data) {
@@ -139,7 +153,12 @@ class Spreadsheet {
           this.sheet.resetData(nd);
         }
       }
+
+      ds.forEach((nd) => {
+        this.data.loadChart(nd.charts, this.datas);
+      });
     }
+
     return this;
   }
 

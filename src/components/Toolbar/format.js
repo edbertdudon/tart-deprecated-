@@ -1,3 +1,10 @@
+//
+//  format.js
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -7,9 +14,7 @@ import { fontSizes } from '../Spreadsheet/core/font';
 import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
 
-const Format = ({
-  authUser, color, slides, rightSidebar, onSetRightSidebar,
-}) => {
+const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
   const FORMAT_DROPDOWN = [
     { key: 'Bold', type: 'item' },
     { key: 'Italic', type: 'item' },
@@ -96,17 +101,18 @@ const Format = ({
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select);
-      return
+      return;
     }
     onSetRightSidebar('none');
   };
 
   return (
     <FormatWithDropdown
+      classname="dropdown-content"
       text="Format"
       items={FORMAT_DROPDOWN}
       onSelect={handleFormat}
-      color={OFF_COLOR[color[authUser.uid]]}
+      // color={OFF_COLOR[color[authUser.uid]]}
     />
   );
 };
@@ -114,8 +120,8 @@ const Format = ({
 const FormatWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
-  authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
+  // authUser: state.sessionState.authUser,
+  // color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });

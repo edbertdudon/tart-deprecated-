@@ -9,9 +9,9 @@ import Editor from './editor';
 import ContextMenu from './contextmenu';
 import Table from './table';
 import {
-  chartInitEvents, chartMousedown, chartMouseup, chartMousemove,
-  chartScrollVertical, chartScrollHorizontal,
-} from './chart_canvas';
+  chartInitEvents, chartResetData, chartMousedown, chartMouseup, chartMousemove,
+  chartScrollVertical, chartScrollHorizontal, invalidate,
+} from '../canvas/chart';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
 import SortFilter from './sort_filter';
@@ -20,6 +20,8 @@ import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula';
 import { columnToLetter } from '../cloudr';
+
+let isResize = false;
 
 /**
  * @desc throttle fn
@@ -133,7 +135,7 @@ export function selectorMove(multiple, direction) {
 
 // private methods
 function overlayerMousemove(evt) {
-  const isResize = chartMousemove.call(this, evt);
+  isResize = chartMousemove.call(this, evt);
   if (isResize) return;
   // console.log('x:', evt.offsetX, ', y:', evt.offsetY);
   if (evt.buttons !== 0) return;
@@ -403,7 +405,6 @@ function overlayerMousedown(evt) {
       sortFilter.hide();
       sortFilter.set(ci, items, autoFilter.getFilter(ci), autoFilter.getSort(ci));
       sortFilter.setOffset({ left, top: top + height + 2 });
-      return;
     }
   }
   // console.log('ri:', ri, ', ci:', ci);
@@ -575,13 +576,25 @@ function toolbarChange(type, value) {
   } else if (type === 'formula') {
     // formula
   } else {
-    console.log(type, value);
+    // console.log(type, value);
     data.setSelectedCellAttr(type, value);
     // if (type === 'formula' && !data.selector.multiple()) {
     // editorSet.call(this);
     // }
     sheetReset.call(this);
   }
+}
+
+function moveChartOut() {
+  // const type = this.data.chartSelect.types[0];
+  // const title = charts[type].title;
+  // const n = `${title} ${getMaxNumberCustomSheet(dataNames, title)}`
+  // const d = new DataProxy(n, this.options);
+  // d.change = (...args) => {
+  //   this.trigger('change', ...args);
+  // };
+  //
+  // this.data.deleteChart();
 }
 
 function sortFilterChange(ci, order, operator, value) {
@@ -652,6 +665,15 @@ function sheetInitEvents() {
 
       // charts
       const isChart = chartMousedown.call(this, evt);
+      // For switching between charts in chart editor
+      this.trigger('chart-select', this.data.chartSelect);
+      if (isChart) {
+        selector.br.el.hide();
+      } else {
+        // no need if already shown
+        selector.br.el.show();
+      }
+
       // the left mouse button: mousedown → mouseup → click
       // the right mouse button: mousedown → contenxtmenu → mouseup
       if (evt.buttons === 2) {
@@ -685,6 +707,11 @@ function sheetInitEvents() {
     })
     .on('mouseup', (evt) => {
       chartMouseup(evt);
+      if (isResize) {
+        // for saving chart position
+        this.trigger('change', this.data.getData());
+        isResize = false;
+      }
     })
     .on('wheel.stop', (evt) => {
       overlayerMousescroll.call(this, evt);
@@ -712,8 +739,7 @@ function sheetInitEvents() {
   });
 
   // chart
-  // chartInitEvents.call(this);
-  chartInitEvents.call(this, this.getRect());
+  chartInitEvents.call(this);
 
   // toolbar change
   toolbar.change = (type, value) => toolbarChange.call(this, type, value);
@@ -757,22 +783,57 @@ function sheetInitEvents() {
   // contextmenu
   contextMenu.itemClick = (type) => {
     // console.log('type:', type);
-    if (type === 'validation') {
-      modalValidation.setValue(this.data.getSelectedValidation());
-    } else if (type === 'copy') {
-      copy.call(this);
-    } else if (type === 'cut') {
-      cut.call(this);
-    } else if (type === 'paste') {
-      paste.call(this, 'all');
-    } else if (type === 'paste-value') {
-      paste.call(this, 'text');
-    } else if (type === 'paste-format') {
-      paste.call(this, 'format');
-    } else if (type === 'hide') {
-      hideRowsOrCols.call(this);
-    } else {
-      insertDeleteRowColumn.call(this, type);
+    switch (type) {
+      case 'validation': {
+        modalValidation.setValue(this.data.getSelectedValidation());
+        break;
+      }
+      case 'copy': {
+        copy.call(this);
+        break;
+      }
+      case 'cut': {
+        cut.call(this);
+        break;
+      }
+      case 'paste': {
+        paste.call(this, 'all');
+        break;
+      }
+      case 'paste-value': {
+        paste.call(this, 'text');
+        break;
+      }
+      case 'paste-format': {
+        paste.call(this, 'format');
+        break;
+      }
+      case 'hide': {
+        hideRowsOrCols.call(this);
+        break;
+      }
+      default: {
+        insertDeleteRowColumn.call(this, type);
+      }
+    }
+  };
+  // contextMenuChart
+  contextMenuChart.itemClick = (type) => {
+    switch (type) {
+      case 'edit': {
+        this.trigger('show-editor');
+        break;
+      }
+      case 'delete': {
+        this.data.deleteChart();
+        this.trigger('chart-select', null);
+        this.trigger('change', this.data.getData());
+        break;
+      }
+      case 'move': {
+        moveChartOut();
+        break;
+      }
     }
   };
 
@@ -914,7 +975,14 @@ function sheetInitEvents() {
           evt.preventDefault();
           break;
         case 8: // backspace
-          insertDeleteRowColumn.call(this, 'delete-cell-text');
+          if (this.data.chartSelect !== null) {
+            this.data.deleteChart();
+            this.trigger('chart-select', null);
+            this.trigger('change', this.data.getData());
+          } else {
+            insertDeleteRowColumn.call(this, 'delete-cell-text');
+            invalidate();
+          }
           evt.preventDefault();
           break;
         default:
@@ -937,16 +1005,6 @@ function sheetInitEvents() {
       }
     }
   });
-
-  // contextMenuChart
-  contextMenuChart.itemClick = (type) => {
-    switch (type) {
-      case 'edit': {
-        // open format drawer
-        break;
-      }
-    }
-  };
 }
 
 export default class Sheet {
@@ -977,24 +1035,26 @@ export default class Sheet {
     this.modalValidation = new ModalValidation();
     // contextMenu
     this.contextMenu = new ContextMenu('sheet', () => this.getRect(), !showContextmenu);
+    // contextMenuChart
     this.contextMenuChart = new ContextMenu('chart', () => this.getRect(), !showContextmenu);
     // selector
     this.selector = new Selector(data);
+    // chart
+    this.chartEl = h('canvas', `${cssPrefix}-chart`, `${cssPrefix}-chart`);
+    // overlayer
     this.overlayerCEl = h('div', `${cssPrefix}-overlayer-content`)
       .children(
         this.editor.el,
         this.selector.el,
+        this.chartEl,
       );
     this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
       .child(this.overlayerCEl);
     // sortFilter
     this.sortFilter = new SortFilter();
-    // // chart
-    this.chartEl = h('canvas', `${cssPrefix}-chart`, `${cssPrefix}-chart`);
     // root element
     this.el.children(
       this.tableEl,
-      this.chartEl,
       this.overlayerEl.el,
       this.rowResizer.el,
       this.colResizer.el,

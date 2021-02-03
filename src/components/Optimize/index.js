@@ -20,11 +20,14 @@ import Qconstraint from './qconstraint';
 import Lconstraint from './lconstraint';
 import Variable from '../Statistics/core/variable';
 import Button from '../RightSidebar/button';
-import withLists from '../RightSidebar/withLists';
 import {
   letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR,
 } from '../Spreadsheet/cloudr';
-import { insertData } from '../../functions';
+import {
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, createFile,
+} from '../../functions';
+import withLists from '../RightSidebar/withLists';
+import { withFirebase } from '../Firebase';
 
 const OBJECTIVE_CLASS = ['General nonlinear optimization', 'Linear programming', 'Quadratic programming'];
 
@@ -85,9 +88,6 @@ const OPTIMX_METHODS = [
 const VALID_RANGE_REFERENCES = /^\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*$/;
 const VALID_FORMULA_CELL_REFERENCES = /^\$?[A-Z]+\$?[0-9]*$/;
 const RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g;
-const FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
-const LETTERS_REFERENCE = /\$?[A-Z]+/g;
-const NUMBERS_REFERENCE = /\$?[0-9]+/g;
 
 const validateCell = (v) => {
   if (!VALID_FORMULA_CELL_REFERENCES.test(v)) {
@@ -288,7 +288,8 @@ export const updateCellorRange = (e, setLhs, setError) => {
 // }
 
 const Optimize = ({
-  slides, authUser, color, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar,
+  firebase, authUser, worksheetname, slides, dataNames, current, saving, color,
+  onSetDataNames, onSetCurrent, onSetSaving, onSetRightSidebar,
 }) => {
   const [objective, setObjective] = useState('');
   const [quadratic, setQuadratic] = useState('');
@@ -351,6 +352,7 @@ const Optimize = ({
   const [cpsdlhs, setCpsdlhs] = useState('');
   const [psdcone, setPsdcone] = useState(1);
   const [cpsdrhs, setCpsdrhs] = useState('');
+
   const [solver, setSolver] = useState(0);
   const [loading, setLoading] = useState(false);
   // Errors
@@ -395,76 +397,90 @@ const Optimize = ({
     setLoading(true);
     const { name } = slides.data;
     const sparkData = {
-      objective: translateR(objective || 'na', name),
-      quadratic: translateR(quadratic || 'na', name),
-      linear: translateR(linear || 'na', name),
-      gradient: translateR(gradient || 'na', name),
-      hessian: translateR(hessian || 'na', name),
       minmax: minMax,
-      decision: translateR(decision || 'na', name),
-      flhs: translateR(flhs || 'na', name),
-      fdir: translateR(fdir || 'na', name),
-      frhs: translateR(frhs || 'na', name),
-      jacobian: translateR(jacobian || 'na', name),
-      blhs: translateR(blhs || 'na', name),
-      bdir: translateR(bdir || 'na', name),
-      brhs: translateR(brhs || 'na', name),
-      lowerindex: translateR(li || 'na', name),
-      lowerbound: translateR(lb || 'na', name),
-      upperindex: translateR(ui || 'na', name),
-      upperbound: translateR(ub || 'na', name),
-      lowerlimit: translateR(ld || 'na', name),
-      upperlimit: translateR(ud || 'na', name),
-      qquad: translateR(qquad || 'na', name),
-      qlin: translateR(qlin || 'na', name),
-      qdir: translateR(qdir || 'na', name),
-      qrhs: translateR(qrhs || 'na', name),
-      llin: translateR(llin || 'na', name),
-      ldir: translateR(ldir || 'na', name),
-      lrhs: translateR(lrhs || 'na', name),
-      c0lhs: translateR(c0lhs || 'na', name),
-      c0cone: c0cone || 'na',
-      c0rhs: translateR(c0rhs || 'na', name),
-      cllhs: translateR(cllhs || 'na', name),
-      lcone: lcone || 'na',
-      clrhs: translateR(clrhs || 'na', name),
-      csolhs: translateR(csolhs || 'na', name),
-      socone: socone || 'na',
-      csorhs: translateR(csorhs || 'na', name),
-      cexlhs: translateR(cexlhs || 'na', name),
-      excone: excone || 'na',
-      cexrhs: translateR(cexrhs || 'na', name),
-      cpplhs: translateR(cpplhs || 'na', name),
-      ppcone: ppcone || 'na',
-      cpprhs: translateR(cpprhs || 'na', name),
-      cpdlhs: translateR(cpdlhs || 'na', name),
-      pdcone: pdcone || 'na',
-      cpdrhs: translateR(cpdrhs || 'na', name),
-      cpsdlhs: translateR(cpsdlhs || 'na', name),
-      psdcone: psdcone || 'na',
-      cpsdrhs: translateR(cpsdrhs || 'na', name),
       solver: SOLVER_STATES[objectiveClass][solver],
     };
+    if (objective.length > 0) sparkData.objective = translateR(objective, name);
+    if (quadratic.length > 0) sparkData.quadratic = translateR(quadratic, name);
+    if (linear.length > 0) sparkData.linear = translateR(linear, name);
+    if (gradient.length > 0) sparkData.gradient = translateR(gradient, name);
+    if (hessian.length > 0) sparkData.hessian = translateR(hessian, name);
+    if (decision.length > 0) sparkData.decision = translateR(decision, name);
+    if (flhs.length > 0) sparkData.flhs = translateR(flhs, name);
+    if (fdir.length > 0) sparkData.fdir = translateR(fdir, name);
+    if (frhs.length > 0) sparkData.frhs = translateR(frhs, name);
+    if (jacobian.length > 0) sparkData.jacobian = translateR(jacobian, name);
+    if (blhs.length > 0) sparkData.blhs = translateR(blhs, name);
+    if (bdir.length > 0) sparkData.bdir = translateR(bdir, name);
+    if (brhs.length > 0) sparkData.brhs = translateR(brhs, name);
+    if (li.length > 0) sparkData.lowerindex = translateR(li, name);
+    if (lb.length > 0) sparkData.lowerbound = translateR(lb, name);
+    if (ui.length > 0) sparkData.upperindex = translateR(ui, name);
+    if (ub.length > 0) sparkData.upperbound = translateR(ub, name);
+    if (ld.length > 0) sparkData.lowerlimit = translateR(ld, name);
+    if (ud.length > 0) sparkData.upperlimit = translateR(ud, name);
+    if (qquad.length > 0) sparkData.qquad = translateR(qquad, name);
+    if (qlin.length > 0) sparkData.qlin = translateR(qlin, name);
+    if (qdir.length > 0) sparkData.qdir = translateR(qdir, name);
+    if (qrhs.length > 0) sparkData.qrhs = translateR(qrhs, name);
+    if (llin.length > 0) sparkData.llin = translateR(llin, name);
+    if (ldir.length > 0) sparkData.ldir = translateR(ldir, name);
+    if (lrhs.length > 0) sparkData.lrhs = translateR(lrhs, name);
+    if (c0lhs.length > 0) sparkData.c0lhs = translateR(c0lhs, name);
+    if (c0cone.length !== 1) sparkData.c0cone = c0cone;
+    if (c0rhs.length > 0) sparkData.c0rhs = translateR(c0rhs, name);
+    if (cllhs.length > 0) sparkData.cllhs = translateR(cllhs, name);
+    if (lcone.length !== 1) sparkData.lcone = lcone;
+    if (clrhs.length > 0) sparkData.clrhs = translateR(clrhs, name);
+    if (csolhs.length > 0) sparkData.csolhs = translateR(csolhs, name);
+    if (socone.length !== 1) sparkData.socone = socone;
+    if (csorhs.length > 0) sparkData.csorhs = translateR(csorhs, name);
+    if (cexlhs.length > 0) sparkData.cexlhs = translateR(cexlhs, name);
+    if (excone.length !== 1) sparkData.excone = excone;
+    if (cexrhs.length > 0) sparkData.cexrhs = translateR(cexrhs, name);
+    if (cpplhs.length > 0) sparkData.cpplhs = translateR(cpplhs, name);
+    if (ppcone.length !== 0.5) sparkData.ppcone = ppcone;
+    if (cpprhs.length > 0) sparkData.cpprhs = translateR(cpprhs, name);
+    if (cpdlhs.length > 0) sparkData.cpdlhs = translateR(cpdlhs, name);
+    if (pdcone.length !== 0.5) sparkData.pdcone = pdcone;
+    if (cpdrhs.length > 0) sparkData.cpdrhs = translateR(cpdrhs, name);
+    if (cpsdlhs.length > 0) sparkData.cpsdlhs = translateR(cpsdlhs, name);
+    if (psdcone.length !== 1) sparkData.psdcone = psdcone;
+    if (cpsdrhs.length > 0) sparkData.cpsdrhs = translateR(cpsdrhs, name);
+
     const optimizationData = {
       ...sparkData,
       slides: JSON.stringify(spreadsheetToR(slides.datas)),
       names: JSON.stringify(slides.datas.map((data) => data.name)),
     };
-    console.log(sparkData);
-    console.log(JSON.stringify(spreadsheetToR(slides.datas)));
-    // doOptimization(optimizationData)
-    // 	.then(res => {
-    // 		if (typeof res[0] === "string" || res[0] instanceof String) {
-    // 			setError(res)
-    // 			setLoading(false)
-    // 		} else {
-    // 			res.type = "optimize"
-    // 			res.optimization = sparkData
-    // 			insertData(slides, dataNames, current, res, name, onSetDataNames, onSetCurrent)
-    // 			onSetRightSidebar('none')
-    // 			setLoading(false)
-    // 		}
-    // 	})
+
+    doOptimization(optimizationData)
+    	.then((res) => {
+    		if (typeof res[0] === 'string' || res[0] instanceof String) {
+    			setError(res);
+    			setLoading(false);
+    		} else {
+    			res.type = 'optimize';
+    			res.optimization = sparkData;
+          const sheetname = `optimization ${
+            objectiveClass === 0
+              ? objective
+              : objectiveClass === 1
+                ? linear : quadratic}`;
+          const isEmpty = slides.insertData(current, res, sheetname);
+
+          onSetDataNames(slides.datas.map((it) => it.name));
+          if (!isEmpty) {
+            onSetCurrent(slides.sheetIndex);
+          }
+    			onSetRightSidebar('none');
+    			setLoading(false);
+
+          onSetSaving(true);
+        	firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+            .then(() => onSetSaving(false));
+    		}
+    	});
   };
 
   const handleClose = () => {
@@ -552,185 +568,191 @@ const Optimize = ({
       <Button onClick={handleMaximize} condition={minMax === 1} text="Maximum" />
       <div className="rightsidebar-label">Constraints</div>
       {!constraints.includes(CONSTRAINTS_TYPE[0])
-				&& (
-<Fconstraint
-  lhs={flhs}
-  setLhs={setFlhs}
-  dir={fdir}
-  setDir={setFdir}
-  rhs={frhs}
-  setRhs={setFrhs}
-  jacobian={jacobian}
-  setJacobian={setJacobian}
-  onClose={handleRemoveConstraint}
-  error={errorGconstraint}
-  setError={setErrorGconstraint}
-/>
-				)}
+        && (
+        <Fconstraint
+          lhs={flhs}
+          setLhs={setFlhs}
+          dir={fdir}
+          setDir={setFdir}
+          rhs={frhs}
+          setRhs={setFrhs}
+          jacobian={jacobian}
+          setJacobian={setJacobian}
+          onClose={handleRemoveConstraint}
+          error={errorGconstraint}
+          setError={setErrorGconstraint}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[1])
-				&& (
-<Bounds
-  objectiveClass={objectiveClass}
-  lhs={blhs}
-  setLhs={setBlhs}
-  dir={bdir}
-  setDir={setBdir}
-  rhs={brhs}
-  setRhs={setBrhs}
-  li={li}
-  setLi={setLi}
-  lb={lb}
-  setLb={setLb}
-  ui={ui}
-  setUi={setUi}
-  ub={ub}
-  setUb={setUb}
-  ld={ld}
-  setUb={setLd}
-  ud={ud}
-  setUb={setUd}
-  onClose={handleRemoveConstraint}
-  error={errorBounds}
-  setError={setErrorBounds}
-/>
-				)}
+        && (
+        <Bounds
+          objectiveClass={objectiveClass}
+          lhs={blhs}
+          setLhs={setBlhs}
+          dir={bdir}
+          setDir={setBdir}
+          rhs={brhs}
+          setRhs={setBrhs}
+          li={li}
+          setLi={setLi}
+          lb={lb}
+          setLb={setLb}
+          ui={ui}
+          setUi={setUi}
+          ub={ub}
+          setUb={setUb}
+          ld={ld}
+          setUb={setLd}
+          ud={ud}
+          setUb={setUd}
+          onClose={handleRemoveConstraint}
+          error={errorBounds}
+          setError={setErrorBounds}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[2])
-				&& (
-<Lconstraint
-  lhs={llin}
-  setLhs={setLlin}
-  dir={ldir}
-  setDir={setLdir}
-  rhs={lrhs}
-  setRhs={setLrhs}
-  onClose={handleRemoveConstraint}
-  error={errorLconstraint}
-  setError={setErrorLconstraint}
-/>
-				)}
+        && (
+        <Lconstraint
+          lhs={llin}
+          setLhs={setLlin}
+          dir={ldir}
+          setDir={setLdir}
+          rhs={lrhs}
+          setRhs={setLrhs}
+          onClose={handleRemoveConstraint}
+          error={errorLconstraint}
+          setError={setErrorLconstraint}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[3])
-				&& (
-<Qconstraint
-  quadratic={qquad}
-  setQuadratic={setQquad}
-  linear={qlin}
-  setLinear={setQlin}
-  dir={qdir}
-  setDir={setQdir}
-  rhs={qrhs}
-  setRhs={setQrhs}
-  onClose={handleRemoveConstraint}
-  error={errorQconstraint}
-  setError={setErrorQconstraint}
-/>
-				)}
+        && (
+        <Qconstraint
+          quadratic={qquad}
+          setQuadratic={setQquad}
+          linear={qlin}
+          setLinear={setQlin}
+          dir={qdir}
+          setDir={setQdir}
+          rhs={qrhs}
+          setRhs={setQrhs}
+          onClose={handleRemoveConstraint}
+          error={errorQconstraint}
+          setError={setErrorQconstraint}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[4])
-				&& (
-<Cconstraint
-  lhs={c0lhs}
-  setLhs={setC0lhs}
-  cone={c0cone}
-  setCone={setC0cone}
-  rhs={c0rhs}
-  setRhs={setC0rhs}
-  type={CONSTRAINTS_TYPE[4]}
-  onClose={() => handleRemoveConstraint(4)}
-  error={error0cone}
-  setError={setError0cone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={c0lhs}
+          setLhs={setC0lhs}
+          cone={c0cone}
+          setCone={setC0cone}
+          rhs={c0rhs}
+          setRhs={setC0rhs}
+          type={CONSTRAINTS_TYPE[4]}
+          onClose={() => handleRemoveConstraint(4)}
+          error={error0cone}
+          setError={setError0cone}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[5])
-				&& (
-<Cconstraint
-  lhs={cllhs}
-  setLhs={setCllhs}
-  cone={lcone}
-  setCone={setlcone}
-  rhs={clrhs}
-  setRhs={setClrhs}
-  type={CONSTRAINTS_TYPE[5]}
-  onClose={() => handleRemoveConstraint(5)}
-  error={errorLcone}
-  setError={setErrorLcone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={cllhs}
+          setLhs={setCllhs}
+          cone={lcone}
+          setCone={setlcone}
+          rhs={clrhs}
+          setRhs={setClrhs}
+          type={CONSTRAINTS_TYPE[5]}
+          onClose={() => handleRemoveConstraint(5)}
+          error={errorLcone}
+          setError={setErrorLcone}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[6])
-				&& (
-<Cconstraint
-  lhs={csolhs}
-  setLhs={setCsolhs}
-  cone={socone}
-  setCone={setSocone}
-  rhs={csorhs}
-  setRhs={setCsorhs}
-  type={CONSTRAINTS_TYPE[6]}
-  onClose={() => handleRemoveConstraint(6)}
-  error={errorSocone}
-  setError={setErrorSocone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={csolhs}
+          setLhs={setCsolhs}
+          cone={socone}
+          setCone={setSocone}
+          rhs={csorhs}
+          setRhs={setCsorhs}
+          type={CONSTRAINTS_TYPE[6]}
+          onClose={() => handleRemoveConstraint(6)}
+          error={errorSocone}
+          setError={setErrorSocone}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[7])
-				&& (
-<Cconstraint
-  lhs={cexlhs}
-  setLhs={setCexlhs}
-  cone={excone}
-  setCone={setExcone}
-  rhs={cexrhs}
-  setRhs={setCexrhs}
-  type={CONSTRAINTS_TYPE[7]}
-  onClose={() => handleRemoveConstraint(7)}
-  error={errorEcone}
-  setError={setErrorEcone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={cexlhs}
+          setLhs={setCexlhs}
+          cone={excone}
+          setCone={setExcone}
+          rhs={cexrhs}
+          setRhs={setCexrhs}
+          type={CONSTRAINTS_TYPE[7]}
+          onClose={() => handleRemoveConstraint(7)}
+          error={errorEcone}
+          setError={setErrorEcone}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[8])
-				&& (
-<Cconstraint
-  lhs={cpplhs}
-  setLhs={setCpplhs}
-  cone={ppcone}
-  setCone={setPpcone}
-  rhs={cpprhs}
-  setRhs={setCpprhs}
-  type={CONSTRAINTS_TYPE[8]}
-  onClose={() => handleRemoveConstraint(8)}
-  error={error3cone}
-  setError={setError3cone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={cpplhs}
+          setLhs={setCpplhs}
+          cone={ppcone}
+          setCone={setPpcone}
+          rhs={cpprhs}
+          setRhs={setCpprhs}
+          type={CONSTRAINTS_TYPE[8]}
+          onClose={() => handleRemoveConstraint(8)}
+          error={error3cone}
+          setError={setError3cone}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[9])
-				&& (
-<Cconstraint
-  lhs={cpdlhs}
-  setLhs={setCpdlhs}
-  cone={pdcone}
-  setCone={setPdcone}
-  rhs={cpdrhs}
-  setRhs={setCpdrhs}
-  type={CONSTRAINTS_TYPE[9]}
-  onClose={() => handleRemoveConstraint(9)}
-  error={error2cone}
-  setError={setError2cone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={cpdlhs}
+          setLhs={setCpdlhs}
+          cone={pdcone}
+          setCone={setPdcone}
+          rhs={cpdrhs}
+          setRhs={setCpdrhs}
+          type={CONSTRAINTS_TYPE[9]}
+          onClose={() => handleRemoveConstraint(9)}
+          error={error2cone}
+          setError={setError2cone}
+        />
+        )}
       {!constraints.includes(CONSTRAINTS_TYPE[10])
-				&& (
-<Cconstraint
-  lhs={cpsdlhs}
-  setLhs={setCpsdlhs}
-  cone={psdcone}
-  setCone={setPsdcone}
-  rhs={cpsdrhs}
-  setRhs={setCpsdrhs}
-  type={CONSTRAINTS_TYPE[10]}
-  onClose={() => handleRemoveConstraint(10)}
-  error={errorPsdcone}
-  setError={setErrorPsdcone}
-/>
-				)}
+        && (
+        <Cconstraint
+          lhs={cpsdlhs}
+          setLhs={setCpsdlhs}
+          cone={psdcone}
+          setCone={setPsdcone}
+          rhs={cpsdrhs}
+          setRhs={setCpsdrhs}
+          type={CONSTRAINTS_TYPE[10]}
+          onClose={() => handleRemoveConstraint(10)}
+          error={errorPsdcone}
+          setError={setErrorPsdcone}
+        />
+        )}
       {constraints.length > 0
-				&& <OptionsWithLists onChange={handleAddConstraint} options={constraints} name="Add constraint" />}
+        && (
+        <OptionsWithLists
+          onChange={handleAddConstraint}
+          options={constraints}
+          name="Add constraint"
+        />
+        )}
       <Variable
         label="Solver"
         setSelected={setSolver}
@@ -763,20 +785,24 @@ const OptionsWithLists = withLists(Options);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
-  color: (state.colorState.colors || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
+  color: (state.colorState.colors || {}),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
   onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 });
 
 export default compose(
+  withFirebase,
   connect(
     mapStateToProps,
     mapDispatchToProps,

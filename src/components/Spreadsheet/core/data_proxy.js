@@ -15,10 +15,13 @@ import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
 import {
-  Chart, invalidate, select,
-} from '../component/chart_canvas';
+  ChartBox, addRect, changeRect, deleteRect, setChartSelect, mainDraw, invalidate,
+} from '../canvas/chart';
 import charts from '../../Chart/chartsR';
-import { columnToLetter, spreadsheetToR, doChart } from '../cloudr';
+import {
+  translateR, columnToLetter, spreadsheetToR, doChart,
+} from '../cloudr';
+import { getRownames, getRange, getRangeIndex } from '../../RightSidebar/datarange';
 
 // private methods
 /*
@@ -335,6 +338,7 @@ export default class DataProxy {
     this.freeze = [0, 0];
     this.styles = []; // Array<Style>
     this.charts = [];
+    this.chartSelect = null;
     this.merges = new Merges(); // [CellRange, ...]
     this.matrices = new Matrices();
     this.rows = new Rows(this.settings.row);
@@ -1148,53 +1152,104 @@ export default class DataProxy {
     return styles.length - 1;
   }
 
-  addChart(datas, range, type, variables) {
-    const c = new Chart();
-    const {
-      sri, sci, eri, eci,
-    } = range;
-    const rRange = `\`${this.name}\`` + `[${sri + 1}:${eri + 1},${sci + 1}:${eci + 1}]`;
-    c.range = rRange;
+  addChart(type, datas, range) {
+    const c = new ChartBox();
+    c.range = getRange(this.rows.len, range);
     c.types = [type];
-    const { rows, charts } = this;
-    if (Object.keys(rows._).length !== 0) {
-      const rownames = Object.values(rows._[0].cells)
-      	.map((cell) => cell.text);
-      const isFirstRowHeader = rownames.some(isNaN);
-      c.firstrow = isFirstRowHeader;
-      c.variablex = isFirstRowHeader
-        ? rownames[0]
-        : `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(sci + 1)}${eri + 1}`;
-      if (variables > 1 && rownames.length > 1) {
-        c.variabley = isFirstRowHeader
-          ? rownames[1]
-          : `${columnToLetter(sci + 2) + (sri + 1)}:${columnToLetter(sci + 2)}${eri + 1}`;
+
+    const rowNames = getRownames(this.rows._, range);
+    if (rowNames.length !== 0) {
+      c.firstrow = rowNames.some(isNaN);
+      c.variablex = 0;
+      if (charts[type].variables > 1 && rowNames.length > 1) {
+        c.variabley = 1;
       }
     }
-    this.setChart(c, datas).then((chart) => {
-      charts.push(chart);
-      // invalidate();
+
+    return this.changeData(() => this.setChart(c, datas, range).then((chart) => {
+      this.charts.push(chart);
+      addRect(chart);
+      mainDraw(this);
+      invalidate();
+      this.chartSelect = chart;
+      setChartSelect(chart);
+      return this;
+    }));
+  }
+
+  loadChart(cs, datas) {
+    cs.forEach((c) => {
+      const rect = new ChartBox();
+      rect.x = c.x;
+      rect.y = c.y;
+      rect.w = c.w;
+      rect.h = c.h;
+      rect.range = c.range;
+      rect.firstrow = c.firstrow;
+      rect.types = c.types;
+      rect.variablex = c.variablex;
+      rect.variabley = c.variabley;
+      rect.sparkuri = c.sparkuri;
+
+      const range = getRangeIndex(c.range);
+
+      this.setChart(rect, datas, range).then((chart) => {
+        addRect(chart);
+        mainDraw(this);
+        invalidate();
+      });
     });
   }
 
-  setChart(c, datas) {
-    const { charts } = this;
-    if (c.variablex.length < 1) {
-      return doChart({ variablex: 'na' }).then((uri) => {
+  changeChart(c, datas, range) {
+    return this.changeData(() => this.setChart(c, datas, range).then((chart) => {
+      const i = this.charts.findIndex((chart) => chart === this.chartSelect);
+      this.charts.splice(i, 1, chart);
+      changeRect(i, chart);
+      mainDraw(this);
+      invalidate();
+      return this;
+    }));
+  }
+
+  deleteChart() {
+    const i = this.charts.findIndex((chart) => chart === this.chartSelect);
+
+    this.changeData(() => {
+      this.charts.splice(i, 1);
+      deleteRect(i);
+    });
+  }
+
+  setChart(c, datas, range) {
+    if (c.variablex == null) {
+      return doChart({}).then((uri) => {
         c.image.attr('src', uri);
         return c;
       });
     }
+
+    const {
+      sri, sci, eri, eci,
+    } = range;
+    const rowNames = getRownames(this.rows._, range);
     const data = {
       slides: JSON.stringify(spreadsheetToR(datas)),
       names: JSON.stringify(datas.map((data) => data.name)),
-      range: c.range,
+      range: translateR(c.range, this.name),
       firstrow: c.firstrow,
-      types: JSON.stringify(c.types),
-      variablex: c.variablex,
+      types: JSON.stringify(c.types.map(((type) => charts[type].type))),
+      variablex: c.firstrow
+        ? rowNames[c.variablex]
+        : `${columnToLetter(sci + c.variablex + 1) + (sri + 1)}:${columnToLetter(sci + c.variablex + 1)}${eri + 1}`,
     };
-    if (c.variabley) data.variabley = c.variabley;
-    console.log(data);
+
+    if (c.variabley) {
+      data.variabley = c.firstrow
+        ? rowNames[c.variabley]
+        : `${columnToLetter(sci + c.variabley + 1) + (sri + 1)}:${columnToLetter(sci + c.variabley + 1)}${eri + 1}`;
+    }
+
     return doChart(data).then((uri) => {
       c.image.attr('src', uri);
       return c;

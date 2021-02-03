@@ -1,3 +1,10 @@
+//
+//  table.js
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -21,7 +28,7 @@ export const TABLE_DROPDOWN = [
   { key: 'Filter Cell', type: 'item' },
 ];
 
-const Table = ({ color, authUser, slides }) => {
+const Table = ({ slides }) => {
   const handleTable = (key) => {
     const { data } = slides;
     switch (key) {
@@ -69,10 +76,11 @@ const Table = ({ color, authUser, slides }) => {
 
   return (
     <TableWithDropdown
+      classname="dropdown-content"
       text="Table"
       items={TABLE_DROPDOWN}
       onSelect={handleTable}
-      color={OFF_COLOR[color[authUser.uid]]}
+      // color={OFF_COLOR[color[authUser.uid]]}
     />
   );
 };
@@ -80,8 +88,8 @@ const Table = ({ color, authUser, slides }) => {
 const TableWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
-  authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
+  // authUser: state.sessionState.authUser,
+  // color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
 });
 

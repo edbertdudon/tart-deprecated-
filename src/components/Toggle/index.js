@@ -15,8 +15,11 @@ import formulas from '../Spreadsheet/cloudr/formula';
 import charts from '../Chart/chartsR';
 import statistics from '../Statistics/core/statisticsR';
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet';
+import { createFile } from '../../functions';
+
 import { OFF_COLOR } from '../../constants/off-color';
 import withDropdownModal from '../DropdownModal';
+import { withFirebase } from '../Firebase';
 import './index.less';
 
 const CHART_CATEGORIES = [
@@ -56,33 +59,34 @@ const Button = ({
   <button
     className="worksheet-toggle-button"
     onClick={onToggle}
-    style={{ backgroundColor: isSelected ? '#ebebeb' : '#fff' }}
+    style={{ backgroundColor: isSelected && 'rgba(0, 0, 0, .05)' }}
     id={`${name}toggle`}
-		>
+  >
     <Icon path={icon} size={0.8} />
   </button>
 );
 
 const Toggle = ({
-  color, authUser, slides, rightSidebar, dataNames, current,
-  onSetDataNames, onSetCurrent, onSetRightSidebar, setStatistic,
+  firebase, authUser, color, worksheetname, slides, dataNames, current, saving, rightSidebar,
+  onSetDataNames, onSetCurrent, onSetSaving, onSetRightSidebar, setStatistic,
 }) => {
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
       onSetRightSidebar(select);
-    } else {
-      onSetRightSidebar('none');
+      return;
     }
+    onSetRightSidebar('none');
   };
 
   const handleChart = (chart) => {
     const i = charts.findIndex((item) => item.key === chart);
-    const { data, sheet } = slides;
-    const { type, name, rows } = data;
-    // setSchart([i])
+    const { type } = slides.data;
     if (type === 'sheet' || type === 'input') {
-      const d = slides.insertChart(charts[i].type, charts[i].variables);
-      // slides.data = d;
+      slides.insertChart(i);
+
+      onSetSaving(true);
+    	firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+        .then(() => onSetSaving(false));
     }
   };
 
@@ -147,19 +151,23 @@ const ButtonWithDropdownModal = withDropdownModal(Button);
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
   onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
   onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 });
 
 export default compose(
+  withFirebase,
   connect(
     mapStateToProps,
     mapDispatchToProps,

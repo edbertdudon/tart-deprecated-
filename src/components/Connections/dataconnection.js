@@ -1,3 +1,4 @@
+//
 //  DataConnection
 //  Tart
 //
@@ -15,7 +16,7 @@ import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const DATASOURCE_DROPDOWN = [
-  { key: 'Move to trash', type: 'item' },
+  { key: 'Delete connection', type: 'item' },
 ];
 
 const DataConnection = ({
@@ -24,21 +25,16 @@ const DataConnection = ({
   const [hover, setHover] = useState(false);
   const [hoverDropdown, setHoverDropdown] = useState(false);
 
-  const handleTrash = () => {
-    // const today = new Date().toLocaleDateString();
-    // firebase.trash(authUser.uid).get().then((doc) => {
-    //   if (doc.exists) {
-    //     firebase.trash(authUser.uid).update({ [name]: today });
-    //   } else {
-    //     firebase.trash(authUser.uid).set({ [name]: today });
-    //   }
-    // });
-    // const ws = connections.findIndex((connection) => connection.name === name)
-    // onSetWorksheets([
-    //   ...connections.slice(0, ws),
-    //   ...connections.slice(ws + 1),
-    // ])
+  const handleDelete = () => {
+    firebase.doDeleteConnectionsField(authUser.uid, name);
+    const ws = connections.findIndex((c) => c.name === name);
+    onSetConnections([
+      ...connections.slice(0, ws),
+      ...connections.slice(ws + 1),
+    ]);
   };
+
+  const handleTrash = () => {};
 
   const ContextMenuDropdown = () => (
     <ContextMenu id={`right-click${name}`}>
@@ -54,11 +50,11 @@ const DataConnection = ({
         </div>
         <div className="datasource-buttons-wrapper">
           <OptionWithDropdown
+            classname="dropdown-content-datasource"
             text={<Icon path={mdiDotsHorizontal} size={0.9} />}
             items={DATASOURCE_DROPDOWN}
-            onSelect={handleTrash}
+            onSelect={handleDelete}
             color={OFF_COLOR[color[authUser.uid]]}
-            style={{ left: '13px' }}
           />
         </div>
         <div className="datasource-editabletext">{name}</div>

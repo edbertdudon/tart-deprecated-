@@ -17,7 +17,7 @@ const Alternative = ({
       <div className="rightsidebar-label">Correlation Method</div>
       <Button onClick={handleAlt0} condition={alt === 0} text={CORRELATION_METHOD[0]} color={color[authUser.uid]} />
       <Button onClick={handleAlt1} condition={alt === 1} text={CORRELATION_METHOD[1]} color={color[authUser.uid]} />
-      <Button onClick={handleAlt2} condition={alt === 2} text={CORRELATION_METHOD[2]} color={color[authUser.uid]} />
+      {/*<Button onClick={handleAlt2} condition={alt === 2} text={CORRELATION_METHOD[2]} color={color[authUser.uid]} />*/}
     </>
   );
 };

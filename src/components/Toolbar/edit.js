@@ -1,3 +1,10 @@
+//
+//  edit.js
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -18,7 +25,7 @@ export const EDIT_DROPDOWN = [
   { key: 'Delete', type: 'item' },
 ];
 
-const Edit = ({ color, authUser, slides }) => {
+const Edit = ({ slides }) => {
   const handleEdit = (key) => {
     const { data, sheet } = slides;
     switch (key) {
@@ -59,20 +66,26 @@ const Edit = ({ color, authUser, slides }) => {
         break;
       }
     }
-    
+
     slides.reRender();
   };
 
   return (
-    <EditWithDropdown text="Edit" items={EDIT_DROPDOWN} onSelect={handleEdit} color={OFF_COLOR[color[authUser.uid]]} />
+    <EditWithDropdown
+      classname="dropdown-content"
+      text="Edit"
+      items={EDIT_DROPDOWN}
+      onSelect={handleEdit}
+      // color={OFF_COLOR[color[authUser.uid]]}
+    />
   );
 };
 
 const EditWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
-  authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
+  // authUser: state.sessionState.authUser,
+  // color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
 });
 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiChevronRight } from '@mdi/js';
+import { useOutsideClick } from '../../functions';
 import './index.less';
 
 const Item = ({ text, onSelect, color }) => {
@@ -15,7 +16,7 @@ const Item = ({ text, onSelect, color }) => {
       onClick={() => onSelect(text)}
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
-      style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
+      // style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
     >
       {text}
     </div>
@@ -33,7 +34,7 @@ const Redirect = ({ path, text, color }) => {
       className="dropdown-item"
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
-      style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
+      // style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
     >
       {text}
     </Link>
@@ -53,7 +54,7 @@ const Toggle = ({
       onClick={() => onSelect(text)}
       onMouseEnter={handleHover}
       onMouseLeave={handleHover}
-      style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
+      // style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
     >
       {(isOpen ? 'Hide ' : 'Show ') + text}
     </div>
@@ -76,7 +77,7 @@ const SecondaryMenu = ({
         className="dropdown-item"
         onMouseEnter={handleHoverFirst}
         onMouseLeave={handleHoverFirst}
-        style={{ backgroundColor: hover && (hoverFirst ? color : 'rgba(0, 0, 0, 0.05)'), color: hoverFirst ? '#fff' : '#000000' }}
+        // style={{ backgroundColor: hover && (hoverFirst ? color : 'rgba(0, 0, 0, 0.05)'), color: hoverFirst ? '#fff' : '#000000' }}
       >
         {text}
         <div className="dropdown-item-arrow">
@@ -84,11 +85,11 @@ const SecondaryMenu = ({
         </div>
       </div>
       {hover
-				&& (
-<div className="dropdown-content-second" style={style}>
-  {items.map((item, i) => <Item text={item.pt} onSelect={() => onSelect(text, item.pt)} color={color} key={item.pt} />)}
-</div>
-				)}
+        && (
+        <div className="dropdown-content-second" style={style}>
+          {items.map((item, i) => <Item text={item.pt} onSelect={() => onSelect(text, item.pt)} color={color} key={item.pt} />)}
+        </div>
+        )}
     </div>
   );
 };
@@ -113,29 +114,20 @@ const withDropdown = (Component) => (props) => {
   const [hover, setHover] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
+  const contentRef = useRef(null);
 
-  const useOutsideAlerter = (ref) => {
-    const handleOutsideClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    useEffect(() => {
-      document.addEventListener('mousedown', handleOutsideClick);
-      return () => {
-        document.removeEventListener('mousedown', handleOutsideClick);
-      };
-    });
-  };
-  useOutsideAlerter(wrapperRef);
+  useOutsideClick(wrapperRef, setIsOpen);
 
   const handleOpen = () => setIsOpen(!isOpen);
+
   const handleHover = () => setHover(!hover);
 
   const handleSelect = (selection, second) => {
     setIsOpen(!isOpen);
     props.onSelect(selection, second);
   };
+
+  const rect = wrapperRef.current && wrapperRef.current.getBoundingClientRect();
 
   return (
     <div className="dropdown" ref={wrapperRef}>
@@ -150,11 +142,20 @@ const withDropdown = (Component) => (props) => {
         style={props.style}
       />
       {isOpen
-				&& (
-<div className="dropdown-content" style={props.style}>
-  {props.items.map((item, i) => getDropdownStates(item, i, handleSelect, props.color, item.component, item.visibility)[item.type])}
-</div>
-				)}
+        && (
+        <div
+          className={props.classname}
+          style={{
+            left: (wrapperRef.current && (rect.right + rect.width) > window.innerWidth)
+              && '45px',
+            top: (wrapperRef.current && (rect.bottom + (props.items.length * 32)) > window.innerHeight)
+              && `-${props.items.length * 32 - 40}px`,
+          }}
+          ref={contentRef}
+        >
+          {props.items.map((item, i) => getDropdownStates(item, i, handleSelect, props.color, item.component, item.visibility)[item.type])}
+        </div>
+        )}
     </div>
   );
 };

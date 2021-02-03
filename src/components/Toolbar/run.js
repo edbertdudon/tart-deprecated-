@@ -1,3 +1,10 @@
+//
+//  run.js
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
@@ -14,7 +21,7 @@ const RUN_DROPDOWN = [
 ];
 
 const Run = ({
-  firebase, authUser, color, slides, worksheetname, jobs, rightSidebar, notifications,
+  firebase, authUser, slides, worksheetname, jobs, rightSidebar, notifications,
   onSetRightSidebar, onSetJobs, onSetIsJobsActive, onSetNotifications,
 }) => {
   const history = useHistory();
@@ -24,10 +31,10 @@ const Run = ({
       case RUN_DROPDOWN[0].key: {
         onSetIsJobsActive(true);
     		onSetJobs(
-          submitJob(worksheetname, jobs)
+          submitJob(worksheetname, jobs),
         );
     		onSetNotifications(
-          notifications.concat({ key: `Job started: ${worksheetname}`, type: 'notification' })
+          notifications.concat({ key: `Job started: ${worksheetname}`, type: 'notification' }),
         );
 
         firebase.doRunWorksheet(
@@ -41,10 +48,10 @@ const Run = ({
             const runId = getJobId(worksheetname.replace(/\s/g, '').toLowerCase(), jobs);
 
             onSetJobs(
-              cancelJob(runId, jobs)
+              cancelJob(runId, jobs),
             );
         		onSetNotifications(
-              notifications.concat({ key: `Job cancelled: ${worksheetname}`, type: 'notification' })
+              notifications.concat({ key: `Job cancelled: ${worksheetname}`, type: 'notification' }),
             );
           }
         });
@@ -64,7 +71,13 @@ const Run = ({
   };
 
   return (
-    <RunWithDropdown text="Run" items={RUN_DROPDOWN} onSelect={handleRun} color={OFF_COLOR[color[authUser.uid]]} />
+    <RunWithDropdown
+      classname="dropdown-content"
+      text="Run"
+      items={RUN_DROPDOWN}
+      onSelect={handleRun}
+      // color={OFF_COLOR[color[authUser.uid]]}
+    />
   );
 };
 
@@ -72,7 +85,7 @@ const RunWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
+  // color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),

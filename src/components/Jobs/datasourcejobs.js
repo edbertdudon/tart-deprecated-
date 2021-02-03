@@ -22,16 +22,16 @@ import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../Constants/routes';
 
 const DataSourceJobs = ({
-  firebase, authUser, color, name, worksheets, runId, onJobSubmit, onJobCancel, onSetWorksheet,
+  firebase, authUser, color, filename, worksheets, runId, onJobSubmit, onJobCancel, onSetWorksheet,
 }) => {
   const [hover, setHover] = useState(false);
 
   const handleRun = () => {
-    onJobSubmit(name);
+    onJobSubmit(filename);
     const jobFilePath = 'gs://tart-90ca2.appspot.com/scripts/sparkR.R';
-    const jobFileArgument = `user/${authUser.uid}/${name}`;
+    const jobFileArgument = `user/${authUser.uid}/${filename}`;
     const jobFileSave = `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`;
-    firebase.doRunWorksheet(authUser.uid, name, jobFileArgument, jobFileSave, jobFilePath)
+    firebase.doRunWorksheet(authUser.uid, filename, jobFileArgument, jobFileSave, jobFilePath)
       .then((jobResp) => {
         if (jobResp === 'failed job') onJobCancel(runId);
       });
@@ -39,12 +39,12 @@ const DataSourceJobs = ({
 
   const handleCancel = () => {
     onJobCancel(runId);
-    firebase.doCancelWorksheet(runId, authUser.uid, name.replace(/\s/g, '').toLowerCase());
+    firebase.doCancelWorksheet(runId, authUser.uid, filename.replace(/\s/g, '').toLowerCase());
   };
 
   const handleOpen = () => {
-    document.getElementById(`link-app-${name}`).click();
-    onSetWorksheet(name, authUser.uid);
+    document.getElementById(`link-app-${filename}`).click();
+    onSetWorksheet(filename, authUser.uid);
   };
 
   const Run = () => (
@@ -68,7 +68,7 @@ const DataSourceJobs = ({
   );
 
   const LinkToApp = () => (
-    <Link to={{ pathname: ROUTES.WORKSHEET, filename: name }} onClick={handleOpen} id={`link-app-${name}`}>
+    <Link to={{ pathname: ROUTES.WORKSHEET, filename }} onClick={handleOpen} id={`link-app-${filename}`}>
       <div className="datasource-icon">
         {runId === undefined || runId === ''
 				  ? <Icon path={mdilTable} size={5} />
@@ -83,7 +83,7 @@ const DataSourceJobs = ({
       <div className="datasource-buttons-wrapper">
         <Run />
       </div>
-      <div className="datasource-editabletext">{name.replace(/\.[^/.]+$/, '')}</div>
+      <div className="datasource-editabletext">{filename.replace(/\.[^/.]+$/, '')}</div>
     </div>
   );
 };

@@ -85,9 +85,9 @@ body {
 
 .@{css-prefix}-chart {
   position: absolute;
-  left: 155px;
-  top: 25px;
-  z-index: 5;
+  // left: 155px;
+  // top: 25px;
+  z-index: 10;
 }
 
 .@{css-prefix}-resize-container {
@@ -497,9 +497,9 @@ body {
     opacity: 0.5;
   }
 
-  // &:hover, &.active {
-  //   background: rgba(0, 0, 0, .05);
-  // }
+  &:hover, &.active {
+    background: rgba(0, 0, 0, .05);
+  }
 
   // &.active {
   //   //   background: #89aef53d;
@@ -588,7 +588,7 @@ body {
   box-shadow: 1px 2px 5px 2px rgba(51, 51, 51, 0.15);
   background: #fff;
   z-index: 100;
-  width: 260px;
+  width: 240px;
   pointer-events: auto;
   overflow: auto;
   padding: 2px 0;
@@ -759,7 +759,8 @@ body {
     }
 
     &:hover, &.active {
-      background: rgba(0, 0, 0, .08);
+      // background: rgba(0, 0, 0, .08);
+      background: rgba(0, 0, 0, .05);
     }
   }
 }

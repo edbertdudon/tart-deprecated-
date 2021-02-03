@@ -13,6 +13,8 @@ const withListsDropdown = (Component) => (props) => {
 
   useOutsideAlerter(listdropdownRef, handleHideOptions);
 
+  const toggleComponent = () => setShowOptions(!showOptions);
+
   const handleSelectComponent = () => {
     setShowOptions(false);
     const newSelection = props.selection.map((selected, j) => {
@@ -37,8 +39,6 @@ const withListsDropdown = (Component) => (props) => {
 
   const toggleHover = (index) => setActiveOption(index);
 
-  const toggleComponent = () => setShowOptions(false);
-
   return (
     <div ref={listdropdownRef}>
       <ContextMenuTrigger id="withlistsdropdown-rightclick">
@@ -52,7 +52,7 @@ const withListsDropdown = (Component) => (props) => {
       <ContextMenu id="withlistsdropdown-rightclick" className="rightsidebar-dropdown-contextmenu">
         <MenuItem>Delete</MenuItem>
       </ContextMenu>
-      {(showOptions && props.options.length)
+      {(showOptions && props.options.length > 0)
         && (
         <div className="rightsidebar-dropdown-content">
           {props.options.map((option, index) => (

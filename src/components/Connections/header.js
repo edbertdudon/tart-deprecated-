@@ -19,11 +19,11 @@ const Header = ({ firebase, authUser, color }) => {
   return (
     <div className="home-header">
       <UserWithDropdown
+        classname="dropdown-content-user"
         text={authUser.firstname}
         items={USER_DROPDOWN}
         onSelect={handleDropdown}
         color={OFF_COLOR[color[authUser.uid]]}
-        style={{ marginLeft: 'calc(100% - 195px)' }}
       />
     </div>
   );

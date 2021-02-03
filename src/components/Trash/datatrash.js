@@ -51,21 +51,12 @@ const DataTrash = ({
   };
 
   const handleDelete = () => {
-    if (connections.includes(name)) {
-      firebase.doDeleteConnectionsField(authUser.uid, name);
-      const ws = connections.findIndex((c) => c.name === name)
-      onSetConnections([
-        ...connections.slice(0, ws),
-        ...connections.slice(ws + 1),
-      ])
-    } else {
-      firebase.doDeleteTrash(authUser.uid, name);
-      const ws = trash.findIndex((t) => t.name === name)
-      onSetTrash([
-        ...trash.slice(0, ws),
-        ...trash.slice(ws + 1),
-      ])
-    }
+    firebase.doDeleteTrash(authUser.uid, name);
+    const ws = trash.findIndex((t) => t.name === name);
+    onSetTrash([
+      ...trash.slice(0, ws),
+      ...trash.slice(ws + 1),
+    ]);
   };
 
   const handleOpen = () => setIsOpen(true);
@@ -89,11 +80,11 @@ const DataTrash = ({
         </div>
         <div className="datasource-buttons-wrapper">
           <OptionWithDropdown
+            classname="dropdown-content-datasource"
             text={<Icon path={mdiDotsHorizontal} size={0.9} />}
             items={DATASOURCE_DROPDOWN}
             onSelect={handleDropdown}
             color={OFF_COLOR[color[authUser.uid]]}
-            style={{ left: '13px' }}
           />
         </div>
         <div className="datasource-editabletext">{name.replace(/\.[^/.]+$/, '')}</div>
@@ -105,7 +96,6 @@ const DataTrash = ({
         onSelect={handleDelete}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        style={{ width: '360px', left: 'Calc((100% - 360px)/2)' }}
       />
     </div>
   );
@@ -128,7 +118,7 @@ const Option = ({
 const VerifyDelete = ({
   name, color, onClose, onSelect,
 }) => (
-  <form className="modal-form">
+  <form className="modal-form-datatrash">
     <h3>{`Are you sure you want to delete "${name}"?`}</h3>
     <p>This item will be deleted immediately. You cannot undo this action.</p>
     <input

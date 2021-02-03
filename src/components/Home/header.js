@@ -23,18 +23,18 @@ const Header = ({
   return (
     <div className="home-header">
       <NotificationWithNotification
+        classname="notification-home"
         header="Notifications"
         items={notifications}
         color={OFF_COLOR[color[authUser.uid]]}
-        style={{ marginLeft: 'calc(100% - 375px)', marginTop: '42px' }}
         onSetNotifications={onSetNotifications}
       />
       <UserWithDropdown
+        classname="dropdown-content-user"
         text={authUser.firstname}
         items={USER_DROPDOWN}
         onSelect={handleDropdown}
         color={OFF_COLOR[color[authUser.uid]]}
-        style={{ marginLeft: 'calc(100% - 195px)' }}
       />
     </div>
   );

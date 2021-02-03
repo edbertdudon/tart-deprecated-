@@ -1,8 +1,7 @@
-import React, {
-  useState, useRef, useEffect, useCallback,
-} from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import { useOutsideClick } from '../../functions';
 import './index.less';
 
 const withDropdownModal = (Component) => (props) => {
@@ -13,20 +12,7 @@ const withDropdownModal = (Component) => (props) => {
   const [filteredOption, setFilteredOption] = useState(props.items.filter((item) => item.category === 0));
   const wrapperRef = useRef(null);
 
-  const useOutsideAlerter = (ref) => {
-    const handleOutsideClick = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    useEffect(() => {
-      document.addEventListener('mousedown', handleOutsideClick);
-      return () => {
-        document.removeEventListener('mousedown', handleOutsideClick);
-      };
-    }, []);
-  };
-  useOutsideAlerter(wrapperRef);
+  useOutsideClick(wrapperRef, setIsOpen);
 
   const handleOpen = () => {
     setIsOpen(!isOpen);
@@ -81,8 +67,8 @@ const withDropdownModal = (Component) => (props) => {
                 onClick={() => handleSelectCategory(i)}
                 key={i}
                 style={{
-                  backgroundColor: i === category && !isSearching ? props.color : '#ebebeb',
-                  color: i === category && !isSearching ? '#fff' : '#000000',
+                  backgroundColor: (i === category && !isSearching) && props.color,
+                  color: (i === category && !isSearching) && '#fff',
                 }}
               >
                 {cat}

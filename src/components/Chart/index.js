@@ -9,165 +9,173 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import charts from './chartsR';
-import DataRange from '../RightSidebar/datarange';
+import DataRange, {
+  getRangeIndex, getRownames, getVarsAsColumns,
+} from '../RightSidebar/datarange';
 import Button from '../RightSidebar/button';
+import { createFile } from '../../functions';
 import withLists from '../RightSidebar/withLists';
 import withListsDropdown from '../RightSidebar/withListsDropdown';
-import { columnToLetter, translateR, spreadsheetToR } from '../Spreadsheet/cloudR';
+import { withFirebase } from '../Firebase';
 
-function setChart(datarange, name, schart, variablex, variabley, firstRow) {
-  const data = {
-    range: translateR(datarange, name),
-    types: schart.map((c) => charts[c].type).join('+'),
-    variablex,
-    firstrow: firstRow,
-  };
-  if (Math.max(...schart.map((c) => charts[c].variables)) > 1) {
-    data.variabley = variabley;
-  }
-  return (data);
-}
-
-const Chart = ({ authUser, color, slides }) => {
-  const [schart, setSchart] = useState([0]);
-  const [datarange, setDatarange] = useState('');
+const Chart = ({
+  firebase, authUser, worksheetname, slides, save, chartSelect, onSetSaving,
+}) => {
   const [variables, setVariables] = useState([]);
+  const [datarange, setDatarange] = useState('');
+  const [firstRow, setFirstRow] = useState(true);
+  const [types, setTypes] = useState([]);
   const [variableX, setVariableX] = useState(null);
   const [variableY, setVariableY] = useState(null);
-  const [firstRow, setFirstRow] = useState(true);
   const [datarangeError, setDatarangeError] = useState(null);
 
   useEffect(() => {
-    const { data, datas } = slides;
-    if ((data.type === 'sheet' || data.type === 'input') && '0' in data.rows._) {
-      const rownames = Object.values(data.rows._[0].cells)
-        .map((cell) => cell.text);
-      const rows = Object.keys(data.rows._)
-        .map((row) => parseInt(row) + 1);
-      const cols = rownames.map((t, i) => columnToLetter(i + 1));
-      setDatarange(`${cols[0]}:${cols[cols.length - 1]}`);
-      // setDatarange(cols[0] + rows[0] + ":" + cols[cols.length-1] + rows[rows.length-1])
-      if (rownames.every(isNaN)) {
-        setVariables(rownames);
+    const { rows } = slides.data;
+    // const { chartSelect } = data;
+    console.log(chartSelect);
+    if (chartSelect === null) {
+      setVariables([]);
+      setDatarange('');
+      setFirstRow(true);
+      setTypes([]);
+      setVariableX(null);
+      setVariableY(null);
+      setDatarangeError(null);
+    } else {
+      const range = getRangeIndex(chartSelect.range);
+      const rowNames = getRownames(rows._, range);
+      if (rowNames.some(isNaN)) {
+        setVariables(rowNames);
       } else {
-        setVariables(cols.map((col) => `${col + rows[0]}:${col}${rows[rows.length - 1]}`));
-        setFirstRow(false);
+        setVariables(
+          getVarsAsColumns(rows._, rows.len, range),
+        );
       }
-    } else if (data.type === 'chart') {
-      const slide = datas.find((s) => s.name === data.name);
-      setVariableX(slide.variablex);
-      if ('variabley' in slide) {
-        setVariableY(slide.variabley);
-      }
+
+      setDatarange(chartSelect.range);
+      setFirstRow(chartSelect.firstrow);
+      setTypes(chartSelect.types);
+      setVariableX(chartSelect.variablex);
+      setVariableY(chartSelect.variabley);
     }
-  }, []);
+  }, [chartSelect]);
 
   const handleUpdateChart = (selected) => {
-    setSchart(selected);
-    const data = setChart(
-      datarange,
-      slides.data.name,
-      selected,
-      variables[variableX],
-      variables[variableY],
-      firstRow,
-    );
-    // insert chart
+    setTypes(selected);
+    const c = slides.data.chartSelect;
+    c.types = selected;
+    slides.editChart(c);
+    save();
   };
 
   const handleUpdateVariableX = (option) => {
     setVariableX(option);
-    const data = setChart(
-      datarange,
-      slides.data.name,
-      schart,
-      variables[option],
-      variables[variableY],
-      firstRow,
-    );
+    const c = slides.data.chartSelect;
+    c.variablex = option;
+    slides.editChart(c);
+    save();
   };
 
   const handleUpdateVariableY = (option) => {
     setVariableY(option);
-    const data = setChart(
-      datarange,
-      slides.data.name,
-      schart,
-      variables[variableX],
-      variables[option],
-      firstRow,
-    );
+    const c = slides.data.chartSelect;
+    c.variabley = option;
+    slides.editChart(c);
+    save();
   };
 
   const handleAddChart = (option) => {
-    const newScharts = [...schart, option];
-    setSchart(newScharts);
-    const data = setChart(
-      datarange,
-      slides.data.name,
-      newScharts,
-      variables[variableX],
-      variables[variableY],
-      firstRow,
-    );
+    const newTypes = [...types, option];
+    setTypes(newTypes);
+    const c = slides.data.chartSelect;
+    c.types = newTypes;
+    slides.editChart(c);
+    save();
   };
 
   const handleFirstrow = () => {
+    const { data } = slides;
+    const { rows } = data;
+    const range = getRangeIndex(datarange);
+
     setFirstRow(!firstRow);
-    if (Object.keys(data.rows._[0].cells).length > 0 && obj.constructor === Object) {
-      const { data } = slides;
-      const rownames = Object.values(data.rows._[0].cells)
-        .map((cell) => cell.text);
-      const rows = Object.keys(data.rows._)
-        .map((row) => parseInt(row) + 1);
-      const cols = rownames.map((t, i) => columnToLetter(i + 1));
-      if (firstRow) {
-        setVariables(cols.map((col) => `${col + rows[0]}:${col}${rows[rows.length - 1]}`));
-      } else {
-        setVariables(rownames);
-      }
+    if (!firstRow) {
+      setVariables(
+        getRownames(rows._, range),
+      );
+    } else {
+      setVariables(
+        getVarsAsColumns(rows._, rows.len, range),
+      );
     }
+    const c = data.chartSelect;
+    c.firstrow = !firstRow;
+    slides.editChart(c);
+    save();
   };
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
+
+  function filterVariables(item, index) {
+    return charts[types[0]].variables === item.variables && !types.includes(index);
+  }
 
   return (
     <>
-      <div className="rightsidebar-label">Chart Type</div>
-      {schart.map((selected, index) => (
-        <ChartsWithListsDropdown
-          onChange={handleUpdateChart}
-          options={charts}
-          name={charts[selected].key}
-          selection={schart}
-          setSelection={setSchart}
-          currentSelection={index}
-          key={index}
-        />
-      ))}
-      <ChartsWithLists
-        onChange={handleAddChart}
-        options={charts.filter((item, index) => charts[schart[0]].variables === item.variables && !schart.includes(index))}
-        name="Add Additonal Chart"
-        styles={{ color: '#aaa' }}
-      />
-      <DataRange datarange={datarange} setDatarange={setDatarange} error={datarangeError} setError={setDatarangeError} />
-      <div className="rightsidebar-label">X-Axis</div>
-      <OptionsWithLists
-        onChange={handleUpdateVariableX}
-        options={variables}
-        name={variables[variableX]}
-      />
-      {(charts[schart[0]].variables > 1)
-				&& (
-<>
-  <div className="rightsidebar-label">Y-Axis</div>
-  <OptionsWithLists
-    onChange={handleUpdateVariableY}
-    options={variables}
-    name={variables[variableY]}
-  />
-</>
-				)}
-      <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+      {types.length < 1
+        ? <div className="rightsidebar-none">No chart selected</div>
+        : (
+          <>
+            <div className="rightsidebar-label">Chart Type</div>
+            {types.map((selected, index) => (
+              <ChartsWithListsDropdown
+                onChange={handleUpdateChart}
+                options={charts.filter((item, index) => filterVariables(item, index))}
+                name={charts[selected].title}
+                selection={types}
+                setSelection={setTypes}
+                currentSelection={index}
+                key={index}
+              />
+            ))}
+            <ChartsWithLists
+              onChange={handleAddChart}
+              options={charts.filter((item, index) => filterVariables(item, index))}
+              name="Add Additonal Chart"
+              styles={{ color: '#aaa' }}
+            />
+            <DataRange
+              firstRow={firstRow}
+              datarange={datarange}
+              setVariables={setVariables}
+              setDatarange={setDatarange}
+              error={datarangeError}
+              setError={setDatarangeError}
+            />
+            <div className="rightsidebar-label">X-Axis</div>
+            <OptionsWithLists
+              onChange={handleUpdateVariableX}
+              options={variables}
+              name={variables[variableX]}
+            />
+            {(charts[types[0]].variables > 1)
+              && (
+              <>
+                <div className="rightsidebar-label">Y-Axis</div>
+                <OptionsWithLists
+                  onChange={handleUpdateVariableY}
+                  options={variables}
+                  name={variables[variableY]}
+                />
+              </>
+              )}
+            <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+          </>
+        )}
     </>
   );
 };
@@ -181,12 +189,20 @@ const OptionsWithLists = withLists(Options);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
+  saving: (state.savingState.saving || false),
+  chartSelect: (state.chartSelectState.chartSelect || null),
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
 });
 
 export default compose(
+  withFirebase,
   connect(
     mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Chart);

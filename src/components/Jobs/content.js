@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
 import DataSourceJobs from './datasourcejobs';
-import useRecursiveTimeout from '../Home/useRecursiveTimeout.ts';
+import useRecursiveTimeout from '../../functions/useRecursiveTimeout.ts';
 import {
   shouldReloadTimer, getJobId, cancelJob, checkJobChanges, submitJob,
 } from '../Home/content';
@@ -68,7 +68,7 @@ const JobsContentRunning = ({
 		    }
 		  }).map((worksheet, index) => (
   <DataSourceJobs
-    file={worksheet.name}
+    filename={worksheet.name}
     runId={getJobId(worksheet.name.replace(/\s/g, '').toLowerCase(), jobs)}
     onJobSubmit={handleJobSubmit}
     onJobCancel={handleJobCancel}

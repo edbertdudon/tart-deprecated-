@@ -1,11 +1,11 @@
 //
 // http://jsfiddle.net/398dtj5q/6/
 //
-import { h } from './element';
+import { h } from '../component/element';
 import { cssPrefix } from '../config';
 import chartpng from './chart.png';
 
-// const charts = [];
+// global var
 // the selection handles will be in this order:
 // 0  1  2
 // 3     4
@@ -16,6 +16,7 @@ const HANDLE_WIDTH = 2;
 const HANDLE_BOX_SIZE = 6;
 const HANDLE_BOX_COLOR = 'rgb(78,125,255)';
 
+const charts = [];
 const selectionHandles = [];
 let canvas;
 let ctx;
@@ -27,13 +28,15 @@ let expectResize = -1;
 let mx;
 let my;
 let isValid = false;
-let mySel = null;
+let chartSelect = null;
 let ghostcanvas;
 let gctx;
-let offsetx; let
-  offsety;
-let stylePaddingLeft; let stylePaddingTop; let styleBorderLeft; let
-  styleBorderTop;
+let offsetx;
+let offsety;
+let stylePaddingLeft;
+let stylePaddingTop;
+let styleBorderLeft;
+let styleBorderTop;
 let firstLoad = true;
 
 class Handle {
@@ -46,7 +49,7 @@ class Handle {
   }
 }
 
-class Chart {
+class ChartBox {
   constructor() {
     this.x = 0;
     this.y = 0;
@@ -56,10 +59,11 @@ class Chart {
     this.range = '';
     this.firstrow = true;
     this.types = [];
-    this.variablex = '';
-    this.variabley = '';
+    this.variablex = null;
+    this.variabley = null;
     this.image = h('img', `${cssPrefix}-chart-image`);
     // .attr('src', chartpng);
+    this.sparkuri = '';
   }
 
   draw(context, optionalColor) {
@@ -82,7 +86,7 @@ class Chart {
       context.drawImage(this.image.el, this.x, this.y, this.w, this.h);
     }
 
-    if (mySel === this) {
+    if (chartSelect === this) {
       context.strokeStyle = HANDLE_COLOR;
       context.lineWidth = HANDLE_WIDTH;
       context.strokeRect(this.x, this.y, this.w, this.h);
@@ -126,22 +130,41 @@ class Chart {
       }
     }
   }
-
-  setChart() {}
 }
 
-function addRect(x, y, w, h, fill, charts) {
-  const rect = new Chart();
-  rect.x = x;
-  rect.y = y;
-  rect.w = w;
-  rect.h = h;
-  rect.fill = fill;
-  charts.push(rect);
+// function addRect(x, y, w, h, fill, charts) {
+//   const rect = new Chart();
+//   rect.x = x;
+//   rect.y = y;
+//   rect.w = w;
+//   rect.h = h;
+//   rect.fill = fill;
+//   charts.push(rect);
+//   invalidate();
+// }
+
+function addRect(chart) {
+  charts.push(chart);
   invalidate();
 }
 
-function chartInitEvents(vRect) {
+function changeRect(i, chart) {
+  charts.splice(i, 1, chart);
+  invalidate();
+}
+
+function deleteRect(i) {
+  charts.splice(i, 1);
+  invalidate();
+}
+
+function setChartSelect(chart) {
+  chartSelect = chart;
+  invalidate();
+}
+
+function chartInitEvents() {
+  const vRect = this.getRect();
   canvas = document.getElementById(`${cssPrefix}-chart`);
   HEIGHT = vRect.height - 25;
   WIDTH = vRect.width - 30;
@@ -159,8 +182,8 @@ function chartInitEvents(vRect) {
     styleBorderLeft = parseInt(document.defaultView.getComputedStyle(canvas, null).borderLeftWidth, 10) || 0;
     styleBorderTop = parseInt(document.defaultView.getComputedStyle(canvas, null).borderTopWidth, 10) || 0;
   }
-  const { charts } = this.data;
-  setInterval(mainDraw, INTERVAL, charts);
+
+  setInterval(mainDraw, INTERVAL, this.data);
 
   for (let i = 0; i < 8; i++) {
     const rect = new Handle();
@@ -168,79 +191,84 @@ function chartInitEvents(vRect) {
   }
 
   // addRect(0, 0, 500, 500, 'rgba(0,205,0,0.7)', charts);
+  // this.data.charts.forEach((chart) => addRect(chart));
 }
 
 function clear(c) {
   c.clearRect(0, 0, WIDTH, HEIGHT);
 }
 
-function mainDraw(charts) {
+function mainDraw(data) {
   if (isValid == false) {
+    // const { chartSelect } = data;
+    // const { charts, chartSelect } = data;
     clear(ctx);
     for (let i = 0; i < charts.length; i++) {
-      charts[i].draw(ctx);
+      charts[i].draw(ctx, null, chartSelect);
     }
     isValid = true;
   }
 }
 
 function chartMousemove(e) {
+  // const { chartSelect } = this.data;
   if (isDrag) {
     getMouse(e);
-    mySel.x = mx - offsetx;
-    mySel.y = my - offsety;
+    chartSelect.x = mx - offsetx;
+    chartSelect.y = my - offsety;
     invalidate();
   } else if (isResizeDrag) {
-    const oldx = mySel.x;
-    const oldy = mySel.y;
+    const oldx = chartSelect.x;
+    const oldy = chartSelect.y;
     switch (expectResize) {
       case 0:
         // Still Wrong
-        // mySel.x = mx;
-        mySel.x = my;
-        mySel.y = my;
-        // mySel.w += oldx - mx;
-        mySel.w += oldy - my;
-        mySel.h += oldy - my;
-        console.log(mySel);
+        // chartSelect.x = mx;
+        chartSelect.x = my;
+        chartSelect.y = my;
+        // chartSelect.w += oldx - mx;
+        chartSelect.w += oldy - my;
+        chartSelect.h += oldy - my;
+        console.log(chartSelect);
         break;
       case 1:
-        mySel.y = my;
-        mySel.h += oldy - my;
+        chartSelect.y = my;
+        chartSelect.h += oldy - my;
         break;
       case 2:
-        mySel.y = my;
-        // mySel.w = mx - oldx;
-        mySel.w += oldy - my;
-        mySel.h += oldy - my;
+        chartSelect.y = my;
+        // chartSelect.w = mx - oldx;
+        chartSelect.w += oldy - my;
+        chartSelect.h += oldy - my;
         break;
       case 3:
-        mySel.x = mx;
-        mySel.w += oldx - mx;
+        chartSelect.x = mx;
+        chartSelect.w += oldx - mx;
         break;
       case 4:
-        mySel.w = mx - oldx;
+        chartSelect.w = mx - oldx;
         break;
       case 5:
-        mySel.x = mx;
-        mySel.w += oldx - mx;
-        mySel.h += oldx - mx;
-        // mySel.h = my - oldy;
+        chartSelect.x = mx;
+        chartSelect.w += oldx - mx;
+        chartSelect.h += oldx - mx;
+        // chartSelect.h = my - oldy;
         break;
       case 6:
-        mySel.h = my - oldy;
+        chartSelect.h = my - oldy;
         break;
       case 7:
-        mySel.w = mx - oldx;
-        mySel.h = mx - oldx;
-        // mySel.h = my - oldy;
+        chartSelect.w = mx - oldx;
+        chartSelect.h = mx - oldx;
+        // chartSelect.h = my - oldy;
         break;
     }
+    this.data.chartSelect = chartSelect;
     invalidate();
   }
   getMouse(e);
   const { overlayerEl } = this;
-  if (mySel !== null && !isResizeDrag) {
+  if (chartSelect !== null && !isResizeDrag) {
     for (let i = 0; i < 8; i++) {
       const cur = selectionHandles[i];
       if (mx >= cur.x && mx <= cur.x + HANDLE_BOX_SIZE
@@ -280,6 +308,10 @@ function chartMousemove(e) {
     expectResize = -1;
     overlayerEl.el.style.cursor = 'auto';
   }
+
+  if (isDrag || isResizeDrag) {
+    return true;
+  }
   return false;
 }
 
@@ -290,24 +322,28 @@ function chartMousedown(e) {
     return true;
   }
   clear(gctx);
-  const { charts } = this.data;
+  // const { charts } = this.data;
   const l = charts.length;
   for (let i = l - 1; i >= 0; i--) {
+    // charts[i].draw(gctx, 'black', this.data.chartSelect);
     charts[i].draw(gctx, 'black');
+    this.data.charts[i] = charts[i];
     const imageData = gctx.getImageData(mx, my, 1, 1);
     if (imageData.data[3] > 0) {
-      mySel = charts[i];
-      offsetx = mx - mySel.x;
-      offsety = my - mySel.y;
-      mySel.x = mx - offsetx;
-      mySel.y = my - offsety;
+      chartSelect = charts[i];
+      offsetx = mx - chartSelect.x;
+      offsety = my - chartSelect.y;
+      chartSelect.x = mx - offsetx;
+      chartSelect.y = my - offsety;
+      this.data.chartSelect = chartSelect;
       isDrag = true;
       invalidate();
       clear(gctx);
       return true;
     }
   }
-  mySel = null;
+  chartSelect = null;
+  this.data.chartSelect = null;
   clear(gctx);
   invalidate();
   return false;
@@ -337,15 +373,6 @@ function chartScrollHorizontal(left) {
   }
 }
 
-function select(chart) {
-  mySel = chart;
-  offsetx = mx - mySel.x;
-  offsety = my - mySel.y;
-  mySel.x = mx - offsetx;
-  mySel.y = my - offsety;
-  invalidate();
-}
-
 function invalidate() {
   isValid = false;
 }
@@ -370,10 +397,14 @@ function getMouse(e) {
 }
 
 export {
-  Chart,
-  invalidate,
-  select,
+  ChartBox,
+  addRect,
+  changeRect,
+  deleteRect,
+  setChartSelect,
   chartInitEvents,
+  mainDraw,
+  invalidate,
   chartMousedown,
   chartMouseup,
   chartMousemove,

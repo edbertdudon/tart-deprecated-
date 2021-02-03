@@ -4,12 +4,12 @@ import _cell from '../core/cell';
 import { formulam } from '../cloudr/formula';
 // import { formulam } from '../core/formula'
 import { formatm } from '../core/format';
-import { rRender } from '../cloudr';
-
+import { removeMatrix, rRender } from '../cloudr';
 import {
   Draw, DrawBox, thinLineWidth, npx,
 } from '../canvas/draw';
-// gobal var
+
+// global var
 const cellPaddingWidth = 5;
 // const tableFixedHeaderCleanStyle = { fillStyle: '#f4f5f8' };
 const tableFixedHeaderCleanStyle = { fillStyle: '#353535' };
@@ -18,6 +18,9 @@ const tableGridStyle = {
   lineWidth: thinLineWidth,
   strokeStyle: '#e6e6e6',
 };
+
+// let hasMatrix = false;
+
 function tableFixedHeaderStyle() {
   return {
     textAlign: 'center',
@@ -55,7 +58,7 @@ function renderCellBorders(bboxes, translateFunc) {
 */
 
 // default yoffset = 0 xoffset = 0
-export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0, xoffset = 0) {
+export async function renderCell(draw, data, datas, rindex, cindex, srindex, scindex) {
   const { sortedRowMap, rows, cols } = data;
   if (rows.isHide(rindex) || cols.isHide(cindex)) return;
   let nrindex = rindex;
@@ -65,10 +68,18 @@ export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0,
 
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
-  let cellText = rRender(cell.text || '', data, datas, rindex, cindex);
-  // let cellText = await rRender(cell.text || '', data, datas, rindex, cindex)
-  // yoffset = 25
-  // xoffset = 60
+
+  // let cellText = rRender(cell.text || '', data, datas, rindex, cindex);
+  // let cellText = cell.text || '';
+
+  let cellText = await rRender(cell.text || '', data, datas, rindex, cindex);
+  // if (typeof cellText === 'object' && cellText !== null) {
+  //   hasMatrix = cellText.hasMatrix
+  //   cellText = cellText.value
+  // }
+  const yoffset = 25 - (srindex * 25);
+  const xoffset = 30 - (scindex * 100);
+
   let frozen = false;
   if ('editable' in cell && cell.editable === false) {
     frozen = true;
@@ -84,6 +95,7 @@ export async function renderCell(draw, data, datas, rindex, cindex, yoffset = 0,
   draw.rect(dbox, () => {
     // render text
     // if (cellText.status )
+    // let cellText = rRender(cell.text || '', data, datas, rindex, cindex);
     // let cellText = _cell.render(cell.text || '', formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
     if (style.format) {
       // console.log(data.formatm, '>>', cell.format);
@@ -147,8 +159,9 @@ function renderContent(viewRange, fw, fh, tx, ty) {
   // 1 render cell
   draw.save();
   draw.translate(0, -exceptRowTotalHeight);
+  const { sri, sci } = viewRange;
   viewRange.each((ri, ci) => {
-    renderCell(draw, data, datas, ri, ci);
+    renderCell(draw, data, datas, ri, ci, sri, sci);
   }, (ri) => filteredTranslateFunc(ri));
   draw.restore();
 
@@ -158,7 +171,8 @@ function renderContent(viewRange, fw, fh, tx, ty) {
   draw.translate(0, -exceptRowTotalHeight);
   data.eachMergesInView(viewRange, ({ sri, sci, eri }) => {
     if (!exceptRowSet.has(sri)) {
-      renderCell(draw, data, datas, sri, sci);
+      // renderCell(draw, data, datas, sri, sci);
+      renderCell(draw, data, datas, sri, sci, 0, 0);
     } else if (!rset.has(sri)) {
       rset.add(sri);
       const height = data.rows.sumHeight(sri, eri + 1);
@@ -368,6 +382,11 @@ class Table {
       // 5
       renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
     }
+
+    // if (hasMatrix) {
+    //   hasMatrix = false;
+    //   // this.resetData();
+    // }
   }
 
   clear() {
