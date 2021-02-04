@@ -143,6 +143,10 @@ class ChartBox {
 //   invalidate();
 // }
 
+function clearCharts() {
+  clear(ctx);
+}
+
 function addRect(chart) {
   charts.push(chart);
   invalidate();
@@ -398,6 +402,7 @@ function getMouse(e) {
 
 export {
   ChartBox,
+  clearCharts,
   addRect,
   changeRect,
   deleteRect,

@@ -53,10 +53,7 @@ const SpreadsheetWrapper = ({
     		})
         .on('show-editor', () => onSetRightSidebar('chart'))
         .on('chart-select', (chart) => onSetChartSelect(chart))
-    		.change((data) => {
-          console.log(data);
-          setPendingSave(data);
-        });
+    		.change((data) => setPendingSave(data));
 
       s.validate();
       s.data = s.datas[0];
@@ -88,12 +85,12 @@ const SpreadsheetWrapper = ({
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
+  color: (state.colorState.colors || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['sheet1']),
   current: (state.currentState.current || 0),
   saving: (state.savingState.saving || false),
-  color: (state.colorState.colors || {}),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
   chartSelect: (state.chartSelectState.chartSelect || null),
 });

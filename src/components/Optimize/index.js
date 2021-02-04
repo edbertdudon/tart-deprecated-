@@ -467,7 +467,7 @@ const Optimize = ({
               ? objective
               : objectiveClass === 1
                 ? linear : quadratic}`;
-          const isEmpty = slides.insertData(current, res, sheetname);
+          const isEmpty = slides.insertData(current, res, sheetname, 'read');
 
           onSetDataNames(slides.datas.map((it) => it.name));
           if (!isEmpty) {

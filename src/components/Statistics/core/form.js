@@ -16,7 +16,8 @@ import DataRange, {
   getRangeIndex, getRownames, getRange, getVarsAsColumns,
 } from '../../RightSidebar/datarange';
 import Button from '../../RightSidebar/button';
-import { getMaxNumberCustomSheet, insertData } from '../../../functions';
+import { createFile, insertData } from '../../../functions';
+import { withFirebase } from '../../Firebase';
 
 export const ALTERNATIVES = ['Two-sided', 'Greater', 'Less'];
 export const ALTERNATIVES_AUTOCORRELATION = ['Two-sided', 'Positive', 'Negative'];
@@ -27,28 +28,9 @@ export const BOOTSTRAP_METHOD = ['Resample', 'Normal'];
 export const WILKS_METHOD = ['c (standard)', 'MCD', 'Rank'];
 export const WILKS_APPROXIMATION = ['Bartlett', 'Rao', 'Empirical'];
 
-export function createStatistic(
-  res, slides, formuladata, statistic, dataNames, current,
-  onSetDataNames, onSetCurrent, onSetRightSidebar,
-) {
-  const { datas, data } = slides;
-  delete formuladata.slides;
-  delete formuladata.names;
-  res.type = statistics.find((e) => e.key === statistic).function;
-  res.regression = formuladata;
-
-  const isEmpty = slides.insertData(current, res, statistic);
-  onSetDataNames(slides.datas.map((it) => it.name));
-  if (!isEmpty) {
-    onSetCurrent(slides.sheetIndex);
-  }
-
-  onSetRightSidebar('none');
-}
-
 const Form = ({
-  slides, color, authUser, statistic, invalidStat, setVariables,
-  onSubmit, error, setError, onSetRightSidebar, children,
+  firebase, authUser, color, worksheetname, slides, dataNames, current, saving, statistic, invalidStat, error,
+  children, setVariables, setError, onSubmit, onSetSaving, onSetDataNames, onSetCurrent, onSetRightSidebar,
 }) => {
   const [datarange, setDatarange] = useState('');
   const [firstRow, setFirstRow] = useState(true);
@@ -60,9 +42,7 @@ const Form = ({
     const { type, rows } = data;
     const { range } = sheet.selector;
 
-    setDatarange(
-      getRange(rows.len, range),
-    );
+    setDatarange(getRange(rows.len, range));
 
 	  if (type === 'sheet' || type === 'input') {
       const rowNames = getRownames(rows._, range);
@@ -109,8 +89,27 @@ const Form = ({
       names: JSON.stringify(datas.map((d) => d.name)),
       range: translateR(datarange, data.name),
       firstrow: firstRow,
-    }).then(() => {
+    }).then((r) => {
+      const { res } = r;
+      const { formuladata } = r;
+      const { datas, data } = slides;
+
+      delete formuladata.slides;
+      delete formuladata.names;
+      res.type = statistics.find((e) => e.key === statistic).function;
+      res.regression = formuladata;
+
+      const isEmpty = slides.insertData(current, res, statistic, 'read');
+      onSetDataNames(slides.datas.map((it) => it.name));
+      if (!isEmpty) {
+        onSetCurrent(slides.sheetIndex);
+      }
+      onSetRightSidebar('none');
       setLoading(false);
+
+      onSetSaving(true);
+      firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+        .then(() => onSetSaving(false));
     });
   };
 
@@ -157,16 +156,24 @@ const Form = ({
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  slides: (state.slidesState.slides || {}),
   color: (state.colorState.colors || {}),
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
+  slides: (state.slidesState.slides || {}),
+  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  current: (state.currentState.current || 0),
+  saving: (state.savingState.saving || false),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });
 
 const mapDispatchToProps = (dispatch) => ({
+  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
+  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
+  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
   onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 });
 
 export default compose(
+  withFirebase,
   connect(
     mapStateToProps,
     mapDispatchToProps,

@@ -6,9 +6,7 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import Form, { ALTERNATIVES, createStatistic } from '../core/form';
+import Form, { ALTERNATIVES } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
@@ -16,9 +14,7 @@ import Variable from '../core/variable';
 import Alternative from '../core/alternative';
 import Number from '../../RightSidebar/number';
 
-const TwoSampleTTest = ({
-  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
-}) => {
+const TwoSampleTTest = ({ statistic }) => {
   const [variables, setVariables] = useState([]);
   const [variableX, setVariableX] = useState(null);
   const [variableY, setVariableY] = useState(null);
@@ -60,12 +56,9 @@ const TwoSampleTTest = ({
     if (alt !== 0) formuladata.alternative = ALTERNATIVES[alt].charAt(0).toLowerCase();
     if (mean !== 0) formuladata.mean = mean;
     if (confLevel !== 0.95) formuladata.confidencelevel = confLevel;
-    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
-      createStatistic(
-        res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
-      );
-    }).catch((err) => setError(err.toString()));
+    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+      .then((res) => ({ res, formuladata }))
+      .catch((err) => setError(err.toString()));
   };
 
   const isInvalid = variableX == null
@@ -91,22 +84,4 @@ const TwoSampleTTest = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
-  current: (state.currentState.current || 0),
-  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-});
-
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(TwoSampleTTest);
+export default TwoSampleTTest;

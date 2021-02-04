@@ -12,28 +12,33 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Editable from './editable';
 import './index.less';
 
-const reorder = (list, startIndex, endIndex) => {
+function reorder(list, startIndex, endIndex) {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
   return result;
-};
+}
 
 const Navigator = ({
   slides, dataNames, current, onSetDataNames, onSetCurrent,
 }) => {
   const handleDragEnd = (result) => {
     if (!result.destination) return;
+
     const destination = result.destination.index;
     const source = result.source.index;
+
     if (destination === source) return;
+
     const dn = reorder(dataNames, source, destination);
+
     onSetDataNames(dn);
     if (source === current) {
       onSetCurrent(destination);
     } else {
       onSetCurrent(source);
     }
+
     slides.datas = reorder(slides.datas, source, destination);
   };
 

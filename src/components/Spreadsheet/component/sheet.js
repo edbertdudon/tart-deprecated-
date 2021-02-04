@@ -1087,7 +1087,7 @@ export default class Sheet {
     }
   }
 
-  resetData(data) {
+  resetData(data, datas) {
     // before
     this.editor.clear();
     // after
@@ -1098,6 +1098,7 @@ export default class Sheet {
     // this.print.resetData(data);
     this.selector.resetData(data);
     this.table.resetData(data);
+    this.data.loadChart(data.charts, datas);
   }
 
   loadData(data) {

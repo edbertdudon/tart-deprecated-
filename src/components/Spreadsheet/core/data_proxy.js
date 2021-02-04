@@ -15,7 +15,7 @@ import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
 import {
-  ChartBox, addRect, changeRect, deleteRect, setChartSelect, mainDraw, invalidate,
+  ChartBox, clearCharts, addRect, changeRect, deleteRect, setChartSelect, mainDraw, invalidate,
 } from '../canvas/chart';
 import charts from '../../Chart/chartsR';
 import {
@@ -402,8 +402,9 @@ export default class DataProxy {
 
   undo() {
     this.history.undo(this.getData(), (d) => {
-      console.log(d);
+      // console.log(d);
       this.setData(d);
+      // if (d.charts)
     });
   }
 
@@ -1152,7 +1153,8 @@ export default class DataProxy {
     return styles.length - 1;
   }
 
-  addChart(type, datas, range) {
+  addChart(type, datas, sheet) {
+    const { range } = sheet.selector;
     const c = new ChartBox();
     c.range = getRange(this.rows.len, range);
     c.types = [type];
@@ -1166,18 +1168,19 @@ export default class DataProxy {
       }
     }
 
-    return this.changeData(() => this.setChart(c, datas, range).then((chart) => {
+    this.changeData(() => this.setChart(c, datas, range).then((chart) => {
       this.charts.push(chart);
       addRect(chart);
       mainDraw(this);
       invalidate();
       this.chartSelect = chart;
       setChartSelect(chart);
-      return this;
+      sheet.trigger('chart-select', chart);
     }));
   }
 
   loadChart(cs, datas) {
+    clearCharts();
     cs.forEach((c) => {
       const rect = new ChartBox();
       rect.x = c.x;
@@ -1192,7 +1195,6 @@ export default class DataProxy {
       rect.sparkuri = c.sparkuri;
 
       const range = getRangeIndex(c.range);
-
       this.setChart(rect, datas, range).then((chart) => {
         addRect(chart);
         mainDraw(this);
@@ -1202,13 +1204,12 @@ export default class DataProxy {
   }
 
   changeChart(c, datas, range) {
-    return this.changeData(() => this.setChart(c, datas, range).then((chart) => {
+    this.changeData(() => this.setChart(c, datas, range).then((chart) => {
       const i = this.charts.findIndex((chart) => chart === this.chartSelect);
       this.charts.splice(i, 1, chart);
       changeRect(i, chart);
       mainDraw(this);
       invalidate();
-      return this;
     }));
   }
 

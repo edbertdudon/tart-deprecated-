@@ -32,7 +32,7 @@ const Insert = ({
     switch (key) {
       case INSERT_DROPDOWN[0].key: {
         const d = slides.addSheet(undefined, undefined, current);
-        slides.sheet.resetData(d);
+        slides.sheet.resetData(d, slides.datas);
 
         onSetDataNames([
           ...dataNames.slice(0, current + 1),

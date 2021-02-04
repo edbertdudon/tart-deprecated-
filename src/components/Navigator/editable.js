@@ -146,7 +146,7 @@ const Editable = ({
     switch (key) {
       case NAVIGATOR_DROPDOWN[0].key:
         var d = slides.addSheet(undefined, undefined, current);
-        slides.sheet.resetData(d);
+        slides.sheet.resetData(d, slides.datas);
 
         onSetDataNames([
 		      ...dataNames.slice(0, current + 1),
@@ -190,7 +190,7 @@ const Editable = ({
   const handleSelect = () => {
     if (current !== index) {
       const d = slides.datas[index];
-      slides.sheet.resetData(d);
+      slides.sheet.resetData(d, slides.datas);
       slides.data = d;
       onSetCurrent(index);
     }

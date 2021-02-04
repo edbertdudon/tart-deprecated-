@@ -45,7 +45,15 @@ class Spreadsheet {
   }
 
   addSheet(name, active = true, current) {
-    const n = name || `Sheet${this.sheetIndex}`;
+    let n = name || `Sheet${this.sheetIndex}`;
+    if (this.datas.length > 0) {
+      const names = this.datas.map((it) => it.name);
+      const max = getMaxNumberCustomSheet(names, n);
+      if (max !== 1) {
+        n = `${n} ${max}`;
+      }
+    }
+
     const d = new DataProxy(n, this.options);
     d.change = (...args) => {
       this.sheet.trigger('change', ...args);
@@ -65,7 +73,7 @@ class Spreadsheet {
     // const [oldIndex, nindex] = this.bottombar.deleteItem();
     if (oldIndex >= 0) {
       this.datas.splice(oldIndex, 1);
-      if (nindex >= 0) this.sheet.resetData(this.datas[nindex]);
+      if (nindex >= 0) this.sheet.resetData(this.datas[nindex], this.datas);
     }
   }
 
@@ -86,24 +94,19 @@ class Spreadsheet {
     this.datas.splice(index + 1, 0, d);
     // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
     // this.sheetIndex = index + 1;
-    this.sheet.resetData(d);
+    this.sheet.resetData(d, this.datas);
     return d;
   }
 
   insertChart(type) {
-    this.data.addChart(type, this.datas, this.sheet.selector.range)
-      .then((d) => {
-        this.sheet.resetData(d);
-        this.sheet.trigger('chart-select', d.chartSelect);
-      });
+    this.data.addChart(type, this.datas, this.sheet);
   }
 
   editChart(c) {
-    this.data.changeChart(c, this.datas, this.sheet.selector.range)
-      .then((d) => this.sheet.resetData(d));
+    this.data.changeChart(c, this.datas, this.sheet.selector.range);
   }
 
-  insertData(current, o, name) {
+  insertData(current, o, name, mode = 'edit') {
     const { row, col } = this.options;
     const { rows } = o;
     const nrows = Object.keys(rows).length;
@@ -116,6 +119,8 @@ class Spreadsheet {
     }
 
     const { datas } = this;
+    const opt = this.options;
+    opt.mode = mode;
     const d = new DataProxy('temp', this.options);
     d.setData(o);
     const names = datas.map((it) => it.name);
@@ -132,9 +137,9 @@ class Spreadsheet {
       datas.splice(current, 1, d);
     } else {
       datas.splice(current + 1, 0, d);
-      this.sheetIndex = current + 1;
+      // this.sheetIndex = current + 1;
     }
-    this.sheet.resetData(d);
+    this.sheet.resetData(d, datas);
     this.data = d;
 
     return isEmpty;
@@ -149,14 +154,15 @@ class Spreadsheet {
         const it = ds[i];
         const nd = this.addSheet(it.name, i === 0);
         nd.setData(it);
-        if (i === 0) {
-          this.sheet.resetData(nd);
-        }
+        // if (i === 0) {
+        //   console.log(this.datas);
+        //   this.sheet.resetData(nd);
+        // }
       }
-
-      ds.forEach((nd) => {
-        this.data.loadChart(nd.charts, this.datas);
-      });
+      this.sheet.resetData(this.datas[0], this.datas);
+      // ds.forEach((nd) => {
+      // this.data.loadChart(nd.charts, this.datas);
+      // });
     }
 
     return this;

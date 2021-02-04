@@ -6,9 +6,7 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState, useEffect, useRef } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import Form, { CORRELATION_METHOD, createStatistic } from '../core/form';
+import Form, { CORRELATION_METHOD } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
@@ -16,9 +14,7 @@ import Matrix from '../core/matrix';
 import Alternative from '../core/alternativecorrelation';
 import { getRownames, getVarsAsColumns } from '../../RightSidebar/datarange';
 
-const Correlation = ({
-  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
-}) => {
+const Correlation = ({ statistic }) => {
   const [variables, setVariables] = useState([]);
   const [varsx, setVarsx] = useState([]);
   const [method, setMethod] = useState(0);
@@ -59,12 +55,9 @@ const Correlation = ({
       variablesx: JSON.stringify(varsx.map((v) => variables[v])),
     };
     if (method !== 0) formuladata.method = CORRELATION_METHOD[method].charAt(0).toLowerCase();
-    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
-      createStatistic(
-        res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
-      );
-    }).catch((err) => setError(err.toString()));
+    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+      .then((res) => ({ res, formuladata }))
+      .catch((err) => setError(err.toString()));
   };
 
   const isInvalid = varsx.length < 1;
@@ -84,22 +77,4 @@ const Correlation = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
-  current: (state.currentState.current || 0),
-  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-});
-
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(Correlation);
+export default Correlation;

@@ -6,18 +6,14 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import Form, { createStatistic } from '../core/form';
+import Form from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
 import Formula from '../core/formula';
 import Number from '../../RightSidebar/number';
 
-const AkaikeInformationCriterion = ({
-  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
-}) => {
+const AkaikeInformationCriterion = ({ statistic }) => {
   const [variables, setVariables] = useState([]);
   const [formula, setFormula] = useState('');
   const [penalty, setPenalty] = useState(2);
@@ -43,12 +39,9 @@ const AkaikeInformationCriterion = ({
       formula,
     };
     if (penalty !== 0.95) formuladata.penalty = penalty;
-    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
-      createStatistic(
-        res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
-      );
-    }).catch((err) => setError(err.toString()));
+    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+      .then((res) => ({ res, formuladata }))
+      .catch((err) => setError(err.toString()));
   };
 
   const isInvalid = formulaError !== null
@@ -69,22 +62,4 @@ const AkaikeInformationCriterion = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
-  current: (state.currentState.current || 0),
-  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-});
-
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(AkaikeInformationCriterion);
+export default AkaikeInformationCriterion;

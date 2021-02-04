@@ -6,17 +6,13 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import Form, { createStatistic } from '../core/form';
+import Form from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
 import Variable from '../core/variable';
 
-const TwoWayAncova2Covariate = ({
-  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
-}) => {
+const TwoWayAncova2Covariate = ({ statistic }) => {
   const [variables, setVariables] = useState([]);
   const [variableY, setVariableY] = useState(null);
   const [variableX1, setVariableX1] = useState(null);
@@ -34,12 +30,9 @@ const TwoWayAncova2Covariate = ({
       covariate1: variables[covariate1],
       covariate2: variables[covariate2],
     };
-    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
-      createStatistic(
-        res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
-      );
-    }).catch((err) => setError(err.toString()));
+    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+      .then((res) => ({ res, formuladata }))
+      .catch((err) => setError(err.toString()));
   };
 
   const isInvalid = variableY == null
@@ -66,22 +59,4 @@ const TwoWayAncova2Covariate = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
-  current: (state.currentState.current || 0),
-  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-});
-
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(TwoWayAncova2Covariate);
+export default TwoWayAncova2Covariate;

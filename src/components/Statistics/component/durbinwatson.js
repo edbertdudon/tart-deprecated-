@@ -6,9 +6,7 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import Form, { BOOTSTRAP_METHOD, ALTERNATIVES, createStatistic } from '../core/form';
+import Form, { BOOTSTRAP_METHOD, ALTERNATIVES } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
@@ -17,9 +15,7 @@ import BootstrapMethod from '../core/bootstrap';
 import Alternative from '../core/alternative';
 import Number from '../../RightSidebar/number';
 
-const DurbinWatsonTest = ({
-  slides, dataNames, current, onSetDataNames, onSetCurrent, onSetRightSidebar, statistic,
-}) => {
+const DurbinWatsonTest = ({ statistic }) => {
   const [variables, setVariables] = useState([]);
   const [formula, setFormula] = useState('');
   const [lag, setLag] = useState(1);
@@ -57,12 +53,9 @@ const DurbinWatsonTest = ({
         formuladata.alternative = 'n';
       }
     }
-    doRegress(formuladata, statistics.find((e) => e.key === statistic).function).then((res) => {
-      createStatistic(
-        res, slides, formuladata, statistic, dataNames,
-        current, onSetDataNames, onSetCurrent, onSetRightSidebar,
-      );
-    }).catch((err) => setError(err.toString()));
+    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+      .then((res) => ({ res, formuladata }))
+      .catch((err) => setError(err.toString()));
   };
 
   const isInvalid = formulaError !== null
@@ -85,22 +78,4 @@ const DurbinWatsonTest = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
-  current: (state.currentState.current || 0),
-  rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
-  onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
-});
-
-export default compose(
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(DurbinWatsonTest);
+export default DurbinWatsonTest;
