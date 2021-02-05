@@ -31,19 +31,9 @@ const Insert = ({
   const handleInsert = (key) => {
     switch (key) {
       case INSERT_DROPDOWN[0].key: {
-        const d = slides.addSheet(undefined, undefined, current);
-        slides.sheet.resetData(d, slides.datas);
-
-        onSetDataNames([
-          ...dataNames.slice(0, current + 1),
-          d.name,
-          ...dataNames.slice(current + 1),
-        ]);
-
+        const names = slides.insertSheet(current);
+        onSetDataNames(names);
         onSetCurrent(current + 1);
-
-        slides.data = d;
-
         onSetSaving(true);
         firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
           .then(() => onSetSaving(false));

@@ -462,13 +462,13 @@ const Optimize = ({
     		} else {
     			res.type = 'optimize';
     			res.optimization = sparkData;
+
           const sheetname = `optimization ${
             objectiveClass === 0
               ? objective
               : objectiveClass === 1
                 ? linear : quadratic}`;
           const isEmpty = slides.insertData(current, res, sheetname, 'read');
-
           onSetDataNames(slides.datas.map((it) => it.name));
           if (!isEmpty) {
             onSetCurrent(slides.sheetIndex);

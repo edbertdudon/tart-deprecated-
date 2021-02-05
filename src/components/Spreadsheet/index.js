@@ -44,7 +44,7 @@ class Spreadsheet {
     // rootEl.child(this.bottombar.el);
   }
 
-  addSheet(name, active = true, current) {
+  addSheet(name, active = true, index) {
     let n = name || `Sheet${this.sheetIndex}`;
     if (this.datas.length > 0) {
       const names = this.datas.map((it) => it.name);
@@ -58,10 +58,10 @@ class Spreadsheet {
     d.change = (...args) => {
       this.sheet.trigger('change', ...args);
     };
-    if (current == undefined) {
+    if (index == undefined) {
       this.datas.push(d);
     } else {
-      this.datas.splice(current + 1, 0, d);
+      this.datas.splice(index + 1, 0, d);
     }
     // console.log('d:', n, d, this.datas);
     // this.bottombar.addItem(n, active, this.options.style.offcolor);
@@ -69,12 +69,29 @@ class Spreadsheet {
     return d;
   }
 
+  insertSheet(index) {
+    const d = this.addSheet(`Sheet${this.sheetIndex}`, true, index);
+    this.sheet.resetData(d);
+    this.data = d;
+    return this.datas.map((data) => data.name);
+  }
+
+  swapSheet(index) {
+    const d = this.datas[index];
+    this.sheet.resetData(d);
+    this.data = d;
+  }
+
   deleteSheet(oldIndex, nindex) {
     // const [oldIndex, nindex] = this.bottombar.deleteItem();
     if (oldIndex >= 0) {
       this.datas.splice(oldIndex, 1);
-      if (nindex >= 0) this.sheet.resetData(this.datas[nindex], this.datas);
+      if (nindex >= 0) this.sheet.resetData(this.datas[nindex]);
     }
+  }
+
+  updateSheetName(index, name) {
+    this.datas[index].name = name;
   }
 
   copySheet(index) {
@@ -94,8 +111,9 @@ class Spreadsheet {
     this.datas.splice(index + 1, 0, d);
     // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
     // this.sheetIndex = index + 1;
-    this.sheet.resetData(d, this.datas);
-    return d;
+    this.sheet.resetData(d);
+    this.data = d;
+    return this.datas.map((data) => data.name);
   }
 
   insertChart(type) {
@@ -139,7 +157,7 @@ class Spreadsheet {
       datas.splice(current + 1, 0, d);
       // this.sheetIndex = current + 1;
     }
-    this.sheet.resetData(d, datas);
+    this.sheet.resetData(d);
     this.data = d;
 
     return isEmpty;
@@ -153,15 +171,17 @@ class Spreadsheet {
       for (let i = 0; i < ds.length; i += 1) {
         const it = ds[i];
         const nd = this.addSheet(it.name, i === 0);
-        nd.setData(it);
-        // if (i === 0) {
-        //   console.log(this.datas);
-        //   this.sheet.resetData(nd);
-        // }
+        nd.setData(it, false);
+        nd.loadChart(nd.charts, this.datas);
+        if (i === 0) {
+          this.sheet.resetData(nd, false);
+        }
       }
-      this.sheet.resetData(this.datas[0], this.datas);
+      // this.sheet.resetData(this.datas[0], this.datas);
       // ds.forEach((nd) => {
-      // this.data.loadChart(nd.charts, this.datas);
+      //   if ('charts' in nd) {
+      //     this.data.loadChart(nd.charts, this.datas);
+      //   }
       // });
     }
 

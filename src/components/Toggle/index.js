@@ -67,8 +67,8 @@ const Button = ({
 );
 
 const Toggle = ({
-  firebase, authUser, color, worksheetname, slides, dataNames, current, saving, rightSidebar,
-  onSetDataNames, onSetCurrent, onSetSaving, onSetRightSidebar, setStatistic,
+  firebase, authUser, color, worksheetname, slides, saving,
+  rightSidebar, setStatistic, onSetSaving, onSetRightSidebar,
 }) => {
   const handleToggle = (select) => {
     if (rightSidebar !== select) {
@@ -153,15 +153,11 @@ const mapStateToProps = (state) => ({
   color: (state.colorState.colors || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
-  current: (state.currentState.current || 0),
   saving: (state.savingState.saving || false),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  onSetDataNames: (dataNames) => dispatch({ type: 'DATANAMES_SET', dataNames }),
-  onSetCurrent: (current) => dispatch({ type: 'CURRENT_SET', current }),
   onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
   onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
 });

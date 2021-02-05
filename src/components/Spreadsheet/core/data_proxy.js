@@ -15,7 +15,7 @@ import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
 import {
-  ChartBox, clearCharts, addRect, changeRect, deleteRect, setChartSelect, mainDraw, invalidate,
+  ChartBox, createChartBox, clearCharts, addRect, changeRect, deleteRect, setChartSelect,
 } from '../canvas/chart';
 import charts from '../../Chart/chartsR';
 import {
@@ -1171,8 +1171,6 @@ export default class DataProxy {
     this.changeData(() => this.setChart(c, datas, range).then((chart) => {
       this.charts.push(chart);
       addRect(chart);
-      mainDraw(this);
-      invalidate();
       this.chartSelect = chart;
       setChartSelect(chart);
       sheet.trigger('chart-select', chart);
@@ -1180,26 +1178,18 @@ export default class DataProxy {
   }
 
   loadChart(cs, datas) {
-    clearCharts();
+    // clearCharts();
     cs.forEach((c) => {
-      const rect = new ChartBox();
-      rect.x = c.x;
-      rect.y = c.y;
-      rect.w = c.w;
-      rect.h = c.h;
-      rect.range = c.range;
-      rect.firstrow = c.firstrow;
-      rect.types = c.types;
-      rect.variablex = c.variablex;
-      rect.variabley = c.variabley;
-      rect.sparkuri = c.sparkuri;
-
-      const range = getRangeIndex(c.range);
-      this.setChart(rect, datas, range).then((chart) => {
+      this.setChart(c, datas, getRangeIndex(c.range)).then((chart) => {
         addRect(chart);
-        mainDraw(this);
-        invalidate();
       });
+    });
+  }
+
+  resetCharts(cs) {
+    clearCharts();
+    cs.forEach((chart) => {
+      addRect(chart);
     });
   }
 
@@ -1208,8 +1198,6 @@ export default class DataProxy {
       const i = this.charts.findIndex((chart) => chart === this.chartSelect);
       this.charts.splice(i, 1, chart);
       changeRect(i, chart);
-      mainDraw(this);
-      invalidate();
     }));
   }
 
@@ -1263,7 +1251,7 @@ export default class DataProxy {
     this.change(this.getData());
   }
 
-  setData(d) {
+  setData(d, isLoaded = true) {
     Object.keys(d).forEach((property) => {
       if (property === 'merges' || property === 'rows'
         || property === 'cols' || property === 'validations') {
@@ -1273,6 +1261,8 @@ export default class DataProxy {
         this.freeze = [y, x];
       } else if (property === 'autofilter') {
         this.autoFilter.setData(d[property]);
+      } else if (property === 'charts' && isLoaded === false) {
+        this[property] = d[property].map((c) => createChartBox(c));
       } else if (d[property] !== undefined) {
         this[property] = d[property];
       }

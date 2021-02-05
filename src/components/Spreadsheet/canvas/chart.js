@@ -143,6 +143,22 @@ class ChartBox {
 //   invalidate();
 // }
 
+function createChartBox(c) {
+  const rect = new ChartBox();
+  rect.x = c.x;
+  rect.y = c.y;
+  rect.w = c.w;
+  rect.h = c.h;
+  rect.range = c.range;
+  rect.firstrow = c.firstrow;
+  rect.types = c.types;
+  rect.variablex = c.variablex;
+  rect.variabley = c.variabley;
+  rect.sparkuri = c.sparkuri;
+
+  return rect;
+}
+
 function clearCharts() {
   clear(ctx);
 }
@@ -150,10 +166,14 @@ function clearCharts() {
 function addRect(chart) {
   charts.push(chart);
   invalidate();
+  mainDraw();
+  invalidate();
 }
 
 function changeRect(i, chart) {
   charts.splice(i, 1, chart);
+  invalidate();
+  mainDraw();
   invalidate();
 }
 
@@ -195,7 +215,6 @@ function chartInitEvents() {
   }
 
   // addRect(0, 0, 500, 500, 'rgba(0,205,0,0.7)', charts);
-  // this.data.charts.forEach((chart) => addRect(chart));
 }
 
 function clear(c) {
@@ -402,6 +421,7 @@ function getMouse(e) {
 
 export {
   ChartBox,
+  createChartBox,
   clearCharts,
   addRect,
   changeRect,

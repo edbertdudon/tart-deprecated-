@@ -125,61 +125,49 @@ const Editable = ({
       } else {
         slides.deleteSheet(index, -1);
       }
+      save();
     }
-
-    save();
-  };
-
-  const paste = (d) => {
-    onSetDataNames([
-      ...dataNames.slice(0, index + 1),
-      d.name,
-      ...dataNames.slice(index + 1),
-    ]);
-    onSetCurrent(index + 1);
-    slides.data = d;
-
-    save();
   };
 
   const handleDropdown = (key) => {
     switch (key) {
-      case NAVIGATOR_DROPDOWN[0].key:
-        var d = slides.addSheet(undefined, undefined, current);
-        slides.sheet.resetData(d, slides.datas);
-
-        onSetDataNames([
-		      ...dataNames.slice(0, current + 1),
-		      d.name,
-		      ...dataNames.slice(current + 1),
-		    ]);
+      case NAVIGATOR_DROPDOWN[0].key: {
+        const names = slides.insertSheet(current);
+        onSetDataNames(names);
         onSetCurrent(current + 1);
-        slides.data = d;
-
         save();
         break;
-      case NAVIGATOR_DROPDOWN[1].key:
-        // Not working as expected
+      }
+      case NAVIGATOR_DROPDOWN[1].key: {
         handleShow();
-        // handleSelect();
         break;
-      case NAVIGATOR_DROPDOWN[3].key:
+      }
+      case NAVIGATOR_DROPDOWN[3].key: {
         deleteSheet();
         break;
-      case NAVIGATOR_DROPDOWN[4].key:
+      }
+      case NAVIGATOR_DROPDOWN[4].key: {
         slides.copySheet(index);
         break;
-      case NAVIGATOR_DROPDOWN[5].key:
-        var d = slides.pasteSheet(dataNames, index, false);
-        paste(d);
+      }
+      case NAVIGATOR_DROPDOWN[5].key: {
+        const names = slides.pasteSheet(dataNames, index, false);
+        onSetDataNames(names);
+        onSetCurrent(index + 1);
+        save();
         break;
-      case NAVIGATOR_DROPDOWN[6].key:
+      }
+      case NAVIGATOR_DROPDOWN[6].key: {
         deleteSheet();
         break;
-      case NAVIGATOR_DROPDOWN[7].key:
-        var d = slides.pasteSheet(dataNames, index, true);
-        paste(d);
+      }
+      case NAVIGATOR_DROPDOWN[7].key: {
+        const names = slides.pasteSheet(dataNames, index, true);
+        onSetDataNames(names);
+        onSetCurrent(index + 1);
+        save();
         break;
+      }
     }
   };
 
@@ -189,9 +177,7 @@ const Editable = ({
 
   const handleSelect = () => {
     if (current !== index) {
-      const d = slides.datas[index];
-      slides.sheet.resetData(d, slides.datas);
-      slides.data = d;
+      slides.swapSheet(index);
       onSetCurrent(index);
     }
   };
