@@ -25,20 +25,12 @@ const DataInput = ({
   const [hover, setHover] = useState(false);
 
   const handleTrash = () => {
-    // const today = new Date().toLocaleDateString();
-    // firebase.trash(authUser.uid).get().then((doc) => {
-    //   if (doc.exists) {
-    //     firebase.trash(authUser.uid).update({ [name]: today });
-    //   } else {
-    //     firebase.trash(authUser.uid).set({ [name]: today });
-    //   }
-    // });
-    //
-    // const ws = inputs.findIndex((input) => input.name === name)
-    // onSetInputs([
-    //   ...inputs.slice(0, ws),
-    //   ...inputs.slice(ws + 1),
-    // ])
+    firebase.doMoveToTrash(authUser.uid, filename);
+    const ws = inputs.findIndex((input) => input.name === name);
+    onSetInputs([
+      ...inputs.slice(0, ws),
+      ...inputs.slice(ws + 1),
+    ]);
   };
 
   const ContextMenuDropdown = () => (

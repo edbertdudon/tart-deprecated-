@@ -92,15 +92,7 @@ const DataSource = ({
         break;
       }
       case DATASOURCE_DROPDOWN[4].key: {
-        // const today = new Date().toLocaleDateString();
-        // firebase.trash(authUser.uid).get().then((doc) => {
-        //   if (doc.exists) {
-        //     firebase.trash(authUser.uid).update({ [filename]: today });
-        //   } else {
-        //     firebase.trash(authUser.uid).set({ [filename]: today });
-        //   }
-        // });
-
+        firebase.doMoveToTrash(authUser.uid, filename);
         const ws = worksheets.findIndex((worksheet) => worksheet.name === filename);
         onSetWorksheets([
           ...worksheets.slice(0, ws),
@@ -116,9 +108,7 @@ const DataSource = ({
     firebase.doRunWorksheet(
       authUser.uid,
       filename,
-      `user/${authUser.uid}/${name}`,
-      `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`,
-      'gs://tart-90ca2.appspot.com/scripts/sparkR.R',
+      `user/${authUser.uid}/worksheets/${name}`,
     ).then((jobResp) => {
       if (jobResp === 'failed job') {
         onJobCancel(runId);
@@ -135,22 +125,9 @@ const DataSource = ({
     );
   };
 
-  const handleCommitRename = (n) => {
-    // setLoading(true);
-    // setName(n);
-    // firebase.doDownloadWorksheet(authUser.uid, filename).then((slide) => {
-    //   firebase.doUploadWorksheet(
-    //     authUser.uid,
-    //     n,
-    //     new File([JSON.stringify(slide)], n, { type: 'application/json' }),
-    //   ).then(() => {
-    //     firebase.doDeleteWorksheet(authUser.uid, filename).then(() => {
-    //       // onListFilesLessTrash()
-    //       setLoading(false);
-    //       // onSetWorksheetname(n)
-    //     });
-    //   });
-    // });
+  const handleCommit = (name) => {
+    setName(name);
+    firebase.doRenameWorksheet(authUser.uid, filename, name);
   };
 
   const handleOpen = () => onSetWorksheetname(filename);
@@ -205,7 +182,7 @@ const DataSource = ({
         <EditableInput
           value={name}
           readOnly={readOnly}
-          onCommit={handleCommitRename}
+          onCommit={handleCommit}
           classname="datasource-editabletext"
           setReadOnly={setReadOnly}
           inputId={`datasource-editabletext-${filename}`}

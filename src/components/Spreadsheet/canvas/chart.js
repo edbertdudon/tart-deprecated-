@@ -15,6 +15,8 @@ const HANDLE_COLOR = 'rgb(78,125,255)';
 const HANDLE_WIDTH = 2;
 const HANDLE_BOX_SIZE = 6;
 const HANDLE_BOX_COLOR = 'rgb(78,125,255)';
+const INITIAL_WIDTH = 500;
+const INITIAL_HEIGHT = 500;
 
 const charts = [];
 const selectionHandles = [];
@@ -53,8 +55,8 @@ class ChartBox {
   constructor() {
     this.x = 0;
     this.y = 0;
-    this.w = 500;
-    this.h = 500;
+    this.w = INITIAL_WIDTH;
+    this.h = INITIAL_HEIGHT;
     this.fill = '#444444';
     this.range = '';
     this.firstrow = true;
@@ -63,6 +65,7 @@ class ChartBox {
     this.variabley = null;
     this.image = h('img', `${cssPrefix}-chart-image`);
     // .attr('src', chartpng);
+    this.uri = '';
     this.sparkuri = '';
   }
 
@@ -154,6 +157,7 @@ function createChartBox(c) {
   rect.types = c.types;
   rect.variablex = c.variablex;
   rect.variabley = c.variabley;
+  rect.uri = c.uri;
   rect.sparkuri = c.sparkuri;
 
   return rect;
@@ -247,12 +251,11 @@ function chartMousemove(e) {
       case 0:
         // Still Wrong
         // chartSelect.x = mx;
-        chartSelect.x = my;
-        chartSelect.y = my;
+        chartSelect.x -= my;
+        chartSelect.y -= my;
         // chartSelect.w += oldx - mx;
         chartSelect.w += oldy - my;
         chartSelect.h += oldy - my;
-        console.log(chartSelect);
         break;
       case 1:
         chartSelect.y = my;
@@ -420,6 +423,8 @@ function getMouse(e) {
 }
 
 export {
+  INITIAL_WIDTH,
+  INITIAL_HEIGHT,
   ChartBox,
   createChartBox,
   clearCharts,

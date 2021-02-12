@@ -16,14 +16,17 @@ export const config = {
   measurementId: 'G-B2WK4MFZL7',
 };
 
-const fetchG = (func, data, idToken) => fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
-  method: 'POST',
-  body: JSON.stringify(data),
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: `Bearer ${idToken}`,
-  },
-});
+// const fetchG = (func, data, idToken) => fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
+function fetchG(func, data, idToken) {
+  return fetch(process.env.CLOUD_FUNCTIONS_URL, {
+    method: 'POST',
+    body: JSON.stringify(data),
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${idToken}`,
+    },
+  });
+}
 
 class Firebase {
   constructor() {
@@ -91,7 +94,8 @@ class Firebase {
 
   doUploadWorksheet = (uid, filename, file) => this.storage.ref(`user/${uid}/worksheets/${filename}`).put(file)
 
-  doDownloadWorksheet = (uid, filename) => this.storage.ref(`user/${uid}/worksheets/${filename}`).getDownloadURL()
+  doDownloadWorksheet = (uid, filename) => this.storage.ref(`user/${uid}/worksheets/${filename}`)
+    .getDownloadURL()
     .then((url) => fetch(url, { method: 'GET' })
       .then((res) => res.json())
       .then((res) => res))
@@ -99,11 +103,20 @@ class Firebase {
 
   doDeleteWorksheet = (uid, filename) => this.storage.ref(`user/${uid}/worksheets/${filename}`).delete()
 
+  doMoveToWorksheets = (uid, filename) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG('moveToWorksheets', { uid, filename }, authToken))
+
+  doRenameWorksheet = (uid, src, dest) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG('renameWorksheet', { uid, src, dest }, authToken))
+
   doListInputs = (uid) => this.storage.ref(`user/${uid}/inputs`).listAll()
 
   doUploadInput = (uid, filename, file) => this.storage.ref(`user/${uid}/inputs/${filename}`).put(file)
 
   doListTrash = (uid) => this.storage.ref(`user/${uid}/trash`).listAll()
+
+  doMoveToTrash = (uid, filename) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG('moveToTrash', { uid, filename }, authToken))
 
   doUploadTrash = (uid, filename, file) => this.storage.ref(`user/${uid}/trash/${filename}`).put(file)
 
@@ -111,11 +124,9 @@ class Firebase {
 
   // *** Dataproc API ***
 
-  doRunWorksheet = (authUser, filename, jobFileArgument, jobFileSave, jobFilePath) => fetchG('createandsubmit', {
+  doRunWorksheet = (authUser, filename, jobFileArgument) => fetchG('createandsubmit', {
     authuser: authUser.toLowerCase(),
     jobFileArgument,
-    jobFileSave,
-    jobFilePath,
     worksheet: filename.replace(/\s/g, '').toLowerCase(),
   }).then((res) => res.text())
 
@@ -131,17 +142,25 @@ class Firebase {
 
   // *** Database Connector API ***
 
-  doConnect = (data, connector) => this.auth.currentUser.getIdToken().then((authToken) => fetchG(connector, data, authToken)
-    .then((res) => res.json()).then((res) => res))
+  doConnect = (connector, data) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(connector, data, authToken)
+      .then((res) => res.json())
+      .then((res) => res))
 
-  doListDatabases = (data, connector) => this.auth.currentUser.getIdToken().then((authToken) => fetchG(connector, data, authToken)
-    .then((res) => res.json()).then((res) => res))
+  doListDatabases = (connector, data) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(connector, data, authToken)
+      .then((res) => res.json())
+      .then((res) => res));
 
-  doListTables = (data, connector) => this.auth.currentUser.getIdToken().then((authToken) => fetchG(connector, data, authToken)
-    .then((res) => res.json()).then((res) => res))
+  doListTables = (connector, data) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(connector, data, authToken)
+      .then((res) => res.json())
+      .then((res) => res))
 
-  doGetTableSample = (data, connector) => this.auth.currentUser.getIdToken().then((authToken) => fetchG(connector, data, authToken)
-    .then((res) => res.json()).then((res) => res))
+  doGetTableSample = (connector, data) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(connector, data, authToken)
+      .then((res) => res.json())
+      .then((res) => res))
 
   // *** User API ***
 

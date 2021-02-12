@@ -10,6 +10,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import Editable from './editable';
+import Input from './input';
 import './index.less';
 
 function reorder(list, startIndex, endIndex) {
@@ -47,7 +48,11 @@ const Navigator = ({
       <Draggable key={`draggable-${index}`} draggableId={`draggable-${index}`} index={index}>
         {(provided) => (
           <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="navigator-slidewrapper">
-            <Editable value={name} index={index} key={name} />
+            {slides.datas[index].type === 'input'
+              ? <Input value={name} index={index} key={name} />
+              : ('regression' in slides.datas[index] || 'optimization' in slides.datas[index])
+                ? <Sample value={name} index={index} key={name} />
+                : <Editable value={name} index={index} key={name} />}
           </div>
         )}
       </Draggable>

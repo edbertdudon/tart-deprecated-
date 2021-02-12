@@ -40,9 +40,7 @@ const Run = ({
         firebase.doRunWorksheet(
           authUser.uid,
           worksheetname,
-          `user/${authUser.uid}/${worksheetname}`,
-          `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`,
-          'gs://tart-90ca2.appspot.com/scripts/sparkR.R',
+          `user/${authUser.uid}/worksheets/${worksheetname}`,
         ).then((jobResp) => {
           if (jobResp === 'failed job') {
             const runId = getJobId(worksheetname.replace(/\s/g, '').toLowerCase(), jobs);

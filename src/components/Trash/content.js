@@ -13,19 +13,10 @@ const Content = ({ firebase, authUser }) => {
 
   useEffect(() => {
     setLoading(true);
-
     firebase.doListTrash(authUser.uid).then((res) => {
       setTrash(res.items);
       setLoading(false);
     });
-
-    // firebase.connection(authUser.uid).get()
-    //   .then((doc) => {
-    //     if (doc.exists) {
-    //       const list = Object.keys(doc.data());
-    //       setConnections(list);
-    //     }
-    //   });
   }, []);
 
   return (
@@ -34,7 +25,8 @@ const Content = ({ firebase, authUser }) => {
         ? <LoadingDataSource />
         : ((connections.length < 1 && trash.length < 1)
           ? <div className="home-content-search">Trash is empty</div>
-          : <div>
+          : (
+            <div>
               {trash.map((file, index) => (
                 <DataTrash
                   name={file.name}
@@ -46,8 +38,8 @@ const Content = ({ firebase, authUser }) => {
                 />
               ))}
             </div>
-        )
-      }
+          )
+        )}
     </div>
   );
 };

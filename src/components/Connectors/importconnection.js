@@ -9,7 +9,7 @@
 //  list containers: docker ps
 //  SQL Server:
 //    docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=yourStrong(!)Password' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
-//    docker restart 67a02d931c58
+//    docker restart 122c21c652cb
 //    sqlcmd -S 0.0.0.0:1433 -U sa -P MyNewPass! -Q "CREATE DATABASE SampleDB;"
 //  OracleDB:
 //    https://medium.com/@mfofana/how-to-install-oracle-database-on-mac-os-sierra-10-12-or-above-c0b350fd2f2c
@@ -25,34 +25,12 @@ import Icon from '@mdi/react';
 import { mdilChevronLeft, mdilChevronRight, mdilMagnify } from '@mdi/light-js';
 import { mdiLoading } from '@mdi/js';
 
-import { databaseList } from './databaseList';
-import { tablesList } from './tablesList';
-import { getTableSample } from './getTableSample';
+import databaseList from './databaseList';
+import tablesList from './tablesList';
+import getTableSample from './getTableSample';
+import setTableSample from './setTableSample';
 import { createFile, getMaxNumberCustomSheet } from '../../functions';
 import { withFirebase } from '../Firebase';
-
-function aoaToSpreadsheet(aoa) {
-  const o = { rows: {}, type: 'input' };
-  aoa.forEach((r, i) => {
-    const cells = {};
-    r.forEach((c, j) => { cells[j] = ({ text: c }); });
-    o.rows[i] = { cells };
-  });
-  return o;
-}
-
-// from [{x: 1, y: 'a'},{x: 2, y: 'b'}]
-function mysqlToSpreadsheet(data) {
-  let aoa = data.map((row) => Object.values(row).map((value) => value.toString()));
-  aoa = [Object.keys(data[0]), ...aoa];
-  return aoaToSpreadsheet(aoa);
-}
-
-// from {headers: [{name: 'DATE_'}, {name: 'RATING_X'}], rows: [['31-Dec-98', 0.0806], ['31-Dec-99', 0.2635]]}
-export function oracledbToSpreadsheet(data) {
-  const aoa = [data.headers.map((header) => header.name), ...data.rows];
-  return aoaToSpreadsheet(aoa);
-}
 
 const LEVELS_STATES = [
   'connections', 'databases', 'tables',
@@ -64,18 +42,21 @@ const Levels = ({
   <div>
     {
         {
-          connections:
-  <div className="filexplorer-content-text" onClick={() => onSelectConnection(option)}>
-    <p>{option}</p>
-  </div>,
-          databases:
-  <div className="filexplorer-content-text" onClick={() => onSelectDatabase(option)}>
-    <p>{option}</p>
-  </div>,
-          tables:
-  <div className="filexplorer-content-text" onClick={() => onSelectTable(option)}>
-    <p>{option}</p>
-  </div>,
+          connections: (
+            <div className="filexplorer-content-text" onClick={() => onSelectConnection(option)}>
+              <p>{option}</p>
+            </div>
+          ),
+          databases: (
+            <div className="filexplorer-content-text" onClick={() => onSelectDatabase(option)}>
+              <p>{option}</p>
+            </div>
+          ),
+          tables: (
+            <div className="filexplorer-content-text" onClick={() => onSelectTable(option)}>
+              <p>{option}</p>
+            </div>
+          ),
     		}[LEVELS_STATES[level]]
       }
   </div>
@@ -91,6 +72,7 @@ const ImportConnection = ({
   const [databases, setDatabases] = useState([]);
   const [tables, setTables] = useState([]);
   const [filteredOption, setFilteredOption] = useState([]);
+  const [connector, setConnector] = useState('');
   const [config, setConfig] = useState({});
   const [error, setError] = useState(null);
 
@@ -152,35 +134,34 @@ const ImportConnection = ({
 
   const handleSelectConnection = (connection) => {
     setLoading(true);
-    setConfig(connections[connection]);
-    if (connections[connection].connector === 'Oracle SQL') {
-      setLevel(level + 2);
-      tablesList(connections[connection].connector, connections[connection], firebase)
+    const { connector } = connections[connection];
+    setConnector(connector);
+    setConfig({ connection });
+    const data = { connection, uid: authUser.uid };
+    if (connector === 'Oracle SQL') {
+      tablesList(firebase, connector, data)
         .then((res) => {
-          if ('status' in res) {
-            if (res.status === 'ERROR') {
-              setError('Unable to connect');
-              setLoading(false);
-              return;
-            }
-          }
+          setLevel(level + 2);
           setTables(res);
           setFilteredOption(res);
+          setError('');
+          setLoading(false);
+        })
+        .catch(() => {
+          setError('Unable to connect');
           setLoading(false);
         });
     } else {
-      setLevel(level + 1);
-      databaseList(connections[connection].connector, connections[connection], firebase)
+      databaseList(firebase, connector, data)
         .then((res) => {
-          if ('status' in res) {
-            if (res.status === 'ERROR') {
-              setError('Unable to connect');
-              setLoading(false);
-              return;
-            }
-          }
+          setLevel(level + 1);
           setDatabases(res);
           setFilteredOption(res);
+          setError('');
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError('Unable to connect');
           setLoading(false);
         });
     }
@@ -188,72 +169,50 @@ const ImportConnection = ({
 
   const handleSelectDatabase = (database) => {
     setLoading(true);
-    setLevel(level + 1);
     const data = { ...config, database };
     setConfig(data);
-    tablesList(config.connector, data, firebase)
+    tablesList(firebase, connector, { ...data, uid: authUser.uid })
       .then((res) => {
-        if ('status' in res) {
-          if (res.status === 'ERROR') {
-            setError('Unable to connect');
-            setLoading(false);
-            return;
-          }
-        }
+        setLevel(level + 1);
         setTables(res);
         setFilteredOption(res);
+        setError('');
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError('Unable to connect');
         setLoading(false);
       });
   };
 
   const handleSelectTable = (table) => {
     if (level !== 2) return;
+
     setLoading(true);
+    getTableSample(firebase, connector, { ...config, table, uid: authUser.uid })
+      .then((res) => {
+        const out = setTableSample(connector, res);
+        out.delimiter = connector;
+        out.connection = config.connection;
+        out.database = config.database;
+        out.table = table;
+        insert(out);
 
-    const data = { ...config, table };
-    getTableSample(config.connector, data, firebase).then((res) => {
-      if ('status' in res) {
-        if (res.status === 'ERROR') {
-          setError('Unable to connect');
-          setLoading(false);
-          return;
-        }
-      }
-
-      switch (config.connector) {
-        case 'MySQL': {
-          const out = mysqlToSpreadsheet(res);
-          out.delimiter = 'mySQL';
-          break;
-        }
-        case 'Microsoft SQL Server': {
-          const out = mysqlToSpreadsheet(res);
-          out.delimiter = 'SQLServer';
-          break;
-        }
-        case 'Oracle SQL': {
-          const out = oracledbToSpreadsheet(res);
-          out.delimiter = 'OracleDB';
-          break;
-        }
-      }
-
-      out.connection = `${config.host}.${config.port}`;
-      out.database = config.database;
-      out.table = table;
-      insert(out, table);
-
-      onSelect();
-      handleClose();
-      setLevel(0);
-      setLoading(false);
-    });
+        onSelect();
+        handleClose();
+        setError('');
+        setLoading(false);
+        setLevel(0);
+      }).catch((err) => {
+        console.log(err);
+        setError('Unable to connect');
+        setLoading(false);
+      });
   };
 
-  const insert = (o, table) => {
-    const name = table.split('.').slice(0, -1).join('.');
-
-    const isEmpty = slides.insertData(current, o, name);
+  const insert = (o) => {
+    const name = o.table;
+    const isEmpty = slides.insertData(current, o, name, 'read');
     onSetDataNames(slides.datas.map((it) => it.name));
     if (!isEmpty) {
       onSetCurrent(slides.sheetIndex);
@@ -281,7 +240,6 @@ const ImportConnection = ({
           />
         </div>
       </div>
-      {error && <p className="filexplorer-error">{error}</p>}
       <div className="filexplorer-content">
         {filteredOption.map((option) => (
           <Levels
@@ -294,7 +252,7 @@ const ImportConnection = ({
           />
         ))}
       </div>
-      <br />
+      {error && <p className="filexplorer-error">{error}</p>}
       <input
         className="modal-button"
         type="button"

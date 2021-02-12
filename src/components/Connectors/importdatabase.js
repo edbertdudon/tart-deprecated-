@@ -11,7 +11,6 @@ import { withFirebase } from '../Firebase';
 const ImportDatabase = ({
   firebase, authUser, color, databaseType, onClose,
 }) => {
-  const [loading, setLoading] = useState(false);
   const [host, setHost] = useState('');
   const [port, setPort] = useState('');
   const [sid, setSid] = useState('');
@@ -22,6 +21,7 @@ const ImportDatabase = ({
   const [caFile, setCaFile] = useState('');
   const [keyFile, setKeyFile] = useState('');
   const [certFile, setCertFile] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const ca = useRef(null);
   const key = useRef(null);
@@ -56,39 +56,27 @@ const ImportDatabase = ({
 
   const handleConnect = () => {
     setLoading(true);
+    const data = {
+      host,
+      user,
+      password,
+      port,
+      url,
+      connector: databaseType,
+      uid: authUser.uid,
+    };
     if (databaseType === 'OracleDB') {
-      const data = {
-        host,
-        user,
-        password,
-        port,
-        sid,
-        url,
-        connector: databaseType,
-        uid: authUser.uid,
-      };
-    } else {
-      const data = {
-        host,
-        user,
-        password,
-        port,
-        url,
-        connector: databaseType,
-        uid: authUser.uid,
-      };
+      data.sid = sid;
     }
-
-    serverConnect(databaseType, data, firebase).then((res) => {
-      setLoading(false);
-      if (res.status === 'CONNECTED') {
-        handleClose();
-        // upload files
-      } else if (res.status === 'ERROR') {
+    serverConnect(databaseType, data, firebase)
+      .then(() => {
         setLoading(false);
+        handleClose();
+      })
+      .catch(() => {
         setError('Unable to connect');
-      }
-    });
+        setLoading(false);
+      });
   };
 
   const isInvalid = databaseType === 'OracleDB'
@@ -160,39 +148,38 @@ const ImportDatabase = ({
             disabled={!(host === '' && port === '' && user === '' && password === '')}
           />
         </div>
-        {ssl
-					&& (
-<div>
-  <div className="importdatabase-inputs-login">
-    <input
-      value={caFile.length < 1 ? 'Certificate authority' : caFile.name}
-      type="button"
-      onClick={handleClickCA}
-      className="importdatabase-inputs-button"
-    />
-    <input type="file" onChange={handleInputCA} accept=".pem" ref={ca} />
-  </div>
-  <br />
-  <div className="importdatabase-inputs-login">
-    <input
-      value={keyFile.length < 1 ? 'Client key' : keyFile.name}
-      type="button"
-      onClick={handleClickKey}
-      className="importdatabase-inputs-button"
-    />
-    <input type="file" onChange={handleInputKey} accept=".pem" ref={key} />
-  </div>
-  <div className="importdatabase-inputs-login">
-    <input
-      value={certFile.length < 1 ? 'Client certificate' : certFile.name}
-      type="button"
-      onClick={handleClickCert}
-      className="importdatabase-inputs-button"
-    />
-    <input type="file" onChange={handleInputCert} accept=".pem" ref={cert} />
-  </div>
-</div>
-					)}
+        {ssl && (
+          <div>
+            <div className="importdatabase-inputs-login">
+              <input
+                value={caFile.length < 1 ? 'Certificate authority' : caFile.name}
+                type="button"
+                onClick={handleClickCA}
+                className="importdatabase-inputs-button"
+              />
+              <input type="file" onChange={handleInputCA} accept=".pem" ref={ca} />
+            </div>
+            <br />
+            <div className="importdatabase-inputs-login">
+              <input
+                value={keyFile.length < 1 ? 'Client key' : keyFile.name}
+                type="button"
+                onClick={handleClickKey}
+                className="importdatabase-inputs-button"
+              />
+              <input type="file" onChange={handleInputKey} accept=".pem" ref={key} />
+            </div>
+            <div className="importdatabase-inputs-login">
+              <input
+                value={certFile.length < 1 ? 'Client certificate' : certFile.name}
+                type="button"
+                onClick={handleClickCert}
+                className="importdatabase-inputs-button"
+              />
+              <input type="file" onChange={handleInputCert} accept=".pem" ref={cert} />
+            </div>
+          </div>
+        )}
         <div className="importdatabase-textbox">
           {error && <p>{error}</p>}
         </div>
@@ -200,29 +187,26 @@ const ImportDatabase = ({
           Tart requires credentials to run your worksheet. Passwords are encrypted.
           Users have strict read access (Unable to edit, download, delete data within a database).
         </p>
-        <br />
         <input
           className="modal-button"
           type="button"
           value="Cancel"
           onClick={handleClose}
         />
-        {loading
-				  ? 	(
-  <div className="modal-button">
-    <Icon path={mdiLoading} size={1.5} spin />
-  </div>
-          )
-				  : 	(
-  <input
-    disabled={isInvalid}
-    className="modal-button"
-    type="button"
-    value="Connect"
-    onClick={handleConnect}
-    style={{ color: isInvalid ? 'rgb(0, 0, 0, 0.5)' : color[authUser.uid] }}
-  />
-          )}
+        {loading ? (
+          <div className="modal-loading">
+            <Icon path={mdiLoading} size={1.5} spin />
+          </div>
+        ) : (
+          <input
+            disabled={isInvalid}
+            className="modal-button"
+            type="button"
+            value="Connect"
+            onClick={handleConnect}
+            style={{ color: isInvalid ? 'rgb(0, 0, 0, 0.5)' : color[authUser.uid] }}
+          />
+        )}
       </div>
     </form>
   );

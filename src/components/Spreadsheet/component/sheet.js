@@ -9,8 +9,8 @@ import Editor from './editor';
 import ContextMenu from './contextmenu';
 import Table from './table';
 import {
-  chartInitEvents, chartResetData, chartMousedown, chartMouseup, chartMousemove,
-  chartScrollVertical, chartScrollHorizontal, invalidate,
+  chartInitEvents, chartResetData, chartMousedown, chartMouseup,
+  chartMousemove, chartScrollVertical, chartScrollHorizontal, invalidate,
 } from '../canvas/chart';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
@@ -20,6 +20,7 @@ import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula';
 import { columnToLetter } from '../cloudr';
+import { defaultSettings } from '../core/data_proxy';
 
 let isResize = false;
 
@@ -313,8 +314,8 @@ export function sheetReset() {
   const tOffset = this.getTableOffset();
   const vRect = this.getRect();
   const vRectChart = {
-    width: vRect.width - 30,
-    height: vRect.height - 25,
+    width: vRect.width - defaultSettings.col.indexWidth,
+    height: vRect.height - defaultSettings.row.height,
   };
   tableEl.attr(vRect);
   chartEl.attr(vRectChart);
@@ -1120,12 +1121,12 @@ export default class Sheet {
   }
 
   undo() {
-    this.data.undo();
+    this.data.undo(this);
     sheetReset.call(this);
   }
 
   redo() {
-    this.data.redo();
+    this.data.redo(this);
     sheetReset.call(this);
   }
 

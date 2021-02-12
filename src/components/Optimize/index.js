@@ -461,7 +461,7 @@ const Optimize = ({
     			setLoading(false);
     		} else {
     			res.type = 'optimize';
-    			res.optimization = sparkData;
+    			res.optimization = { ...sparkData, sample: true };
 
           const sheetname = `optimization ${
             objectiveClass === 0

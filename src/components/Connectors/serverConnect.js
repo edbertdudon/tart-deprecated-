@@ -1,13 +1,13 @@
-export const serverConnect = (connector, data, firebase) => {
+export default function serverConnect(firebase, connector, data) {
   switch (connector) {
     case 'MySQL':
-      return firebase.doConnect(data, 'connectMySql');
+      return firebase.doConnect('connectMySql', data);
       break;
     case 'Microsoft SQL Server':
-      return firebase.doConnect(data, 'connectMsSql');
+      return firebase.doConnect('connectMsSql', data);
       break;
     case 'Oracle SQL':
-      return firebase.doConnect(data, 'connectOracledb');
+      return firebase.doConnect('connectOracledb', data);
       break;
   }
-};
+}

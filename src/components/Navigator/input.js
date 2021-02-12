@@ -1,5 +1,5 @@
 //
-//  Editable
+//  Input
 //  Tart
 //
 //  Created by Edbert Dudon on 7/8/19.
@@ -17,31 +17,25 @@ import { OFF_COLOR } from '../../constants/off-color';
 import withModal from '../Modal';
 import { withFirebase } from '../Firebase';
 
-const NAVIGATOR_DROPDOWN = [
+const INPUT_DROPDOWN = [
   { key: 'New sheet', type: 'item' },
   { key: 'Rename...', type: 'item' },
   { type: 'divider' },
-  { key: 'Cut', type: 'item' },
-  { key: 'Copy', type: 'item' },
-  { key: 'Paste', type: 'item' },
   { key: 'Delete', type: 'item' },
-  { key: 'Duplicate', type: 'item' },
+  { key: 'Refresh Connection', type: 'item' },
 ];
 
 const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
   <ContextMenu id={`right-click${slide}`}>
-    <Item text={NAVIGATOR_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
-    <Item text={NAVIGATOR_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
-    <Item text={NAVIGATOR_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
+    <Item text={INPUT_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
+    <Item text={INPUT_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
     <hr />
-    <Item text={NAVIGATOR_DROPDOWN[4].key} onSelect={onDropdown} color={color} />
-    <Item text={NAVIGATOR_DROPDOWN[5].key} onSelect={onDropdown} color={color} />
-    <Item text={NAVIGATOR_DROPDOWN[6].key} onSelect={onDropdown} color={color} />
-    <Item text={NAVIGATOR_DROPDOWN[7].key} onSelect={onDropdown} color={color} />
+    <Item text={INPUT_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
+    <Item text={INPUT_DROPDOWN[4].key} onSelect={onDropdown} color={color} />
   </ContextMenu>
 );
 
-const Editable = ({
+const Input = ({
   firebase, authUser, worksheetname, slides, dataNames, current,
   saving, color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
@@ -110,7 +104,7 @@ const Editable = ({
 
   const handleDropdown = (key) => {
     switch (key) {
-      case NAVIGATOR_DROPDOWN[0].key: {
+      case INPUT_DROPDOWN[0].key: {
         const names = slides.insertSheet(current);
         onSetDataNames(names);
         onSetCurrent(current + 1);
@@ -121,30 +115,18 @@ const Editable = ({
         handleShow();
         break;
       }
-      case NAVIGATOR_DROPDOWN[3].key: {
+      case INPUT_DROPDOWN[3].key: {
         deleteSheet();
         break;
       }
-      case NAVIGATOR_DROPDOWN[4].key: {
-        slides.copySheet(index);
-        break;
-      }
-      case NAVIGATOR_DROPDOWN[5].key: {
-        const names = slides.pasteSheet(dataNames, index, false);
-        onSetDataNames(names);
-        onSetCurrent(index + 1);
-        save();
-        break;
-      }
-      case NAVIGATOR_DROPDOWN[6].key: {
-        deleteSheet();
-        break;
-      }
-      case NAVIGATOR_DROPDOWN[7].key: {
-        const names = slides.pasteSheet(dataNames, index, true);
-        onSetDataNames(names);
-        onSetCurrent(index + 1);
-        save();
+      case INPUT_DROPDOWN[4].key: {
+        // refresh connection
+        // const data = slides.datas[index];
+        // const connector = data.delimiter;
+        // const config = {
+        //
+        // };
+        // getTableSample(data.connector, firebase);
         break;
       }
     }
@@ -191,13 +173,16 @@ const Editable = ({
           </div>
           {show
             ? (
-              <input
-                type="text"
-                onChange={handleChange}
-                className="navigator-input"
-                value={text}
-                autoFocus
-              />
+              <>
+                <input
+                  type="text"
+                  onChange={handleChange}
+                  className="navigator-input"
+                  value={text}
+                  autoFocus
+                />
+                <div className="navigator-subtext">Sample</div>
+              </>
             )
             :	(
               <div
@@ -206,6 +191,7 @@ const Editable = ({
                 onDoubleClick={handleShow}
               >
                 {text}
+                <div className="navigator-subtext">Sample</div>
               </div>
             )}
         </div>
@@ -243,4 +229,4 @@ export default compose(
     mapStateToProps,
     mapDispatchToProps,
   ),
-)(Editable);
+)(Input);

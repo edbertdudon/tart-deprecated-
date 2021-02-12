@@ -1,10 +1,10 @@
-export const databaseList = (connector, data, firebase) => {
+export default function databaseList(firebase, connector, data) {
   switch (connector) {
     case 'MySQL':
-      return firebase.doListDatabases(data, 'listDatabasesMySql');
+      return firebase.doListDatabases('listDatabasesMySql', data);
       break;
     case 'Microsoft SQL Server':
-      return firebase.doListDatabases(data, 'listDatabasesMsSql');
+      return firebase.doListDatabases('listDatabasesMsSql', data);
       break;
   }
-};
+}

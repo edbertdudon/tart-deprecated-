@@ -30,12 +30,12 @@ const Edit = ({ slides }) => {
     const { data, sheet } = slides;
     switch (key) {
       case EDIT_DROPDOWN[0].key: {
-        data.undo();
+        data.undo(sheet);
         sheetReset.call(sheet);
         break;
       }
       case EDIT_DROPDOWN[1].key: {
-        data.redo();
+        data.redo(sheet);
         sheetReset.call(sheet);
         break;
       }

@@ -31,14 +31,8 @@ const Header = ({
   }, []);
 
   const handleCommit = (name) => {
-    // onSetSaving(true);
-    // const file = new File([JSON.stringify(slides.getData())], name, { type: 'application/json' });
-    // firebase.doUploadWorksheet(authUser.uid, name, file);
-    // firebase.doDeleteWorksheet(authUser.uid, worksheetname)
-    //   .then(() => {
-    //     onSetSaving(false);
-    //     onSetWorksheetname(name);
-    //   });
+    onSetWorksheetname(name);
+    firebase.doRenameWorksheet(authUser.uid, worksheetname, name);
   };
 
   const handleDropdown = (i) => firebase.doSignOut();

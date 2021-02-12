@@ -1,13 +1,13 @@
-export const tablesList = (connector, data, firebase) => {
+export default function tablesList(firebase, connector, data) {
   switch (connector) {
     case 'MySQL':
-      return firebase.doListTables(data, 'listTablesMySql');
+      return firebase.doListTables('listTablesMySql', data);
       break;
     case 'Microsoft SQL Server':
-      return firebase.doListTables(data, 'listTablesMsSql');
+      return firebase.doListTables('listTablesMsSql', data);
       break;
     case 'Oracle SQL':
-      return firebase.doListTables(data, 'listTablesOracledb');
+      return firebase.doListTables('listTablesOracledb', data);
       break;
   }
-};
+}

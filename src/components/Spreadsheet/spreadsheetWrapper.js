@@ -23,8 +23,8 @@ import { compose } from 'recompose';
 import useDebounce from '../../functions/useDebounce.ts';
 import { rRender } from './cloudr';
 import Spreadsheet from './index.js';
-import { options } from './options.js';
 import { createFile } from '../../functions';
+import { options } from './options';
 
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
 import { OFF_COLOR } from '../../constants/off-color';

@@ -18,8 +18,8 @@ function getRangeIndex(range) {
   return {
     sri: mn[0],
     sci: ml[0],
-    eri: mn[1],
-    eci: ml[1],
+    eri: mn[1] || mn[0],
+    eci: ml[1] || ml[0],
   };
 }
 

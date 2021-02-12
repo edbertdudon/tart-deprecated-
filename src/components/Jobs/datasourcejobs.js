@@ -28,13 +28,13 @@ const DataSourceJobs = ({
 
   const handleRun = () => {
     onJobSubmit(filename);
-    const jobFilePath = 'gs://tart-90ca2.appspot.com/scripts/sparkR.R';
-    const jobFileArgument = `user/${authUser.uid}/${filename}`;
-    const jobFileSave = `gs://tart-90ca2.appspot.com/user/${authUser.uid}/`;
-    firebase.doRunWorksheet(authUser.uid, filename, jobFileArgument, jobFileSave, jobFilePath)
-      .then((jobResp) => {
-        if (jobResp === 'failed job') onJobCancel(runId);
-      });
+    firebase.doRunWorksheet(
+      authUser.uid,
+      filename,
+      `user/${authUser.uid}/worksheets/${filename}`,
+    ).then((jobResp) => {
+      if (jobResp === 'failed job') onJobCancel(runId);
+    });
   };
 
   const handleCancel = () => {

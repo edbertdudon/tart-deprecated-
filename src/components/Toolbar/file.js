@@ -110,18 +110,8 @@ const Files = ({
         break;
       }
       case FILE_DROPDOWN[5].key: {
-        console.log(JSON.stringify(slides.data.charts));
-        // const today = new Date().toLocaleDateString();
-        //
-        // firebase.trash(authUser.uid).get().then((doc) => {
-        //   if (doc.exists) {
-        //     firebase.trash(authUser.uid).update({ [worksheetname]: today });
-        //   } else {
-        //     firebase.trash(authUser.uid).set({ [worksheetname]: today });
-        //   }
-        // });
-        //
-        // history.push(ROUTES.HOME);
+        firebase.doMoveToTrash(authUser.uid, worksheetname);
+        history.push(ROUTES.HOME);
         break;
       }
       case FILE_DROPDOWN[7].key: {

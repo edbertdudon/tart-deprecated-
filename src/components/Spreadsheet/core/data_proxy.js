@@ -14,14 +14,18 @@ import { Validations } from './validation';
 import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
+import { options } from '../options';
 import {
-  ChartBox, createChartBox, clearCharts, addRect, changeRect, deleteRect, setChartSelect,
+  INITIAL_WIDTH, INITIAL_HEIGHT, ChartBox, createChartBox,
+  clearCharts, addRect, changeRect, deleteRect, setChartSelect,
 } from '../canvas/chart';
 import charts from '../../Chart/chartsR';
 import {
   translateR, columnToLetter, spreadsheetToR, doChart,
 } from '../cloudr';
-import { getRownames, getRange, getRangeIndex } from '../../RightSidebar/datarange';
+import {
+  getRownames, getVarsAsColumns, getRange, getRangeIndex,
+} from '../../RightSidebar/datarange';
 
 // private methods
 /*
@@ -77,24 +81,25 @@ import { getRownames, getRange, getRangeIndex } from '../../RightSidebar/dataran
  *  }
  * }
  */
-const defaultSettings = {
+export const defaultSettings = {
   mode: 'edit', // edit | read
   view: {
-    height: () => document.documentElement.clientHeight,
+    height: () => document.documentElement.clientHeight - 31,
     width: () => document.documentElement.clientWidth,
   },
   showGrid: true,
   showToolbar: true,
   showContextmenu: true,
+  showNavigator: true,
   row: {
-    len: 100,
+    len: 1000,
     height: 25,
   },
   col: {
-    len: 26,
+    len: 40,
     width: 100,
-    indexWidth: 60,
-    minWidth: 60,
+    indexWidth: 30,
+    minWidth: 30,
   },
   style: {
     bgcolor: '#ffffff',
@@ -105,7 +110,7 @@ const defaultSettings = {
     underline: false,
     color: '#0a0a0a',
     font: {
-      name: 'Arial',
+      name: 'Helvetica',
       size: 10,
       bold: false,
       italic: false,
@@ -400,17 +405,36 @@ export default class DataProxy {
     return this.history.canRedo();
   }
 
-  undo() {
-    this.history.undo(this.getData(), (d) => {
-      // console.log(d);
+  undoRedoChart(sheet) {
+    if (d.charts.length > current.charts.length) {
+      const c = d.charts.find((chart) => current.charts.indexOf(chart) === -1);
+      const chart = createChartBox(c);
+      chart.image.attr('src', chart.uri);
+      this.charts.push(chart);
+      addRect(chart);
+      this.chartSelect = chart;
+      setChartSelect(chart);
+      sheet.trigger('chart-select', chart);
+    } else if (d.charts.length < current.charts.length) {
+      const i = current.charts.findIndex((chart) => d.charts.indexOf(chart) === -1);
+      this.charts.splice(i, 1);
+      deleteRect(i);
+    }
+  }
+
+  undo(sheet) {
+    const current = this.getData();
+    this.history.undo(current, (d) => {
       this.setData(d);
-      // if (d.charts)
+      undoRedoChart(sheet);
     });
   }
 
-  redo() {
-    this.history.redo(this.getData(), (d) => {
+  redo(sheet) {
+    const current = this.getData();
+    this.history.redo(current, (d) => {
       this.setData(d);
+      undoRedoChart(sheet);
     });
   }
 
@@ -1158,6 +1182,9 @@ export default class DataProxy {
     const c = new ChartBox();
     c.range = getRange(this.rows.len, range);
     c.types = [type];
+    const navigatorWidth = defaultSettings.showNavigator ? 125 : 0;
+    c.x = (this.viewWidth() - defaultSettings.col.indexWidth - navigatorWidth - INITIAL_WIDTH) / 2;
+    c.y = (this.viewHeight() - defaultSettings.row.height - INITIAL_HEIGHT) / 2;
 
     const rowNames = getRownames(this.rows._, range);
     if (rowNames.length !== 0) {
@@ -1180,16 +1207,24 @@ export default class DataProxy {
   loadChart(cs, datas) {
     // clearCharts();
     cs.forEach((c) => {
-      this.setChart(c, datas, getRangeIndex(c.range)).then((chart) => {
-        addRect(chart);
-      });
+      if (c.sparkuri.length > 0) {
+        c.image.attr('src', c.sparkuri);
+        addRect(c);
+      } else {
+        this.setChart(c, datas, getRangeIndex(c.range)).then((chart) => {
+          addRect(chart);
+        });
+      }
     });
   }
 
   resetCharts(cs) {
     clearCharts();
-    cs.forEach((chart) => {
-      addRect(chart);
+    cs.forEach((c) => {
+      if (c.sparkuri.length > 0) {
+        c.image.attr('src', c.sparkuri);
+      }
+      addRect(c);
     });
   }
 
@@ -1203,7 +1238,6 @@ export default class DataProxy {
 
   deleteChart() {
     const i = this.charts.findIndex((chart) => chart === this.chartSelect);
-
     this.changeData(() => {
       this.charts.splice(i, 1);
       deleteRect(i);
@@ -1222,6 +1256,7 @@ export default class DataProxy {
       sri, sci, eri, eci,
     } = range;
     const rowNames = getRownames(this.rows._, range);
+    const colVars = getVarsAsColumns(this.rows._, this.rows.len, range);
     const data = {
       slides: JSON.stringify(spreadsheetToR(datas)),
       names: JSON.stringify(datas.map((data) => data.name)),
@@ -1241,6 +1276,7 @@ export default class DataProxy {
 
     return doChart(data).then((uri) => {
       c.image.attr('src', uri);
+      c.uri = uri;
       return c;
     });
   }
@@ -1272,12 +1308,14 @@ export default class DataProxy {
 
   getData() {
     const {
-      name, freeze, styles, merges, rows, cols, validations, autoFilter, type, regression, optimization, charts,
+      name, freeze, styles, merges, rows, cols, validations,
+      autoFilter, type, regression, optimization, charts,
     } = this;
     const data = {
       name,
       freeze: xy2expr(freeze[1], freeze[0]),
       styles,
+      charts,
       merges: merges.getData(),
       rows: rows.getData(),
       cols: cols.getData(),
@@ -1287,7 +1325,6 @@ export default class DataProxy {
     };
     if (regression) data.regression = regression;
     if (optimization) data.optimization = optimization;
-    if (charts.length > 0) data.charts = charts;
     return data;
   }
 }

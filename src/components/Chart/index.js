@@ -27,12 +27,12 @@ const Chart = ({
   const [types, setTypes] = useState([]);
   const [variableX, setVariableX] = useState(null);
   const [variableY, setVariableY] = useState(null);
+  const [sparkuri, setSparkuri] = useState('');
+  const [message, setMessage] = useState(null);
   const [datarangeError, setDatarangeError] = useState(null);
 
   useEffect(() => {
     const { rows } = slides.data;
-    // const { chartSelect } = data;
-    console.log(chartSelect);
     if (chartSelect === null) {
       setVariables([]);
       setDatarange('');
@@ -40,6 +40,8 @@ const Chart = ({
       setTypes([]);
       setVariableX(null);
       setVariableY(null);
+      setSparkuri('');
+      setMessage(null);
       setDatarangeError(null);
     } else {
       const range = getRangeIndex(chartSelect.range);
@@ -57,6 +59,7 @@ const Chart = ({
       setTypes(chartSelect.types);
       setVariableX(chartSelect.variablex);
       setVariableY(chartSelect.variabley);
+      setSparkuri(chartSelect.sparkuri);
     }
   }, [chartSelect]);
 
@@ -95,23 +98,28 @@ const Chart = ({
 
   const handleFirstrow = () => {
     const { data } = slides;
-    const { rows } = data;
-    const range = getRangeIndex(datarange);
-
-    setFirstRow(!firstRow);
-    if (!firstRow) {
-      setVariables(
-        getRownames(rows._, range),
-      );
-    } else {
-      setVariables(
-        getVarsAsColumns(rows._, rows.len, range),
-      );
+    const { type, rows } = data;
+    if (type !== 'input') {
+      const range = getRangeIndex(datarange);
+      setFirstRow(!firstRow);
+      if (!firstRow) {
+        setVariables(
+          getRownames(rows._, range),
+        );
+      } else {
+        setVariables(
+          getVarsAsColumns(rows._, rows.len, range),
+        );
+      }
+      const c = data.chartSelect;
+      c.firstrow = !firstRow;
+      slides.editChart(c);
+      save();
     }
-    const c = data.chartSelect;
-    c.firstrow = !firstRow;
-    slides.editChart(c);
-    save();
+    // input must have firstrow = true for sparkR to work
+    if (type === 'input' && datarange.match(NUMBERS_REFERENCE) === null) {
+      setMessage('First row must be true for calculating statistics on population data.');
+    }
   };
 
   function save() {
@@ -128,54 +136,59 @@ const Chart = ({
     <>
       {types.length < 1
         ? <div className="rightsidebar-none">No chart selected</div>
-        : (
-          <>
-            <div className="rightsidebar-label">Chart Type</div>
-            {types.map((selected, index) => (
-              <ChartsWithListsDropdown
-                onChange={handleUpdateChart}
-                options={charts.filter((item, index) => filterVariables(item, index))}
-                name={charts[selected].title}
-                selection={types}
-                setSelection={setTypes}
-                currentSelection={index}
-                key={index}
-              />
-            ))}
-            <ChartsWithLists
-              onChange={handleAddChart}
-              options={charts.filter((item, index) => filterVariables(item, index))}
-              name="Add Additonal Chart"
-              styles={{ color: '#aaa' }}
-            />
-            <DataRange
-              firstRow={firstRow}
-              datarange={datarange}
-              setVariables={setVariables}
-              setDatarange={setDatarange}
-              error={datarangeError}
-              setError={setDatarangeError}
-            />
-            <div className="rightsidebar-label">X-Axis</div>
-            <OptionsWithLists
-              onChange={handleUpdateVariableX}
-              options={variables}
-              name={variables[variableX]}
-            />
-            {(charts[types[0]].variables > 1)
-              && (
-              <>
-                <div className="rightsidebar-label">Y-Axis</div>
-                <OptionsWithLists
-                  onChange={handleUpdateVariableY}
-                  options={variables}
-                  name={variables[variableY]}
+        : sparkuri.length > 0
+          ? <div className="rightsidebar-none">Cannot edit chart plotted in 'Run'</div>
+          : (
+            <>
+              <div className="rightsidebar-label">Chart Type</div>
+              {types.map((selected, index) => (
+                <ChartsWithListsDropdown
+                  onChange={handleUpdateChart}
+                  options={charts.filter((item, index) => filterVariables(item, index))}
+                  name={charts[selected].title}
+                  selection={types}
+                  setSelection={setTypes}
+                  currentSelection={index}
+                  key={index}
                 />
-              </>
-              )}
-            <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
-          </>
-        )}
+              ))}
+              <ChartsWithLists
+                onChange={handleAddChart}
+                options={charts.filter((item, index) => filterVariables(item, index))}
+                name="Add Additonal Chart"
+                styles={{ color: '#aaa' }}
+              />
+              <DataRange
+                firstRow={firstRow}
+                datarange={datarange}
+                setVariables={setVariables}
+                setDatarange={setDatarange}
+                error={datarangeError}
+                setError={setDatarangeError}
+              />
+              <div className="rightsidebar-label">X-Axis</div>
+              <OptionsWithLists
+                onChange={handleUpdateVariableX}
+                options={variables}
+                name={variables[variableX]}
+              />
+              {(charts[types[0]].variables > 1)
+                && (
+                <>
+                  <div className="rightsidebar-label">Y-Axis</div>
+                  <OptionsWithLists
+                    onChange={handleUpdateVariableY}
+                    options={variables}
+                    name={variables[variableY]}
+                  />
+                </>
+                )}
+              <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+              <div className="rightsidebar-text">
+                {message && <div className="rightsidebar-error">{message}</div>}
+              </div>
+            </>
+          )}
     </>
   );
 };

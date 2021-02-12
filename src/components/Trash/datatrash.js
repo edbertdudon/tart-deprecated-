@@ -26,6 +26,14 @@ const DATASOURCE_DROPDOWN = [
   { key: 'Move back', type: 'item' },
 ];
 
+function removeDataTrash(trash, name, onSetTrash) {
+  const ws = trash.findIndex((t) => t.name === name);
+  onSetTrash([
+    ...trash.slice(0, ws),
+    ...trash.slice(ws + 1),
+  ]);
+}
+
 const DataTrash = ({
   firebase, authUser, color, name, trash,
   connections, onSetTrash, onSetConnections,
@@ -39,24 +47,19 @@ const DataTrash = ({
         setIsOpen(!isOpen);
         break;
       case 'Move back':
-        // firebase.doDeleteTrashField(authUser.uid, name);
-        // onReload(name);
+        handleMoveBack();
         break;
     }
   };
 
   const handleMoveBack = () => {
-    // firebase.doDeleteTrashField(authUser.uid, name);
-    // onReload(name);
+    firebase.doMoveToWorksheets(authUser.uid, name);
+    removeDataTrash(trash, name, onSetTrash);
   };
 
   const handleDelete = () => {
     firebase.doDeleteTrash(authUser.uid, name);
-    const ws = trash.findIndex((t) => t.name === name);
-    onSetTrash([
-      ...trash.slice(0, ws),
-      ...trash.slice(ws + 1),
-    ]);
+    removeDataTrash(trash, name, onSetTrash);
   };
 
   const handleOpen = () => setIsOpen(true);

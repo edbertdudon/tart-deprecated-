@@ -35,17 +35,18 @@ const Form = ({
   const [datarange, setDatarange] = useState('');
   const [firstRow, setFirstRow] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(null);
   const [datarangeError, setDatarangeError] = useState(null);
 
   useEffect(() => {
     const { data, sheet } = slides;
     const { type, rows } = data;
     const { range } = sheet.selector;
+    const rowNames = getRownames(rows._, range);
 
     setDatarange(getRange(rows.len, range));
 
-	  if (type === 'sheet' || type === 'input') {
-      const rowNames = getRownames(rows._, range);
+	  if (type === 'sheet') {
 	    if (rowNames.some(isNaN)) {
 	      setVariables(rowNames);
 	    } else {
@@ -55,29 +56,39 @@ const Form = ({
 	      setFirstRow(false);
 	    }
 	  }
+    if (slides.data.type === 'input') {
+      setVariables(rowNames);
+    }
   }, []);
 
   const handleClose = () => {
     onSetRightSidebar('none');
     setFirstRow(true);
+    setMessage(null);
     setDatarangeError(null);
     setError(null);
     setLoading(false);
   };
 
   const handleFirstrow = () => {
-    const { rows } = slides.data;
-    const range = getRangeIndex(datarange);
+    const { type, rows } = slides.data;
 
-    setFirstRow(!firstRow);
-    if (firstRow) {
-      setVariables(
-        getRownames(rows._, range),
-      );
-    } else {
-      setVariables(
-        getVarsAsColumns(rows._, rows.len, range),
-      );
+    if (type !== 'input') {
+      const range = getRangeIndex(datarange);
+      setFirstRow(!firstRow);
+      if (firstRow) {
+        setVariables(
+          getRownames(rows._, range),
+        );
+      } else {
+        setVariables(
+          getVarsAsColumns(rows._, rows.len, range),
+        );
+      }
+    }
+    // input must have firstrow = true for sparkR to work
+    if (type === 'input' && datarange.match(NUMBERS_REFERENCE) === null) {
+      setMessage('First row must be true for calculating statistics on population data.');
     }
   };
 
@@ -97,7 +108,7 @@ const Form = ({
       delete formuladata.slides;
       delete formuladata.names;
       res.type = statistics.find((e) => e.key === statistic).function;
-      res.regression = formuladata;
+      res.regression = { ...formuladata, sample: true };
 
       const isEmpty = slides.insertData(current, res, statistic, 'read');
       onSetDataNames(slides.datas.map((it) => it.name));
@@ -136,7 +147,8 @@ const Form = ({
       {children}
       <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
       <div className="rightsidebar-text">
-        <p>{statistics.find((e) => e.key === statistic).description}</p>
+        {/* <p>{statistics.find((e) => e.key === statistic).description}</p> */}
+        {message && <div className="rightsidebar-error">{message}</div>}
         {error && <div className="rightsidebar-error">{error}</div>}
       </div>
       {loading
