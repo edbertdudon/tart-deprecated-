@@ -9,7 +9,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Header from './header';
-import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
 
 const View = ({
@@ -57,7 +56,7 @@ const View = ({
   };
 
   return (
-    <ViewWithDropdown
+    <Header
       classname="dropdown-content"
       text="View"
       items={VIEW_DROPDOWN}
@@ -67,11 +66,7 @@ const View = ({
   );
 };
 
-const ViewWithDropdown = withDropdown(Header);
-
 const mapStateToProps = (state) => ({
-  // authUser: state.sessionState.authUser,
-  // color: (state.colorState.colors || {}),
   slides: (state.slidesState.slides || {}),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
 });

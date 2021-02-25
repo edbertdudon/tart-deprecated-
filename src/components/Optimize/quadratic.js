@@ -6,33 +6,32 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react';
-import { updateRangeNotOne, updateCellorSingleRange } from './index';
+import CellReference from '../RightSidebar/cellreference';
+import { validateRangeNotOne, validateCellorSingleRange } from './index';
 
 const Quadratic = ({
   quadratic, linear, error, setQuadratic, setLinear, setError,
 }) => {
-  const handleUpdateQuadratic = (e) => updateRangeNotOne(e, setQuadratic, setError);
-
-  const handleUpdateLinear = (e) => updateCellorSingleRange(e, setLinear, setError);
-
   return (
     <>
       <div className="rightsidebar-label">Quadratic objective</div>
-      <div className="rightsidebar-input-text-2part1">Quadratic matrix</div>
-      <div className="rightsidebar-input-text-2part2">Linear matrix</div>
-      <input
-        type="text"
-        className="rightsidebar-input-2part1"
-        onChange={handleUpdateQuadratic}
-        value={quadratic}
+      <div className="rightsidebar-input-text-2part1">Quadratic</div>
+      <div className="rightsidebar-input-text-2part2">Linear</div>
+      <CellReference
+        cell={quadratic}
+        onSetCell={setQuadratic}
+        classname="rightsidebar-input-2part1"
         placeholder="A1:A2"
+        onValidate={validateRangeNotOne}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-2part2"
-        onChange={handleUpdateLinear}
-        value={linear}
+      <CellReference
+        cell={linear}
+        onSetCell={setLinear}
+        classname="rightsidebar-input-2part2"
         placeholder="B1:B2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
       <div className="rightsidebar-text">
         {error && <div className="rightsidebar-error">{error}</div>}

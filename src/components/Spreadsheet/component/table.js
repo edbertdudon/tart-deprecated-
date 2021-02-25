@@ -12,7 +12,7 @@ import {
 // global var
 const cellPaddingWidth = 5;
 // const tableFixedHeaderCleanStyle = { fillStyle: '#f4f5f8' };
-const tableFixedHeaderCleanStyle = { fillStyle: '#353535' };
+const tableFixedHeaderCleanStyle = { fillStyle: '#000000' };
 const tableGridStyle = {
   fillStyle: '#fff',
   lineWidth: thinLineWidth,
@@ -269,7 +269,7 @@ function renderFixedLeftTopCell(fw, fh) {
   draw.save();
   // left-top-cell
   // draw.attr({ fillStyle: '#f4f5f8' })
-  draw.attr({ fillStyle: '#353535' })
+  draw.attr({ fillStyle: '#000000' })
     .fillRect(0, 0, fw, fh);
   draw.restore();
 }

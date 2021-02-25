@@ -30,6 +30,7 @@ import tablesList from './tablesList';
 import getTableSample from './getTableSample';
 import setTableSample from './setTableSample';
 import { createFile, getMaxNumberCustomSheet } from '../../functions';
+import withModal from '../Modal';
 import { withFirebase } from '../Firebase';
 
 const LEVELS_STATES = [
@@ -192,10 +193,12 @@ const ImportConnection = ({
     getTableSample(firebase, connector, { ...config, table, uid: authUser.uid })
       .then((res) => {
         const out = setTableSample(connector, res);
-        out.delimiter = connector;
-        out.connection = config.connection;
-        out.database = config.database;
-        out.table = table;
+        out.input = {
+          connector,
+          connection: config.connection,
+          database: config.database,
+          table: config.table,
+        };
         insert(out);
 
         onSelect();
@@ -204,7 +207,6 @@ const ImportConnection = ({
         setLoading(false);
         setLevel(0);
       }).catch((err) => {
-        console.log(err);
         setError('Unable to connect');
         setLoading(false);
       });
@@ -280,6 +282,7 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default compose(
+  withModal,
   withFirebase,
   connect(
     mapStateToProps,

@@ -12,7 +12,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { useOutsideAlerter } from '../../functions';
-import withModal from '../Modal';
+import Message from './message';
 
 const EditableInput = ({
   value, readOnly, onCommit, worksheets,
@@ -56,10 +56,13 @@ const EditableInput = ({
   return (
     <>
       {readOnly
-        ? <div className={classname} onDoubleClick={handleReadonly} style={style}>
+        ? (
+          <div className={classname} onDoubleClick={handleReadonly} style={style}>
             {text}
           </div>
-        : <input
+        )
+        : (
+          <input
             type="text"
             onChange={handleChange}
             className={classname}
@@ -69,8 +72,9 @@ const EditableInput = ({
             id={inputId}
             autoFocus
           />
-      }
-      <MessageWithModal
+        )}
+      <Message
+        classname="modal"
         text={errortext}
         isOpen={error}
         setIsOpen={setError}
@@ -79,15 +83,6 @@ const EditableInput = ({
     </>
   );
 };
-
-const Message = ({ text, onSelect }) => (
-  <form className="modal-form-editableinput">
-    <p>{`The name ${text} is already taken.`}</p>
-    <button className="modal-button" onClick={onSelect}>Ok</button>
-  </form>
-);
-
-const MessageWithModal = withModal(Message);
 
 const mapStateToProps = (state) => ({
   worksheets: (state.worksheetsState.worksheets || []),

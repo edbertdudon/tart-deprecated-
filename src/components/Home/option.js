@@ -1,3 +1,6 @@
+import React from 'react';
+import withDropdown from '../Dropdown';
+
 const Option = ({
   text, hover, onHover, isOpen, onOpen, color,
 }) => (
@@ -11,3 +14,7 @@ const Option = ({
     {text}
   </div>
 );
+
+const OptionWithDropdown = withDropdown(Option);
+
+export default OptionWithDropdown;

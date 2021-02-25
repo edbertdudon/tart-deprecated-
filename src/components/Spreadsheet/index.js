@@ -44,7 +44,7 @@ class Spreadsheet {
     // rootEl.child(this.bottombar.el);
   }
 
-  addSheet(name, active = true, index) {
+  addSheet(name, active = true, index, mode = 'edit') {
     let n = name || `Sheet${this.sheetIndex}`;
     if (this.datas.length > 0) {
       const names = this.datas.map((it) => it.name);
@@ -54,7 +54,10 @@ class Spreadsheet {
       }
     }
 
-    const d = new DataProxy(n, this.options);
+    const opt = this.options;
+    opt.mode = mode;
+
+    const d = new DataProxy(n, opt);
     d.change = (...args) => {
       this.sheet.trigger('change', ...args);
     };
@@ -105,7 +108,9 @@ class Spreadsheet {
     } else {
       data = this.datas[this.clipboard.range];
     }
-    const d = new DataProxy('temp', this.options);
+    const opt = this.options;
+    opt.mode = data.settings.mode;
+    const d = new DataProxy('temp', opt);
     d.setData(data.getData());
     d.name = `${data.name} ${getMaxNumberCustomSheet(dataNames, data.name)}`;
     this.datas.splice(index + 1, 0, d);
@@ -125,7 +130,8 @@ class Spreadsheet {
   }
 
   insertData(current, o, name, mode = 'edit') {
-    const { row, col } = this.options;
+    const opt = this.options;
+    const { row, col } = opt;
     const { rows } = o;
     const nrows = Object.keys(rows).length;
     const ncols = Object.keys(rows[0].cells).length;
@@ -137,9 +143,8 @@ class Spreadsheet {
     }
 
     const { datas } = this;
-    const opt = this.options;
     opt.mode = mode;
-    const d = new DataProxy('temp', this.options);
+    const d = new DataProxy('temp', opt);
     d.setData(o);
     const names = datas.map((it) => it.name);
     const n = getMaxNumberCustomSheet(names, name);
@@ -170,7 +175,8 @@ class Spreadsheet {
     if (ds.length > 0) {
       for (let i = 0; i < ds.length; i += 1) {
         const it = ds[i];
-        const nd = this.addSheet(it.name, i === 0);
+        const mode = it.type === 'input' ? 'read' : 'edit'
+        const nd = this.addSheet(it.name, i === 0, undefined, mode);
         nd.setData(it, false);
         nd.loadChart(nd.charts, this.datas);
         if (i === 0) {

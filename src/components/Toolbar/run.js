@@ -10,7 +10,6 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { useHistory } from 'react-router-dom';
 import Header from './header';
-import withDropdown from '../Dropdown';
 import { submitJob, getJobId, cancelJob } from '../Home/content';
 import * as ROUTES from '../../constants/routes';
 import { OFF_COLOR } from '../../constants/off-color';
@@ -69,7 +68,7 @@ const Run = ({
   };
 
   return (
-    <RunWithDropdown
+    <Header
       classname="dropdown-content"
       text="Run"
       items={RUN_DROPDOWN}
@@ -78,8 +77,6 @@ const Run = ({
     />
   );
 };
-
-const RunWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,

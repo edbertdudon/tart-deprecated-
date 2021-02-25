@@ -15,11 +15,9 @@ import {
   stox, addCopyToName, createFile, getMaxNumberCustomSheet, xtos,
 } from '../../functions';
 import ImportConnection from '../Connectors/importconnection';
-import ImportDatabase from '../Connectors/importdatabase';
+import Share from '../Share';
 
 import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
-import withDropdown from '../Dropdown';
-import withModal from '../Modal';
 import * as ROUTES from '../../constants/routes';
 import { withFirebase } from '../Firebase';
 // import { OFF_COLOR } from '../../constants/off-color';
@@ -47,22 +45,18 @@ export const FILE_DROPDOWN = [
   { key: 'Download as Xlsx', type: 'item' },
   { key: 'Move to Trash', type: 'item', path: ROUTES.HOME },
   { type: 'divider' },
+  { key: 'Share', type: 'item' },
+  { type: 'divider' },
   { key: 'Import csv or xlsx', type: 'item' },
   { key: 'Import connection', type: 'item' },
-  { type: 'divider' },
-  { key: 'Connect to MySQL...', type: 'item' },
-  { key: 'Connect to SQL server...', type: 'item' },
-  { key: 'Connect to Oracle SQL...', type: 'item' },
 ];
 
 const Files = ({
   firebase, authUser, worksheetname, worksheets, slides, dataNames, current, saving,
   setReadOnly, onSetDataNames, onSetCurrent, onSetSaving, onSetWorksheetname,
 }) => {
+  const [isShareOpen, setIsShareOpen] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
-  const [isOpenDatabaseMysql, setIsOpenDatabaseMysql] = useState(false);
-  const [isOpenDatabaseSqlserver, setIsOpenDatabaseSqlserver] = useState(false);
-  const [isOpenDatabaseOracle, setIsOpenDatabaseOracle] = useState(false);
   const uploadRef = useRef(null);
   const history = useHistory();
 
@@ -115,23 +109,15 @@ const Files = ({
         break;
       }
       case FILE_DROPDOWN[7].key: {
+        setIsShareOpen(!isShareOpen);
+        break;
+      }
+      case FILE_DROPDOWN[9].key: {
         uploadRef.current.click();
         break;
       }
-      case FILE_DROPDOWN[8].key: {
-        setIsOpen(!isOpen);
-        break;
-      }
       case FILE_DROPDOWN[10].key: {
-        setIsOpenDatabaseMysql(true);
-        break;
-      }
-      case FILE_DROPDOWN[11].key: {
-        setIsOpenDatabaseSqlserver(true);
-        break;
-      }
-      case FILE_DROPDOWN[12].key: {
-        setIsOpenDatabaseOracle(true);
+        setIsOpen(!isOpen);
         break;
       }
     }
@@ -196,44 +182,28 @@ const Files = ({
 
   return (
     <>
-      <FileWithDropdown
+      <Header
         classname="dropdown-content"
         text="File"
         items={FILE_DROPDOWN}
         onSelect={handleFile}
         // color={OFF_COLOR[color[authUser.uid]]}
       />
+      <Share
+        classname="modal-share"
+        // onSelect={handleShare}
+        isOpen={isShareOpen}
+        setIsOpen={setIsShareOpen}
+      />
       <input type="file" className="toolbar-upload" onChange={handleUpload} accept=".xlsx, .xls, .csv" ref={uploadRef} />
-      <ImportConnectionWithModal
+      <ImportConnection
+        classname="modal-importconnection"
         isOpen={isOpen}
         setIsOpen={setIsOpen}
-        style={{ width: '550px', left: 'Calc((100% - 550px)/2)', top: '10%' }}
-      />
-      <ImportDatabaseWithModal
-        databaseType="MySQL"
-        isOpen={isOpenDatabaseMysql}
-        setIsOpen={setIsOpenDatabaseMysql}
-        style={{ width: '466px', left: 'Calc((100% - 466px)/2)', top: '10%' }}
-      />
-      <ImportDatabaseWithModal
-        databaseType="Microsoft SQL Server"
-        isOpen={isOpenDatabaseSqlserver}
-        setIsOpen={setIsOpenDatabaseSqlserver}
-        style={{ width: '466px', left: 'Calc((100% - 466px)/2)', top: '10%' }}
-      />
-      <ImportDatabaseWithModal
-        databaseType="OracleDB"
-        isOpen={isOpenDatabaseOracle}
-        setIsOpen={setIsOpenDatabaseOracle}
-        style={{ width: '466px', left: 'Calc((100% - 466px)/2)', top: '10%' }}
       />
     </>
   );
 };
-
-const FileWithDropdown = withDropdown(Header);
-const ImportConnectionWithModal = withModal(ImportConnection);
-const ImportDatabaseWithModal = withModal(ImportDatabase);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
@@ -254,9 +224,9 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default compose(
+  withFirebase,
   connect(
     mapStateToProps,
     mapDispatchToProps,
   ),
-  withFirebase,
 )(Files);

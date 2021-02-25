@@ -10,11 +10,10 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import Item from './item';
-import MessageWithModal from './messagewithmodal';
+import Message from './message';
 import { formulan } from '../Spreadsheet/cloudr/formula';
 import { useOutsideAlerter, createFile } from '../../functions';
 import { OFF_COLOR } from '../../constants/off-color';
-import withModal from '../Modal';
 import { withFirebase } from '../Firebase';
 
 const NAVIGATOR_DROPDOWN = [
@@ -211,7 +210,8 @@ const Editable = ({
         </div>
       </ContextMenuTrigger>
       <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
-      <MessageWithModal
+      <Message
+        classname="modal"
         text={errortext}
         isOpen={error}
         setIsOpen={setError}

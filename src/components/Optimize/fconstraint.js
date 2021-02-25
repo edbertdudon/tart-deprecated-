@@ -10,20 +10,18 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
-import { updateCellorSingleRange, updateCell } from './index';
+import CellReference from '../RightSidebar/cellreference';
+import { validateCellorSingleRange, validateCell } from './index';
 
 const Fconstraint = ({
-  slides, lhs, dir, rhs, jacobian, error, setLhs, setDir, setRhs, setJacobian, setError, onClose,
+  slides, isActive, lhs, dir, rhs, jacobian, error,
+  setLhs, setDir, setRhs, setJacobian, setError, onClose,
 }) => {
-  const handleUpdateLhs = (e) => updateCellorSingleRange(e, setLhs, setError);
-
-  const handleUpdateDir = (e) => updateCellorSingleRange(e, setDir, setError);
-
-  const handleUpdateRhs = (e) => updateCellorSingleRange(e, setRhs, setError);
-
-  const handleUpdateJacobian = (e) => updateCell(e, setJacobian, setError);
-
   const handleClose = () => onClose(0);
+
+  if (!isActive) {
+    return null;
+  }
 
   return (
     <>
@@ -31,37 +29,41 @@ const Fconstraint = ({
       <button className="rightsidebar-label-close" onClick={handleClose}>
         <Icon path={mdiClose} size={0.8} />
       </button>
-      <div className="rightsidebar-input-text-3part1">Cell range</div>
-      <div className="rightsidebar-input-text-3part2">Direction range</div>
-      <div className="rightsidebar-input-text-3part3">Numeric range</div>
-      <input
-        type="text"
-        className="rightsidebar-input-3part1"
-        onChange={handleUpdateLhs}
-        value={lhs}
+      <div className="rightsidebar-input-text-3part1">Cell</div>
+      <div className="rightsidebar-input-text-3part2">Direction</div>
+      <div className="rightsidebar-input-text-3part3">Numeric</div>
+      <CellReference
+        cell={lhs}
+        onSetCell={setLhs}
+        classname="rightsidebar-input-3part1"
         placeholder="A1:A2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-3part2"
-        onChange={handleUpdateDir}
-        value={dir}
+      <CellReference
+        cell={dir}
+        onSetCell={setDir}
+        classname="rightsidebar-input-3part2"
         placeholder="B1:B2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-3part3"
-        onChange={handleUpdateRhs}
-        value={rhs}
+      <CellReference
+        cell={rhs}
+        onSetCell={setRhs}
+        classname="rightsidebar-input-3part3"
         placeholder="C1:C2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
       <div className="rightsidebar-input-text-1part1">Jacobian (optional)</div>
-      <input
-        type="text"
-        className="rightsidebar-input-1part1"
-        onChange={handleUpdateJacobian}
-        value={jacobian}
+      <CellReference
+        cell={jacobian}
+        onSetCell={setJacobian}
+        classname="rightsidebar-input-1part1"
         placeholder="D1"
+        onValidate={validateCell}
+        onSetError={setError}
       />
       <div className="rightsidebar-text-margin">
         {error && <div className="rightsidebar-error">{error}</div>}

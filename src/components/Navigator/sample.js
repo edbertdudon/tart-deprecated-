@@ -10,13 +10,13 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import Item from './item';
-import MessageWithModal from './messagewithmodal';
+import Message from './message';
 import { formulan } from '../Spreadsheet/cloudr/formula';
 import { useOutsideAlerter, createFile } from '../../functions';
 import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
-const INPUT_DROPDOWN = [
+const SAMPLE_DROPDOWN = [
   { key: 'New sheet', type: 'item' },
   { key: 'Rename...', type: 'item' },
   { type: 'divider' },
@@ -25,10 +25,10 @@ const INPUT_DROPDOWN = [
 
 const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
   <ContextMenu id={`right-click${slide}`}>
-    <Item text={INPUT_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
-    <Item text={INPUT_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
     <hr />
-    <Item text={INPUT_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
   </ContextMenu>
 );
 
@@ -109,18 +109,18 @@ const Sample = ({
 
   const handleDropdown = (key) => {
     switch (key) {
-      case INPUT_DROPDOWN[0].key: {
+      case SAMPLE_DROPDOWN[0].key: {
         const names = slides.insertSheet(current);
         onSetDataNames(names);
         onSetCurrent(current + 1);
         save();
         break;
       }
-      case NAVIGATOR_DROPDOWN[1].key: {
+      case SAMPLE_DROPDOWN[1].key: {
         handleShow();
         break;
       }
-      case INPUT_DROPDOWN[3].key: {
+      case SAMPLE_DROPDOWN[3].key: {
         deleteSheet();
         break;
       }
@@ -192,7 +192,8 @@ const Sample = ({
         </div>
       </ContextMenuTrigger>
       <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
-      <MessageWithModal
+      <Message
+        classname="modal"
         text={errortext}
         isOpen={error}
         setIsOpen={setError}

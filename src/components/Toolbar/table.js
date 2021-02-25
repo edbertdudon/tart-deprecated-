@@ -9,7 +9,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Header from './header';
-import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
 
 export const TABLE_DROPDOWN = [
@@ -75,7 +74,7 @@ const Table = ({ slides }) => {
   };
 
   return (
-    <TableWithDropdown
+    <Header
       classname="dropdown-content"
       text="Table"
       items={TABLE_DROPDOWN}
@@ -84,8 +83,6 @@ const Table = ({ slides }) => {
     />
   );
 };
-
-const TableWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
   // authUser: state.sessionState.authUser,

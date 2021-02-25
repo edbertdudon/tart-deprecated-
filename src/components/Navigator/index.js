@@ -43,21 +43,34 @@ const Navigator = ({
     slides.datas = reorder(slides.datas, source, destination);
   };
 
-  const List = () => dataNames.map((name, index) => (
-    <div key={`navigator-item-${index}`}>
-      <Draggable key={`draggable-${index}`} draggableId={`draggable-${index}`} index={index}>
-        {(provided) => (
-          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="navigator-slidewrapper">
-            {slides.datas[index].type === 'input'
-              ? <Input value={name} index={index} key={name} />
-              : ('regression' in slides.datas[index] || 'optimization' in slides.datas[index])
-                ? <Sample value={name} index={index} key={name} />
-                : <Editable value={name} index={index} key={name} />}
-          </div>
-        )}
-      </Draggable>
-    </div>
-  ));
+  const List = () => {
+    if (slides && Object.keys(slides).length === 0) {
+      return null;
+    }
+
+    return slides.datas.map((data, index) => {
+      const name = data.name;
+
+      return (
+        <div key={`navigator-item-${index}`}>
+          <Draggable key={`draggable-${index}`} draggableId={`draggable-${index}`} index={index}>
+            {(provided) => (
+              <div
+                ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
+                className="navigator-slidewrapper"
+              >
+                {slides.datas[index].type === 'input'
+                  ? <Input value={name} index={index} key={name} />
+                  : ('regression' in slides.datas[index] || 'optimization' in slides.datas[index])
+                    ? <Sample value={name} index={index} key={name} />
+                    : <Editable value={name} index={index} key={name} />}
+              </div>
+            )}
+          </Draggable>
+        </div>
+      )
+    })
+  };
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

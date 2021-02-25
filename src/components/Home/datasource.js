@@ -29,11 +29,16 @@ const DATASOURCE_DROPDOWN = [
   { key: 'Move to trash', type: 'item' },
 ];
 
-const Item = ({ text, onDropdown }) => <MenuItem onClick={() => onDropdown(text)}>{text}</MenuItem>;
+const Item = ({ text, onDropdown }) => (
+  <MenuItem onClick={() => onDropdown(text)}>{text}</MenuItem>
+);
 
 const ContextMenuDropdown = ({ filename, onDropdown }) => (
   <ContextMenu id={`right-click${filename}`}>
-    <MenuItem onClick={() => onDropdown(DATASOURCE_DROPDOWN[0].key)} onContextMenu={(e) => e.preventPropognation()}>
+    <MenuItem
+      onClick={() => onDropdown(DATASOURCE_DROPDOWN[0].key)}
+      onContextMenu={(e) => e.preventPropognation()}
+    >
       {DATASOURCE_DROPDOWN[0].key}
     </MenuItem>
     <Item text={DATASOURCE_DROPDOWN[1].key} onDropdown={onDropdown} />
@@ -42,6 +47,22 @@ const ContextMenuDropdown = ({ filename, onDropdown }) => (
     <Item text={DATASOURCE_DROPDOWN[4].key} onDropdown={onDropdown} />
   </ContextMenu>
 );
+
+const Option = ({
+  text, hover, onHover, isOpen, onOpen, color,
+}) => (
+  <div
+    className="datasource-options"
+    onClick={onOpen}
+    onMouseEnter={onHover}
+    onMouseLeave={onHover}
+    style={{ backgroundColor: hover && color }}
+  >
+    {text}
+  </div>
+);
+
+const OptionWithDropdown = withDropdown(Option);
 
 const DataSource = ({
   firebase, authUser, color, filename, worksheets, onSetWorksheetname,
@@ -148,14 +169,22 @@ const DataSource = ({
         </button>
       )
       :	(
-        <button className="datasource-button" onClick={handleCancel} style={{ backgroundColor: OFF_COLOR[color[authUser.uid]] }}>
+        <button
+          className="datasource-button"
+          onClick={handleCancel}
+          style={{ backgroundColor: OFF_COLOR[color[authUser.uid]] }}
+        >
           <Icon path={mdiStop} size={1} />
         </button>
       )
   );
 
   const LinkToApp = () => (
-    <Link to={{ pathname: ROUTES.WORKSHEET, filename }} onClick={handleOpen} id={`link-app-${filename}`}>
+    <Link
+      to={{ pathname: ROUTES.WORKSHEET, filename }}
+      onClick={handleOpen}
+      id={`link-app-${filename}`}
+    >
       <div className="datasource-icon">
         {runId === undefined || runId === ''
 				  ? <Icon path={mdilTable} size={5} />
@@ -192,22 +221,6 @@ const DataSource = ({
     </div>
   );
 };
-
-const Option = ({
-  text, hover, onHover, isOpen, onOpen, color,
-}) => (
-  <div
-    className="datasource-options"
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ backgroundColor: hover && color }}
-  >
-    {text}
-  </div>
-);
-
-const OptionWithDropdown = withDropdown(Option);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,

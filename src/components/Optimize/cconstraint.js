@@ -8,41 +8,16 @@
 import React from 'react';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
-import { updateCellorSingleRange, updateCell } from './index';
+import CellReference from '../RightSidebar/cellreference';
+import { validateCellorSingleRange, validateCellorNumeric } from './index';
 
 const Cconstraint = ({
-  lhs, cone, rhs, setLhs, setCone, setRhs, type, onClose, error, setError,
+  isActive, lhs, cone, rhs, type, error,
+  onClose, setLhs, setCone, setRhs, setError,
 }) => {
-  const handleUpdateLhs = (e) => updateCellorSingleRange(e, setLhs, setError);
-
-  // const handleUpdateCone = e => {
-  //   const v = e.target.value
-  //   setCone(v)
-  //   if (isNaN(v)) {
-  //     setError("Cone must be numeric (e.g., 1 for K_expp(1), 1/4 for K_powp(1/4)).")
-  //   }
-  // }
-
-  const handleUpdateCone = (e) => updateCell(e, setCone, setError);
-
-  const handleUpdateRhs = (e) => updateCellorSingleRange(e, setRhs, setError);
-
-  // <div className='rightsidebar-input-text-2part1'>Linear matrix</div>
-  // <div className='rightsidebar-input-text-2part2'>Numeric range</div>
-  // <input
-  //   type="text"
-  //   className='rightsidebar-input-2part1'
-  //   onChange={handleUpdateLhs}
-  //   value={lhs}
-  //   placeholder="A1:A2"
-  // />
-  // <input
-  //   type="text"
-  //   className='rightsidebar-input-2part2'
-  //   onChange={handleUpdateRhs}
-  //   value={rhs}
-  //   placeholder="B1:B2"
-  // />
+  if (!isActive) {
+    return null;
+  }
 
   return (
     <>
@@ -50,29 +25,32 @@ const Cconstraint = ({
       <button className="rightsidebar-label-close" onClick={onClose}>
         <Icon path={mdiClose} size={0.8} />
       </button>
-      <div className="rightsidebar-input-text-3part1">Linear matrix</div>
+      <div className="rightsidebar-input-text-3part1">Linear</div>
       <div className="rightsidebar-input-text-3part2">cone</div>
-      <div className="rightsidebar-input-text-3part3">Numeric range</div>
-      <input
-        type="text"
-        className="rightsidebar-input-3part1"
-        onChange={handleUpdateLhs}
-        value={lhs}
+      <div className="rightsidebar-input-text-3part3">Numeric</div>
+      <CellReference
+        cell={lhs}
+        onSetCell={setLhs}
+        classname="rightsidebar-input-3part1"
         placeholder="A1:A2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-3part2"
-        onChange={handleUpdateCone}
-        value={cone}
-        placeholder="1"
+      <CellReference
+        cell={cone}
+        onSetCell={setCone}
+        classname="rightsidebar-input-3part2"
+        placeholder="B1"
+        onValidate={validateCellorNumeric}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-3part3"
-        onChange={handleUpdateRhs}
-        value={rhs}
+      <CellReference
+        cell={rhs}
+        onSetCell={setRhs}
+        classname="rightsidebar-input-3part3"
         placeholder="C1:C2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
       <div className="rightsidebar-text">
         {error && <div className="rightsidebar-error">{error}</div>}
@@ -80,7 +58,5 @@ const Cconstraint = ({
     </>
   );
 };
-
-const Options = ({ option }) => option;
 
 export default Cconstraint;

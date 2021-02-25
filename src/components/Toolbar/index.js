@@ -14,6 +14,7 @@ import Insert from './insert';
 import Table from './table';
 import Format from './format';
 import View from './view';
+import Connect from './connect';
 import Run from './run';
 
 const Toolbar = ({ navigator, setNavigator, setReadOnly }) => (
@@ -24,6 +25,7 @@ const Toolbar = ({ navigator, setNavigator, setReadOnly }) => (
     <Table />
     <Format />
     <View navigator={navigator} setNavigator={setNavigator} />
+    <Connect />
     <Run />
   </div>
 );

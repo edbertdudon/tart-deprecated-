@@ -85,11 +85,14 @@ const Form = ({
           getVarsAsColumns(rows._, rows.len, range),
         );
       }
+    } else {
+      // input must have firstrow = true for sparkR to work
+      setMessage('First row must be true for calculating statistics on inputs.');
     }
-    // input must have firstrow = true for sparkR to work
-    if (type === 'input' && datarange.match(NUMBERS_REFERENCE) === null) {
-      setMessage('First row must be true for calculating statistics on population data.');
-    }
+    // // input must have firstrow = true for sparkR to work
+    // if (type === 'input' && datarange.match(NUMBERS_REFERENCE) === null) {
+    //   setMessage('First row must be true for calculating statistics on population data.');
+    // }
   };
 
   const handleSubmit = () => {

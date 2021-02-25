@@ -64,7 +64,8 @@ function letterToColumn(letter) {
   return column;
 }
 
-const optionsFilterAdd = rFormulas.filter((formula) => 'addStart' in formula || 'addEnd' in formula);
+const optionsFilterAdd = rFormulas
+  .filter((formula) => 'addStart' in formula || 'addEnd' in formula);
 
 function addPrefixToFunction(cell) {
   const optionsInCell = [];
@@ -159,7 +160,8 @@ function spreadsheetToR(datas) {
     newData = mapSpreadsheet(newData, (ri, ci) => {
       if (rows._.[ri] != undefined && rows._.[ri].cells[ci] != undefined) {
         const cell = rows._.[ri].cells[ci].text;
-        if ((typeof cell === 'string' || cell instanceof String) && cell.startsWith('=') && cell != '=') {
+        if ((typeof cell === 'string' || cell instanceof String)
+          && cell.startsWith('=') && cell != '=') {
           return translateR(cell.slice(1), data.name);
         }
         return cell;
@@ -264,25 +266,27 @@ function doRegress(data, type) {
     });
 }
 
-function doRegression(data) {
-  return fetchR(data, 'regression')
-    .then((res) => res.json())
-    .then((res) => {
-      if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
-        return (res);
-      }
-      return rToSpreadsheet(res);
-    });
-}
+// function doRegression(data) {
+//   return fetchR(data, 'regression')
+//     .then((res) => res.json())
+//     .then((res) => {
+//       if (typeof JSON.parse(res[0])[0] === 'string'
+//         || JSON.parse(res[0])[0] instanceof String) {
+//         return (res);
+//       }
+//       return rToSpreadsheet(res);
+//     });
+// }
 
 function doOptimization(data) {
   return fetchR(data, 'optimization')
     .then((res) => res.json())
     .then((res) => {
-      if (typeof JSON.parse(res[0])[0] === 'string' || JSON.parse(res[0])[0] instanceof String) {
-        return (res);
-      }
-      return robjToSrToSpreadsheetpreadsheet(res);
+      // if (typeof JSON.parse(res[0])[0] === 'string'
+      //   || JSON.parse(res[0])[0] instanceof String) {
+      //   return (res);
+      // }
+      return rToSpreadsheet(res);
     });
 }
 

@@ -6,53 +6,51 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react';
-import { updateCell, updateCellorSingleRange } from './index';
+import CellReference from '../RightSidebar/cellreference';
+import { validateCellorSingleRange, validateCell } from './index';
 
 const General = ({
-  objective, decision, gradient, hessian, error, setObjective, setDecision, setGradient, setHessian, setError,
+  objective, decision, gradient, hessian, error,
+  setObjective, setDecision, setGradient, setHessian, setError,
 }) => {
-  const handleUpdateObjective = (e) => updateCell(e, setObjective, setError);
-
-  const handleUpdateDecision = (e) => updateCellorSingleRange(e, setDecision, setError);
-
-  const handleUpdateGradient = (e) => updateCell(e, setGradient, setError);
-
-  const handleUpdateHessian = (e) => updateCell(e, setHessian, setError);
-
   return (
     <>
       <div className="rightsidebar-label">General nonlinear objective</div>
-      <div className="rightsidebar-input-text-2part1">Objective cell</div>
-      <div className="rightsidebar-input-text-2part2">Decision range</div>
-      <input
-        type="text"
-        className="rightsidebar-input-2part1"
-        onChange={handleUpdateObjective}
-        value={objective}
+      <div className="rightsidebar-input-text-2part1">Objective</div>
+      <div className="rightsidebar-input-text-2part2">Decision</div>
+      <CellReference
+        cell={objective}
+        onSetCell={setObjective}
+        classname="rightsidebar-input-2part1"
         placeholder="A1"
+        onValidate={validateCell}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-2part2"
-        onChange={handleUpdateDecision}
-        value={decision}
+      <CellReference
+        cell={decision}
+        onSetCell={setDecision}
+        classname="rightsidebar-input-2part2"
         placeholder="B1:B2"
+        onValidate={validateCellorSingleRange}
+        onSetError={setError}
       />
-      <div className="rightsidebar-input-text-2part1">Gradient cell (optional)</div>
-      <div className="rightsidebar-input-text-2part2">Hessian cell (optional)</div>
-      <input
-        type="text"
-        className="rightsidebar-input-2part1"
-        onChange={handleUpdateGradient}
-        value={gradient}
+      <div className="rightsidebar-input-text-2part1">Gradient (optional)</div>
+      <div className="rightsidebar-input-text-2part2">Hessian (optional)</div>
+      <CellReference
+        cell={gradient}
+        onSetCell={setGradient}
+        classname="rightsidebar-input-2part1"
         placeholder="C1"
+        onValidate={validateCell}
+        onSetError={setError}
       />
-      <input
-        type="text"
-        className="rightsidebar-input-2part2"
-        onChange={handleUpdateHessian}
-        value={hessian}
+      <CellReference
+        cell={hessian}
+        onSetCell={setHessian}
+        classname="rightsidebar-input-2part2"
         placeholder="D1"
+        onValidate={validateCell}
+        onSetError={setError}
       />
       <div className="rightsidebar-text">
         {error && <div className="rightsidebar-error">{error}</div>}

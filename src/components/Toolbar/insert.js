@@ -13,7 +13,6 @@ import { createFile } from '../../functions';
 
 import { OFF_COLOR } from '../../constants/off-color';
 import * as ROUTES from '../../constants/routes';
-import withDropdown from '../Dropdown';
 import { withFirebase } from '../Firebase';
 
 const Insert = ({
@@ -67,7 +66,7 @@ const Insert = ({
   };
 
   return (
-    <InsertWithDropdown
+    <Header
       classname="dropdown-content"
       text="Insert"
       items={INSERT_DROPDOWN}
@@ -76,8 +75,6 @@ const Insert = ({
     />
   );
 };
-
-const InsertWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,

@@ -16,10 +16,10 @@ import Icon from '@mdi/react';
 import { mdilFile, mdilTable } from '@mdi/light-js';
 import { mdiDatabase, mdiDotsHorizontal } from '@mdi/js';
 
+import Delete from './delete';
+import OptionWithDropdown from '../Home/option';
 import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
-import withDropdown from '../Dropdown';
-import withModal from '../Modal';
 
 const DATASOURCE_DROPDOWN = [
   { key: 'Delete', type: 'item' },
@@ -93,7 +93,8 @@ const DataTrash = ({
         <div className="datasource-editabletext">{name.replace(/\.[^/.]+$/, '')}</div>
       </ContextMenuTrigger>
       <ContextMenuDropdown />
-      <VerifyDeleteWithModal
+      <Delete
+        classname="modal"
         name={name}
         color={color[authUser.uid]}
         onSelect={handleDelete}
@@ -103,45 +104,6 @@ const DataTrash = ({
     </div>
   );
 };
-
-const Option = ({
-  text, hover, onHover, isOpen, onOpen, color,
-}) => (
-  <div
-    className="datasource-options-only"
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ backgroundColor: hover && color }}
-  >
-    {text}
-  </div>
-);
-
-const VerifyDelete = ({
-  name, color, onClose, onSelect,
-}) => (
-  <form className="modal-form-datatrash">
-    <h3>{`Are you sure you want to delete "${name}"?`}</h3>
-    <p>This item will be deleted immediately. You cannot undo this action.</p>
-    <input
-      className="modal-button"
-      type="button"
-      value="Cancel"
-      onClick={onClose}
-      style={{ color }}
-    />
-    <input
-      className="modal-button"
-      type="button"
-      value="Delete"
-      onClick={onSelect}
-    />
-  </form>
-);
-
-const OptionWithDropdown = withDropdown(Option);
-const VerifyDeleteWithModal = withModal(VerifyDelete);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,

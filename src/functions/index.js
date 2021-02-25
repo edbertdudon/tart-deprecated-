@@ -4,6 +4,9 @@ import XLSX from 'xlsx';
 export const LETTERS_REFERENCE = /\$?[A-Z]+/g;
 export const NUMBERS_REFERENCE = /\$?[0-9]+/g;
 export const FORMULA_CELL_REFERENCES = /\$?[A-Z]+\$?[0-9]*/g;
+export const VALID_RANGE_REFERENCES = /^\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*$/;
+export const VALID_FORMULA_CELL_REFERENCES = /^\$?[A-Z]+\$?[0-9]*$/;
+export const RANGE_REFERENCES = /\$?[A-Z]+\$?[0-9]*\:{1}\$?[A-Z]+\$?[0-9]*/g;
 
 // *** General Functions ***
 

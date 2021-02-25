@@ -10,11 +10,11 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import Item from './item';
-import MessageWithModal from './messagewithmodal';
+import Message from './message';
+import RefreshFail from './refreshfail';
 import { formulan } from '../Spreadsheet/cloudr/formula';
 import { useOutsideAlerter, createFile } from '../../functions';
 import { OFF_COLOR } from '../../constants/off-color';
-import withModal from '../Modal';
 import { withFirebase } from '../Firebase';
 
 const INPUT_DROPDOWN = [
@@ -43,6 +43,7 @@ const Input = ({
   const [show, setShow] = useState(false);
   const [error, setError] = useState(false);
   const [errortext, setErrorText] = useState('');
+  const [refreshError, setRefreshError] = useState(false);
   const wrapperRef = useRef(null);
 
   const checkIllegalChange = () => {
@@ -111,7 +112,7 @@ const Input = ({
         save();
         break;
       }
-      case NAVIGATOR_DROPDOWN[1].key: {
+      case INPUT_DROPDOWN[1].key: {
         handleShow();
         break;
       }
@@ -121,12 +122,24 @@ const Input = ({
       }
       case INPUT_DROPDOWN[4].key: {
         // refresh connection
-        // const data = slides.datas[index];
-        // const connector = data.delimiter;
-        // const config = {
-        //
-        // };
-        // getTableSample(data.connector, firebase);
+        const { input, name } = slides.datas[index];
+        const {
+          connector, connection, database, table,
+        } = input;
+        getTableSample(firebase, connector, {
+          connection,
+          database,
+          table,
+          uid: authUser.uid,
+        }).then((res) => {
+          const out = setTableSample(connector, res);
+          console.log(out);
+          slides.insertData(current, out, name, 'read');
+          slides.deleteSheet(current, -1);
+          save();
+        }).catch(() => {
+          setRefreshError(true);
+        });
         break;
       }
     }
@@ -197,11 +210,17 @@ const Input = ({
         </div>
       </ContextMenuTrigger>
       <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
-      <MessageWithModal
+      <Message
+        classname="modal"
         text={errortext}
         isOpen={error}
         setIsOpen={setError}
         onSelect={handleClose}
+      />
+      <RefreshFail
+        classname="modal"
+        isOpen={refreshError}
+        setIsOpen={setRefreshError}
       />
     </>
   );

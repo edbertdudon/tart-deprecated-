@@ -11,7 +11,6 @@ import { compose } from 'recompose';
 
 import Header from './header';
 import { sheetReset } from '../Spreadsheet/component/sheet';
-import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
 
 export const EDIT_DROPDOWN = [
@@ -71,7 +70,7 @@ const Edit = ({ slides }) => {
   };
 
   return (
-    <EditWithDropdown
+    <Header
       classname="dropdown-content"
       text="Edit"
       items={EDIT_DROPDOWN}
@@ -80,8 +79,6 @@ const Edit = ({ slides }) => {
     />
   );
 };
-
-const EditWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
   // authUser: state.sessionState.authUser,

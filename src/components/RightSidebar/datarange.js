@@ -8,13 +8,23 @@
 import React, { useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { updateCellorRange } from '../Optimize';
-import { LETTERS_REFERENCE, NUMBERS_REFERENCE, useOutsideAlerter } from '../../functions';
 import { letterToColumn, columnToLetter } from '../Spreadsheet/cloudr';
+import {
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, RANGE_REFERENCES,
+  VALID_FORMULA_CELL_REFERENCES, VALID_RANGE_REFERENCES, useOutsideAlerter
+} from '../../functions';
 
 function getRangeIndex(range) {
-  const mn = range.match(NUMBERS_REFERENCE).map((ref) => parseInt(ref) - 1);
-  const ml = range.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
+  let mn = range.match(NUMBERS_REFERENCE);
+  let ml = range.match(LETTERS_REFERENCE);
+
+  if (mn === null || ml === null) {
+    return null;
+  }
+
+  mn = mn.map((ref) => parseInt(ref) - 1);
+  ml = ml.map((ref) => letterToColumn(ref) - 1);
+
   return {
     sri: mn[0],
     sci: ml[0],
@@ -74,6 +84,31 @@ function getVarsAsColumns(rows, len, range) {
   return cols.map((col) => `${col + (sri + 1)}:${col + (eri + 1)}`);
 }
 
+function validateCellorRange(v) {
+  if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
+    return ('Invalid cell reference.');
+  }
+  const mc = v.match(FORMULA_CELL_REFERENCES);
+  if (mc === null) {
+    return ('Invalid cell.');
+  }
+  const mr = v.match(RANGE_REFERENCES);
+  if (mr !== null) {
+    const ml = v.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
+    if (ml[1] < ml[0] || ml.length > 2) {
+      return ('Invalid range.');
+    }
+    const mn = v.match(NUMBERS_REFERENCE);
+    if (mn !== null) {
+      mn.map((ref) => parseInt(ref));
+      if (mn[1] < mn[0] || mn.length > 2) {
+        return ('Invalid range.');
+      }
+    }
+  }
+  return (null);
+}
+
 // function setVariablesRange(firstRow, rows, len, range) {
 //   if (firstRow) {
 //     return getRownames(rows, slides.sheet.selector.range);
@@ -87,9 +122,17 @@ const DataRange = ({
   const datarangeRef = useRef(null);
 
   const handleRange = () => {
+    if (datarange.length > 0) {
+      setError(validateCellorRange(datarange));
+    }
+
     if (datarangeRef.current === document.activeElement) {
       const { rows } = slides.data;
       const range = getRangeIndex(datarange);
+
+      if (!range) {
+        return
+      }
 
       if (firstRow) {
         setVariables(getRownames(rows._, range));
@@ -101,9 +144,7 @@ const DataRange = ({
 
   useOutsideAlerter(datarangeRef, handleRange);
 
-  const handleUpdateDatarange = (e) => {
-    updateCellorRange(e, setDatarange, setError);
-  };
+  const handleChange = (e) => setDatarange(e.target.value);
 
   return (
     <>
@@ -111,7 +152,7 @@ const DataRange = ({
       <input
         type="text"
         className="rightsidebar-input-1part1"
-        onChange={handleUpdateDatarange}
+        onChange={handleChange}
         value={datarange}
         placeholder="A1:A2"
         ref={datarangeRef}

@@ -10,31 +10,114 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose, mdiLessThanOrEqual } from '@mdi/js';
-import { updateCell, updateCellorSingleRange } from './index';
+import CellReference from '../RightSidebar/cellreference';
+import { validateCell, validateCellorSingleRange } from './index';
+
+const General = ({
+  lhs, dir, rhs, setLhs, setDir, setRhs, setError
+}) => (
+  <>
+    <div className="rightsidebar-input-text-3part1">Cell</div>
+    <div className="rightsidebar-input-text-3part2">Direction</div>
+    <div className="rightsidebar-input-text-3part3">Numeric</div>
+    <CellReference
+      cell={lhs}
+      onSetCell={setLhs}
+      classname="rightsidebar-input-3part1"
+      placeholder="A1:A2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <CellReference
+      cell={dir}
+      onSetCell={setDir}
+      classname="rightsidebar-input-3part2"
+      placeholder="B1:B2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <CellReference
+      cell={rhs}
+      onSetCell={setRhs}
+      classname="rightsidebar-input-3part3"
+      placeholder="C1:C2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+  </>
+);
+
+const QuadraticLinear = ({
+  li, lb, ui, ub, ld, ud, setLi, setLb,
+  setUi, setUb, setLd, setUd, setError
+}) => (
+  <>
+    <div className="rightsidebar-input-text-2part1">Lower index (optional)</div>
+    <div className="rightsidebar-input-text-2part2">Lower bound (optional)</div>
+    <CellReference
+      cell={li}
+      onSetCell={setLi}
+      classname="rightsidebar-input-2part1"
+      placeholder="A1:A2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <CellReference
+      cell={lb}
+      onSetCell={setLb}
+      classname="rightsidebar-input-2part2"
+      placeholder="B1:B2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <div className="rightsidebar-input-text-2part1">Upper index (optional)</div>
+    <div className="rightsidebar-input-text-2part2">Upper bound (optional)</div>
+    <CellReference
+      cell={ui}
+      onSetCell={setUi}
+      classname="rightsidebar-input-2part1"
+      placeholder="C1:C2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <CellReference
+      cell={ub}
+      onSetCell={setUb}
+      classname="rightsidebar-input-2part2"
+      placeholder="D1:D2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <div className="rightsidebar-input-text-2part1">Lower limit (optional)</div>
+    <div className="rightsidebar-input-text-2part2">Upper limit (optional)</div>
+    <CellReference
+      cell={ld}
+      onSetCell={setLd}
+      classname="rightsidebar-input-2part1"
+      placeholder="D1"
+      onValidate={validateCell}
+      onSetError={setError}
+    />
+    <CellReference
+      cell={ud}
+      onSetCell={setUd}
+      classname="rightsidebar-input-2part2"
+      placeholder="E1"
+      onValidate={validateCell}
+      onSetError={setError}
+    />
+  </>
+);
 
 const Bounds = ({
-  slides, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
+  slides, isActive, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
   setLhs, setDir, setRhs, setLi, setLb, setUi, setUb, setLd, setUd, setError, onClose,
 }) => {
-  const handleUpdateLhs = (e) => updateCellorSingleRange(e, setLhs, setError);
-
-  const handleUpdateDir = (e) => updateCellorSingleRange(e, setDir, setError);
-
-  const handleUpdateRhs = (e) => updateCellorSingleRange(e, setRhs, setError);
-
-  const handleUpdateLi = (e) => updateCellorSingleRange(e, setLi, setError);
-
-  const handleUpdateLb = (e) => updateCellorSingleRange(e, setLb, setError);
-
-  const handleUpdateUi = (e) => updateCellorSingleRange(e, setUi, setError);
-
-  const handleUpdateUb = (e) => updateCellorSingleRange(e, setUb, setError);
-
-  const handleUpdateLd = (e) => updateCell(e, setLd, setError);
-
-  const handleUpdateUd = (e) => updateCell(e, setUd, setError);
-
   const handleClose = () => onClose(1);
+
+  if (!isActive) {
+    return null;
+  }
 
   return (
     <>
@@ -43,21 +126,30 @@ const Bounds = ({
         <Icon path={mdiClose} size={0.8} />
       </button>
       {objectiveClass === 0
-        ? <General lhs={lhs} dir={dir} rhs={rhs} onLhs={handleUpdateLhs} onDir={handleUpdateDir} onRhs={handleUpdateRhs} />
+        ? <General
+            lhs={lhs}
+            dir={dir}
+            rhs={rhs}
+            setLhs={setLhs}
+            setDir={setDir}
+            setRhs={setRhs}
+            setError={setError}
+          />
         : (
           <QuadraticLinear
             li={li}
-            onLi={handleUpdateLi}
             lb={lb}
-            onLb={handleUpdateLb}
             ui={ui}
-            onUi={handleUpdateUi}
             ub={ub}
-            onUb={handleUpdateUb}
             ld={ld}
-            onLd={handleUpdateLd}
             ud={ud}
-            onUd={handleUpdateUd}
+            setLi={setLi}
+            setLb={setLb}
+            setUi={setUi}
+            setUb={setUb}
+            setLd={setLd}
+            setUd={setUd}
+            setError={setError}
           />
         )}
       <div className="rightsidebar-subtext">
@@ -69,92 +161,6 @@ const Bounds = ({
     </>
   );
 };
-
-const General = ({
-  lhs, dir, rhs, onLhs, onDir, onRhs,
-}) => (
-  <>
-    <div className="rightsidebar-input-text-3part1">Cell range</div>
-    <div className="rightsidebar-input-text-3part2">Direction range</div>
-    <div className="rightsidebar-input-text-3part3">Numeric range</div>
-    <input
-      type="text"
-      className="rightsidebar-input-3part1"
-      onChange={onLhs}
-      value={lhs}
-      placeholder="A1:A2"
-    />
-    <input
-      type="text"
-      className="rightsidebar-input-3part2"
-      onChange={onDir}
-      value={dir}
-      placeholder="B1:B2"
-    />
-    <input
-      type="text"
-      className="rightsidebar-input-3part3"
-      onChange={onRhs}
-      value={rhs}
-      placeholder="C1:C2"
-    />
-  </>
-);
-
-const QuadraticLinear = ({
-  li, onLi, lb, onLb, ui, onUi, ub, onUb, ld, onLd, ud, setUd,
-}) => (
-  <>
-    <div className="rightsidebar-input-text-2part1">Lower index</div>
-    <div className="rightsidebar-input-text-2part2">Lower bound</div>
-    <input
-      type="text"
-      className="rightsidebar-input-2part1"
-      onChange={onLi}
-      value={li}
-      placeholder="A1:A2"
-    />
-    <input
-      type="text"
-      className="rightsidebar-input-2part2"
-      onChange={onLb}
-      value={lb}
-      placeholder="B1:B2"
-    />
-    <div className="rightsidebar-input-text-2part1">Upper index</div>
-    <div className="rightsidebar-input-text-2part2">Upper bound</div>
-    <input
-      type="text"
-      className="rightsidebar-input-2part1"
-      onChange={onUi}
-      value={ui}
-      placeholder="C1:C2"
-    />
-    <input
-      type="text"
-      className="rightsidebar-input-2part2"
-      onChange={onUb}
-      value={ub}
-      placeholder="D1:D2"
-    />
-    <div className="rightsidebar-input-text-2part1">Lower limit (all variables)</div>
-    <div className="rightsidebar-input-text-2part2">Upper limit (all variables)</div>
-    <input
-      type="text"
-      className="rightsidebar-input-2part1"
-      onChange={onLd}
-      value={ld}
-      placeholder="D1"
-    />
-    <input
-      type="text"
-      className="rightsidebar-input-2part2"
-      onChange={onUd}
-      value={ud}
-      placeholder="E1"
-    />
-  </>
-);
 
 const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),

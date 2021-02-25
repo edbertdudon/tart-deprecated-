@@ -14,7 +14,6 @@ import { Validations } from './validation';
 import { CellRange } from './cell_range';
 import { expr2xy, xy2expr } from './alphabet';
 import { t } from '../locale/locale';
-import { options } from '../options';
 import {
   INITIAL_WIDTH, INITIAL_HEIGHT, ChartBox, createChartBox,
   clearCharts, addRect, changeRect, deleteRect, setChartSelect,
@@ -405,7 +404,7 @@ export default class DataProxy {
     return this.history.canRedo();
   }
 
-  undoRedoChart(sheet) {
+  undoRedoChart(d, current, sheet) {
     if (d.charts.length > current.charts.length) {
       const c = d.charts.find((chart) => current.charts.indexOf(chart) === -1);
       const chart = createChartBox(c);
@@ -426,7 +425,7 @@ export default class DataProxy {
     const current = this.getData();
     this.history.undo(current, (d) => {
       this.setData(d);
-      undoRedoChart(sheet);
+      this.undoRedoChart(d, current, sheet);
     });
   }
 
@@ -434,7 +433,7 @@ export default class DataProxy {
     const current = this.getData();
     this.history.redo(current, (d) => {
       this.setData(d);
-      undoRedoChart(sheet);
+      this.undoRedoChart(d, current, sheet);
     });
   }
 
@@ -1309,7 +1308,7 @@ export default class DataProxy {
   getData() {
     const {
       name, freeze, styles, merges, rows, cols, validations,
-      autoFilter, type, regression, optimization, charts,
+      autoFilter, type, input, regression, optimization, charts,
     } = this;
     const data = {
       name,
@@ -1323,6 +1322,7 @@ export default class DataProxy {
       autofilter: autoFilter.getData(),
       type,
     };
+    if (input) data.input = input;
     if (regression) data.regression = regression;
     if (optimization) data.optimization = optimization;
     return data;

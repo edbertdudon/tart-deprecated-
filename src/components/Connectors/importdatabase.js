@@ -5,6 +5,7 @@ import Icon from '@mdi/react';
 import { mdiLoading } from '@mdi/js';
 import './index.less';
 
+import withModal from '../Modal';
 import { serverConnect } from './serverConnect';
 import { withFirebase } from '../Firebase';
 
@@ -68,7 +69,7 @@ const ImportDatabase = ({
     if (databaseType === 'OracleDB') {
       data.sid = sid;
     }
-    serverConnect(databaseType, data, firebase)
+    serverConnect(firebase, databaseType, data)
       .then(() => {
         setLoading(false);
         handleClose();
@@ -106,17 +107,17 @@ const ImportDatabase = ({
           />
         </div>
         {databaseType === 'OracleDB' && (
-        <>
-          <br />
-          <div className="importdatabase-inputs-login">
-            <input
-              placeholder="Oracle system identifier (SID)"
-              type="text"
-              name="sid"
-              onChange={handleSid}
-            />
-          </div>
-        </>
+          <>
+            <br />
+            <div className="importdatabase-inputs-login">
+              <input
+                placeholder="Oracle system identifier (SID)"
+                type="text"
+                name="sid"
+                onChange={handleSid}
+              />
+            </div>
+          </>
         )}
         <br />
         <div className="importdatabase-inputs-login">
@@ -184,8 +185,8 @@ const ImportDatabase = ({
           {error && <p>{error}</p>}
         </div>
         <p>
-          Tart requires credentials to run your worksheet. Passwords are encrypted.
-          Users have strict read access (Unable to edit, download, delete data within a database).
+          Tart requires credentials to RUN your worksheet.
+          Passwords are encrypted. Users have strict read access.
         </p>
         <input
           className="modal-button"
@@ -218,6 +219,7 @@ const mapStateToProps = (state) => ({
 });
 
 export default compose(
+  withModal,
   withFirebase,
   connect(
     mapStateToProps,

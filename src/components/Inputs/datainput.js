@@ -11,7 +11,8 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 import Icon from '@mdi/react';
 import { mdiDotsHorizontal } from '@mdi/js';
 import { mdilFile } from '@mdi/light-js';
-import withDropdown from '../Dropdown';
+
+import OptionWithDropdown from '../Home/option';
 import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
@@ -60,22 +61,6 @@ const DataInput = ({
     </div>
   );
 };
-
-const Option = ({
-  text, hover, onHover, isOpen, onOpen, color,
-}) => (
-  <div
-    className="datasource-options-only"
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ backgroundColor: hover && color }}
-  >
-    {text}
-  </div>
-);
-
-const OptionWithDropdown = withDropdown(Option);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,

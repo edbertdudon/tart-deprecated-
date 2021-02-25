@@ -11,7 +11,6 @@ import { compose } from 'recompose';
 
 import Header from './header';
 import { fontSizes } from '../Spreadsheet/core/font';
-import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
 
 const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
@@ -107,7 +106,7 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
   };
 
   return (
-    <FormatWithDropdown
+    <Header
       classname="dropdown-content"
       text="Format"
       items={FORMAT_DROPDOWN}
@@ -116,8 +115,6 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
     />
   );
 };
-
-const FormatWithDropdown = withDropdown(Header);
 
 const mapStateToProps = (state) => ({
   // authUser: state.sessionState.authUser,

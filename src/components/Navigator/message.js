@@ -15,6 +15,4 @@ const Message = ({ text, onSelect }) => (
   </form>
 );
 
-const MessageWithModal = withModal(Message);
-
-export default MessageWithModal;
+export default withModal(Message);

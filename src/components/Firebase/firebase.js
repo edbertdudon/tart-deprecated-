@@ -16,9 +16,9 @@ export const config = {
   measurementId: 'G-B2WK4MFZL7',
 };
 
-// const fetchG = (func, data, idToken) => fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
-function fetchG(func, data, idToken) {
-  return fetch(process.env.CLOUD_FUNCTIONS_URL, {
+function fetchG(idToken, func, data) {
+  return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
+  // return fetch(process.env.CLOUD_FUNCTIONS_URL, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
@@ -104,10 +104,10 @@ class Firebase {
   doDeleteWorksheet = (uid, filename) => this.storage.ref(`user/${uid}/worksheets/${filename}`).delete()
 
   doMoveToWorksheets = (uid, filename) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG('moveToWorksheets', { uid, filename }, authToken))
+    .then((authToken) => fetchG(authToken, 'moveToWorksheets', { uid, filename }))
 
   doRenameWorksheet = (uid, src, dest) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG('renameWorksheet', { uid, src, dest }, authToken))
+    .then((authToken) => fetchG(authToken, 'renameWorksheet', { uid, src, dest }))
 
   doListInputs = (uid) => this.storage.ref(`user/${uid}/inputs`).listAll()
 
@@ -116,7 +116,7 @@ class Firebase {
   doListTrash = (uid) => this.storage.ref(`user/${uid}/trash`).listAll()
 
   doMoveToTrash = (uid, filename) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG('moveToTrash', { uid, filename }, authToken))
+    .then((authToken) => fetchG(authToken, 'moveToTrash', { uid, filename }))
 
   doUploadTrash = (uid, filename, file) => this.storage.ref(`user/${uid}/trash/${filename}`).put(file)
 
@@ -124,17 +124,19 @@ class Firebase {
 
   // *** Dataproc API ***
 
-  doRunWorksheet = (authUser, filename, jobFileArgument) => fetchG('createandsubmit', {
-    authuser: authUser.toLowerCase(),
-    jobFileArgument,
-    worksheet: filename.replace(/\s/g, '').toLowerCase(),
-  }).then((res) => res.text())
+  doRunWorksheet = (authUser, filename, jobFileArgument) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(authToken, 'createandsubmit', {
+      authuser: authUser.toLowerCase(),
+      jobFileArgument,
+      worksheet: filename.replace(/\s/g, '').toLowerCase(),
+    }).then((res) => res.text()))
 
-  doCancelWorksheet = (jobId, authuser, filename) => fetchG('canceljob', {
-    jobId,
-    authuser: authuser.toLowerCase(),
-    filename,
-  })
+  doCancelWorksheet = (jobId, authuser, filename) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(authToken, 'canceljob', {
+      jobId,
+      authuser: authuser.toLowerCase(),
+      filename,
+    }))
 
   doListJobs = (authUser) => fetchG('listjobs', {
     authuser: authUser.toLowerCase(),
@@ -143,22 +145,22 @@ class Firebase {
   // *** Database Connector API ***
 
   doConnect = (connector, data) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG(connector, data, authToken)
+    .then((authToken) => fetchG(authToken, connector, data)
       .then((res) => res.json())
       .then((res) => res))
 
   doListDatabases = (connector, data) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG(connector, data, authToken)
+    .then((authToken) => fetchG(authToken, connector, data)
       .then((res) => res.json())
       .then((res) => res));
 
   doListTables = (connector, data) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG(connector, data, authToken)
+    .then((authToken) => fetchG(authToken, connector, data)
       .then((res) => res.json())
       .then((res) => res))
 
   doGetTableSample = (connector, data) => this.auth.currentUser.getIdToken()
-    .then((authToken) => fetchG(connector, data, authToken)
+    .then((authToken) => fetchG(authToken, connector, data)
       .then((res) => res.json())
       .then((res) => res))
 
