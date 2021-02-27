@@ -5,7 +5,7 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Form from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
@@ -30,9 +30,13 @@ const TwoWayAncova2Covariate = ({ statistic }) => {
       covariate1: variables[covariate1],
       covariate2: variables[covariate2],
     };
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = variableY == null

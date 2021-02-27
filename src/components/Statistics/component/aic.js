@@ -26,7 +26,7 @@ const AkaikeInformationCriterion = ({ statistic }) => {
   const handlePenalty = (e) => {
     const input = e.target.value;
     setPenalty(input);
-    if (isNaN(parseFloat(input))) {
+    if (Number.isNaN(parseFloat(input))) {
       setPenaltyError('Penalty must be a number.');
     } else {
       setPenaltyError(null);
@@ -39,9 +39,12 @@ const AkaikeInformationCriterion = ({ statistic }) => {
       formula,
     };
     if (penalty !== 0.95) formuladata.penalty = penalty;
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = formulaError !== null
@@ -56,7 +59,12 @@ const AkaikeInformationCriterion = ({ statistic }) => {
       error={error}
       setError={setError}
     >
-      <Formula formulaText={formula} variables={variables} onSetFormula={handleFormula} formulaError={formulaError} />
+      <Formula
+        formulaText={formula}
+        variables={variables}
+        onSetFormula={handleFormula}
+        formulaError={formulaError}
+      />
       <Number label="Penalty" value={penalty} onChange={handlePenalty} error={penaltyError} />
     </Form>
   );

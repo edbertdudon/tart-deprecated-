@@ -6,7 +6,7 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState, useEffect } from 'react';
-import Form, { WILKS_METHOD, WILKS_APPROXIMATION } from '../core/form';
+import Form, { WILKS_METHOD } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
@@ -41,9 +41,13 @@ const RobustOneWayManova = ({ statistic }) => {
         formuladata.approximation = WilksApproximation[approximation].charAt(0).toLowerCase();
       }
     }
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = variableX == null
@@ -52,7 +56,7 @@ const RobustOneWayManova = ({ statistic }) => {
   return (
     <Form
       statistic={statistic}
-      invalidStat={false}
+      invalidStat={isInvalid}
       setVariables={setVariables}
       onSubmit={handleSubmit}
       error={error}

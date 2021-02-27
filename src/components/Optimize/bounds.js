@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose, mdiLessThanOrEqual } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
-import { validateCell, validateCellorSingleRange } from './index';
+import { validateCell, validateCellorSingleRange } from './validate';
 
 const General = ({
   lhs, dir, rhs, setLhs, setDir, setRhs, setError

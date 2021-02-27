@@ -26,9 +26,12 @@ const Ancova1Covariate = ({ statistic }) => {
       variabley: variables[variableY],
       covariate1: variables[covariate1],
     };
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = variableX == null

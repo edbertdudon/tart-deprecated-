@@ -5,8 +5,8 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState, useEffect } from 'react';
-import Form, { BOOTSTRAP_METHOD, ALTERNATIVES } from '../core/form';
+import React, { useState } from 'react';
+import Form, { BOOTSTRAP_METHOD } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
@@ -30,7 +30,7 @@ const DurbinWatsonTest = ({ statistic }) => {
   const handleLag = (e) => {
     const input = e.target.value;
     setLag(input);
-    if (isNaN(parseFloat(input))) {
+    if (Number.isNaN(parseFloat(input))) {
       setLagError('Lag must be a number.');
     } else if (parseFloat(input) < 0) {
       setLagError('Lag must be greater than 0.');
@@ -44,18 +44,22 @@ const DurbinWatsonTest = ({ statistic }) => {
       ...e,
       formula,
     };
-    if (lag != 1) formuladata.lag = lag;
+    if (lag !== 1) formuladata.lag = lag;
     if (method !== 0) formuladata.method = BOOTSTRAP_METHOD[method].charAt(0).toLowerCase();
-    if (alt !== 0 && lag == 1) {
-      if (alt == 1) {
+    if (alt !== 0 && lag === 1) {
+      if (alt === 1) {
         formuladata.alternative = 'p';
-      } else if (alt == 2) {
+      } else if (alt === 2) {
         formuladata.alternative = 'n';
       }
     }
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = formulaError !== null
@@ -70,10 +74,15 @@ const DurbinWatsonTest = ({ statistic }) => {
       error={error}
       setError={setError}
     >
-      <Formula formulaText={formula} variables={variables} onSetFormula={handleFormula} formulaError={formulaError} />
+      <Formula
+        formulaText={formula}
+        variables={variables}
+        onSetFormula={handleFormula}
+        formulaError={formulaError}
+      />
       <Number label="Maximum Lag" value={lag} onChange={handleLag} error={lagError} />
       <BootstrapMethod setMethod={setMethod} method={method} />
-      {lag == 1 && <Alternative setAlt={setAlt} alt={alt} />}
+      {lag === 1 && <Alternative setAlt={setAlt} alt={alt} />}
     </Form>
   );
 };

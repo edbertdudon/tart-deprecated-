@@ -27,7 +27,7 @@ const OneSampleTTest = ({ statistic }) => {
   const handleMean = (e) => {
     const input = e.target.value;
     setMean(input);
-    if (isNaN(parseFloat(input))) {
+    if (Number.isNaN(parseFloat(input))) {
       setMeanError('True mean must be a number.');
     } else {
       setMeanError(null);
@@ -37,7 +37,7 @@ const OneSampleTTest = ({ statistic }) => {
   const handleConfLevel = (e) => {
     const input = e.target.value;
     setConfLevel(input);
-    if (isNaN(parseFloat(input))) {
+    if (Number.isNaN(parseFloat(input))) {
       setConfLevelError('Confidence level must be a number.');
     } else if (parseFloat(input) > 1 || parseFloat(input) < 0) {
       setConfLevelError('Confidence Level must be between 0 and 1.');
@@ -54,9 +54,13 @@ const OneSampleTTest = ({ statistic }) => {
     if (alt !== 0) formuladata.alternative = ALTERNATIVES[alt].charAt(0).toLowerCase();
     if (mean !== 0) formuladata.mean = mean;
     if (confLevel !== 0.95) formuladata.confidencelevel = confLevel;
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = variableX == null

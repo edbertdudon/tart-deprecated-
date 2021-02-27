@@ -9,7 +9,7 @@ import React from 'react';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
-import { validateCellorSingleRange, validateCellorNumeric } from './index';
+import { validateCellorSingleRange, validateCellorNumeric } from './validate';
 
 const Cconstraint = ({
   isActive, lhs, cone, rhs, type, error,
@@ -26,7 +26,7 @@ const Cconstraint = ({
         <Icon path={mdiClose} size={0.8} />
       </button>
       <div className="rightsidebar-input-text-3part1">Linear</div>
-      <div className="rightsidebar-input-text-3part2">cone</div>
+      <div className="rightsidebar-input-text-3part2">Cone</div>
       <div className="rightsidebar-input-text-3part3">Numeric</div>
       <CellReference
         cell={lhs}

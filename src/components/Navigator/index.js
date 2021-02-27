@@ -9,8 +9,9 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import Editable from './editable';
 import Input from './input';
+import Sample from './sample'
+import Editable from './editable';
 import './index.less';
 
 function reorder(list, startIndex, endIndex) {

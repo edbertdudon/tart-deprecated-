@@ -34,9 +34,10 @@ const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 
 const SubText = ({ slide }) => (
   <div className="navigator-subtext">
-    {(slide.regression.sample === true || slide.optimization.sample === true)
-      ? 'Sample'
-      : 'Population'}
+    {(('regression' in slide && slide.regression.sample === true)
+      || ('optimization' in slide && slide.optimization.sample === true)
+    ) ? 'Sample' : 'Population'
+    }
   </div>
 );
 

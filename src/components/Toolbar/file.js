@@ -55,7 +55,7 @@ const Files = ({
   firebase, authUser, worksheetname, worksheets, slides, dataNames, current, saving,
   setReadOnly, onSetDataNames, onSetCurrent, onSetSaving, onSetWorksheetname,
 }) => {
-  const [isShareOpen, setIsShareOpen] = useState(true);
+  const [isShareOpen, setIsShareOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const uploadRef = useRef(null);
   const history = useHistory();

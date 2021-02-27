@@ -1,41 +1,41 @@
 //
-//  cloudr
-//  Tart
+// cloudr
+// Tart
 //
-//  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+// Created by Edbert Dudon on 7/8/19.
+// Copyright © 2019 Project Tart. All rights reserved.
 //
-//  Notes:
-//  Build: docker build . -t 'cloudrun-r-rscript'
-//  Run: docker run -p 8080:8080 -e PORT=8080 cloudrun-r-rscript
-//  234\ ==> 234\\
+// Notes:
+// Build: docker build . -t 'cloudrun-r-rscript'
+// Run: docker run -p 8080:8080 -e PORT=8080 cloudrun-r-rscript
+// 234\ ==> 234\\
 //
-//  Test Cases:
-//  reference within a reference:
-//    "Sheet1!C3"
-//    * "Sheet1!C3 + Sheet1!C6"
-//    "mean(Sheet1$Rating_X)"
-//    * "1+2", "=1+2" !== 3
-//    "31-Dec-2019"
-//    "Sheet1!C3:C4"
-//    "Sheet1!C3:D3"
-//    "Sheet1!C:C"
-//  "31-Dec-2019"
-//  "Sheet1!C3 + Sheet1!C6"
-//  "mean(Sheet1$Rating_X)"
-//  * "1+2", "=1+2" !== 3
-//  "Sheet1!C3"
-//  "Sheet1!C3:C4"
-//  "Sheet1!C3:D3"
-//  "Sheet1!C:C"
+// Test Cases:
+// reference within a reference:
+//   "Sheet1!C3"
+//   * "Sheet1!C3 + Sheet1!C6"
+//   "mean(Sheet1$Rating_X)"
+//   * "1+2", "=1+2" !== 3
+//   "31-Dec-2019"
+//   "Sheet1!C3:C4"
+//   "Sheet1!C3:D3"
+//   "Sheet1!C:C"
+// "31-Dec-2019"
+// "Sheet1!C3 + Sheet1!C6"
+// "mean(Sheet1$Rating_X)"
+// * "1+2", "=1+2" !== 3
+// "Sheet1!C3"
+// "Sheet1!C3:C4"
+// "Sheet1!C3:D3"
+// "Sheet1!C:C"
 //
-//	Matrices Test Cases:
-// 	H4 should work
-// 	H4:H6 should not work
-// 	H4:H6 %*% H4:H6 should work (replaces MMULT)
-//	H:H %*% 2 should not work (can do H1+2, H2+2, etc.)
-//	t(H:H)%*% H:H should work
-//  matrix with cell referencing
+// Matrices Test Cases:
+// H4 should work
+// H4:H6 should not work
+// H4:H6 %*% H4:H6 should work (replaces MMULT)
+// H:H %*% 2 should not work (can do H1+2, H2+2, etc.)
+// t(H:H)%*% H:H should work
+// matrix with cell referencing
 //
 import _cell from '../core/cell';
 import { formulam, rFormulas } from './formula';
@@ -133,9 +133,10 @@ function translateR(cell, name) {
 }
 
 function mapSpreadsheet(data, cb) {
+  const newData = data;
   for (let ri = 0; ri < data.length; ri++) {
     for (let ci = 0; ci < data[ri].length; ci++) {
-      data[ri][ci] = cb(ri, ci);
+      newData[ri][ci] = cb(ri, ci);
     }
   }
   return data;
@@ -144,7 +145,7 @@ function mapSpreadsheet(data, cb) {
 // [[1,2],["a","b"]]
 function spreadsheetToR(datas) {
   const newDatas = datas.map((data) => {
-    const { rows, cols } = data;
+    const { rows } = data;
     const arows = Object.keys(rows._);
     if (arows.length < 1) return [];
     const nrows = Math.max(...arows) + 1;
@@ -158,10 +159,10 @@ function spreadsheetToR(datas) {
     ncols += 1;
     let newData = createEmptyMatrix(nrows, ncols);
     newData = mapSpreadsheet(newData, (ri, ci) => {
-      if (rows._.[ri] != undefined && rows._.[ri].cells[ci] != undefined) {
+      if (rows._.[ri] !== undefined && rows._.[ri].cells[ci] !== undefined) {
         const cell = rows._.[ri].cells[ci].text;
         if ((typeof cell === 'string' || cell instanceof String)
-          && cell.startsWith('=') && cell != '=') {
+          && cell.startsWith('=') && cell !== '=') {
           return translateR(cell.slice(1), data.name);
         }
         return cell;
@@ -184,7 +185,7 @@ function fetchR(data, func) {
 
 function removeMatrix(data, ri, ci) {
   if (data.matrices._.length > 0) {
-    const cr = data.matrices._.find((cr) => cr.sri === ri && cr.sci === ci);
+    const cr = data.matrices._.find((c) => c.sri === ri && c.sci === ci);
     if (cr !== undefined) {
       data.removeMatrix(cr);
     }
@@ -280,13 +281,25 @@ function doRegress(data, type) {
 
 function doOptimization(data) {
   return fetchR(data, 'optimization')
-    .then((res) => res.json())
     .then((res) => {
-      // if (typeof JSON.parse(res[0])[0] === 'string'
-      //   || JSON.parse(res[0])[0] instanceof String) {
-      //   return (res);
-      // }
-      return rToSpreadsheet(res);
+      if (!res.ok) {
+        return res.text();
+      }
+      return res.json();
+    })
+    .then((res) => {
+      const slide = JSON.parse(res);
+      if ('error' in slide) {
+        return slide;
+      }
+      const optimizeData = slide[1];
+      let aoa = optimizeData.map((row) => Object.values(row));
+      aoa = [Object.keys(optimizeData[0]), ...aoa];
+
+      return {
+        sparkdata: slide[0],
+        res: rToSpreadsheet(aoa),
+      };
     });
 }
 
@@ -296,7 +309,7 @@ function rRender(src, data, datas, ri, ci) {
       return doParse({
         cell: translateR(src.slice(1), data.name),
         slides: JSON.stringify(spreadsheetToR(datas)),
-        names: JSON.stringify(datas.map((data) => data.name)),
+        names: JSON.stringify(datas.map((d) => d.name)),
       }, data, ri, ci);
     }
     return _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
@@ -313,7 +326,6 @@ export {
   removeMatrix,
   doChart,
   doRegress,
-  doRegression,
   doOptimization,
   rRender,
 };

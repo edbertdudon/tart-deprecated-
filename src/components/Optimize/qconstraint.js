@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
-import { validateRangeNotOne, validateCellorSingleRange } from './index';
+import { validateRangeNotOne, validateCellorSingleRange } from './validate';
 
 const Qconstraint = ({
   slides, isActive, quadratic, linear, dir, rhs, error,

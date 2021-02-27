@@ -15,9 +15,24 @@ const Alternative = ({
   return (
     <>
       <div className="rightsidebar-label">Alternative Hypothesis</div>
-      <Button onClick={handleAlt0} condition={alt === 0} text={ALTERNATIVES_AUTOCORRELATION[0]} color={color[authUser.uid]} />
-      <Button onClick={handleAlt1} condition={alt === 1} text={ALTERNATIVES_AUTOCORRELATION[1]} color={color[authUser.uid]} />
-      <Button onClick={handleAlt2} condition={alt === 2} text={ALTERNATIVES_AUTOCORRELATION[2]} color={color[authUser.uid]} />
+      <Button
+        onClick={handleAlt0}
+        condition={alt === 0}
+        text={ALTERNATIVES_AUTOCORRELATION[0]}
+        color={color[authUser.uid]}
+      />
+      <Button
+        onClick={handleAlt1}
+        condition={alt === 1}
+        text={ALTERNATIVES_AUTOCORRELATION[1]}
+        color={color[authUser.uid]}
+      />
+      <Button
+        onClick={handleAlt2}
+        condition={alt === 2}
+        text={ALTERNATIVES_AUTOCORRELATION[2]}
+        color={color[authUser.uid]}
+      />
     </>
   );
 };

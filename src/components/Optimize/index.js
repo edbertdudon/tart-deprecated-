@@ -21,11 +21,10 @@ import Lconstraint from './lconstraint';
 import Variable from '../Statistics/core/variable';
 import Button from '../RightSidebar/button';
 import {
-  letterToColumn, columnToLetter, spreadsheetToR, doOptimization, translateR,
+  columnToLetter, spreadsheetToR, doOptimization, translateR,
 } from '../Spreadsheet/cloudr';
 import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, createFile,
-  VALID_RANGE_REFERENCES, VALID_FORMULA_CELL_REFERENCES, RANGE_REFERENCES,
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, createFile,
 } from '../../functions';
 import withLists from '../RightSidebar/withLists';
 import { withFirebase } from '../Firebase';
@@ -46,7 +45,7 @@ const CONSTRAINTS_TYPE = [
   'Positive semidefinite cone',
 ];
 
-const CONES_TYPE = ['K_zero', 'K_lin', 'K_soc', 'K_expp', 'K_powp', 'K_powd', 'K_psd'];
+// const CONES_TYPE = ['K_zero', 'K_lin', 'K_soc', 'K_expp', 'K_powp', 'K_powd', 'K_psd'];
 
 const SOLVER_STATES = [
   // General
@@ -86,103 +85,6 @@ const OPTIMX_METHODS = [
   'Nelder-mead', 'L-BFGS-B', 'BFGS', 'CG', 'nlm', 'nlminb', 'spg',
   'ucminf', 'newuoa', 'bobyqa', 'nmkb', 'hjkb', 'Rcgmin', 'Rvmmin',
 ];
-
-export function validateCell(v) {
-  if (!VALID_FORMULA_CELL_REFERENCES.test(v)) {
-    return ('Invalid cell reference.');
-  }
-  const mr = v.match(RANGE_REFERENCES);
-  if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref));
-    if (ml[1] < ml[0] || ml.length !== 1) {
-      return ('Invalid range.');
-    }
-    const mn = v.match(NUMBERS_REFERENCE);
-    if (mn !== null) {
-      mn.map((ref) => parseInt(ref));
-      if (mn[1] < mn[0] || mn.length !== 1) {
-        return ('Invalid range.');
-      }
-    }
-  }
-  return (null);
-}
-
-export function validateCellorNumeric(v) {
-  if (!NUMBERS_REFERENCE.test(v)) {
-    validateCell(v);
-  }
-  return null;
-}
-
-export function validateCellorSingleRange(v) {
-  if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
-    return ('Invalid cell, row or column.');
-  }
-  const mc = v.match(FORMULA_CELL_REFERENCES);
-  if (mc === null) {
-    return ('Invalid cell.');
-  }
-  const mr = v.match(RANGE_REFERENCES);
-  if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE);
-    const mn = v.match(NUMBERS_REFERENCE);
-    if (!(ml[1] == ml[0] || mn[1] == mn[0]) || ml.length > 2 || mn.length > 2) {
-      return ('Invalid row or column. Must be limited to a single row or column');
-    }
-  }
-  return (null);
-}
-
-// function validateRange(v) {
-//   if (!VALID_RANGE_REFERENCES.test(v)) {
-//     return ('Invalid range reference.');
-//   }
-//   const mc = v.match(FORMULA_CELL_REFERENCES);
-//   if (mc === null) {
-//     return ('Invalid cell.');
-//   }
-//   const mr = v.match(RANGE_REFERENCES);
-//   if (mr !== null) {
-//     const ml = v.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
-//     if (ml[1] < ml[0] || ml.length !== 2) {
-//       return ('Invalid range.');
-//     }
-//     const mn = v.match(NUMBERS_REFERENCE);
-//     if (mn !== null) {
-//       mn.map((ref) => parseInt(ref));
-//       if (mn[1] < mn[0] || mn.length !== 2) {
-//         return ('Invalid range.');
-//       }
-//     }
-//   }
-//   return (null);
-// }
-
-export function validateRangeNotOne(v) {
-  if (!VALID_RANGE_REFERENCES.test(v)) {
-    return ('Invalid range reference.');
-  }
-  const mc = v.match(FORMULA_CELL_REFERENCES);
-  if (mc === null) {
-    return ('Invalid cell.');
-  }
-  const mr = v.match(RANGE_REFERENCES);
-  if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
-    if (ml[1] <= ml[0] || ml.length !== 2) {
-      return ('Invalid range. Must be greater than a single row or column');
-    }
-    const mn = v.match(NUMBERS_REFERENCE);
-    if (mn !== null) {
-      mn.map((ref) => parseInt(ref));
-      if (mn[1] <= mn[0] || mn.length !== 2) {
-	      return ('Invalid range. Must be greater than a single row or column');
-	    }
-    }
-  }
-  return (null);
-}
 
 function complete(lhs, dir, rhs) {
   if ((lhs.length === 0 && dir.length === 0 && rhs.length === 0)
@@ -241,7 +143,7 @@ function completeCone(lhs, rhs) {
 // }
 
 const Optimize = ({
-  firebase, authUser, worksheetname, slides, dataNames, current, saving, color,
+  firebase, authUser, worksheetname, slides, current, color,
   onSetDataNames, onSetCurrent, onSetSaving, onSetRightSidebar,
 }) => {
   const [objective, setObjective] = useState('');
@@ -328,9 +230,7 @@ const Optimize = ({
 
   useEffect(() => {
     const { selector } = slides.sheet;
-    const {
-      sri, sci, eri, eci,
-    } = selector.range;
+    const { sri, sci } = selector.range;
     setObjective(columnToLetter(sci + 1) + (sri + 1));
   }, []);
 
@@ -349,21 +249,50 @@ const Optimize = ({
       .map((c) => CONSTRAINTS_TYPE[c]),
   );
 
+  const filteredOptions = SOLVER_STATES[objectiveClass].filter((option) => {
+    if (constraints === CONSTRAINTS_TYPE) {
+      return option;
+    }
+
+    const list = CONSTRAINTS_TYPE
+      .filter((c) => !constraints.includes(c))
+      .map((c) => CONSTRAINTS_TYPE.indexOf(c));
+
+    for (let i = 0; i < list.length; i++) {
+      if (SOLVER_CONSTRAINTS[list[i]].includes(option)) {
+        return option;
+      }
+    }
+    return [];
+  });
+
+  const hasGConstraint = !constraints.includes(CONSTRAINTS_TYPE[0]);
+  const hasBounds = !constraints.includes(CONSTRAINTS_TYPE[1]);
+  const hasLConstraint = !constraints.includes(CONSTRAINTS_TYPE[2]);
+  const hasQConstraint = !constraints.includes(CONSTRAINTS_TYPE[3]);
+  const hasC0cone = !constraints.includes(CONSTRAINTS_TYPE[4]);
+  const hasLcone = !constraints.includes(CONSTRAINTS_TYPE[5]);
+  const hasSocone = !constraints.includes(CONSTRAINTS_TYPE[6]);
+  const hasEcone = !constraints.includes(CONSTRAINTS_TYPE[7]);
+  const has3cone = !constraints.includes(CONSTRAINTS_TYPE[8]);
+  const has2cone = !constraints.includes(CONSTRAINTS_TYPE[9]);
+  const hasPsdcone = !constraints.includes(CONSTRAINTS_TYPE[10]);
+
   const handleSubmit = () => {
     setLoading(true);
     const { name } = slides.data;
     const data = {
-      solver: SOLVER_STATES[objectiveClass][solver],
+      solver: filteredOptions[solver],
       slides: JSON.stringify(spreadsheetToR(slides.datas)),
       names: JSON.stringify(slides.datas.map((d) => d.name)),
     };
 
-    if (minMax == 1) {
+    if (minMax === 1) {
       data.minmax = minMax;
     }
 
     // optimx
-    if (objectiveClass == 0 && solver == 0) {
+    if (objectiveClass === 0 && solver === 0) {
       data.method = OPTIMX_METHODS[method];
     }
 
@@ -494,36 +423,44 @@ const Optimize = ({
       data.cpsdrhs = translateR(cpsdrhs, name);
     }
 
-    // doOptimization(data)
-    // 	.then((res) => {
-    // 		if (typeof res[0] === 'string' || res[0] instanceof String) {
-    // 			setError(res);
-    // 			setLoading(false);
-    // 		} else {
-    // 			res.type = 'optimize';
-    // 			res.optimization = { ...data, sample: true };
-    //
-    //       const sheetname = `optimization ${
-    //         objectiveClass === 0
-    //           ? objective
-    //           : objectiveClass === 1
-    //             ? linear : quadratic}`;
-    //       const isEmpty = slides.insertData(current, res, sheetname, 'read');
-    //       onSetDataNames(slides.datas.map((it) => it.name));
-    //       if (!isEmpty) {
-    //         onSetCurrent(slides.sheetIndex);
-    //       }
-    // 			onSetRightSidebar('none');
-    // 			setLoading(false);
-    //
-    //       onSetSaving(true);
-    //     	firebase.doUploadWorksheet(
-    //         authUser.uid,
-    //         worksheetname,
-    //         createFile(slides, worksheetname)
-    //       ).then(() => onSetSaving(false));
-    // 		}
-    // 	});
+    doOptimization(data)
+      .then((r) => {
+        if ('error' in r) {
+          setError(r.error);
+          setLoading(false);
+          return;
+        }
+
+        const { res, sparkdata } = r;
+
+        res.type = 'optimize';
+        res.optimization = { ...sparkdata, sample: true };
+        let prefix;
+        if (objectiveClass === 0) {
+          prefix = objective;
+        } else if (objectiveClass === 1) {
+          prefix = linear;
+        } else {
+          prefix = quadratic;
+        }
+
+        const sheetname = `optimization ${prefix}`;
+        const isEmpty = slides.insertData(current, res, sheetname, 'read');
+
+        onSetDataNames(slides.datas.map((it) => it.name));
+        if (!isEmpty) {
+          onSetCurrent(slides.sheetIndex);
+        }
+        onSetRightSidebar('none');
+        setLoading(false);
+
+        onSetSaving(true);
+        firebase.doUploadWorksheet(
+          authUser.uid,
+          worksheetname,
+          createFile(slides, worksheetname)
+        ).then(() => onSetSaving(false));
+      });
   };
 
   const handleClose = () => {
@@ -560,51 +497,28 @@ const Optimize = ({
     />,
   };
 
-  const filteredOptions = SOLVER_STATES[objectiveClass].filter((option) => {
-    if (constraints === CONSTRAINTS_TYPE) {
-      return option
-    }
-
-    const list = CONSTRAINTS_TYPE
-      .filter((c) => !constraints.includes(c))
-      .map((c) => CONSTRAINTS_TYPE.indexOf(c));
-
-    for (let i = 0; i < list.length; i++) {
-      if (SOLVER_CONSTRAINTS[list[i]].includes(option)) {
-        return option;
-      }
-    }
-  });
-
   const isEmptyObjective = {
     0: objective === '' || decision === '' || errorGeneral !== null,
     1: linear === '' || errorLinear !== null,
     2: quadratic === '' || errorQuadratic !== null,
   };
-  const hasGConstraint = !constraints.includes(CONSTRAINTS_TYPE[0]);
-  const hasBounds = !constraints.includes(CONSTRAINTS_TYPE[1]);
-  const hasLConstraint = !constraints.includes(CONSTRAINTS_TYPE[2]);
-  const hasQConstraint = !constraints.includes(CONSTRAINTS_TYPE[3]);
-  const hasC0cone = !constraints.includes(CONSTRAINTS_TYPE[4]);
-  const hasLcone = !constraints.includes(CONSTRAINTS_TYPE[5]);
-  const hasSocone = !constraints.includes(CONSTRAINTS_TYPE[6]);
-  const hasEcone = !constraints.includes(CONSTRAINTS_TYPE[7]);
-  const has3cone = !constraints.includes(CONSTRAINTS_TYPE[8]);
-  const has2cone = !constraints.includes(CONSTRAINTS_TYPE[9]);
-  const hasPsdcone = !constraints.includes(CONSTRAINTS_TYPE[10]);
 
   const isError = isEmptyObjective[objectiveClass]
     || (hasGConstraint && (errorGconstraint !== null || !complete(flhs, fdir, frhs)))
-    || (hasBounds && ((errorBounds !== null || (objectiveClass === 0 && !complete(blhs, bdir, brhs)))))
-		|| (hasLConstraint && (errorLconstraint !== null || !complete(llin, ldir, lrhs)))
-		|| (hasQConstraint && (errorQconstraint !== null || !complete(qquad, qdir, qrhs)))
-		|| (hasC0cone && (error0cone !== null || !completeCone(c0lhs, c0rhs)))
-		|| (hasLcone && (errorLcone !== null || !completeCone(cllhs, clrhs)))
-		|| (hasSocone && (errorSocone !== null || !completeCone(csolhs, csorhs)))
-		|| (hasEcone && (errorEcone !== null || !completeCone(cexlhs, cexrhs)))
-		|| (has3cone && (error3cone !== null || !completeCone(cpplhs, cpprhs)))
-		|| (has2cone && (error2cone !== null || !completeCone(cpdlhs, cpdrhs)))
-		|| (hasPsdcone && (errorPsdcone !== null || !completeCone(cpsdlhs, cpsdrhs)));
+    || (hasBounds && (
+      (errorBounds !== null
+        || (objectiveClass === 0 && !complete(blhs, bdir, brhs))
+      )
+    ))
+    || (hasLConstraint && (errorLconstraint !== null || !complete(llin, ldir, lrhs)))
+    || (hasQConstraint && (errorQconstraint !== null || !complete(qquad, qdir, qrhs)))
+    || (hasC0cone && (error0cone !== null || !completeCone(c0lhs, c0rhs)))
+    || (hasLcone && (errorLcone !== null || !completeCone(cllhs, clrhs)))
+    || (hasSocone && (errorSocone !== null || !completeCone(csolhs, csorhs)))
+    || (hasEcone && (errorEcone !== null || !completeCone(cexlhs, cexrhs)))
+    || (has3cone && (error3cone !== null || !completeCone(cpplhs, cpprhs)))
+    || (has2cone && (error2cone !== null || !completeCone(cpdlhs, cpdrhs)))
+    || (hasPsdcone && (errorPsdcone !== null || !completeCone(cpsdlhs, cpsdrhs)));
 
   return (
     <>
@@ -655,9 +569,9 @@ const Optimize = ({
         ub={ub}
         setUb={setUb}
         ld={ld}
-        setUb={setLd}
+        setLd={setLd}
         ud={ud}
-        setUb={setUd}
+        setUd={setUd}
         onClose={handleRemoveConstraint}
         error={errorBounds}
         setError={setErrorBounds}
@@ -786,22 +700,21 @@ const Optimize = ({
           options={constraints}
           name="Add constraint"
         />
-        )
-      }
+        )}
       <Variable
         label="Solver"
         setSelected={setSolver}
         options={filteredOptions}
         name={filteredOptions[solver]}
       />
-      {(objectiveClass == 0 && solver == 0) &&
+      {(objectiveClass === 0 && solver === 0) && (
         <Variable
           label="Method"
           setSelected={setMethod}
           options={OPTIMX_METHODS}
           name={OPTIMX_METHODS[method]}
         />
-      }
+      )}
       <div className="rightsidebar-text">
         {error && <div className="rightsidebar-error">{error}</div>}
       </div>

@@ -26,9 +26,13 @@ const StatisticDescription = ({ statistic }) => {
       ...e,
       variablesx: JSON.stringify(varsx.map((v) => variables[v])),
     };
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = varsx.length < 1;

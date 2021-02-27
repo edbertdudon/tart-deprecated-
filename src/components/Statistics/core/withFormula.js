@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 
 const OPERATORS_REGEX = /\+|\~/g;
 
@@ -26,7 +26,30 @@ const withFormula = (Component) => (props) => {
     setActiveOption(0);
   };
 
-  const handleClick = (event) => {
+  const formulaBuilder = () => {
+    setShowOptions(false);
+    let selectedColumn = filteredOption[activeOption];
+    if (filteredOption.length > 0 && selectedColumn !== undefined) {
+      const formulaAsArray = formula.split(OPERATORS_REGEX);
+      const [formulaLast] = formulaAsArray.slice(formulaAsArray.length - 1);
+      const formulaExceptLast = formula.slice(0, formula.length - formulaLast.length);
+      // if (/\s/g.test(selectedColumn)) {
+      selectedColumn = `\`${selectedColumn}\``;
+      // }
+      if (formulaAsArray.length < 2) {
+        setFormula(`${selectedColumn}~`);
+      } else {
+        setFormula(formulaExceptLast + selectedColumn);
+        props.onSetFormula(formulaExceptLast + selectedColumn);
+      }
+    } else {
+      setFormula(formula);
+      props.onSetFormula(formula);
+    }
+    setActiveOption(0);
+  };
+
+  const handleClick = () => {
     setFilteredOption([]);
     formulaBuilder();
     formulaRef.current.focus();
@@ -52,29 +75,6 @@ const withFormula = (Component) => (props) => {
       setActiveOption(activeOption + 1);
     // tab
     }
-  };
-
-  const formulaBuilder = () => {
-    setShowOptions(false);
-    let selectedColumn = filteredOption[activeOption];
-    if (filteredOption.length > 0 && selectedColumn !== undefined) {
-      const formulaAsArray = formula.split(OPERATORS_REGEX);
-      const [formulaLast] = formulaAsArray.slice(formulaAsArray.length - 1);
-      const formulaExceptLast = formula.slice(0, formula.length - formulaLast.length);
-      // if (/\s/g.test(selectedColumn)) {
-      selectedColumn = `\`${selectedColumn}\``;
-      // }
-      if (formulaAsArray.length < 2) {
-        setFormula(`${selectedColumn}~`);
-      } else {
-        setFormula(formulaExceptLast + selectedColumn);
-        props.onSetFormula(formulaExceptLast + selectedColumn);
-      }
-    } else {
-      setFormula(formula);
-      props.onSetFormula(formula);
-    }
-    setActiveOption(0);
   };
 
   return (

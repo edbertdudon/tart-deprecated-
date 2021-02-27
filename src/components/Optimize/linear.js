@@ -7,7 +7,7 @@
 //
 import React from 'react';
 import CellReference from '../RightSidebar/cellreference';
-import { validateCellorSingleRange } from './index';
+import { validateCellorSingleRange } from './validate';
 
 const Linear = ({
   linear, error, setLinear, setError,

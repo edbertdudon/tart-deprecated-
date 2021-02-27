@@ -22,9 +22,24 @@ const WilksApproximation = ({
   return (
     <>
       <div className="rightsidebar-label">Approximation</div>
-      <Button onClick={handleMethod0} condition={method === 0} text={WILKS_APPROXIMATION[0]} color={color[authUser.uid]} />
-      <Button onClick={handleMethod1} condition={method === 1} text={WILKS_APPROXIMATION[1]} color={color[authUser.uid]} />
-      <Button onClick={handleMethod2} condition={method === 2} text={WILKS_APPROXIMATION[2]} color={color[authUser.uid]} />
+      <Button
+        onClick={handleMethod0}
+        condition={method === 0}
+        text={WILKS_APPROXIMATION[0]}
+        color={color[authUser.uid]}
+      />
+      <Button
+        onClick={handleMethod1}
+        condition={method === 1}
+        text={WILKS_APPROXIMATION[1]}
+        color={color[authUser.uid]}
+      />
+      <Button
+        onClick={handleMethod2}
+        condition={method === 2}
+        text={WILKS_APPROXIMATION[2]}
+        color={color[authUser.uid]}
+      />
     </>
   );
 };

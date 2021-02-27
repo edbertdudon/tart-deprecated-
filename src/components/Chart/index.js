@@ -13,13 +13,13 @@ import DataRange, {
   getRangeIndex, getRownames, getVarsAsColumns,
 } from '../RightSidebar/datarange';
 import Button from '../RightSidebar/button';
-import { createFile } from '../../functions';
+import { NUMBERS_REFERENCE, createFile } from '../../functions';
 import withLists from '../RightSidebar/withLists';
 import withListsDropdown from '../RightSidebar/withListsDropdown';
 import { withFirebase } from '../Firebase';
 
 const Chart = ({
-  firebase, authUser, worksheetname, slides, save, chartSelect, onSetSaving,
+  firebase, authUser, worksheetname, slides, chartSelect, onSetSaving,
 }) => {
   const [variables, setVariables] = useState([]);
   const [datarange, setDatarange] = useState('');
@@ -46,7 +46,7 @@ const Chart = ({
     } else {
       const range = getRangeIndex(chartSelect.range);
       const rowNames = getRownames(rows._, range);
-      if (rowNames.some(isNaN)) {
+      if (rowNames.some(Number.isNaN)) {
         setVariables(rowNames);
       } else {
         setVariables(
@@ -62,6 +62,12 @@ const Chart = ({
       setSparkuri(chartSelect.sparkuri);
     }
   }, [chartSelect]);
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   const handleUpdateChart = (selected) => {
     setTypes(selected);
@@ -121,12 +127,6 @@ const Chart = ({
       setMessage('First row must be true for calculating statistics on population data.');
     }
   };
-
-  function save() {
-    onSetSaving(true);
-    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-      .then(() => onSetSaving(false));
-  }
 
   function filterVariables(item, index) {
     return charts[types[0]].variables === item.variables && !types.includes(index);

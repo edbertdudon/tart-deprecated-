@@ -1187,7 +1187,7 @@ export default class DataProxy {
 
     const rowNames = getRownames(this.rows._, range);
     if (rowNames.length !== 0) {
-      c.firstrow = rowNames.some(isNaN);
+      c.firstrow = rowNames.some(Number.isNaN);
       c.variablex = 0;
       if (charts[type].variables > 1 && rowNames.length > 1) {
         c.variabley = 1;

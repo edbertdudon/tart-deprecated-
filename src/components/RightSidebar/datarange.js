@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 import { letterToColumn, columnToLetter } from '../Spreadsheet/cloudr';
 import {
   LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, RANGE_REFERENCES,
-  VALID_FORMULA_CELL_REFERENCES, VALID_RANGE_REFERENCES, useOutsideAlerter
+  VALID_FORMULA_CELL_REFERENCES, VALID_RANGE_REFERENCES, useOutsideAlerter,
 } from '../../functions';
 
 function getRangeIndex(range) {
@@ -74,9 +74,7 @@ function getRange(len, range) {
 }
 
 function getVarsAsColumns(rows, len, range) {
-  const {
-    sri, sci, eri, eci,
-  } = range;
+  const { sri, eri } = range;
   const cols = getCols(rows, range);
   if (len === eri + 1) {
     return cols.map((col) => `${col}:${col}`);
@@ -131,7 +129,7 @@ const DataRange = ({
       const range = getRangeIndex(datarange);
 
       if (!range) {
-        return
+        return;
       }
 
       if (firstRow) {

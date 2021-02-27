@@ -7,7 +7,7 @@
 //
 import React from 'react';
 import CellReference from '../RightSidebar/cellreference';
-import { validateRangeNotOne, validateCellorSingleRange } from './index';
+import { validateRangeNotOne, validateCellorSingleRange } from './validate';
 
 const Quadratic = ({
   quadratic, linear, error, setQuadratic, setLinear, setError,

@@ -7,7 +7,7 @@
 //
 import React from 'react';
 import CellReference from '../RightSidebar/cellreference';
-import { validateCellorSingleRange, validateCell } from './index';
+import { validateCellorSingleRange, validateCell } from './validate';
 
 const General = ({
   objective, decision, gradient, hessian, error,

@@ -6,6 +6,8 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React, { useState, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import Form, { CORRELATION_METHOD } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
@@ -14,7 +16,7 @@ import Matrix from '../core/matrix';
 import Alternative from '../core/alternativecorrelation';
 import { getRownames, getVarsAsColumns } from '../../RightSidebar/datarange';
 
-const Correlation = ({ statistic }) => {
+const Correlation = ({ statistic, slides }) => {
   const [variables, setVariables] = useState([]);
   const [varsx, setVarsx] = useState([]);
   const [method, setMethod] = useState(0);
@@ -26,19 +28,19 @@ const Correlation = ({ statistic }) => {
     const { type, rows } = data;
     const { range } = sheet.selector;
 
-	  if (type === 'sheet' || type === 'input') {
+    if (type === 'sheet' || type === 'input') {
       const rowNames = getRownames(rows._, range);
-	    if (rowNames.some(isNaN)) {
-	      setVarsx(
+      if (rowNames.some(Number.isNaN)) {
+        setVarsx(
           rowNames.map((v, i) => i),
         );
-	    } else {
-	      setVarsx(
+      } else {
+        setVarsx(
           getVarsAsColumns(rows._, rows.len, range)
             .map((v, i) => i),
         );
-	    }
-	  }
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -55,9 +57,12 @@ const Correlation = ({ statistic }) => {
       variablesx: JSON.stringify(varsx.map((v) => variables[v])),
     };
     if (method !== 0) formuladata.method = CORRELATION_METHOD[method].charAt(0).toLowerCase();
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = varsx.length < 1;
@@ -65,7 +70,7 @@ const Correlation = ({ statistic }) => {
   return (
     <Form
       statistic={statistic}
-      invalidStat={false}
+      invalidStat={isInvalid}
       setVariables={setVariables}
       onSubmit={handleSubmit}
       error={error}
@@ -77,4 +82,12 @@ const Correlation = ({ statistic }) => {
   );
 };
 
-export default Correlation;
+const mapStateToProps = (state) => ({
+  slides: (state.slidesState.slides || {}),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(Correlation);

@@ -61,7 +61,7 @@ class Spreadsheet {
     d.change = (...args) => {
       this.sheet.trigger('change', ...args);
     };
-    if (index == undefined) {
+    if (index === undefined) {
       this.datas.push(d);
     } else {
       this.datas.splice(index + 1, 0, d);
@@ -118,7 +118,7 @@ class Spreadsheet {
     // this.sheetIndex = index + 1;
     this.sheet.resetData(d);
     this.data = d;
-    return this.datas.map((data) => data.name);
+    return this.datas.map((a) => a.name);
   }
 
   insertChart(type) {
@@ -149,10 +149,11 @@ class Spreadsheet {
     const names = datas.map((it) => it.name);
     const n = getMaxNumberCustomSheet(names, name);
 
+    let newName;
     if (n !== 1) {
-      name = `${name} ${n}`;
+      newName = `${name} ${n}`;
     }
-    d.name = name;
+    d.name = newName;
 
     const { _ } = this.data.rows;
     const isEmpty = Object.keys(_).length === 0 && _.constructor === Object;

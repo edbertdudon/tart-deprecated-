@@ -4,7 +4,7 @@ import withFormula from './withFormula';
 const OPERATORS_REGEX = /\+|\~/g;
 
 function readableFormula(formula) {
-  if (formula == '') return 'y = b0 + b1X';
+  if (formula ==='') return 'y = b0 + b1X';
   const formulaAsArray = formula.split(OPERATORS_REGEX);
   let newFormula = `${formulaAsArray[0]} = b0`;
   for (let i = 1; i < formulaAsArray.length; i++) {

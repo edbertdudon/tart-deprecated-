@@ -94,14 +94,14 @@ export function xtos(sdata, filename) {
   sdata.forEach((xws) => {
     const aoa = [[]];
     const rowobj = xws.rows;
-    for (var ri = 0; ri < rowobj.len; ++ri) {
+    for (let ri = 0; ri < rowobj.len; ++ri) {
       if (xws.type !== 'chart') {
-        var row = rowobj[ri];
+        const row = rowobj[ri];
         if (!row) continue;
         aoa[ri] = [];
         Object.keys(row.cells).forEach((k) => {
           const idx = +k;
-          if (isNaN(idx)) return;
+          if (Number.isNaN(idx)) return;
           aoa[ri][idx] = row.cells[k].text;
         });
       }

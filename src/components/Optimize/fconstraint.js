@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
-import { validateCellorSingleRange, validateCell } from './index';
+import { validateCellorSingleRange, validateCell } from './validate';
 
 const Fconstraint = ({
   slides, isActive, lhs, dir, rhs, jacobian, error,

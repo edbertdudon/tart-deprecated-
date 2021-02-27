@@ -5,7 +5,7 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Form from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
@@ -28,7 +28,7 @@ const OutlierTest = ({ statistic }) => {
   const handlePvalue = (e) => {
     const input = e.target.value;
     setPvalue(input);
-    if (isNaN(parseFloat(input))) {
+    if (Number.isNaN(parseFloat(input))) {
       setPvalueError('p-values level must be a number.');
     } else if (parseFloat(input) > 1 || parseFloat(input) < 0) {
       setPvalueError('p-values must be between 0 and 1.');
@@ -40,7 +40,7 @@ const OutlierTest = ({ statistic }) => {
   const handleObservations = (e) => {
     const input = e.target.value;
     setObservations(input);
-    if (isNaN(parseFloat(input))) {
+    if (Number.isNaN(parseFloat(input))) {
       setObservationsError('Maximum observations must be a number.');
     } else {
       setObservationsError(null);
@@ -54,9 +54,13 @@ const OutlierTest = ({ statistic }) => {
     };
     if (pvalue !== 0.05) formuladata.pvalue = pvalue;
     if (observations !== 10) formuladata.observations = observations;
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = formulaError !== null
@@ -72,7 +76,12 @@ const OutlierTest = ({ statistic }) => {
       error={error}
       setError={setError}
     >
-      <Formula formulaText={formula} variables={variables} onSetFormula={handleFormula} formulaError={formulaError} />
+      <Formula
+        formulaText={formula}
+        variables={variables}
+        onSetFormula={handleFormula}
+        formulaError={formulaError}
+      />
       <Number label="Significance Level" value={pvalue} onChange={handlePvalue} error={pvalueError} />
       <Number label="Observations" value={observations} onChange={handleObservations} error={observationsError} />
     </Form>

@@ -20,8 +20,18 @@ const BootstrapMethod = ({
   return (
     <>
       <div className="rightsidebar-label">Bootstrap Method</div>
-      <Button onClick={handleMethodResample} condition={method === 0} text={BOOTSTRAP_METHOD[0]} color={color[authUser.uid]} />
-      <Button onClick={handleMethodNormal} condition={method === 1} text={BOOTSTRAP_METHOD[1]} color={color[authUser.uid]} />
+      <Button
+        onClick={handleMethodResample}
+        condition={method === 0}
+        text={BOOTSTRAP_METHOD[0]}
+        color={color[authUser.uid]}
+      />
+      <Button
+        onClick={handleMethodNormal}
+        condition={method === 1}
+        text={BOOTSTRAP_METHOD[1]}
+        color={color[authUser.uid]}
+      />
     </>
   );
 };

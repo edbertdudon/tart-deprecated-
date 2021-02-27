@@ -29,9 +29,13 @@ const OneWayManova = ({ statistic }) => {
       variablex: variables[variableX],
       variablesy: JSON.stringify(varsy.map((v) => variables[v])),
     };
-    return doRegress(formuladata, statistics.find((e) => e.key === statistic).function)
+    return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
+
       .then((res) => ({ res, formuladata }))
-      .catch((err) => setError(err.toString()));
+      .catch(() => {
+        setError('Unable to calculate statistic.');
+        throw Error();
+      });
   };
 
   const isInvalid = variableX == null
@@ -40,7 +44,7 @@ const OneWayManova = ({ statistic }) => {
   return (
     <Form
       statistic={statistic}
-      invalidStat={false}
+      invalidStat={isInvalid}
       setVariables={setVariables}
       onSubmit={handleSubmit}
       error={error}

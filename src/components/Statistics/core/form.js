@@ -16,7 +16,7 @@ import DataRange, {
   getRangeIndex, getRownames, getRange, getVarsAsColumns,
 } from '../../RightSidebar/datarange';
 import Button from '../../RightSidebar/button';
-import { createFile, insertData } from '../../../functions';
+import { createFile } from '../../../functions';
 import { withFirebase } from '../../Firebase';
 
 export const ALTERNATIVES = ['Two-sided', 'Greater', 'Less'];
@@ -29,8 +29,9 @@ export const WILKS_METHOD = ['c (standard)', 'MCD', 'Rank'];
 export const WILKS_APPROXIMATION = ['Bartlett', 'Rao', 'Empirical'];
 
 const Form = ({
-  firebase, authUser, color, worksheetname, slides, dataNames, current, saving, statistic, invalidStat, error,
-  children, setVariables, setError, onSubmit, onSetSaving, onSetDataNames, onSetCurrent, onSetRightSidebar,
+  firebase, authUser, color, worksheetname, slides, current, statistic,
+  invalidStat, error, children, setVariables, setError, onSubmit, onSetSaving,
+  onSetDataNames, onSetCurrent, onSetRightSidebar,
 }) => {
   const [datarange, setDatarange] = useState('');
   const [firstRow, setFirstRow] = useState(true);
@@ -46,16 +47,16 @@ const Form = ({
 
     setDatarange(getRange(rows.len, range));
 
-	  if (type === 'sheet') {
-	    if (rowNames.some(isNaN)) {
-	      setVariables(rowNames);
-	    } else {
-	      setVariables(
+    if (type === 'sheet') {
+      if (rowNames.some(Number.isNaN)) {
+        setVariables(rowNames);
+      } else {
+        setVariables(
           getVarsAsColumns(rows._, rows.len, range),
         );
-	      setFirstRow(false);
-	    }
-	  }
+        setFirstRow(false);
+      }
+    }
     if (slides.data.type === 'input') {
       setVariables(rowNames);
     }
@@ -104,10 +105,7 @@ const Form = ({
       range: translateR(datarange, data.name),
       firstrow: firstRow,
     }).then((r) => {
-      const { res } = r;
-      const { formuladata } = r;
-      const { datas, data } = slides;
-
+      const { res, formuladata } = r;
       delete formuladata.slides;
       delete formuladata.names;
       res.type = statistics.find((e) => e.key === statistic).function;
@@ -122,14 +120,17 @@ const Form = ({
       setLoading(false);
 
       onSetSaving(true);
-      firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-        .then(() => onSetSaving(false));
-    });
+      firebase.doUploadWorksheet(
+        authUser.uid,
+        worksheetname,
+        createFile(slides, worksheetname),
+      ).then(() => onSetSaving(false));
+    }).catch(() => setLoading(false));
   };
 
   const isInvalid = invalidStat
-		|| datarangeError != null
-		|| error != null;
+    || datarangeError != null
+    || error != null;
 
   return (
     <>
