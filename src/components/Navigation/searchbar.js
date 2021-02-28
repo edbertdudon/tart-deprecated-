@@ -21,14 +21,14 @@ const SearchBar = ({
     });
 
     firebase.doListInputs(authUser.uid).then((res) => {
-      const is = res.items.map((input) => input.name)
+      const is = res.items.map((input) => input.name);
       setInputs(is);
     });
 
     firebase.connection(authUser.uid).get().then((docC) => {
       if (docC.exists) {
         setConnections(Object.keys(docC.data()));
-      };
+      }
     });
   }, []);
 
@@ -36,17 +36,15 @@ const SearchBar = ({
     const input = e.target.value;
     const ws = worksheets
       .map((worksheet) => worksheet.name)
-      .filter((file) => file.toLowerCase().includes(input.toLowerCase()))
+      .filter((file) => file.toLowerCase().includes(input.toLowerCase()));
 
-    const is = inputs.filter((file) =>
-      file.toLowerCase().includes(input.toLowerCase())
-    )
+    const is = inputs.filter((file) => file.toLowerCase().includes(input.toLowerCase()));
 
-    const cs = connections.filter((file) =>
-      file.toLowerCase().includes(input.toLowerCase())
-    )
-    console.log(ws,is,cs)
-    onSetSearch({ input, ws, is, cs })
+    const cs = connections.filter((file) => file.toLowerCase().includes(input.toLowerCase()));
+
+    onSetSearch({
+      input, ws, is, cs,
+    });
   };
 
   return (
@@ -65,7 +63,9 @@ const SearchBar = ({
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  search: (state.searchState.search || { input: '', ws: [], is:[], cs:[] }),
+  search: (state.searchState.search || {
+    input: '', ws: [], is: [], cs: [],
+  }),
   worksheets: (state.worksheetsState.worksheets || []),
 });
 

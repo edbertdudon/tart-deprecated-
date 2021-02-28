@@ -55,9 +55,9 @@ class SignUpFormBase extends Component {
     } = this.state;
     const roles = {};
     const isInvalidPassword = passwordOne.length < 8
-  		|| /\s/.test(passwordOne)
-  		|| !/^[\x00-\x7F]*$/.test(passwordOne)
-  		|| !/\d/.test(passwordOne);
+      || /\s/.test(passwordOne)
+      || !/^[\x00-\x7F]*$/.test(passwordOne)
+      || !/\d/.test(passwordOne);
 
     if (isInvalidPassword) {
       this.setState({ errorPassword: 'password must have at least 8 characters (ASCII) and include numbers.' });
@@ -131,7 +131,7 @@ class SignUpFormBase extends Component {
       dob,
       country,
       error,
-	    errorPassword,
+      errorPassword,
     } = this.state;
 
     const isInvalid = passwordOne !== passwordTwo

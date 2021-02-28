@@ -6,12 +6,11 @@ import { withFirebase } from '../Firebase';
 
 const COLORS_APP = Object.keys(OFF_COLOR);
 
-const Colors = ({ firebase, color, authUser, onSetColor }) => {
-  const handleColor = (color) => {
-    firebase.user(authUser.uid).update({
-      color,
-    });
-
+const Colors = ({
+  firebase, color, authUser, onSetColor,
+}) => {
+  const handleColor = (c) => {
+    firebase.user(authUser.uid).update({ color: c });
     onSetColor(color, authUser.uid);
   };
 
@@ -24,6 +23,7 @@ const Colors = ({ firebase, color, authUser, onSetColor }) => {
           border: (COLORS_APP[0] === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
         }}
         onClick={() => handleColor(COLORS_APP[0])}
+        type="button"
       />
       <button
         style={{
@@ -32,6 +32,7 @@ const Colors = ({ firebase, color, authUser, onSetColor }) => {
           border: (COLORS_APP[1] === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
         }}
         onClick={() => handleColor(COLORS_APP[1])}
+        type="button"
       />
       <button
         style={{
@@ -40,6 +41,7 @@ const Colors = ({ firebase, color, authUser, onSetColor }) => {
           border: (COLORS_APP[2] === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
         }}
         onClick={() => handleColor(COLORS_APP[2])}
+        type="button"
       />
     </div>
   );

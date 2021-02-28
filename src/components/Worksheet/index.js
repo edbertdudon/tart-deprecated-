@@ -15,7 +15,7 @@ import Toggle from '../Toggle';
 import Formulabar from '../Formulabar';
 import Navigator from '../Navigator';
 import RightSidebar from '../RightSidebar';
-import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper.js';
+import SpreadsheetWrapper from '../Spreadsheet/spreadsheetWrapper';
 import { withAuthorization, withEmailVerification } from '../Session';
 
 const Worksheet = () => {

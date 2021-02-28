@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdilChartHistogram } from '@mdi/light-js';
 import { mdiMagnify, mdiBrush, mdiMathIntegral } from '@mdi/js';
-import formulas from '../Spreadsheet/cloudr/formula';
+import { formulas } from '../Spreadsheet/cloudr/formula';
 import charts from '../Chart/chartsR';
 import statistics from '../Statistics/core/statisticsR';
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet';
@@ -67,7 +67,7 @@ const Button = ({
 );
 
 const Toggle = ({
-  firebase, authUser, color, worksheetname, slides, saving,
+  firebase, authUser, color, worksheetname, slides,
   rightSidebar, setStatistic, onSetSaving, onSetRightSidebar,
 }) => {
   const handleToggle = (select) => {
@@ -85,7 +85,7 @@ const Toggle = ({
       slides.insertChart(i);
 
       onSetSaving(true);
-    	firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
         .then(() => onSetSaving(false));
     }
   };

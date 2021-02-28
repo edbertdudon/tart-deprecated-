@@ -1,13 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
 import { useOutsideClick } from '../../functions';
 import './index.less';
 
-import { OFF_COLOR } from '../../constants/off-color';
-
-const getNotificationStates = (item, i) => ({
+const getNotificationStates = (item) => ({
   notification: <div className="notification-item" key={item.key}>{item.key}</div>,
 });
 

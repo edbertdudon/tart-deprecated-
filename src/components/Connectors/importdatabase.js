@@ -1,13 +1,20 @@
-import React, { useState, useRef } from 'react';
+//
+//  ImportDatabase
+//  Tart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
+import React, { useState } from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import Icon from '@mdi/react';
 import { mdiLoading } from '@mdi/js';
-import './index.less';
-
+import Checkbox from './checkbox';
 import withModal from '../Modal';
-import { serverConnect } from './serverConnect';
+import serverConnect from './serverConnect';
 import { withFirebase } from '../Firebase';
+import './index.less';
 
 const ImportDatabase = ({
   firebase, authUser, color, databaseType, onClose,
@@ -18,15 +25,9 @@ const ImportDatabase = ({
   const [url, setUrl] = useState('');
   const [user, setUser] = useState('');
   const [password, setPassword] = useState('');
-  const [ssl, setSSL] = useState(false);
-  const [caFile, setCaFile] = useState('');
-  const [keyFile, setKeyFile] = useState('');
-  const [certFile, setCertFile] = useState('');
+  const [ssl, setSSL] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const ca = useRef(null);
-  const key = useRef(null);
-  const cert = useRef(null);
 
   const handleClose = () => {
     // setHost('')
@@ -46,14 +47,7 @@ const ImportDatabase = ({
   const handleUser = (e) => setUser(e.target.value);
   const handlePassword = (e) => setPassword(e.target.value);
   const handleUrl = (e) => setUrl(e.target.value);
-
-  const handleClickCA = () => ca.current.click();
-  const handleClickKey = () => key.current.click();
-  const handleClickCert = () => cert.current.click();
-
-  const handleInputCA = (e) => setCaFile(e.target.files[0]);
-  const handleInputKey = (e) => setKeyFile(e.target.files[0]);
-  const handleInputCert = (e) => setCertFile(e.target.files[0]);
+  const handleSSL = () => setSSL(!ssl);
 
   const handleConnect = () => {
     setLoading(true);
@@ -82,7 +76,7 @@ const ImportDatabase = ({
 
   const isInvalid = databaseType === 'OracleDB'
     ? (host === '' || port === '' || sid === '' || user === '' || password === '') && url === ''
-    :	(host === '' || port === '' || user === '' || password === '') && url === '';
+    : (host === '' || port === '' || user === '' || password === '') && url === '';
 
   return (
     <form className="modal-form">
@@ -93,8 +87,8 @@ const ImportDatabase = ({
             type="text"
             name="host"
             onChange={handleHost}
-            autoFocus
             disabled={url !== ''}
+            autoFocus
           />
         </div>
         <div className="importdatabase-inputs-port">
@@ -149,38 +143,11 @@ const ImportDatabase = ({
             disabled={!(host === '' && port === '' && user === '' && password === '')}
           />
         </div>
-        {ssl && (
-          <div>
-            <div className="importdatabase-inputs-login">
-              <input
-                value={caFile.length < 1 ? 'Certificate authority' : caFile.name}
-                type="button"
-                onClick={handleClickCA}
-                className="importdatabase-inputs-button"
-              />
-              <input type="file" onChange={handleInputCA} accept=".pem" ref={ca} />
-            </div>
-            <br />
-            <div className="importdatabase-inputs-login">
-              <input
-                value={keyFile.length < 1 ? 'Client key' : keyFile.name}
-                type="button"
-                onClick={handleClickKey}
-                className="importdatabase-inputs-button"
-              />
-              <input type="file" onChange={handleInputKey} accept=".pem" ref={key} />
-            </div>
-            <div className="importdatabase-inputs-login">
-              <input
-                value={certFile.length < 1 ? 'Client certificate' : certFile.name}
-                type="button"
-                onClick={handleClickCert}
-                className="importdatabase-inputs-button"
-              />
-              <input type="file" onChange={handleInputCert} accept=".pem" ref={cert} />
-            </div>
-          </div>
-        )}
+        <Checkbox
+          onClick={handleSSL}
+          condition={ssl}
+          text="SSL"
+        />
         <div className="importdatabase-textbox">
           {error && <p>{error}</p>}
         </div>

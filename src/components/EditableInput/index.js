@@ -8,7 +8,7 @@
 // Known Issues:
 // Alert users when they make an illegal change ie. same name headers, spaces within name
 //
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { useOutsideAlerter } from '../../functions';
@@ -28,7 +28,7 @@ const EditableInput = ({
       setReadOnly(true);
       let doesExist = false;
 
-      for (let i = 0; i < worksheets.length; i++) {
+      for (let i = 0; i < worksheets.length; i += 1) {
         if (worksheets[i].name === text) {
           doesExist = true;
           break;

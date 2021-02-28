@@ -9,7 +9,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Header from './header';
-import { OFF_COLOR } from '../../constants/off-color';
+// import { OFF_COLOR } from '../../constants/off-color';
 
 const View = ({
   slides, rightSidebar, onSetRightSidebar, navigator, setNavigator,
@@ -18,6 +18,14 @@ const View = ({
     { key: 'Navigator', type: 'toggle', visibility: navigator },
     { key: 'Format Chart', type: 'toggle', visibility: rightSidebar === 'chart' },
   ];
+
+  const handleToggle = (select) => {
+    if (rightSidebar !== select) {
+      onSetRightSidebar(select);
+      return;
+    }
+    onSetRightSidebar('none');
+  };
 
   const handleView = (key) => {
     const { sheet, options } = slides;
@@ -44,15 +52,8 @@ const View = ({
         handleToggle('chart');
         break;
       }
+      default:
     }
-  };
-
-  const handleToggle = (select) => {
-    if (rightSidebar !== select) {
-      onSetRightSidebar(select);
-      return;
-    }
-    onSetRightSidebar('none');
   };
 
   return (

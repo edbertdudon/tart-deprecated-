@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import DataSourceSearch from './datasourcesearch';
@@ -6,7 +6,7 @@ import SearchSource from './searchsource';
 import useRecursiveTimeout from '../../functions/useRecursiveTimeout.ts';
 import {
   shouldReloadTimer, getJobId, cancelJob, checkJobChanges, submitJob,
-} from '../Home/content';
+} from '../Home/jobs';
 import { withFirebase } from '../Firebase';
 
 const SearchContent = ({
@@ -30,8 +30,8 @@ const SearchContent = ({
     firebase.doListJobs(authUser.uid)
       .then((res) => {
         if (checkJobChanges(res)) {
-          firebase.doListWorksheets(authUser.uid).then((res) => {
-            onSetWorksheets(res.items);
+          firebase.doListWorksheets(authUser.uid).then((r) => {
+            onSetWorksheets(r.items);
           });
         }
         return res;

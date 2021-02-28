@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { Link } from 'react-router-dom';
-
 import withDropdown from '../Dropdown';
 import { withFirebase } from '../Firebase';
 import { OFF_COLOR } from '../../constants/off-color';
@@ -14,7 +12,7 @@ const USER_DROPDOWN = [
 ];
 
 const Header = ({ firebase, authUser, color }) => {
-  const handleDropdown = (i) => firebase.doSignOut();
+  const handleDropdown = () => firebase.doSignOut();
 
   return (
     <div className="home-header">
@@ -38,9 +36,7 @@ const User = ({
     onMouseEnter={onHover}
     onMouseLeave={onHover}
     style={{ color: (hover || isOpen) && color }}
-  >
-    {text}
-  </div>
+  >{text}</div>
 );
 
 const UserWithDropdown = withDropdown(User);

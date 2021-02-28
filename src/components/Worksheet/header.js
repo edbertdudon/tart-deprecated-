@@ -1,6 +1,4 @@
-import React, {
-  useState, useEffect, useRef,
-} from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import EditableInput from '../EditableInput';
@@ -16,12 +14,25 @@ const USER_DROPDOWN = [
   { key: 'Settings', type: 'link', path: ROUTES.SETTINGS },
 ];
 
-const Header = ({
-  firebase, authUser, color, worksheetname, worksheets, slides, saving,
-  readOnly, onSetSaving, setReadOnly, onSetWorksheets, onSetWorksheetname,
-}) => {
-  const worksheetnameRef = useRef(null);
+const User = ({
+  text, hover, onHover, isOpen, onOpen, color,
+}) => (
+  <div
+    className="worksheet-header-dropdown-header"
+    onClick={onOpen}
+    onMouseEnter={onHover}
+    onMouseLeave={onHover}
+    style={{ color: (hover || isOpen) && color }}
+    role="banner"
+  >{text}</div>
+);
 
+const UserWithDropdown = withDropdown(User);
+
+const Header = ({
+  firebase, authUser, color, worksheetname, worksheets, saving,
+  readOnly, setReadOnly, onSetWorksheets, onSetWorksheetname,
+}) => {
   useEffect(() => {
     if (worksheets === undefined) {
       firebase.doListWorksheets(authUser.uid).then((res) => {
@@ -35,7 +46,7 @@ const Header = ({
     firebase.doRenameWorksheet(authUser.uid, worksheetname, name);
   };
 
-  const handleDropdown = (i) => firebase.doSignOut();
+  const handleDropdown = () => firebase.doSignOut();
 
   const length = getTextWidth(worksheetname, '13px Helvetica Neue');
 
@@ -75,35 +86,17 @@ const Header = ({
   );
 };
 
-const User = ({
-  classname, text, hover, onHover, isOpen, onOpen, color,
-}) => (
-  <div
-    className="worksheet-header-dropdown-header"
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ color: (hover || isOpen) && color }}
-  >
-    {text}
-  </div>
-);
-
-const UserWithDropdown = withDropdown(User);
-
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   worksheets: (state.worksheetsState.worksheets || []),
   color: (state.colorState.colors || {}),
-  slides: (state.slidesState.slides || {}),
   saving: (state.savingState.saving || false),
 });
 
 const mapDispatchToProps = (dispatch) => ({
   onSetWorksheetname: (worksheetname) => dispatch({ type: 'WORKSHEETNAME_SET', worksheetname }),
   onSetWorksheets: (worksheets) => dispatch({ type: 'WORKSHEETS_SET', worksheets }),
-  onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
 });
 
 export default compose(

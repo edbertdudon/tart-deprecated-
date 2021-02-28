@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
-import { Switch, Route, Link } from 'react-router-dom';
+import React from 'react';
+import { Switch, Route } from 'react-router-dom';
 import { compose } from 'recompose';
-import { connect } from 'react-redux';
-
-import { withFirebase } from '../Firebase';
+// import { withFirebase } from '../Firebase';
 import { withAuthorization, withEmailVerification } from '../Session';
 import * as ROLES from '../../constants/roles';
 import * as ROUTES from '../../constants/routes';
@@ -14,7 +12,7 @@ import UserList from './UserList';
 const AdminPage = () => (
   <div className="home-screen">
     <div className="home-content">
-      <HomeHeader />
+      <Header />
       <h1>Admin</h1>
       <p>This page is accessible by everyone signed in as an admin user</p>
 

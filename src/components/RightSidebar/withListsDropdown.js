@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';

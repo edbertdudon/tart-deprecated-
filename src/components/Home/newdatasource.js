@@ -21,9 +21,9 @@ const NewDataSource = ({
     setIsLoading(true);
 
     const filename = `Untitled Worksheet ${
-			 getMaxNumberCustomSheet(
-			  worksheets.map((worksheet) => worksheet.name),
-			  'Untitled Worksheet ',
+      getMaxNumberCustomSheet(
+        worksheets.map((worksheet) => worksheet.name),
+        'Untitled Worksheet ',
       )}`;
 
     firebase.doUploadWorksheet(
@@ -34,7 +34,7 @@ const NewDataSource = ({
         filename,
         { type: 'application/json' },
       ),
-    ).on('state_changed', () => {}, () => {}, (snapshot) => {
+    ).on('state_changed', () => {}, () => {}, () => {
       onSetWorksheetname(filename, authUser.uid);
       history.push(ROUTES.WORKSHEET);
     });
@@ -45,8 +45,8 @@ const NewDataSource = ({
       <div className="newdatasource-button" onClick={handleOpen}>
         <div className="datasource-icon">
           {isLoading
-					  ? <Icon path={mdiLoading} size={5} spin />
-					  : <Icon path={mdilPlus} size={5} />}
+            ? <Icon path={mdiLoading} size={5} spin />
+            : <Icon path={mdilPlus} size={5} />}
         </div>
       </div>
     </div>

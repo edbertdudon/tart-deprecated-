@@ -55,7 +55,7 @@ const Editable = ({
       setShow(false);
 
       let doesExist = false;
-      for (let i = 0; i < dataNames.length; i++) {
+      for (let i = 0; i < dataNames.length; i += 1) {
         if (dataNames[i].name === text) {
           doesExist = true;
           break;

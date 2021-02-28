@@ -5,13 +5,13 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
 import Header from './header';
 import { fontSizes } from '../Spreadsheet/core/font';
-import { OFF_COLOR } from '../../constants/off-color';
+// import { OFF_COLOR } from '../../constants/off-color';
 
 const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
   const FORMAT_DROPDOWN = [
@@ -37,9 +37,17 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
     { key: 'Text wrapping', type: 'item' },
   ];
 
+  const handleToggle = (select) => {
+    if (rightSidebar !== select) {
+      onSetRightSidebar(select);
+      return;
+    }
+    onSetRightSidebar('none');
+  };
+
   const handleFormat = (key, second) => {
     const { data, sheet } = slides;
-    const { toolbar } = slides.sheet;
+    const { toolbar } = sheet;
     switch (key) {
       case FORMAT_DROPDOWN[0].key: {
         data.setSelectedCellAttr('font-bold', toolbar.boldEl.toggle());
@@ -86,7 +94,7 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
         data.setSelectedCellAttr('valign', 'middle');
         break;
       }
-      case FORMAT_DROPDOWN[14].key: {
+      case FORMAT_DROPDOWN[15].key: {
         data.setSelectedCellAttr('valign', 'bottom');
         break;
       }
@@ -94,15 +102,8 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
         data.setSelectedCellAttr('textwrap', toolbar.textwrapEl.toggle());
         break;
       }
+      default:
     }
-  };
-
-  const handleToggle = (select) => {
-    if (rightSidebar !== select) {
-      onSetRightSidebar(select);
-      return;
-    }
-    onSetRightSidebar('none');
   };
 
   return (

@@ -58,7 +58,7 @@ function columnToLetter(column) {
 function letterToColumn(letter) {
   let column = 0; const
     { length } = letter;
-  for (let i = 0; i < length; i++) {
+  for (let i = 0; i < length; i += 1) {
     column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
   }
   return column;
@@ -69,7 +69,7 @@ const optionsFilterAdd = rFormulas
 
 function addPrefixToFunction(cell) {
   const optionsInCell = [];
-  for (let i = 0; i < optionsFilterAdd.length; i++) {
+  for (let i = 0; i < optionsFilterAdd.length; i += 1) {
     if (cell.includes(`${optionsFilterAdd[i].key}(`)) {
       optionsInCell.push(optionsFilterAdd[i]);
     }
@@ -88,7 +88,7 @@ function translateR(cell, name) {
   if (match === null) return cell.replace(/'/g, '`');
   // replaces 'Sheet 1' with `Sheet 1`
   let coordinates = cell.replace(/'/g, '`');
-  for (let i = 0; i < match.length; i++) {
+  for (let i = 0; i < match.length; i += 1) {
     // R reads 1:1 as first number in row and column
     const column = letterToColumn(match[i].match(LETTERS_REFERENCE)[0]);
     let row = match[i].match(NUMBERS_REFERENCE);
@@ -134,8 +134,8 @@ function translateR(cell, name) {
 
 function mapSpreadsheet(data, cb) {
   const newData = data;
-  for (let ri = 0; ri < data.length; ri++) {
-    for (let ci = 0; ci < data[ri].length; ci++) {
+  for (let ri = 0; ri < data.length; ri += 1) {
+    for (let ci = 0; ci < data[ri].length; ci += 1) {
       newData[ri][ci] = cb(ri, ci);
     }
   }

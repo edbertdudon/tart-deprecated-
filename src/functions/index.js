@@ -81,7 +81,11 @@ export function getTextWidth(text, font) {
 // *** File Organization ***
 
 export function createFile(slides, worksheetname) {
-  return new File([JSON.stringify(slides.getData())], worksheetname, { type: 'application/json' });
+  return new File(
+    [JSON.stringify(slides.getData())],
+    worksheetname,
+    { type: 'application/json' }
+  );
 }
 
 export function getMaxNumberCustomSheet(dataNames, prefix) {
@@ -94,7 +98,7 @@ export function xtos(sdata, filename) {
   sdata.forEach((xws) => {
     const aoa = [[]];
     const rowobj = xws.rows;
-    for (let ri = 0; ri < rowobj.len; ++ri) {
+    for (let ri = 0; ri < rowobj.len; ri += 1) {
       if (xws.type !== 'chart') {
         const row = rowobj[ri];
         if (!row) continue;

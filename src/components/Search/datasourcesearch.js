@@ -13,7 +13,6 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
-import { Dropdown } from 'semantic-ui-react';
 import Icon from '@mdi/react';
 import { mdilTable } from '@mdi/light-js';
 import { mdiStop, mdiLoading, mdiDatabase } from '@mdi/js';
@@ -61,7 +60,7 @@ const DataSourceSearch = ({
       >
         RUN
       </button>
-    ) :	(
+    ) : (
       <button className="datasource-button" onClick={handleCancel} style={{ backgroundColor: color[authUser.uid] }}>
         <Icon path={mdiStop} size={1} />
       </button>

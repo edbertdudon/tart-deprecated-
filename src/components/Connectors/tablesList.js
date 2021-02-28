@@ -1,13 +1,15 @@
 export default function tablesList(firebase, connector, data) {
   switch (connector) {
-    case 'MySQL':
+    case 'MySQL': {
       return firebase.doListTables('listTablesMySql', data);
-      break;
-    case 'Microsoft SQL Server':
+    }
+    case 'Microsoft SQL Server': {
       return firebase.doListTables('listTablesMsSql', data);
-      break;
-    case 'Oracle SQL':
+    }
+    case 'Oracle SQL': {
       return firebase.doListTables('listTablesOracledb', data);
-      break;
+    }
+    default:
   }
+  return null;
 }

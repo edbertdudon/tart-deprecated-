@@ -18,7 +18,7 @@ const USER_DROPDOWN = [
 const Header = ({
   firebase, authUser, color, notifications, onSetNotifications,
 }) => {
-  const handleDropdown = (i) => firebase.doSignOut();
+  const handleDropdown = () => firebase.doSignOut();
 
   return (
     <div className="home-header">
@@ -49,9 +49,7 @@ const User = ({
     onMouseEnter={onHover}
     onMouseLeave={onHover}
     style={{ color: (hover || isOpen) && color }}
-  >
-    {text}
-  </div>
+  >{text}</div>
 );
 
 const Notification = ({

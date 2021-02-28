@@ -5,14 +5,14 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { useHistory } from 'react-router-dom';
 import Header from './header';
 import { submitJob, getJobId, cancelJob } from '../Home/content';
 import * as ROUTES from '../../constants/routes';
-import { OFF_COLOR } from '../../constants/off-color';
+// import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const RUN_DROPDOWN = [
@@ -20,7 +20,7 @@ const RUN_DROPDOWN = [
 ];
 
 const Run = ({
-  firebase, authUser, slides, worksheetname, jobs, rightSidebar, notifications,
+  firebase, authUser, worksheetname, jobs, rightSidebar, notifications,
   onSetRightSidebar, onSetJobs, onSetIsJobsActive, onSetNotifications,
 }) => {
   const history = useHistory();
@@ -29,10 +29,10 @@ const Run = ({
     switch (key) {
       case RUN_DROPDOWN[0].key: {
         onSetIsJobsActive(true);
-    		onSetJobs(
+        onSetJobs(
           submitJob(worksheetname, jobs),
         );
-    		onSetNotifications(
+        onSetNotifications(
           notifications.concat({ key: `Job started: ${worksheetname}`, type: 'notification' }),
         );
 
@@ -47,7 +47,7 @@ const Run = ({
             onSetJobs(
               cancelJob(runId, jobs),
             );
-        		onSetNotifications(
+            onSetNotifications(
               notifications.concat({ key: `Job cancelled: ${worksheetname}`, type: 'notification' }),
             );
           }
@@ -56,6 +56,7 @@ const Run = ({
         history.push(ROUTES.HOME);
         break;
       }
+      default:
     }
   };
 
@@ -81,7 +82,6 @@ const Run = ({
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   // color: (state.colorState.colors || {}),
-  slides: (state.slidesState.slides || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
   jobs: (state.jobsState.jobs || [{ status: 'failed list jobs' }]),

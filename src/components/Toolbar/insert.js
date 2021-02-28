@@ -5,19 +5,18 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Header from './header';
 import { createFile } from '../../functions';
 
-import { OFF_COLOR } from '../../constants/off-color';
-import * as ROUTES from '../../constants/routes';
+// import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const Insert = ({
-  firebase, authUser, worksheetname, slides, dataNames, current, rightSidebar,
-  saving, onSetDataNames, onSetCurrent, onSetSaving, onSetRightSidebar,
+  firebase, authUser, worksheetname, slides, current, rightSidebar,
+  onSetDataNames, onSetCurrent, onSetSaving, onSetRightSidebar,
 }) => {
   const INSERT_DROPDOWN = [
     { key: 'Sheet', type: 'item' },
@@ -39,7 +38,7 @@ const Insert = ({
         break;
       }
       case INSERT_DROPDOWN[1].key: {
-			  document.getElementById('chartstoggle').click();
+        document.getElementById('chartstoggle').click();
         break;
       }
       case INSERT_DROPDOWN[2].key: {
@@ -54,6 +53,7 @@ const Insert = ({
         handleToggle('optimize');
         break;
       }
+      default:
     }
   };
 

@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 
 import Header from './header';
 import { sheetReset } from '../Spreadsheet/component/sheet';
-import { OFF_COLOR } from '../../constants/off-color';
+// import { OFF_COLOR } from '../../constants/off-color';
 
 export const EDIT_DROPDOWN = [
   { key: 'Undo', type: 'item' },
@@ -64,6 +64,7 @@ const Edit = ({ slides }) => {
         data.deleteCell();
         break;
       }
+      default:
     }
 
     slides.reRender();

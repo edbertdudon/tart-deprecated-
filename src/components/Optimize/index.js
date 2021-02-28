@@ -258,7 +258,7 @@ const Optimize = ({
       .filter((c) => !constraints.includes(c))
       .map((c) => CONSTRAINTS_TYPE.indexOf(c));
 
-    for (let i = 0; i < list.length; i++) {
+    for (let i = 0; i < list.length; i += 1) {
       if (SOLVER_CONSTRAINTS[list[i]].includes(option)) {
         return option;
       }
@@ -434,7 +434,7 @@ const Optimize = ({
         const { res, sparkdata } = r;
 
         res.type = 'optimize';
-        res.optimization = { ...sparkdata, sample: true };
+        res.optimization = { ...sparkdata, solver: data.solver, sample: true };
         let prefix;
         if (objectiveClass === 0) {
           prefix = objective;
@@ -458,7 +458,7 @@ const Optimize = ({
         firebase.doUploadWorksheet(
           authUser.uid,
           worksheetname,
-          createFile(slides, worksheetname)
+          createFile(slides, worksheetname),
         ).then(() => onSetSaving(false));
       });
   };

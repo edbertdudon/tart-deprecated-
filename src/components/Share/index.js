@@ -20,6 +20,14 @@ const Share = ({
     onSelect();
   };
 
+  const isValidEmail = () => {
+    if (email.includes('@')) {
+      emails.push(email);
+      setEmail('');
+      setFocusedEmail(null);
+    }
+  };
+
   const handleKeyDown = (e) => {
     if (e.keyCode === 13) {
       isValidEmail();
@@ -51,7 +59,7 @@ const Share = ({
         setFocusedEmail(focusedEmail - 1);
       }
     } else if (e.keyCode === 39 && emails.length > 0) {
-      if (focusedEmail == emails.length - 1) {
+      if (focusedEmail === emails.length - 1) {
         setFocusedEmail(null);
         // inputRef.current.focus()
       } else if (focusedEmail !== null) {
@@ -63,14 +71,6 @@ const Share = ({
   const handleFocusInput = () => inputRef.current.focus();
 
   const handleSelect = (index) => setFocusedEmail(index);
-
-  const isValidEmail = () => {
-    if (email.includes('@')) {
-      emails.push(email);
-      setEmail('');
-      setFocusedEmail(null);
-    }
-  };
 
   return (
     <form className="modal-form">

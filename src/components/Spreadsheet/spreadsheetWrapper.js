@@ -21,17 +21,14 @@ import React, {
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import useDebounce from '../../functions/useDebounce.ts';
-import { rRender } from './cloudr';
-import Spreadsheet from './index.js';
+import Spreadsheet from './index';
 import { createFile } from '../../functions';
 import { options } from './options';
-
-import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
-import { OFF_COLOR } from '../../constants/off-color';
+// import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const SpreadsheetWrapper = ({
-  firebase, authUser, slides, worksheetname, color, setText, onSetSaving,
+  firebase, authUser, slides, worksheetname, setText, onSetSaving,
   onSetSlides, onSetDataNames, onSetCurrent, onSetRightSidebar, onSetChartSelect,
 }) => {
   const [pendingSave, setPendingSave] = useState({});
@@ -40,20 +37,20 @@ const SpreadsheetWrapper = ({
 
   useLayoutEffect(() => {
     const unsubscribe = firebase.doDownloadWorksheet(authUser.uid, worksheetname).then((res) => {
-    	// options.style.offcolor = OFF_COLOR[color[authUser.uid]];
+      // options.style.offcolor = OFF_COLOR[color[authUser.uid]];
       const s = new Spreadsheet('#spreadsheet', options)
-    		.loadData(res)
-    		.on('cell-edited', (text, ri, ci) => setText({ text, ri, ci }))
-    		.on('cell-selected', (text, ri, ci) => {
-    			if (text === null) {
-    				setText({ text: '', ri, ci });
-    			} else {
-    				setText({ text: text.text, ri, ci });
-    			}
-    		})
+        .loadData(res)
+        .on('cell-edited', (text, ri, ci) => setText({ text, ri, ci }))
+        .on('cell-selected', (text, ri, ci) => {
+          if (text === null) {
+            setText({ text: '', ri, ci });
+          } else {
+            setText({ text: text.text, ri, ci });
+          }
+        })
         .on('show-editor', () => onSetRightSidebar('chart'))
         .on('chart-select', (chart) => onSetChartSelect(chart))
-    		.change((data) => setPendingSave(data));
+        .change((data) => setPendingSave(data));
 
       s.validate();
       s.data = s.datas[0];
@@ -61,7 +58,6 @@ const SpreadsheetWrapper = ({
       onSetCurrent(0);
       onSetSlides(s);
       console.log(s);
-
       if (firstUpdate.current) {
         firstUpdate.current = false;
       }
@@ -72,9 +68,12 @@ const SpreadsheetWrapper = ({
 
   useEffect(() => {
     if (debouncePendingSave && firstUpdate.current === false) {
-    	onSetSaving(true);
-    	firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-        .then(() => onSetSaving(false));
+      onSetSaving(true);
+      firebase.doUploadWorksheet(
+        authUser.uid,
+        worksheetname,
+        createFile(slides, worksheetname),
+      ).then(() => onSetSaving(false));
     }
   }, [debouncePendingSave]);
 

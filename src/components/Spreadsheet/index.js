@@ -101,7 +101,7 @@ class Spreadsheet {
     this.clipboard.copy(index);
   }
 
-  pasteSheet(dataNames, index, isDuplicate, active = true) {
+  pasteSheet(dataNames, index, isDuplicate) {
     let data;
     if (isDuplicate) {
       data = this.datas[index];
@@ -148,8 +148,7 @@ class Spreadsheet {
     d.setData(o);
     const names = datas.map((it) => it.name);
     const n = getMaxNumberCustomSheet(names, name);
-
-    let newName;
+    let newName = name;
     if (n !== 1) {
       newName = `${name} ${n}`;
     }
@@ -176,7 +175,7 @@ class Spreadsheet {
     if (ds.length > 0) {
       for (let i = 0; i < ds.length; i += 1) {
         const it = ds[i];
-        const mode = it.type === 'input' ? 'read' : 'edit'
+        const mode = it.type === 'input' ? 'read' : 'edit';
         const nd = this.addSheet(it.name, i === 0, undefined, mode);
         nd.setData(it, false);
         nd.loadChart(nd.charts, this.datas);

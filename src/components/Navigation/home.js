@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@mdi/react';
-import { mdilTable } from '@mdi/light-js';
 import {
   mdiDatabase, mdiFile, mdiTable, mdiDelete, mdiClockTimeNine,
 } from '@mdi/js';
@@ -13,7 +12,7 @@ import { OFF_COLOR } from '../../constants/off-color';
 const Item = ({
   pathname, route, color, icon, text,
 }) => (
-  <li className="navigation-home-link" style={{ backgroundColor: pathname == route && OFF_COLOR[color] }}>
+  <li className="navigation-home-link" style={{ backgroundColor: pathname === route && OFF_COLOR[color] }}>
     <Link to={{ pathname: route }}>
       <div className="navigation-home-icon">
         <Icon path={icon} size={1.3} />
@@ -43,8 +42,8 @@ const Home = ({ color, pathname }) => (
       <Item pathname={pathname} route={ROUTES.TRASH} color={color} icon={mdiDelete} text="Trash" />
       {/* {!!authUser.roles[ROLES.ADMIN] && ( */}
       {/* <li>
-				<Link to={ROUTES.ADMIN}>Admin</Link>
-			</li> */}
+        <Link to={ROUTES.ADMIN}>Admin</Link>
+      </li> */}
       {/* // )} */}
     </ul>
   </div>

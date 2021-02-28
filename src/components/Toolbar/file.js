@@ -21,7 +21,6 @@ import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
 import * as ROUTES from '../../constants/routes';
 import { withFirebase } from '../Firebase';
 // import { OFF_COLOR } from '../../constants/off-color';
-import { options } from '../Spreadsheet/options';
 
 const Papa = require('papaparse/papaparse.min.js');
 
@@ -52,13 +51,31 @@ export const FILE_DROPDOWN = [
 ];
 
 const Files = ({
-  firebase, authUser, worksheetname, worksheets, slides, dataNames, current, saving,
+  firebase, authUser, worksheetname, worksheets, slides, current,
   setReadOnly, onSetDataNames, onSetCurrent, onSetSaving, onSetWorksheetname,
 }) => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const uploadRef = useRef(null);
   const history = useHistory();
+
+  function insert(o, name, delimiter, filename) {
+    const data = o;
+    data.delimiter = delimiter;
+    data.filename = filename;
+
+    const isEmpty = slides.insertData(current, data, name);
+    onSetDataNames(slides.datas.map((it) => it.name));
+    if (!isEmpty) {
+      onSetCurrent(slides.sheetIndex);
+    }
+  }
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   const handleFile = (key) => {
     switch (key) {
@@ -88,9 +105,9 @@ const Files = ({
           const file = new File(data, newname, { type: 'application/json' });
 
           firebase.doUploadWorksheet(authUser.uid, newname, file)
-            .on('state_changed', () => {}, () => {}, (snapshot) => {
+            .on('state_changed', () => {}, () => {}, () => {
               onSetWorksheetname(newname);
-          		window.location.reload();
+              window.location.reload();
             });
         });
         break;
@@ -120,12 +137,15 @@ const Files = ({
         setIsOpen(!isOpen);
         break;
       }
+      default:
     }
   };
 
   const handleUpload = (e) => {
     const { files } = e.target;
     const f = files[0];
+    const reader = new FileReader();
+
     switch (re.exec(f.name)[1]) {
       case 'csv': {
         Papa.parse(f, {
@@ -142,16 +162,19 @@ const Files = ({
       }
       case 'xls':
       case 'xlsx':
-        var reader = new FileReader();
-
-        reader.onload = function (e) {
-          const results = new Uint8Array(e.target.result);
+        // const reader = new FileReader();
+        reader.onload = function (r) {
+          const results = new Uint8Array(r.target.result);
           const wb = XLSX.read(results, { type: 'array' });
           stox(wb).forEach((o) => insert(o, o.name, ',', `${f.name}_${o.name}`));
           save();
           // wb.SheetNames.forEach((name) => {
           //   const ws = wb.Sheets[name];
-          //   const aoa = new File([JSON.stringify(XLSX.utils.sheet_to_csv(ws))], name, { type: 'text/csv' });
+          // const aoa = new File(
+          //   [JSON.stringify(XLSX.utils.sheet_to_csv(ws))],
+          //   name,
+          //   { type: 'text/csv' }
+          // );
           //
           //   firebase.doUploadInput(authUser.uid, `${f.name}_${name}`, aoa);
           // });
@@ -159,26 +182,10 @@ const Files = ({
 
         reader.readAsArrayBuffer(f);
         break;
+      default:
     }
     uploadRef.current.value = '';
   };
-
-  function insert(o, name, delimiter, filename) {
-    o.delimiter = delimiter;
-    o.filename = filename;
-
-    const isEmpty = slides.insertData(current, o, name);
-    onSetDataNames(slides.datas.map((it) => it.name));
-    if (!isEmpty) {
-      onSetCurrent(slides.sheetIndex);
-    }
-  }
-
-  function save() {
-    onSetSaving(true);
-    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-      .then(() => onSetSaving(false));
-  }
 
   return (
     <>

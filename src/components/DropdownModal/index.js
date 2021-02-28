@@ -1,6 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
+import React, { useState, useRef } from 'react';
 import { useOutsideClick } from '../../functions';
 import './index.less';
 
@@ -9,7 +7,9 @@ const withDropdownModal = (Component) => (props) => {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState(0);
   const [isSearching, setIsSearching] = useState(false);
-  const [filteredOption, setFilteredOption] = useState(props.items.filter((item) => item.category === 0));
+  const [filteredOption, setFilteredOption] = useState(
+    props.items.filter((item) => item.category === 0)
+  );
   const wrapperRef = useRef(null);
 
   useOutsideClick(wrapperRef, setIsOpen);

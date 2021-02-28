@@ -6,12 +6,12 @@ import DataSourceJobs from './datasourcejobs';
 import useRecursiveTimeout from '../../functions/useRecursiveTimeout.ts';
 import {
   shouldReloadTimer, getJobId, cancelJob, checkJobChanges, submitJob,
-} from '../Home/content';
+} from '../Home/jobs';
 import { withFirebase } from '../Firebase';
 
 const withJobsContentNull = (Component) => (props) => (props.jobs[0].status === 'failed list jobs'
-  ?	<div className="home-content-search">No Jobs Running</div>
-  :	<Component {...props} />);
+  ? <div className="home-content-search">No Jobs Running</div>
+  : <Component {...props} />);
 
 const JobsContentRunning = ({
   firebase, authUser, worksheets, jobs, isJobsActive, onSetJobs, onSetIsJobsActive, onSetWorksheets,
@@ -39,8 +39,8 @@ const JobsContentRunning = ({
     firebase.doListJobs(authUser.uid)
       .then((res) => {
         if (checkJobChanges(res)) {
-          firebase.doListWorksheets(authUser.uid).then((res) => {
-            onSetWorksheets(res.items);
+          firebase.doListWorksheets(authUser.uid).then((r) => {
+            onSetWorksheets(r.items);
           });
         }
         return res;
@@ -59,21 +59,21 @@ const JobsContentRunning = ({
   return (
     <div>
       {worksheets.filter((worksheet) => {
-		    const label = worksheet.name.replace(/\s/g, '').toLowerCase();
-		    if (jobs[0].status !== 'failed list jobs') {
-		      const jobsList = jobs.map((job) => job.labels.worksheet);
-		      if (jobsList.includes(label)) {
-		        return worksheet;
-		      }
-		    }
-		  }).map((worksheet, index) => (
-  <DataSourceJobs
-    filename={worksheet.name}
-    runId={getJobId(worksheet.name.replace(/\s/g, '').toLowerCase(), jobs)}
-    onJobSubmit={handleJobSubmit}
-    onJobCancel={handleJobCancel}
-  />
-		  ))}
+        const label = worksheet.name.replace(/\s/g, '').toLowerCase();
+        if (jobs[0].status !== 'failed list jobs') {
+          const jobsList = jobs.map((job) => job.labels.worksheet);
+          if (jobsList.includes(label)) {
+            return worksheet;
+          }
+        }
+      }).map((worksheet) => (
+        <DataSourceJobs
+          filename={worksheet.name}
+          runId={getJobId(worksheet.name.replace(/\s/g, '').toLowerCase(), jobs)}
+          onJobSubmit={handleJobSubmit}
+          onJobCancel={handleJobCancel}
+        />
+      ))}
     </div>
   );
 };

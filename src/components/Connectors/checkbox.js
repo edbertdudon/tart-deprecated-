@@ -2,16 +2,16 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 
-const Button = ({
+const Checkbox = ({
   authUser, color, onClick, condition, text,
 }) => (
-  <div className="rightsidebar-buttonwrapper" onClick={onClick}>
+  <div className="importdatabase-checkbox" onClick={onClick}>
     <button
-      className="rightsidebar-button"
+      className="importdatabase-checkbox-box"
       style={{
-			  backgroundColor: condition === true && color[authUser.uid],
-			  boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-			  border: condition === true ? `1px solid ${color[authUser.uid]}` : '1px solid #fff',
+        backgroundColor: condition === true && color[authUser.uid],
+        boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
+        border: condition === true ? `1px solid ${color[authUser.uid]}` : '1px solid #fff',
       }}
       type="button"
     />
@@ -28,4 +28,4 @@ export default compose(
   connect(
     mapStateToProps,
   ),
-)(Button);
+)(Checkbox);

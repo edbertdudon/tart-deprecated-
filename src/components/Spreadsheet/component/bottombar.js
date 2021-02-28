@@ -288,7 +288,7 @@ export default class Bottombar {
   }
 
   changeColor(item, offcolor) {
-    for (let i = 0; i < this.items.length; i++) {
+    for (let i = 0; i < this.items.length; i += 1) {
       if (this.items[i] !== item) {
         this.items[i].el.style.backgroundColor = '#fff';
       }

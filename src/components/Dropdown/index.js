@@ -5,7 +5,7 @@ import { mdiChevronRight } from '@mdi/js';
 import { useOutsideClick } from '../../functions';
 import './index.less';
 
-const Item = ({ text, onSelect, color }) => {
+const Item = ({ text, onSelect }) => {
   const [hover, setHover] = useState(false);
 
   const handleHover = () => setHover(!hover);
@@ -23,7 +23,7 @@ const Item = ({ text, onSelect, color }) => {
   );
 };
 
-const Redirect = ({ path, text, color }) => {
+const Redirect = ({ path, text }) => {
   const [hover, setHover] = useState(false);
 
   const handleHover = () => setHover(!hover);
@@ -42,7 +42,7 @@ const Redirect = ({ path, text, color }) => {
 };
 
 const Toggle = ({
-  text, onSelect, isOpen, color,
+  text, onSelect, isOpen,
 }) => {
   const [hover, setHover] = useState(false);
 
@@ -77,7 +77,10 @@ const SecondaryMenu = ({
         className="dropdown-item"
         onMouseEnter={handleHoverFirst}
         onMouseLeave={handleHoverFirst}
-        // style={{ backgroundColor: hover && (hoverFirst ? color : 'rgba(0, 0, 0, 0.05)'), color: hoverFirst ? '#fff' : '#000000' }}
+        // style={{
+        //   backgroundColor: hover && (hoverFirst ? color : 'rgba(0, 0, 0, 0.05)'),
+        //   color: hoverFirst ? '#fff' : '#000000'
+        // }}
       >
         {text}
         <div className="dropdown-item-arrow">
@@ -87,7 +90,14 @@ const SecondaryMenu = ({
       {hover
         && (
         <div className="dropdown-content-second" style={style}>
-          {items.map((item, i) => <Item text={item.pt} onSelect={() => onSelect(text, item.pt)} color={color} key={item.pt} />)}
+          {items.map((item) => (
+            <Item
+              text={item.pt}
+              onSelect={() => onSelect(text, item.pt)}
+              color={color}
+              key={item.pt}
+            />
+          ))}
         </div>
         )}
     </div>
@@ -97,7 +107,13 @@ const SecondaryMenu = ({
 const getDropdownStates = (item, i, onSelect, color, component, isOpen) => ({
   item: <Item text={item.key} onSelect={onSelect} key={item.key} color={color} />,
   link: <Redirect text={item.key} path={item.path} key={item.key} color={color} />,
-  toggle: <Toggle text={item.key} onSelect={onSelect} key={item.key} isOpen={isOpen} color={color} />,
+  toggle: <Toggle
+    text={item.key}
+    onSelect={onSelect}
+    key={item.key}
+    isOpen={isOpen}
+    color={color}
+  />,
   secondarymenu: <SecondaryMenu
     text={item.key}
     items={item.options}
@@ -148,12 +164,15 @@ const withDropdown = (Component) => (props) => {
           style={{
             left: (wrapperRef.current && (rect.right + rect.width) > window.innerWidth)
               && '45px',
-            top: (wrapperRef.current && (rect.bottom + (props.items.length * 32)) > window.innerHeight)
+            top: (wrapperRef.current
+              && (rect.bottom + (props.items.length * 32)) > window.innerHeight)
               && `-${props.items.length * 32 - 40}px`,
           }}
           ref={contentRef}
         >
-          {props.items.map((item, i) => getDropdownStates(item, i, handleSelect, props.color, item.component, item.visibility)[item.type])}
+          {props.items.map((item, i) => getDropdownStates(
+            item, i, handleSelect, props.color, item.component, item.visibility,
+          )[item.type])}
         </div>
         )}
     </div>

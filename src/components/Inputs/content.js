@@ -25,16 +25,16 @@ const Content = ({ firebase, authUser }) => {
         : (inputs.length < 1
           ? <div className="home-content-search">Your inputs will appear here</div>
           : <div>
-              {inputs.map((file, index) => (
+            {inputs.map((file, index) => (
                 <DataInput
-                  name={file.name}
+                  filename={file.name}
                   inputs={inputs}
                   onSetInputs={setInputs}
                   key={file.name}
                 />
               ))}
             </div>
-        )
+          )
       }
     </div>
   );
@@ -47,6 +47,6 @@ const mapStateToProps = (state) => ({
 export default compose(
   withFirebase,
   connect(
-	  mapStateToProps,
+    mapStateToProps,
   ),
 )(Content);

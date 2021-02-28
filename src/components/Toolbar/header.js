@@ -17,9 +17,7 @@ const Header = ({
     onMouseEnter={onHover}
     onMouseLeave={onHover}
     style={{ backgroundColor: (hover || isOpen) && 'rgba(0, 0, 0, 0.05)' }}
-  >
-    {text}
-  </div>
+  >{text}</div>
 );
 
 export default withDropdown(Header);

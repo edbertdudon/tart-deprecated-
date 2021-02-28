@@ -21,13 +21,13 @@ const DATASOURCE_DROPDOWN = [
 ];
 
 const DataInput = ({
-  firebase, authUser, color, name, inputs, onSetInputs,
+  firebase, authUser, color, filename, inputs, onSetInputs,
 }) => {
-  const [hover, setHover] = useState(false);
+  // const [hover, setHover] = useState(false);
 
   const handleTrash = () => {
     firebase.doMoveToTrash(authUser.uid, filename);
-    const ws = inputs.findIndex((input) => input.name === name);
+    const ws = inputs.findIndex((input) => input.name === filename);
     onSetInputs([
       ...inputs.slice(0, ws),
       ...inputs.slice(ws + 1),
@@ -35,14 +35,14 @@ const DataInput = ({
   };
 
   const ContextMenuDropdown = () => (
-    <ContextMenu id={`right-click${name}`}>
+    <ContextMenu id={`right-click${filename}`}>
       <MenuItem onClick={handleTrash}>Move to Trash</MenuItem>
     </ContextMenu>
   );
 
   return (
     <div className="datasource-thumbnail">
-      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${name}`}>
+      <ContextMenuTrigger className="datasource-dropdown" id={`right-click${filename}`}>
         <div className="datasource-icon">
           <Icon path={mdilFile} size={5} />
         </div>
@@ -55,7 +55,7 @@ const DataInput = ({
             color={OFF_COLOR[color[authUser.uid]]}
           />
         </div>
-        <div className="datasource-editabletext">{name}</div>
+        <div className="datasource-editabletext">{filename}</div>
       </ContextMenuTrigger>
       <ContextMenuDropdown />
     </div>

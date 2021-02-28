@@ -35,7 +35,7 @@ export function shouldReloadTimer(jobs) {
 
 export function getJobId(worksheetname, jobs) {
   if (jobs[0].status !== 'failed list jobs') {
-    for (let i = 0; i < jobs.length; i++) {
+    for (let i = 0; i < jobs.length; i += 1) {
       if (worksheetname === jobs[i].labels.worksheet
         && queueStates.has(jobs[i].status.state)) {
         return jobs[i].reference.jobId;
@@ -48,7 +48,7 @@ export function getJobId(worksheetname, jobs) {
 export function submitJob(worksheetname, jobs) {
   const fillerJobs = [];
   if (jobs[0].status !== 'failed list jobs') {
-    for (let i = 0; i < jobs.length; i++) {
+    for (let i = 0; i < jobs.length; i += 1) {
       if (jobs[i].reference.jobId.startsWith('filler job')) fillerJobs.push(jobs[i]);
     }
   }
@@ -66,10 +66,11 @@ export function submitJob(worksheetname, jobs) {
   return ([...jobs, jobFiller]);
 }
 
-// Deletes temporary Job and then list Jobs then useRecursiveTimeout will be called once more (unless theres different jobs running)
-export function cancelJob(runid, jobs) {
+// Deletes temporary Job and then list Jobs then useRecursiveTimeout
+// will be called once more (unless theres different jobs running)
+export function cancelJob(runId, jobs) {
   let currentJob;
-  for (let i = 0; i < jobs.length; i++) {
+  for (let i = 0; i < jobs.length; i += 1) {
     if (jobs[i].reference.jobId === runId) {
       currentJob = i;
     }
@@ -117,8 +118,8 @@ const Content = ({
     firebase.doListJobs(authUser.uid).then((res) => {
       // Checks for changes in job before downloading new worksheets created
       if (res.some((job) => terminalStates.has(job.status.state))) {
-        firebase.doListWorksheets(authUser.uid).then((res) => {
-          onSetWorksheets(res.items);
+        firebase.doListWorksheets(authUser.uid).then((ws) => {
+          onSetWorksheets(ws.items);
         });
       }
       return res;
@@ -144,7 +145,7 @@ const Content = ({
     );
   };
 
-  const handleJobCancel = (runId) => {
+  const handleJobCancel = (runId, worksheetname) => {
     onSetJobs(
       cancelJob(runId, jobs),
     );

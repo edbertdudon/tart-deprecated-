@@ -38,17 +38,19 @@ const DataTrash = ({
   firebase, authUser, color, name, trash,
   connections, onSetTrash, onSetConnections,
 }) => {
-  const [hoverDropdown, setHoverDropdown] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDropdown = (key) => {
     switch (key) {
-      case 'Delete':
+      case 'Delete': {
         setIsOpen(!isOpen);
         break;
-      case 'Move back':
+      }
+      case 'Move back': {
         handleMoveBack();
         break;
+      }
+      default:
     }
   };
 

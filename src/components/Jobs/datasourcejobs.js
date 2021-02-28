@@ -13,16 +13,15 @@ import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { Link } from 'react-router-dom';
-import { Dropdown } from 'semantic-ui-react';
 import Icon from '@mdi/react';
 import { mdilTable } from '@mdi/light-js';
-import { mdiStop, mdiLoading, mdiDatabase } from '@mdi/js';
+import { mdiStop, mdiLoading } from '@mdi/js';
 
 import { withFirebase } from '../Firebase';
-import * as ROUTES from '../../Constants/routes';
+import * as ROUTES from '../../constants/routes';
 
 const DataSourceJobs = ({
-  firebase, authUser, color, filename, worksheets, runId, onJobSubmit, onJobCancel, onSetWorksheet,
+  firebase, authUser, color, filename, runId, onJobSubmit, onJobCancel, onSetWorksheet,
 }) => {
   const [hover, setHover] = useState(false);
 
@@ -59,8 +58,7 @@ const DataSourceJobs = ({
         >
           RUN
         </button>
-      )
-      :	(
+      ) : (
         <button className="datasource-button" onClick={handleCancel} style={{ backgroundColor: color[authUser.uid] }}>
           <Icon path={mdiStop} size={1} />
         </button>
@@ -71,8 +69,8 @@ const DataSourceJobs = ({
     <Link to={{ pathname: ROUTES.WORKSHEET, filename }} onClick={handleOpen} id={`link-app-${filename}`}>
       <div className="datasource-icon">
         {runId === undefined || runId === ''
-				  ? <Icon path={mdilTable} size={5} />
-				  : <Icon path={mdiLoading} size={5} spin />}
+          ? <Icon path={mdilTable} size={5} />
+          : <Icon path={mdiLoading} size={5} spin />}
       </div>
     </Link>
   );
@@ -92,7 +90,6 @@ const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   color: (state.colorState.colors || {}),
-  worksheets: (state.worksheetsState.worksheets || []),
 });
 
 const mapDispatchToProps = (dispatch) => ({

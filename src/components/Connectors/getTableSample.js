@@ -1,13 +1,15 @@
 export default function getTableSample(firebase, connector, data) {
   switch (connector) {
-    case 'MySQL':
+    case 'MySQL': {
       return firebase.doGetTableSample('getTableSampleMySql', data);
-      break;
-    case 'Microsoft SQL Server':
+    }
+    case 'Microsoft SQL Server': {
       return firebase.doGetTableSample('getTableSampleMsSql', data);
-      break;
-    case 'Oracle SQL':
+    }
+    case 'Oracle SQL': {
       return firebase.doGetTableSample('getTableSampleOracledb', data);
-      break;
+    }
+    default:
   }
+  return null;
 }

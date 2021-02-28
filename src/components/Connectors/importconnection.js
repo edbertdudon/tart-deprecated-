@@ -5,10 +5,11 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-//	Commands
+//  Commands
 //  list containers: docker ps
 //  SQL Server:
-//    docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=yourStrong(!)Password' -p 1433:1433 -d mcr.microsoft.com/mssql/server:2017-latest
+//    docker run -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=yourStrong(!)Password' -p 1433:1433 -
+//      d mcr.microsoft.com/mssql/server:2017-latest
 //    docker restart 122c21c652cb
 //    sqlcmd -S 0.0.0.0:1433 -U sa -P MyNewPass! -Q "CREATE DATABASE SampleDB;"
 //  OracleDB:
@@ -29,7 +30,7 @@ import databaseList from './databaseList';
 import tablesList from './tablesList';
 import getTableSample from './getTableSample';
 import setTableSample from './setTableSample';
-import { createFile, getMaxNumberCustomSheet } from '../../functions';
+import { createFile } from '../../functions';
 import withModal from '../Modal';
 import { withFirebase } from '../Firebase';
 
@@ -58,14 +59,14 @@ const Levels = ({
               <p>{option}</p>
             </div>
           ),
-    		}[LEVELS_STATES[level]]
+        }[LEVELS_STATES[level]]
       }
   </div>
 );
 
 const ImportConnection = ({
-  firebase, authUser, color, worksheetname, slides, dataNames, current, saving,
-  files, onClose, onSelect, onSetDataNames, onSetCurrent, onSetSaving,
+  firebase, authUser, worksheetname, slides, current,
+  onClose, onSelect, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
   const [loading, setLoading] = useState(false);
   const [level, setLevel] = useState(0);
@@ -94,6 +95,26 @@ const ImportConnection = ({
     setLevel(0);
   };
 
+  const handleSelectLibrary = (select) => {
+    let library;
+    switch (LEVELS_STATES[select]) {
+      case 'connections': {
+        library = Object.keys(connections);
+        break;
+      }
+      case 'databases': {
+        library = databases;
+        break;
+      }
+      case 'tables': {
+        library = tables;
+        break;
+      }
+      default:
+    }
+    return library;
+  };
+
   const handleBack = () => {
     if (level > 0) {
       setLevel(level - 1);
@@ -113,24 +134,9 @@ const ImportConnection = ({
 
   const handleSearch = (e) => {
     setFilteredOption(
-      handleSelectLibrary(level).filter((file) => file.toLowerCase().includes(e.target.value.toLowerCase())),
+      handleSelectLibrary(level)
+        .filter((file) => file.toLowerCase().includes(e.target.value.toLowerCase())),
     );
-  };
-
-  const handleSelectLibrary = (select) => {
-    let library;
-    switch (LEVELS_STATES[select]) {
-      case 'connections':
-        library = Object.keys(connections);
-        break;
-      case 'databases':
-        library = databases;
-        break;
-      case 'tables':
-        library = tables;
-        break;
-    }
-    return library;
   };
 
   const handleSelectConnection = (connection) => {
@@ -161,7 +167,7 @@ const ImportConnection = ({
           setError('');
           setLoading(false);
         })
-        .catch((err) => {
+        .catch(() => {
           setError('Unable to connect');
           setLoading(false);
         });
@@ -180,10 +186,23 @@ const ImportConnection = ({
         setError('');
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setError('Unable to connect');
         setLoading(false);
       });
+  };
+
+  const insert = (o) => {
+    const name = o.table;
+    const isEmpty = slides.insertData(current, o, name, 'read');
+    onSetDataNames(slides.datas.map((it) => it.name));
+    if (!isEmpty) {
+      onSetCurrent(slides.sheetIndex);
+    }
+
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
   };
 
   const handleSelectTable = (table) => {
@@ -206,25 +225,11 @@ const ImportConnection = ({
         setError('');
         setLoading(false);
         setLevel(0);
-      }).catch((err) => {
+      }).catch(() => {
         setError('Unable to connect');
         setLoading(false);
       });
   };
-
-  const insert = (o) => {
-    const name = o.table;
-    const isEmpty = slides.insertData(current, o, name, 'read');
-    onSetDataNames(slides.datas.map((it) => it.name));
-    if (!isEmpty) {
-      onSetCurrent(slides.sheetIndex);
-    }
-
-    onSetSaving(true);
-    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-      .then(() => onSetSaving(false));
-  };
-
   return (
     <>
       <div className="filexplorer-header">

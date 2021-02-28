@@ -1,10 +1,12 @@
 export default function databaseList(firebase, connector, data) {
   switch (connector) {
-    case 'MySQL':
+    case 'MySQL': {
       return firebase.doListDatabases('listDatabasesMySql', data);
-      break;
-    case 'Microsoft SQL Server':
+    }
+    case 'Microsoft SQL Server': {
       return firebase.doListDatabases('listDatabasesMsSql', data);
-      break;
+    }
+    default:
   }
+  return null;
 }

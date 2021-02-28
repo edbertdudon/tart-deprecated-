@@ -4,11 +4,6 @@ import {
 } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import Icon from '@mdi/react';
-import { mdilTable } from '@mdi/light-js';
-import {
-  mdiDatabase, mdiFile, mdiTable, mdiDelete, mdiClockTimeNine,
-} from '@mdi/js';
 import './index.less';
 
 import NonAuth from './nonauth';
@@ -48,22 +43,22 @@ const Auth = ({ props }) => {
 const Navigation = (props) => (
   <div>
     {
-			{
-			  [ROUTES.SIGN_IN]: <NonAuth />,
-			  [ROUTES.ACCOUNT]: <NonAuth />,
-			  [ROUTES.VERIFICATION]: <NonAuth />,
-			  [ROUTES.SIGN_UP]: <NonAuth />,
-			  [ROUTES.PASSWORD_FORGET]: <NonAuth />,
-			  [ROUTES.WORKSHEET]: <Auth authUser={props.authUser} props={props} />,
-			  [ROUTES.HOME]: <Auth props={props} />,
-			  [ROUTES.SETTINGS]: <Auth authUser={props.authUser} props={props} />,
+      {
+        [ROUTES.SIGN_IN]: <NonAuth />,
+        [ROUTES.ACCOUNT]: <NonAuth />,
+        [ROUTES.VERIFICATION]: <NonAuth />,
+        [ROUTES.SIGN_UP]: <NonAuth />,
+        [ROUTES.PASSWORD_FORGET]: <NonAuth />,
+        [ROUTES.WORKSHEET]: <Auth authUser={props.authUser} props={props} />,
+        [ROUTES.HOME]: <Auth props={props} />,
+        [ROUTES.SETTINGS]: <Auth authUser={props.authUser} props={props} />,
 			  [ROUTES.CONNECTIONS]: <Auth authUser={props.authUser} props={props} />,
 			  [ROUTES.INPUTS]: <Auth authUser={props.authUser} props={props} />,
 			  [ROUTES.TRASH]: <Auth authUser={props.authUser} props={props} />,
 			  [ROUTES.SEARCH]: <Auth authUser={props.authUser} props={props} />,
-			  [ROUTES.JOBS]: <Auth authUser={props.authUser} props={props} />,
-			}[props.location.pathname]
-		}
+        [ROUTES.JOBS]: <Auth authUser={props.authUser} props={props} />,
+      }[props.location.pathname]
+    }
   </div>
 );
 // [ROUTES.ADMIN_DETAILS]: <Auth authUser={props.authUser} props={props}/>,

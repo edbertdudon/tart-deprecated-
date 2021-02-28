@@ -126,7 +126,7 @@ class ChartBox {
 
       context.fillStyle = HANDLE_BOX_COLOR;
       context.strokeStyle = '#ffffff';
-      for (let i = 0; i < 8; i++) {
+      for (let i = 0; i < 8; i += 1) {
         const cur = selectionHandles[i];
         context.fillRect(cur.x, cur.y, HANDLE_BOX_SIZE, HANDLE_BOX_SIZE);
         context.strokeRect(cur.x, cur.y, HANDLE_BOX_SIZE, HANDLE_BOX_SIZE);
@@ -213,7 +213,7 @@ function chartInitEvents() {
 
   setInterval(mainDraw, INTERVAL, this.data);
 
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i += 1) {
     const rect = new Handle();
     selectionHandles.push(rect);
   }
@@ -230,7 +230,7 @@ function mainDraw(data) {
     // const { chartSelect } = data;
     // const { charts, chartSelect } = data;
     clear(ctx);
-    for (let i = 0; i < charts.length; i++) {
+    for (let i = 0; i < charts.length; i += 1) {
       charts[i].draw(ctx, null, chartSelect);
     }
     isValid = true;
@@ -295,7 +295,7 @@ function chartMousemove(e) {
   getMouse(e);
   const { overlayerEl } = this;
   if (chartSelect !== null && !isResizeDrag) {
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i += 1) {
       const cur = selectionHandles[i];
       if (mx >= cur.x && mx <= cur.x + HANDLE_BOX_SIZE
         && my >= cur.y && my <= cur.y + HANDLE_BOX_SIZE) {

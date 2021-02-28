@@ -23,8 +23,8 @@ const DATASOURCE_DROPDOWN = [
 const DataConnection = ({
   firebase, authUser, color, name, connections, onSetConnections,
 }) => {
-  const [hover, setHover] = useState(false);
-  const [hoverDropdown, setHoverDropdown] = useState(false);
+  // const [hover, setHover] = useState(false);
+  // const [hoverDropdown, setHoverDropdown] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDelete = () => {

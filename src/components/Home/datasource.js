@@ -14,7 +14,7 @@ import Icon from '@mdi/react';
 import { mdilTable } from '@mdi/light-js';
 import { mdiStop, mdiLoading, mdiDotsHorizontal } from '@mdi/js';
 
-import { getMaxNumberCustomSheet, xtos, addCopyToName } from '../../functions';
+import { xtos, addCopyToName } from '../../functions';
 import EditableInput from '../EditableInput';
 import withDropdown from '../Dropdown';
 import { OFF_COLOR } from '../../constants/off-color';
@@ -132,7 +132,7 @@ const DataSource = ({
       `user/${authUser.uid}/worksheets/${name}`,
     ).then((jobResp) => {
       if (jobResp === 'failed job') {
-        onJobCancel(runId);
+        onJobCancel(runId, filename);
       }
     });
   };
@@ -146,37 +146,35 @@ const DataSource = ({
     );
   };
 
-  const handleCommit = (name) => {
+  const handleCommit = (n) => {
     setName(name);
-    firebase.doRenameWorksheet(authUser.uid, filename, name);
+    firebase.doRenameWorksheet(authUser.uid, filename, n);
   };
 
   const handleOpen = () => onSetWorksheetname(filename);
 
-  const handleClose = () => setError('');
+  // const handleClose = () => setError('');
 
   const Run = () => (
-    (runId === undefined || runId === '')
-      ?	(
-        <button
-          className="datasource-button"
-          onClick={handleRun}
-          style={{ backgroundColor: hover && OFF_COLOR[color[authUser.uid]] }}
-          onMouseEnter={() => setHover(!hover)}
-          onMouseLeave={() => setHover(!hover)}
-        >
-          RUN
-        </button>
-      )
-      :	(
-        <button
-          className="datasource-button"
-          onClick={handleCancel}
-          style={{ backgroundColor: OFF_COLOR[color[authUser.uid]] }}
-        >
-          <Icon path={mdiStop} size={1} />
-        </button>
-      )
+    (runId === undefined || runId === '') ? (
+      <button
+        className="datasource-button"
+        onClick={handleRun}
+        style={{ backgroundColor: hover && OFF_COLOR[color[authUser.uid]] }}
+        onMouseEnter={() => setHover(!hover)}
+        onMouseLeave={() => setHover(!hover)}
+      >
+        RUN
+      </button>
+    ) : (
+      <button
+        className="datasource-button"
+        onClick={handleCancel}
+        style={{ backgroundColor: OFF_COLOR[color[authUser.uid]] }}
+      >
+        <Icon path={mdiStop} size={1} />
+      </button>
+    )
   );
 
   const LinkToApp = () => (
@@ -187,8 +185,8 @@ const DataSource = ({
     >
       <div className="datasource-icon">
         {runId === undefined || runId === ''
-				  ? <Icon path={mdilTable} size={5} />
-				  : <Icon path={mdiLoading} size={5} spin />}
+          ? <Icon path={mdilTable} size={5} />
+          : <Icon path={mdiLoading} size={5} spin />}
       </div>
     </Link>
   );

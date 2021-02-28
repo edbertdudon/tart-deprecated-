@@ -16,21 +16,26 @@ const Verification = (props) => {
     const mode = urlParams.get('mode');
     const actionCode = urlParams.get('oobCode');
     switch (mode) {
-      case 'resetPassword':
+      case 'resetPassword': {
         props.firebase.doVerifyPasswordResetCode(actionCode)
-          .then((email) => setEmail(email))
+          .then((e) => setEmail(e))
           .catch((err) => setError(err));
         break;
-      case 'recoverEmail':
+      }
+      case 'recoverEmail': {
+        // do something
         break;
-      case 'verifyEmail':
+      }
+      case 'verifyEmail': {
         props.firebase.doVerifyEmail(urlParams.get('oobCode'))
-          .then((resp) => {
+          .then(() => {
             props.history.push(ROUTES.HOME);
             // setVerified(true)
           })
           .catch((err) => setError(err));
         break;
+      }
+      default:
     }
   }, []);
 
@@ -58,7 +63,10 @@ const Verification = (props) => {
             </div>
           );
         }
+        break;
+      default:
     }
+    return null;
   };
 
   return (
