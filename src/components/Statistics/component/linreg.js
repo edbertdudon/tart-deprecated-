@@ -26,7 +26,6 @@ const LinearRegression = ({ statistic }) => {
       formula,
     };
     return doRegress(formuladata, statistics.find((s) => s.key === statistic).function)
-
       .then((res) => ({ res, formuladata }))
       .catch(() => {
         setError('Unable to calculate statistic.');

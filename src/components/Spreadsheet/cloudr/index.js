@@ -74,7 +74,7 @@ function addPrefixToFunction(cell) {
       optionsInCell.push(optionsFilterAdd[i]);
     }
   }
-  for (let j = 0; j < optionsInCell.length; j++) {
+  for (let j = 0; j < optionsInCell.length; j += 1) {
     if ('addStart' in optionsInCell[j]) {
       const match = cell.match(new RegExp(`${optionsInCell[j].key.slice(1, -1)}\\(`));
       cell = cell.replace(match, optionsInCell[j].key.slice(1) + optionsInCell[j].addStart);
@@ -114,7 +114,7 @@ function translateR(cell, name) {
       const prefix4 = new RegExp(`!${match[i]}:${match[i + 1]}`, 'g');
       coordinates = coordinates.replace(prefix4, ref4);
       // replaces B2:C2 with Sheet1[1:1, 2:3] (Letters as Y, Numbers as X)
-      const ref3 = `\`${name}\`` + `[${row}:${row2},${column}:${column2}]`;
+      const ref3 = `\`${name}\`[${row}:${row2},${column}:${column2}]`;
       const prefix3 = new RegExp(`${match[i]}:${match[i + 1]}`, 'g');
       coordinates = coordinates.replace(prefix3, ref3);
     }
@@ -124,7 +124,7 @@ function translateR(cell, name) {
       const prefix = new RegExp(`!${match[i]}`, 'g');
       coordinates = coordinates.replace(prefix, ref);
       // replaces B2 with Sheet1[1,2]
-      const ref2 = `\`${name}\`` + `[${row},${column}]`;
+      const ref2 = `\`${name}\`[${row},${column}]`;
       const prefix2 = new RegExp(match[i], 'g');
       coordinates = coordinates.replace(prefix2, ref2);
     }
@@ -212,8 +212,7 @@ function doParse(obj, data, ri, ci) {
       removeMatrix(data, ri, ci);
       return result[0].toString().replace(/['"]+/g, '');
     })
-    .catch((err) => {
-      console.log(err);
+    .catch(() => {
       removeMatrix(data, ri, ci);
       return '#ERROR!';
     });

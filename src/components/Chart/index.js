@@ -12,7 +12,7 @@ import charts from './chartsR';
 import DataRange, {
   getRangeIndex, getRownames, getVarsAsColumns,
 } from '../RightSidebar/datarange';
-import Button from '../RightSidebar/button';
+import Checkbox from '../RightSidebar/checkbox';
 import { NUMBERS_REFERENCE, createFile } from '../../functions';
 import withLists from '../RightSidebar/withLists';
 import withListsDropdown from '../RightSidebar/withListsDropdown';
@@ -183,7 +183,7 @@ const Chart = ({
                   />
                 </>
                 )}
-              <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+              <Checkbox onClick={handleFirstrow} condition={firstRow} text="First row as header" />
               <div className="rightsidebar-text">
                 {message && <div className="rightsidebar-error">{message}</div>}
               </div>

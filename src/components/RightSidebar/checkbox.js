@@ -5,13 +5,12 @@ import { compose } from 'recompose';
 const Checkbox = ({
   authUser, color, onClick, condition, text,
 }) => (
-  <div className="importdatabase-checkbox" onClick={onClick}>
+  <div className="rightsidebar-checkbox" onClick={onClick}>
     <button
-      className="importdatabase-checkbox-box"
+      className="rightsidebar-checkbox-box"
       style={{
-        backgroundColor: condition === true && color[authUser.uid],
-        boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-        border: condition === true ? `1px solid ${color[authUser.uid]}` : '1px solid #fff',
+			  backgroundColor: condition === true && color[authUser.uid],
+			  boxShadow: condition === true && 'inset 0px 0px 0px 3px #fff',
       }}
       type="button"
     />

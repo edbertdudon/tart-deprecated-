@@ -21,6 +21,7 @@ const Content = ({ firebase, authUser }) => {
 
   return (
     <div className="home-content">
+      <div className="home-content-message">Worksheets in trash will be permanently deleted after 30 days.</div>
       {loading
         ? <LoadingDataSource />
         : ((connections.length < 1 && trash.length < 1)

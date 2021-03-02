@@ -1,12 +1,15 @@
 import React, { useState, useRef } from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
-import './index.less';
+import Icon from '@mdi/react';
+import { mdiClose } from '@mdi/js';
 import withModal from '../Modal';
+import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
+import './index.less';
 
 const Share = ({
-  firebase, authUser, color, onClose, onSelect,
+  firebase, authUser, color, worksheetname, onClose,
 }) => {
   const [email, setEmail] = useState('');
   const [emails, setEmails] = useState([]);
@@ -16,8 +19,7 @@ const Share = ({
   const handleChange = (e) => setEmail(e.target.value);
 
   const handleShare = () => {
-    // firebase.doUploadFile(authUser.uid, file.name, file)
-    onSelect();
+    firebase.doShareFile(authUser.uid, worksheetname, emails);
   };
 
   const isValidEmail = () => {
@@ -28,29 +30,34 @@ const Share = ({
     }
   };
 
+  const handleRemove = (i) => {
+    if (i === null) {
+      // inputRef.current.blur()
+      setFocusedEmail(emails.length - 1);
+    } else {
+      const newEmails = [
+        ...emails.slice(0, i),
+        ...emails.slice(i + 1),
+      ];
+      setEmails(newEmails);
+      if (i === emails.length - 1) {
+        inputRef.current.focus();
+        setFocusedEmail(null);
+      }
+    }
+  };
+
   const handleKeyDown = (e) => {
     if (e.keyCode === 13) {
       isValidEmail();
       e.stopPropagation();
+      e.preventDefault();
     } else if (e.keyCode === 9) {
       isValidEmail();
       e.stopPropagation();
       e.preventDefault();
     } else if (e.keyCode === 8 && email.length < 1 && emails.length > 0) {
-      if (focusedEmail === null) {
-        // inputRef.current.blur()
-        setFocusedEmail(emails.length - 1);
-      } else {
-        const newEmails = [
-          ...emails.slice(0, focusedEmail),
-          ...emails.slice(focusedEmail + 1),
-        ];
-        setEmails(newEmails);
-        if (focusedEmail === emails.length - 1) {
-          inputRef.current.focus();
-          setFocusedEmail(null);
-        }
-      }
+      handleRemove(focusedEmail);
     } else if (e.keyCode === 37 && emails.length > 0) {
       if (focusedEmail === null) {
         // inputRef.current.blur()
@@ -72,21 +79,24 @@ const Share = ({
 
   const handleSelect = (index) => setFocusedEmail(index);
 
+  const isEmpty = emails.length < 1;
+
   return (
     <form className="modal-form">
       <h3>Share Worksheet</h3>
       <div className="share-input-emails" onClick={handleFocusInput}>
         {emails.map((em, index) => (
-          <span
+          <div
             className="share-email"
             style={{
-						  backgroundColor: focusedEmail === index && 'rgb(18,106,255)',
-						  color: focusedEmail === index && '#fff',
+              backgroundColor: focusedEmail === index && OFF_COLOR[color[authUser.uid]],
+              color: focusedEmail === index && '#fff',
             }}
             onClick={() => handleSelect(index)}
           >
             {em}
-          </span>
+            <Icon className="share-email-remove" onClick={() => handleRemove(index)} path={mdiClose} size={0.9} />
+          </div>
         ))}
         <input
           name="email"
@@ -94,25 +104,25 @@ const Share = ({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           type="email"
-          placeholder={emails.length < 1 && 'Email addresses'}
+          placeholder={isEmpty && 'Email addresses'}
           className="share-button"
           ref={inputRef}
         />
       </div>
       <br />
       <input
-        className="modal-button"
+        className="modal-button-left"
         type="button"
         value="Cancel"
         onClick={onClose}
       />
       <input
-        disabled={email === ''}
-        className="modal-button"
+        disabled={isEmpty}
+        className="modal-button-right"
         type="button"
         value="Share"
         onClick={handleShare}
-        style={{ color: email === '' ? 'rgb(0, 0, 0, 0.5)' : color[authUser.uid] }}
+        style={{ color: isEmpty ? 'rgb(0, 0, 0, 0.5)' : color[authUser.uid] }}
       />
     </form>
   );
@@ -121,6 +131,7 @@ const Share = ({
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   color: (state.colorState.colors || {}),
+  worksheetname: (state.worksheetnameState.worksheetname || ''),
 });
 
 export default compose(

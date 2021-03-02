@@ -8,12 +8,14 @@
 import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import { ContextMenu, ContextMenuTrigger } from 'react-contextmenu';
 import Item from './item';
 import Message from './message';
 import RefreshFail from './refreshfail';
 import { formulan } from '../Spreadsheet/cloudr/formula';
 import { useOutsideAlerter, createFile } from '../../functions';
+import getTableSample from '../Connectors/getTableSample';
+import setTableSample from '../Connectors/setTableSample';
 import { OFF_COLOR } from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
@@ -37,7 +39,7 @@ const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 
 const Input = ({
   firebase, authUser, worksheetname, slides, dataNames, current,
-  saving, color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
+  color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
   const [text, setText] = useState(value);
   const [show, setShow] = useState(false);
@@ -45,6 +47,12 @@ const Input = ({
   const [errortext, setErrorText] = useState('');
   const [refreshError, setRefreshError] = useState(false);
   const wrapperRef = useRef(null);
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   const checkIllegalChange = () => {
     if (show === true) {
@@ -103,6 +111,8 @@ const Input = ({
     }
   };
 
+  const handleShow = () => setShow(true);
+
   const handleDropdown = (key) => {
     switch (key) {
       case INPUT_DROPDOWN[0].key: {
@@ -121,7 +131,6 @@ const Input = ({
         break;
       }
       case INPUT_DROPDOWN[4].key: {
-        // refresh connection
         const { input, name } = slides.datas[index];
         const {
           connector, connection, database, table,
@@ -133,7 +142,6 @@ const Input = ({
           uid: authUser.uid,
         }).then((res) => {
           const out = setTableSample(connector, res);
-          console.log(out);
           slides.insertData(current, out, name, 'read');
           slides.deleteSheet(current, -1);
           save();
@@ -142,12 +150,11 @@ const Input = ({
         });
         break;
       }
+      default:
     }
   };
 
   const handleChange = (e) => setText(e.target.value);
-
-  const handleShow = () => setShow(true);
 
   const handleSelect = () => {
     if (current !== index) {
@@ -162,12 +169,6 @@ const Input = ({
   // const whiteText = () => ({ color: current === index && '#fff' });
 
   const handleClose = () => setErrorText('');
-
-  function save() {
-    onSetSaving(true);
-    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-      .then(() => onSetSaving(false));
-  }
 
   return (
     <>
@@ -196,8 +197,7 @@ const Input = ({
                 />
                 <div className="navigator-subtext">Sample</div>
               </>
-            )
-            :	(
+            ) : (
               <div
                 className="navigator-text"
                 // style={{ ...backgroundColor(index), ...whiteText(index) }}
@@ -209,7 +209,11 @@ const Input = ({
             )}
         </div>
       </ContextMenuTrigger>
-      <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
+      <ContextMenuDropdown
+        slide={text}
+        onDropdown={handleDropdown}
+        color={OFF_COLOR[color[authUser.uid]]}
+      />
       <Message
         classname="modal"
         text={errortext}

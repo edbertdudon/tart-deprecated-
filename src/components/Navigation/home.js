@@ -29,7 +29,7 @@ const Home = ({ color, pathname }) => (
     <ul>
       <li>
         <h1 className="navigation-home-logo">
-          <Link to={{ pathname: ROUTES.HOME }}>Tart</Link>
+          <Link to={{ pathname: ROUTES.HOME }}>Sciepp</Link>
         </h1>
       </li>
       <li>

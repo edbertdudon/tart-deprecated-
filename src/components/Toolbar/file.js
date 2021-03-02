@@ -198,7 +198,6 @@ const Files = ({
       />
       <Share
         classname="modal-share"
-        // onSelect={handleShare}
         isOpen={isShareOpen}
         setIsOpen={setIsShareOpen}
       />

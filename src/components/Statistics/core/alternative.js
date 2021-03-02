@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import { ALTERNATIVES } from './form';
+import Button from '../../RightSidebar/button';
 
 const Alternative = ({
   authUser, color, setAlt, alt,
@@ -36,22 +37,6 @@ const Alternative = ({
     </>
   );
 };
-
-const Button = ({
-  onClick, condition, text, color,
-}) => (
-  <div className="rightsidebar-buttonwrapper" onClick={onClick}>
-    <button
-      className="rightsidebar-button"
-      style={{
-			  backgroundColor: condition === true && color,
-			  boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-			  border: condition === true ? `1px solid ${color}` : '1px solid #fff',
-      }}
-    />
-    <div className="rightsidebar-buttontext-3part">{text}</div>
-  </div>
-);
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,

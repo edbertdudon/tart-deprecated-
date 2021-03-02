@@ -39,9 +39,11 @@ class Firebase {
 
   // *** Auth API ***
 
-  doCreateUserWithEmailAndPassword = (email, password) => this.auth.createUserWithEmailAndPassword(email, password)
+  doCreateUserWithEmailAndPassword = (email, password) => this.auth
+    .createUserWithEmailAndPassword(email, password)
 
-  doSignInWithEmailAndPassword = (email, password) => this.auth.signInWithEmailAndPassword(email, password)
+  doSignInWithEmailAndPassword = (email, password) => this.auth
+    .signInWithEmailAndPassword(email, password)
 
   doSignOut = () => this.auth.signOut()
 
@@ -59,7 +61,8 @@ class Firebase {
 
   doVerifyPasswordResetCode = (actionCode) => this.auth.verifyPasswordResetCode(actionCode)
 
-  doConfirmPasswordReset = (actionCode, newPassword) => this.auth.confirmPasswordReset(actionCode, newPassword)
+  doConfirmPasswordReset = (actionCode, newPassword) => this.auth
+    .confirmPasswordReset(actionCode, newPassword)
 
   // *** Merge Auth and DB User API ***
 
@@ -122,6 +125,9 @@ class Firebase {
 
   doDeleteTrash = (uid, filename) => this.storage.ref(`user/${uid}/trash/${filename}`).delete()
 
+  doShareFile = (uid, filename, destEmails) => this.auth.currentUser.getIdToken()
+    .then((authToken) => fetchG(authToken, 'shareFile', { uid, filename, destEmails }))
+
   // *** Dataproc API ***
 
   doRunWorksheet = (authUser, filename, jobFileArgument) => this.auth.currentUser.getIdToken()
@@ -166,25 +172,25 @@ class Firebase {
 
   // *** User API ***
 
-	user = (uid) => this.db.collection('users').doc(uid)
+  user = (uid) => this.db.collection('users').doc(uid)
 
-	users = () => this.db.collection('users')
+  users = () => this.db.collection('users')
 
-	// *** Database Connections API ***
+  // *** Database Connections API ***
 
-	connection = (uid) => this.db.collection('connections').doc(uid)
+  connection = (uid) => this.db.collection('connections').doc(uid)
 
-	connections = () => this.db.collection('connections')
+  connections = () => this.db.collection('connections')
 
-	doDeleteConnectionsField = (uid, filename) => this.db.collection('connections').doc(uid).update({ [filename]: app.firestore.FieldValue.delete() })
+  doDeleteConnectionsField = (uid, filename) => this.db.collection('connections').doc(uid).update({ [filename]: app.firestore.FieldValue.delete() })
 
-	// *** Trash API ***
+  // *** Trash API ***
 
-	trash = (uid) => this.db.collection('trash').doc(uid)
+  trash = (uid) => this.db.collection('trash').doc(uid)
 
-	trashs = () => this.db.collection('trash')
+  trashs = () => this.db.collection('trash')
 
-	doDeleteTrashField = (uid, filename) => this.db.collection('trash').doc(uid).update({ [filename]: app.firestore.FieldValue.delete() })
+  // doDeleteTrashField = (uid, filename) => this.db.collection('trash').doc(uid).update({ [filename]: app.firestore.FieldValue.delete() })
 }
 
 export default Firebase;

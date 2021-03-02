@@ -10,8 +10,7 @@ const Button = ({
       className="rightsidebar-button"
       style={{
 			  backgroundColor: condition === true && color[authUser.uid],
-			  boxShadow: condition === true ? 'inset 0px 0px 0px 3px #fff' : 'none',
-			  border: condition === true ? `1px solid ${color[authUser.uid]}` : '1px solid #fff',
+			  boxShadow: condition === true && 'inset 0px 0px 0px 3px #fff',
       }}
       type="button"
     />

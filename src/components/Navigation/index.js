@@ -14,7 +14,7 @@ import * as ROUTES from '../../constants/routes';
 const Worksheet = () => (
   <div className="navigation-homebutton">
     <Link to={ROUTES.HOME}>
-      <div>Tart</div>
+      <div>Sciepp</div>
     </Link>
   </div>
 );

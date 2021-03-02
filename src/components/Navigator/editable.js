@@ -8,7 +8,7 @@
 import React, { useState, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import { ContextMenu, ContextMenuTrigger } from 'react-contextmenu';
 import Item from './item';
 import Message from './message';
 import { formulan } from '../Spreadsheet/cloudr/formula';
@@ -42,13 +42,19 @@ const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 
 const Editable = ({
   firebase, authUser, worksheetname, slides, dataNames, current,
-  saving, color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
+  color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
   const [text, setText] = useState(value);
   const [show, setShow] = useState(false);
   const [error, setError] = useState(false);
   const [errortext, setErrorText] = useState('');
   const wrapperRef = useRef(null);
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   const checkIllegalChange = () => {
     if (show === true) {
@@ -107,6 +113,8 @@ const Editable = ({
     }
   };
 
+  const handleShow = () => setShow(true);
+
   const handleDropdown = (key) => {
     switch (key) {
       case NAVIGATOR_DROPDOWN[0].key: {
@@ -146,12 +154,11 @@ const Editable = ({
         save();
         break;
       }
+      default:
     }
   };
 
   const handleChange = (e) => setText(e.target.value);
-
-  const handleShow = () => setShow(true);
 
   const handleSelect = () => {
     if (current !== index) {
@@ -161,17 +168,13 @@ const Editable = ({
   };
 
   const backgroundColor = () => ({ backgroundColor: current === index && 'rgb(0,0,0,0.05)' });
-  // const backgroundColor = () => ({ backgroundColor: current === index && OFF_COLOR[color[authUser.uid]] });
+  // const backgroundColor = () => ({
+  //   backgroundColor: current === index && OFF_COLOR[color[authUser.uid]]
+  // });
 
   // const whiteText = () => ({ color: current === index && '#fff' });
 
   const handleClose = () => setErrorText('');
-
-  function save() {
-    onSetSaving(true);
-    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
-      .then(() => onSetSaving(false));
-  }
 
   return (
     <>
@@ -197,8 +200,7 @@ const Editable = ({
                 value={text}
                 autoFocus
               />
-            )
-            :	(
+            ) : (
               <div
                 className="navigator-text"
                 // style={{ ...backgroundColor(index), ...whiteText(index) }}
@@ -209,7 +211,11 @@ const Editable = ({
             )}
         </div>
       </ContextMenuTrigger>
-      <ContextMenuDropdown slide={text} onDropdown={handleDropdown} color={OFF_COLOR[color[authUser.uid]]} />
+      <ContextMenuDropdown
+        slide={text}
+        onDropdown={handleDropdown}
+        color={OFF_COLOR[color[authUser.uid]]}
+      />
       <Message
         classname="modal"
         text={errortext}

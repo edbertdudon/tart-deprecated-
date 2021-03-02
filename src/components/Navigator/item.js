@@ -5,24 +5,16 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useState } from 'react';
+import React from 'react';
+import { MenuItem } from 'react-contextmenu';
 
-const Item = ({ text, onSelect, color }) => {
-  const [hover, setHover] = useState(false);
-
-  const handleHover = () => setHover(!hover);
-
-  return (
-    <div
-      className="dropdown-item"
-      onClick={() => onSelect(text)}
-      onMouseEnter={handleHover}
-      onMouseLeave={handleHover}
-      // style={{ backgroundColor: hover && color, color: hover ? '#fff' : '#000000' }}
-    >
-      {text}
-    </div>
-  );
-};
+const Item = ({ text, onSelect }) => (
+  <MenuItem
+    onClick={() => onSelect(text)}
+    attributes={{ className: 'dropdown-item' }}
+  >
+    {text}
+  </MenuItem>
+);
 
 export default Item;

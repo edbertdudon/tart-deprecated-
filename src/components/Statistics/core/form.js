@@ -15,7 +15,7 @@ import { translateR, spreadsheetToR } from '../../Spreadsheet/cloudr';
 import DataRange, {
   getRangeIndex, getRownames, getRange, getVarsAsColumns,
 } from '../../RightSidebar/datarange';
-import Button from '../../RightSidebar/button';
+import Checkbox from '../../RightSidebar/checkbox';
 import { createFile } from '../../../functions';
 import { withFirebase } from '../../Firebase';
 
@@ -149,7 +149,7 @@ const Form = ({
         setError={setDatarangeError}
       />
       {children}
-      <Button onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+      <Checkbox onClick={handleFirstrow} condition={firstRow} text="First row as header" />
       <div className="rightsidebar-text">
         {/* <p>{statistics.find((e) => e.key === statistic).description}</p> */}
         {message && <div className="rightsidebar-error">{message}</div>}

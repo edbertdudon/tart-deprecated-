@@ -10,7 +10,7 @@ import { compose } from 'recompose';
 import { connect } from 'react-redux';
 import Icon from '@mdi/react';
 import { mdiLoading } from '@mdi/js';
-import Checkbox from './checkbox';
+import Checkbox from '../RightSidebar/checkbox';
 import withModal from '../Modal';
 import serverConnect from './serverConnect';
 import { withFirebase } from '../Firebase';
@@ -156,7 +156,7 @@ const ImportDatabase = ({
           Passwords are encrypted. Users have strict read access.
         </p>
         <input
-          className="modal-button"
+          className="modal-button-left"
           type="button"
           value="Cancel"
           onClick={handleClose}
@@ -168,7 +168,7 @@ const ImportDatabase = ({
         ) : (
           <input
             disabled={isInvalid}
-            className="modal-button"
+            className="modal-button-right"
             type="button"
             value="Connect"
             onClick={handleConnect}

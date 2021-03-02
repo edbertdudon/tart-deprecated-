@@ -1,9 +1,14 @@
 //
-// http://jsfiddle.net/398dtj5q/6/
+//  chart
+//
+//  Created by Edbert Dudon on 7/8/19.
+//  Copyright © 2019 Project Tart. All rights reserved.
+//
+//  source:http://jsfiddle.net/398dtj5q/6/
 //
 import { h } from '../component/element';
 import { cssPrefix } from '../config';
-import chartpng from './chart.png';
+import Handle from './handle';
 
 // global var
 // the selection handles will be in this order:
@@ -41,16 +46,6 @@ let styleBorderLeft;
 let styleBorderTop;
 let firstLoad = true;
 
-class Handle {
-  constructor() {
-    this.x = 0;
-    this.y = 0;
-    this.w = 1;
-    this.h = 1;
-    this.fill = '#444444';
-  }
-}
-
 class ChartBox {
   constructor() {
     this.x = 0;
@@ -69,7 +64,7 @@ class ChartBox {
     this.sparkuri = '';
   }
 
-  draw(context, optionalColor) {
+  draw(context) {
     // if (context === gctx) {
     //   context.fillStyle = 'black';
     // } else {
@@ -81,7 +76,7 @@ class ChartBox {
 
     // context.fillRect(this.x,this.y,this.w,this.h);
     if (firstLoad) {
-      this.image.el.addEventListener('load', (e) => {
+      this.image.el.addEventListener('load', () => {
         context.drawImage(this.image.el, this.x, this.y, this.w, this.h);
       });
       firstLoad = false;
@@ -163,6 +158,46 @@ function createChartBox(c) {
   return rect;
 }
 
+function clear(c) {
+  c.clearRect(0, 0, WIDTH, HEIGHT);
+}
+
+function mainDraw() {
+  if (isValid === false) {
+    // const { chartSelect } = data;
+    // const { charts, chartSelect } = data;
+    clear(ctx);
+    for (let i = 0; i < charts.length; i += 1) {
+      charts[i].draw(ctx, null, chartSelect);
+    }
+    isValid = true;
+  }
+}
+
+function invalidate() {
+  isValid = false;
+}
+
+function getMouse(e) {
+  const element = canvas;
+  let offsetX = 0;
+  let offsetY = 0;
+  if (element.offsetParent) {
+    do {
+      offsetX += element.offsetLeft;
+      offsetY += element.offsetTop;
+    } while ((element === element.offsetParent));
+  }
+  offsetX += stylePaddingLeft;
+  offsetY += stylePaddingTop;
+
+  offsetX += styleBorderLeft;
+  offsetY += styleBorderTop;
+
+  mx = e.pageX - offsetX;
+  my = e.pageY - offsetY;
+}
+
 function clearCharts() {
   clear(ctx);
 }
@@ -205,10 +240,18 @@ function chartInitEvents() {
   canvas.onselectstart = function () { return false; };
 
   if (document.defaultView && document.defaultView.getComputedStyle) {
-    stylePaddingLeft = parseInt(document.defaultView.getComputedStyle(canvas, null).paddingLeft, 10) || 0;
-    stylePaddingTop = parseInt(document.defaultView.getComputedStyle(canvas, null).paddingTop, 10) || 0;
-    styleBorderLeft = parseInt(document.defaultView.getComputedStyle(canvas, null).borderLeftWidth, 10) || 0;
-    styleBorderTop = parseInt(document.defaultView.getComputedStyle(canvas, null).borderTopWidth, 10) || 0;
+    stylePaddingLeft = parseInt(
+      document.defaultView.getComputedStyle(canvas, null).paddingLeft, 10
+    ) || 0;
+    stylePaddingTop = parseInt(
+      document.defaultView.getComputedStyle(canvas, null).paddingTop, 10
+    ) || 0;
+    styleBorderLeft = parseInt(
+      document.defaultView.getComputedStyle(canvas, null).borderLeftWidth, 10
+    ) || 0;
+    styleBorderTop = parseInt(
+      document.defaultView.getComputedStyle(canvas, null).borderTopWidth, 10
+    ) || 0;
   }
 
   setInterval(mainDraw, INTERVAL, this.data);
@@ -219,22 +262,6 @@ function chartInitEvents() {
   }
 
   // addRect(0, 0, 500, 500, 'rgba(0,205,0,0.7)', charts);
-}
-
-function clear(c) {
-  c.clearRect(0, 0, WIDTH, HEIGHT);
-}
-
-function mainDraw(data) {
-  if (isValid == false) {
-    // const { chartSelect } = data;
-    // const { charts, chartSelect } = data;
-    clear(ctx);
-    for (let i = 0; i < charts.length; i += 1) {
-      charts[i].draw(ctx, null, chartSelect);
-    }
-    isValid = true;
-  }
 }
 
 function chartMousemove(e) {
@@ -248,46 +275,56 @@ function chartMousemove(e) {
     const oldx = chartSelect.x;
     const oldy = chartSelect.y;
     switch (expectResize) {
-      case 0:
+      case 0: {
         // Still Wrong
-        // chartSelect.x = mx;
-        chartSelect.x -= my;
-        chartSelect.y -= my;
-        // chartSelect.w += oldx - mx;
-        chartSelect.w += oldy - my;
+        chartSelect.x = mx;
+        chartSelect.y = my;
+        // chartSelect.x -= my;
+        // chartSelect.y -= my;
+        chartSelect.w += oldx - mx;
+        // chartSelect.w += oldy - my;
         chartSelect.h += oldy - my;
         break;
-      case 1:
+      }
+      case 1: {
         chartSelect.y = my;
         chartSelect.h += oldy - my;
         break;
-      case 2:
+      }
+      case 2: {
         chartSelect.y = my;
-        // chartSelect.w = mx - oldx;
-        chartSelect.w += oldy - my;
+        chartSelect.w = mx - oldx;
+        // chartSelect.w += oldy - my;
         chartSelect.h += oldy - my;
         break;
-      case 3:
+      }
+      case 3: {
         chartSelect.x = mx;
         chartSelect.w += oldx - mx;
         break;
-      case 4:
+      }
+      case 4: {
         chartSelect.w = mx - oldx;
         break;
-      case 5:
+      }
+      case 5: {
         chartSelect.x = mx;
         chartSelect.w += oldx - mx;
-        chartSelect.h += oldx - mx;
-        // chartSelect.h = my - oldy;
-        break;
-      case 6:
+        // chartSelect.h += oldx - mx;
         chartSelect.h = my - oldy;
         break;
-      case 7:
-        chartSelect.w = mx - oldx;
-        chartSelect.h = mx - oldx;
-        // chartSelect.h = my - oldy;
+      }
+      case 6: {
+        chartSelect.h = my - oldy;
         break;
+      }
+      case 7: {
+        chartSelect.w = mx - oldx;
+        // chartSelect.h = mx - oldx;
+        chartSelect.h = my - oldy;
+        break;
+      }
+      default:
     }
     this.data.chartSelect = chartSelect;
     invalidate();
@@ -302,30 +339,39 @@ function chartMousemove(e) {
         expectResize = i;
         invalidate();
         switch (i) {
-          case 0:
+          case 0: {
             overlayerEl.el.style.cursor = 'nw-resize';
             break;
-          case 1:
+          }
+          case 1: {
             overlayerEl.el.style.cursor = 'n-resize';
             break;
-          case 2:
+          }
+          case 2: {
             overlayerEl.el.style.cursor = 'ne-resize';
             break;
-          case 3:
+          }
+          case 3: {
             overlayerEl.el.style.cursor = 'w-resize';
             break;
-          case 4:
+          }
+          case 4: {
             overlayerEl.el.style.cursor = 'e-resize';
             break;
-          case 5:
+          }
+          case 5: {
             overlayerEl.el.style.cursor = 'sw-resize';
             break;
-          case 6:
+          }
+          case 6: {
             overlayerEl.el.style.cursor = 's-resize';
             break;
-          case 7:
+          }
+          case 7: {
             overlayerEl.el.style.cursor = 'se-resize';
             break;
+          }
+          default:
         }
         return true;
       }
@@ -350,7 +396,7 @@ function chartMousedown(e) {
   clear(gctx);
   // const { charts } = this.data;
   const l = charts.length;
-  for (let i = l - 1; i >= 0; i--) {
+  for (let i = l - 1; i >= 0; i -= 1) {
     // charts[i].draw(gctx, 'black', this.data.chartSelect);
     charts[i].draw(gctx, 'black');
     this.data.charts[i] = charts[i];
@@ -397,29 +443,6 @@ function chartScrollHorizontal(left) {
     charts[i].x = charts[i].x + left;
     invalidate();
   }
-}
-
-function invalidate() {
-  isValid = false;
-}
-
-function getMouse(e) {
-  let element = canvas; let offsetX = 0; let
-    offsetY = 0;
-  if (element.offsetParent) {
-    do {
-      offsetX += element.offsetLeft;
-      offsetY += element.offsetTop;
-    } while ((element = element.offsetParent));
-  }
-  offsetX += stylePaddingLeft;
-  offsetY += stylePaddingTop;
-
-  offsetX += styleBorderLeft;
-  offsetY += styleBorderTop;
-
-  mx = e.pageX - offsetX;
-  my = e.pageY - offsetY;
 }
 
 export {
