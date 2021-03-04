@@ -93,6 +93,9 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
   }
   toolbar.reset();
   table.render();
+  // setTimeout(function () {
+  // table.render();
+  // }, 1000);
 }
 
 // multiple: boolean
@@ -416,7 +419,6 @@ function overlayerMousedown(evt) {
     } else {
       selectorSet.call(this, false, ri, ci);
     }
-
     // mouse move up
     mouseMoveUp(window, (e) => {
       // console.log('mouseMoveUp::::');
@@ -1089,7 +1091,7 @@ export default class Sheet {
     }
   }
 
-  resetData(data, isLoaded = true) {
+  resetData(data, datas, isLoaded = true) {
     // before
     this.editor.clear();
     // after
@@ -1099,7 +1101,7 @@ export default class Sheet {
     this.toolbar.resetData(data);
     // this.print.resetData(data);
     this.selector.resetData(data);
-    this.table.resetData(data);
+    this.table.resetData(data, datas);
 
     if (isLoaded) {
       this.data.resetCharts(data.charts);

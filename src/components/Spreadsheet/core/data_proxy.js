@@ -773,7 +773,6 @@ export default class DataProxy {
   }
 
   removeMatrix(cellRange) {
-    const { sri, sci } = cellRange;
     this.rows.deleteCellsExceptFirst(cellRange);
     this.matrices.deleteWithin(cellRange);
   }
@@ -1203,15 +1202,15 @@ export default class DataProxy {
     }));
   }
 
-  loadChart(cs, datas) {
+  loadChart(cs, datas, shouldDraw) {
     // clearCharts();
     cs.forEach((c) => {
       if (c.sparkuri.length > 0) {
         c.image.attr('src', c.sparkuri);
-        addRect(c);
+        if (shouldDraw) addRect(c);
       } else {
         this.setChart(c, datas, getRangeIndex(c.range)).then((chart) => {
-          addRect(chart);
+          if (shouldDraw) addRect(chart);
         });
       }
     });
@@ -1229,7 +1228,7 @@ export default class DataProxy {
 
   changeChart(c, datas, range) {
     this.changeData(() => this.setChart(c, datas, range).then((chart) => {
-      const i = this.charts.findIndex((chart) => chart === this.chartSelect);
+      const i = this.charts.findIndex((ch) => ch === this.chartSelect);
       this.charts.splice(i, 1, chart);
       changeRect(i, chart);
     }));
@@ -1252,13 +1251,13 @@ export default class DataProxy {
     }
 
     const {
-      sri, sci, eri, eci,
+      sri, sci, eri,
     } = range;
     const rowNames = getRownames(this.rows._, range);
-    const colVars = getVarsAsColumns(this.rows._, this.rows.len, range);
+    // const colVars = getVarsAsColumns(this.rows._, this.rows.len, range);
     const data = {
       slides: JSON.stringify(spreadsheetToR(datas)),
-      names: JSON.stringify(datas.map((data) => data.name)),
+      names: JSON.stringify(datas.map((d) => d.name)),
       range: translateR(c.range, this.name),
       firstrow: c.firstrow,
       types: JSON.stringify(c.types.map(((type) => charts[type].type))),

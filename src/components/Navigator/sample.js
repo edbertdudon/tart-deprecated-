@@ -134,7 +134,7 @@ const Sample = ({
 
   const handleSelect = () => {
     if (current !== index) {
-      slides.swapSheet(index);
+      slides.selectSheet(index);
       onSetCurrent(index);
     }
   };

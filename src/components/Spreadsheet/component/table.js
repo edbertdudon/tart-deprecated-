@@ -1,7 +1,7 @@
 import { stringAt } from '../core/alphabet';
 import { getFontSizePxByPt } from '../core/font';
-import _cell from '../core/cell';
-import { formulam } from '../cloudr/formula';
+// import _cell from '../core/cell';
+// import { formulam } from '../cloudr/formula';
 // import { formulam } from '../core/formula'
 import { formatm } from '../core/format';
 import { removeMatrix, rRender } from '../cloudr';
@@ -71,7 +71,6 @@ export async function renderCell(draw, data, datas, rindex, cindex, srindex, sci
 
   // let cellText = rRender(cell.text || '', data, datas, rindex, cindex);
   // let cellText = cell.text || '';
-
   let cellText = await rRender(cell.text || '', data, datas, rindex, cindex);
   // if (typeof cellText === 'object' && cellText !== null) {
   //   hasMatrix = cellText.hasMatrix
@@ -325,8 +324,9 @@ class Table {
     this.datas = datas;
   }
 
-  resetData(data) {
+  resetData(data, datas) {
     this.data = data;
+    this.datas = datas;
     this.render();
   }
 
@@ -382,11 +382,6 @@ class Table {
       // 5
       renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
     }
-
-    // if (hasMatrix) {
-    //   hasMatrix = false;
-    //   // this.resetData();
-    // }
   }
 
   clear() {

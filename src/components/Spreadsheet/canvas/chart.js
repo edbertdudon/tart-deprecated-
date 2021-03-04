@@ -4,7 +4,7 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-//  source:http://jsfiddle.net/398dtj5q/6/
+//  source: http://jsfiddle.net/398dtj5q/6/
 //
 import { h } from '../component/element';
 import { cssPrefix } from '../config';
@@ -130,17 +130,6 @@ class ChartBox {
   }
 }
 
-// function addRect(x, y, w, h, fill, charts) {
-//   const rect = new Chart();
-//   rect.x = x;
-//   rect.y = y;
-//   rect.w = w;
-//   rect.h = h;
-//   rect.fill = fill;
-//   charts.push(rect);
-//   invalidate();
-// }
-
 function createChartBox(c) {
   const rect = new ChartBox();
   rect.x = c.x;
@@ -176,26 +165,6 @@ function mainDraw() {
 
 function invalidate() {
   isValid = false;
-}
-
-function getMouse(e) {
-  const element = canvas;
-  let offsetX = 0;
-  let offsetY = 0;
-  if (element.offsetParent) {
-    do {
-      offsetX += element.offsetLeft;
-      offsetY += element.offsetTop;
-    } while ((element === element.offsetParent));
-  }
-  offsetX += stylePaddingLeft;
-  offsetY += stylePaddingTop;
-
-  offsetX += styleBorderLeft;
-  offsetY += styleBorderTop;
-
-  mx = e.pageX - offsetX;
-  my = e.pageY - offsetY;
 }
 
 function clearCharts() {
@@ -260,12 +229,30 @@ function chartInitEvents() {
     const rect = new Handle();
     selectionHandles.push(rect);
   }
+}
 
-  // addRect(0, 0, 500, 500, 'rgba(0,205,0,0.7)', charts);
+function getMouse(e) {
+  let element = canvas;
+  let offsetX = 0;
+  let offsetY = 0;
+  if (element.offsetParent) {
+    do {
+      offsetX += element.offsetLeft;
+      offsetY += element.offsetTop;
+      // Don't change this to ===. It won't work properly.
+    } while ((element = element.offsetParent));
+  }
+  offsetX += stylePaddingLeft;
+  offsetY += stylePaddingTop;
+
+  offsetX += styleBorderLeft;
+  offsetY += styleBorderTop;
+
+  mx = e.pageX - offsetX;
+  my = e.pageY - offsetY;
 }
 
 function chartMousemove(e) {
-  // const { chartSelect } = this.data;
   if (isDrag) {
     getMouse(e);
     chartSelect.x = mx - offsetx;
@@ -430,7 +417,7 @@ function chartMouseup() {
 function chartScrollVertical(top) {
   const { charts } = this.data;
   const l = charts.length;
-  for (let i = l - 1; i >= 0; i--) {
+  for (let i = l - 1; i >= 0; i -= 1) {
     charts[i].y = charts[i].y - top;
     invalidate();
   }
@@ -439,7 +426,7 @@ function chartScrollVertical(top) {
 function chartScrollHorizontal(left) {
   const { charts } = this.data;
   const l = charts.length;
-  for (let i = l - 1; i >= 0; i--) {
+  for (let i = l - 1; i >= 0; i -= 1) {
     charts[i].x = charts[i].x + left;
     invalidate();
   }

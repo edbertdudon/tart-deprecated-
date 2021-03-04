@@ -105,7 +105,7 @@ function translateR(cell, name) {
         const prefix5 = new RegExp(`!${match[i]}:${match[i + 1]}`, 'g');
         coordinates = coordinates.replace(prefix5, ref5);
         // Check for B:B and replace with Sheet1[,2:2]
-        const ref6 = `\`${name}\`` + `[,${column}:${column2}]`;
+        const ref6 = `\`${name}\`[,${column}:${column2}]`;
         const prefix6 = new RegExp(`${match[i]}:${match[i + 1]}`, 'g');
         coordinates = coordinates.replace(prefix6, ref6);
       }
@@ -192,6 +192,10 @@ function removeMatrix(data, ri, ci) {
   }
 }
 
+function replaceQuotes(result) {
+  return result.toString().replace(/['"]+/g, '');
+}
+
 function doParse(obj, data, ri, ci) {
   return fetchR(obj, 'cloudR')
     .then((res) => res.json())
@@ -202,15 +206,20 @@ function doParse(obj, data, ri, ci) {
           result = [result];
         }
         const cr = new CellRange(ri, ci, ri + result.length, ci + result[0].length);
-        data.addMatrix(cr, result);
-        return result[0][0].toString().replace(/['"]+/g, '');
+        const stringResult = replaceQuotes(result[0][0]);
+        if (stringResult === '#ERROR!' || stringResult === '#REF!') {
+          removeMatrix(data, ri, ci);
+        } else {
+          data.addMatrix(cr, result);
+        }
+        return stringResult;
         // return {
         //   value: result[0][0].toString().replace(/['"]+/g, ''),
         //   hasMatrix: true,
         // };
       }
       removeMatrix(data, ri, ci);
-      return result[0].toString().replace(/['"]+/g, '');
+      return replaceQuotes(result[0]);
     })
     .catch(() => {
       removeMatrix(data, ri, ci);

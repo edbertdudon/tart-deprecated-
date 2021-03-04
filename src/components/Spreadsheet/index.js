@@ -46,8 +46,15 @@ class Spreadsheet {
 
   addSheet(name, active = true, index, mode = 'edit') {
     let n = name || `Sheet${this.sheetIndex}`;
+    const names = this.datas.map((it) => it.name);
+
+    // When n is Sheet4 but Sheet4 already exists.
+    if (n === `Sheet${this.sheetIndex}` && n in names) {
+      this.sheetIndex += 1;
+      n = `Sheet${this.sheetIndex}`;
+    }
+
     if (this.datas.length > 0) {
-      const names = this.datas.map((it) => it.name);
       const max = getMaxNumberCustomSheet(names, n);
       if (max !== 1) {
         n = `${n} ${max}`;
@@ -74,14 +81,14 @@ class Spreadsheet {
 
   insertSheet(index) {
     const d = this.addSheet(`Sheet${this.sheetIndex}`, true, index);
-    this.sheet.resetData(d);
+    this.sheet.resetData(d, this.datas);
     this.data = d;
     return this.datas.map((data) => data.name);
   }
 
-  swapSheet(index) {
+  selectSheet(index) {
     const d = this.datas[index];
-    this.sheet.resetData(d);
+    this.sheet.resetData(d, this.datas);
     this.data = d;
   }
 
@@ -89,7 +96,7 @@ class Spreadsheet {
     // const [oldIndex, nindex] = this.bottombar.deleteItem();
     if (oldIndex >= 0) {
       this.datas.splice(oldIndex, 1);
-      if (nindex >= 0) this.sheet.resetData(this.datas[nindex]);
+      if (nindex >= 0) this.sheet.resetData(this.datas[nindex], this.datas);
     }
   }
 
@@ -116,7 +123,7 @@ class Spreadsheet {
     this.datas.splice(index + 1, 0, d);
     // this.bottombar.pasteItem(d.name, active, this.options.style.offcolor);
     // this.sheetIndex = index + 1;
-    this.sheet.resetData(d);
+    this.sheet.resetData(d, this.datas);
     this.data = d;
     return this.datas.map((a) => a.name);
   }
@@ -162,7 +169,7 @@ class Spreadsheet {
       datas.splice(current + 1, 0, d);
       // this.sheetIndex = current + 1;
     }
-    this.sheet.resetData(d);
+    this.sheet.resetData(d, this.datas);
     this.data = d;
 
     return isEmpty;
@@ -178,9 +185,9 @@ class Spreadsheet {
         const mode = it.type === 'input' ? 'read' : 'edit';
         const nd = this.addSheet(it.name, i === 0, undefined, mode);
         nd.setData(it, false);
-        nd.loadChart(nd.charts, this.datas);
+        nd.loadChart(nd.charts, this.datas, i === 0);
         if (i === 0) {
-          this.sheet.resetData(nd, false);
+          this.sheet.resetData(nd, this.datas, false);
         }
       }
       // this.sheet.resetData(this.datas[0], this.datas);
