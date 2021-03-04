@@ -1186,7 +1186,7 @@ export default class DataProxy {
 
     const rowNames = getRownames(this.rows._, range);
     if (rowNames.length !== 0) {
-      c.firstrow = rowNames.some(Number.isNaN);
+      c.firstrow = rowNames.some((n) => Number.isNaN(parseFloat(n)));
       c.variablex = 0;
       if (charts[type].variables > 1 && rowNames.length > 1) {
         c.variabley = 1;
@@ -1217,8 +1217,6 @@ export default class DataProxy {
   }
 
   resetCharts() {
-    console.log('passed resetChart');
-    console.log(this.charts);
     clearCharts();
     this.charts.forEach((c) => {
       if (c.sparkuri.length > 0) {

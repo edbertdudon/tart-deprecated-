@@ -107,13 +107,6 @@ function validateCellorRange(v) {
   return (null);
 }
 
-// function setVariablesRange(firstRow, rows, len, range) {
-//   if (firstRow) {
-//     return getRownames(rows, slides.sheet.selector.range);
-//   }
-//   return getVarsAsColumns(rows, len, range);
-// }
-
 const DataRange = ({
   slides, firstRow, datarange, setVariables, setDatarange, error, setError,
 }) => {
@@ -132,6 +125,7 @@ const DataRange = ({
         return;
       }
 
+      // Flipped compared to Statistics/Chart because firstrow changes
       if (firstRow) {
         setVariables(getRownames(rows._, range));
       } else {

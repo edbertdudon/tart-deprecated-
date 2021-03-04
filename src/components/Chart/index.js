@@ -46,12 +46,11 @@ const Chart = ({
     } else {
       const range = getRangeIndex(chartSelect.range);
       const rowNames = getRownames(rows._, range);
-      if (rowNames.some(Number.isNaN)) {
+      if (rowNames.some((n) => Number.isNaN(parseFloat(n)))) {
         setVariables(rowNames);
       } else {
-        setVariables(
-          getVarsAsColumns(rows._, rows.len, range),
-        );
+        setVariables(getVarsAsColumns(rows._, rows.len, range));
+        // firstrow already set
       }
 
       setDatarange(chartSelect.range);
@@ -108,15 +107,14 @@ const Chart = ({
     if (type !== 'input') {
       const range = getRangeIndex(datarange);
       setFirstRow(!firstRow);
-      if (!firstRow) {
-        setVariables(
-          getRownames(rows._, range),
-        );
+
+      // Flipped compared to datarange because firstrow changes
+      if (firstRow) {
+        setVariables(getVarsAsColumns(rows._, rows.len, range));
       } else {
-        setVariables(
-          getVarsAsColumns(rows._, rows.len, range),
-        );
+        setVariables(getRownames(rows._, range));
       }
+
       const c = data.chartSelect;
       c.firstrow = !firstRow;
       slides.editChart(c);

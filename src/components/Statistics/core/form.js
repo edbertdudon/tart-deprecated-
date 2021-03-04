@@ -48,12 +48,10 @@ const Form = ({
     setDatarange(getRange(rows.len, range));
 
     if (type === 'sheet') {
-      if (rowNames.some(Number.isNaN)) {
+      if (rowNames.some((n) => Number.isNaN(parseFloat(n)))) {
         setVariables(rowNames);
       } else {
-        setVariables(
-          getVarsAsColumns(rows._, rows.len, range),
-        );
+        setVariables(getVarsAsColumns(rows._, rows.len, range));
         setFirstRow(false);
       }
     }
@@ -77,14 +75,12 @@ const Form = ({
     if (type !== 'input') {
       const range = getRangeIndex(datarange);
       setFirstRow(!firstRow);
+
+      // Flipped compared to datarange because firstrow changes
       if (firstRow) {
-        setVariables(
-          getRownames(rows._, range),
-        );
+        setVariables(getVarsAsColumns(rows._, rows.len, range));
       } else {
-        setVariables(
-          getVarsAsColumns(rows._, rows.len, range),
-        );
+        setVariables(getRownames(rows._, range));
       }
     } else {
       // input must have firstrow = true for sparkR to work
