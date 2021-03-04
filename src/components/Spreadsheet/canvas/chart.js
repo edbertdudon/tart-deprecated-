@@ -168,6 +168,7 @@ function invalidate() {
 }
 
 function clearCharts() {
+  charts.splice(0, charts.length);
   clear(ctx);
 }
 
@@ -415,19 +416,17 @@ function chartMouseup() {
 }
 
 function chartScrollVertical(top) {
-  const { charts } = this.data;
-  const l = charts.length;
+  const l = this.data.charts.length;
   for (let i = l - 1; i >= 0; i -= 1) {
-    charts[i].y = charts[i].y - top;
+    this.data.charts[i].y = charts[i].y - top;
     invalidate();
   }
 }
 
 function chartScrollHorizontal(left) {
-  const { charts } = this.data;
-  const l = charts.length;
+  const l = this.data.charts.length;
   for (let i = l - 1; i >= 0; i -= 1) {
-    charts[i].x = charts[i].x + left;
+    this.data.charts[i].x = charts[i].x + left;
     invalidate();
   }
 }

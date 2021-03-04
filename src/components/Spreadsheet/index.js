@@ -50,10 +50,9 @@ class Spreadsheet {
 
     // When n is Sheet4 but Sheet4 already exists.
     if (n === `Sheet${this.sheetIndex}` && n in names) {
+      n = `Sheet${this.sheetIndex + 1}`;
       this.sheetIndex += 1;
-      n = `Sheet${this.sheetIndex}`;
     }
-
     if (this.datas.length > 0) {
       const max = getMaxNumberCustomSheet(names, n);
       if (max !== 1) {
@@ -177,6 +176,8 @@ class Spreadsheet {
 
   loadData(data) {
     const ds = Array.isArray(data) ? data : [data];
+    // Fixing charts can introduce nulls. Use splice to manually fix.
+    // ds[1].charts.splice(1, 3);
     // this.bottombar.clear();
     this.datas = [];
     if (ds.length > 0) {

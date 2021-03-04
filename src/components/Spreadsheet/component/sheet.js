@@ -1104,8 +1104,7 @@ export default class Sheet {
     this.table.resetData(data, datas);
 
     if (isLoaded) {
-      this.data.resetCharts(data.charts);
-      // this.data.loadChart(data.charts, datas);
+      this.data.resetCharts();
     }
   }
 

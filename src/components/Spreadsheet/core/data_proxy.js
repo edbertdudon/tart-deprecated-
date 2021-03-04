@@ -1216,9 +1216,11 @@ export default class DataProxy {
     });
   }
 
-  resetCharts(cs) {
+  resetCharts() {
+    console.log('passed resetChart');
+    console.log(this.charts);
     clearCharts();
-    cs.forEach((c) => {
+    this.charts.forEach((c) => {
       if (c.sparkuri.length > 0) {
         c.image.attr('src', c.sparkuri);
       }
