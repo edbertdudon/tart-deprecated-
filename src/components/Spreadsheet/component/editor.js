@@ -88,8 +88,13 @@ function inputEventHandler(evt) {
         const start = v.lastIndexOf('=');
         if (start !== -1 && v.length > 1) {
           const nv = v.substring(start + 1).split(OPERATORS_REGEX);
-          suggest.search(nv[nv.length - 1]);
-          // suggest.search(v.substring(start + 1));
+          const lastnv = nv[nv.length - 1];
+          if (lastnv.length > 0) {
+            suggest.search(lastnv);
+            // suggest.search(v.substring(start + 1));
+          } else {
+            suggest.hide();
+          }
         } else {
           suggest.hide();
         }

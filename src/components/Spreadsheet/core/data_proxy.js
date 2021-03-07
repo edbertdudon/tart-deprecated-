@@ -363,6 +363,12 @@ export default class DataProxy {
     this.exceptRowSet = new Set();
     this.sortedRowMap = new Map();
     this.unsortedRowMap = new Map();
+    this.prev = { ri: 0, ci: 0 };
+  }
+
+  setPrev(ri, ci) {
+    this.prev.ri = ri;
+    this.prev.ci = ci;
   }
 
   addValidation(mode, ref, validator) {
@@ -598,7 +604,12 @@ export default class DataProxy {
     }
     const oldCell = rows.getCell(nri, ci);
     const oldText = oldCell ? oldCell.text : '';
-    this.setCellText(nri, ci, text, state);
+    // Accomodate cell referencing onMousedown
+    if (this.prev.ri === nri && this.prev.ci === ci) {
+      this.setCellText(nri, ci, text, state);
+    } else {
+      this.setCellText(this.prev.ri, this.prev.ci, text, state);
+    }
     // replace filter.value
     if (autoFilter.active()) {
       const filter = autoFilter.getFilter(ci);

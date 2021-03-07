@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose } from 'recompose';
 import { connect } from 'react-redux';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const COLORS_APP = Object.keys(OFF_COLOR);

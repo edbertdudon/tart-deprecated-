@@ -12,7 +12,7 @@ import { useHistory } from 'react-router-dom';
 import Header from './header';
 import { submitJob, getJobId, cancelJob } from '../Home/content';
 import * as ROUTES from '../../constants/routes';
-// import { OFF_COLOR } from '../../constants/off-color';
+// import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const RUN_DROPDOWN = [

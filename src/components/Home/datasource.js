@@ -17,7 +17,7 @@ import { mdiStop, mdiLoading, mdiDotsHorizontal } from '@mdi/js';
 import { xtos, addCopyToName } from '../../functions';
 import EditableInput from '../EditableInput';
 import withDropdown from '../Dropdown';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
 

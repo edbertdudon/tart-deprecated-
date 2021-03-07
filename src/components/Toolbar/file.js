@@ -17,10 +17,10 @@ import {
 import ImportConnection from '../Connectors/importconnection';
 import Share from '../Share';
 
-import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
+import DEFAULT_INITIAL_SLIDES from '../../constants/default';
 import * as ROUTES from '../../constants/routes';
 import { withFirebase } from '../Firebase';
-// import { OFF_COLOR } from '../../constants/off-color';
+// import OFF_COLOR from '../../constants/off-color';
 
 const Papa = require('papaparse/papaparse.min.js');
 
@@ -67,7 +67,7 @@ const Files = ({
     const isEmpty = slides.insertData(current, data, name);
     onSetDataNames(slides.datas.map((it) => it.name));
     if (!isEmpty) {
-      onSetCurrent(slides.sheetIndex);
+      onSetCurrent(current + 1);
     }
   }
 

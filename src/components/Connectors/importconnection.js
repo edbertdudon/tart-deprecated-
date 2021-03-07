@@ -197,7 +197,7 @@ const ImportConnection = ({
     const isEmpty = slides.insertData(current, o, name, 'read');
     onSetDataNames(slides.datas.map((it) => it.name));
     if (!isEmpty) {
-      onSetCurrent(slides.sheetIndex);
+      onSetCurrent(current + 1);
     }
 
     onSetSaving(true);

@@ -7,7 +7,7 @@ import { mdiClockTimeNine } from '@mdi/js';
 import withDropdown from '../Dropdown';
 import withNotification from '../Notification';
 import { withFirebase } from '../Firebase';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import * as ROUTES from '../../constants/routes';
 
 const USER_DROPDOWN = [

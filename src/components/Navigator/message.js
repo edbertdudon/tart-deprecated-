@@ -10,7 +10,7 @@ import withModal from '../Modal';
 
 const Message = ({ text, onSelect }) => (
   <form className="modal-form-navigator-editable">
-    <p>{`The name '${text}' is already taken or is a formula. Formula names are reserved.`}</p>
+    <p>{`The name '${text}' is already taken or is a reserved keyword. Formula names are reserved.`}</p>
     <button className="modal-button" onClick={onSelect}>Ok</button>
   </form>
 );

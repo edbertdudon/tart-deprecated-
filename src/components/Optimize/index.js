@@ -449,7 +449,7 @@ const Optimize = ({
 
         onSetDataNames(slides.datas.map((it) => it.name));
         if (!isEmpty) {
-          onSetCurrent(slides.sheetIndex);
+          onSetCurrent(current + 1);
         }
         onSetRightSidebar('none');
         setLoading(false);

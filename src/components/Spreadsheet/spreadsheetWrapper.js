@@ -24,7 +24,7 @@ import useDebounce from '../../functions/useDebounce.ts';
 import Spreadsheet from './index';
 import { createFile } from '../../functions';
 import { options } from './options';
-// import { OFF_COLOR } from '../../constants/off-color';
+// import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const SpreadsheetWrapper = ({

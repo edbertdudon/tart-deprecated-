@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import withDropdown from '../Dropdown';
 import { withFirebase } from '../Firebase';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import * as ROUTES from '../../constants/routes';
 
 const USER_DROPDOWN = [

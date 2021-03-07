@@ -13,10 +13,11 @@ import Item from './item';
 import Message from './message';
 import RefreshFail from './refreshfail';
 import { formulan } from '../Spreadsheet/cloudr/formula';
+import reservedKeywords from '../../constants/reservedkeywords';
 import { useOutsideAlerter, createFile } from '../../functions';
 import getTableSample from '../Connectors/getTableSample';
 import setTableSample from '../Connectors/setTableSample';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const INPUT_DROPDOWN = [
@@ -65,7 +66,8 @@ const Input = ({
           break;
         }
       }
-      if (formulan.some((formula) => formula === text)) {
+      if (formulan.some((formula) => formula === text)
+        || reservedKeywords.some((word) => word === text)) {
         doesExist = true;
       }
 

@@ -17,7 +17,7 @@ import statistics from '../Statistics/core/statisticsR';
 import { editorSet, sheetReset } from '../Spreadsheet/component/sheet';
 import { createFile } from '../../functions';
 
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import withDropdownModal from '../DropdownModal';
 import { withFirebase } from '../Firebase';
 import './index.less';

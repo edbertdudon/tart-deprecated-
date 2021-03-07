@@ -104,13 +104,15 @@ const Form = ({
       const { res, formuladata } = r;
       delete formuladata.slides;
       delete formuladata.names;
-      res.type = statistics.find((e) => e.key === statistic).function;
+
+      const statObj = statistics.find((e) => e.key === statistic);
+      res.type = statObj.function;
       res.regression = { ...formuladata, sample: true };
 
-      const isEmpty = slides.insertData(current, res, statistic, 'read');
+      const isEmpty = slides.insertData(current, res, statObj.title, 'read');
       onSetDataNames(slides.datas.map((it) => it.name));
       if (!isEmpty) {
-        onSetCurrent(slides.sheetIndex);
+        onSetCurrent(current + 1);
       }
       onSetRightSidebar('none');
       setLoading(false);

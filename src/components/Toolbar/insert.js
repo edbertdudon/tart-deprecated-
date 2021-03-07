@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 import Header from './header';
 import { createFile } from '../../functions';
 
-// import { OFF_COLOR } from '../../constants/off-color';
+// import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const Insert = ({

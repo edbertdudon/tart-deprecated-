@@ -9,8 +9,8 @@ import Editor from './editor';
 import ContextMenu from './contextmenu';
 import Table from './table';
 import {
-  chartInitEvents, chartResetData, chartMousedown, chartMouseup,
-  chartMousemove, chartScrollVertical, chartScrollHorizontal, invalidate,
+  chartInitEvents, chartMousedown, chartMouseup, chartMousemove,
+  chartScrollVertical, chartScrollHorizontal, invalidate,
 } from '../canvas/chart';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
@@ -23,6 +23,7 @@ import { columnToLetter } from '../cloudr';
 import { defaultSettings } from '../core/data_proxy';
 
 let isResize = false;
+let isEditing = false;
 
 /**
  * @desc throttle fn
@@ -388,6 +389,54 @@ function toolbarChangePaintformatPaste() {
   }
 }
 
+function getCellRef() {
+  const {
+    sri, sci, eri, eci,
+  } = this.selector.range;
+  let cellRef;
+  if (sri === eri && sci === eci) {
+    cellRef = columnToLetter(sci+1) + (sri+1)
+  } else {
+    cellRef = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
+  }
+  return cellRef;
+}
+
+const REFERENCE_REGEX = /\=|\+|\-|\*|\/|\~|\,|\(/g;
+
+function isCellValidFormula(cell, cellRef) {
+  if (!(cell && 'text' in cell && cell.text.lastIndexOf('=') !== -1)) {
+    return false;
+  }
+
+  const v = this.editor.inputText
+  const start = v.lastIndexOf('=');
+  // if (start !== -1 && v.length >= 1) {
+  const nv = v.substring(start + 1).split(REFERENCE_REGEX);
+  const lastnv = nv[nv.length - 1];
+  return lastnv.length === 0 || lastnv === cellRef;
+}
+
+function setCellTextReference() {
+  const { editor, selector } = this;
+  let inputTextLessRef = editor.inputText;
+  const nv = inputTextLessRef.split(REFERENCE_REGEX);
+  const lastnv = nv[nv.length - 1];
+  if (lastnv !== '=' && lastnv.length !== 0) {
+    inputTextLessRef = inputTextLessRef.slice(0, -lastnv.length);
+  }
+  const {
+    sri, sci, eri, eci,
+  } = selector.range;
+  if (sri === eri && sci === eci) {
+    const reference = columnToLetter(sci + 1) + (sri + 1);
+    editor.setText(inputTextLessRef + reference);
+  } else {
+    const reference = `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(eci + 1)}${eri + 1}`;
+    editor.setText(inputTextLessRef + reference);
+  }
+}
+
 function overlayerMousedown(evt) {
   // console.log(':::::overlayer.mousedown:', evt.detail, evt.button, evt.buttons, evt.shiftKey);
   // console.log('evt.target.className:', evt.target.className);
@@ -414,6 +463,8 @@ function overlayerMousedown(evt) {
   // console.log('ri:', ri, ', ci:', ci);
   if (!evt.shiftKey) {
     // console.log('selectorSetStart:::');
+    const { indexes } = selector;
+    const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
     if (isAutofillEl) {
       selector.showAutofill(ri, ci);
     } else {
@@ -436,6 +487,21 @@ function overlayerMousedown(evt) {
       }
       selector.hideAutofill();
       // toolbarChangePaintformatPaste.call(this);
+
+      const cellRef = getCellRef.call(this);
+      // console.log(isEditing, isCellValidFormula.call(this, previousCell, cellRef))
+      if (this.editor.el.css('display') === 'block'
+        && (isEditing || isCellValidFormula.call(this, previousCell, cellRef))
+      ) {
+        console.log(indexes)
+        setCellTextReference.call(this);
+        this.data.setPrev(indexes[0], indexes[1]);
+        isEditing = true;
+      } else {
+        // console.log(ri, ci)
+        this.data.setPrev(ri, ci);
+        isEditing = false;
+      }
     });
   }
 
@@ -606,27 +672,6 @@ function sortFilterChange(ci, order, operator, value) {
   sheetReset.call(this);
 }
 
-const REFERENCE_REGEX = /\+|\-|\*|\/|\~|\,|\(/g;
-
-function setCellTextReference(lastRef) {
-  const { editor, selector } = this;
-  const nv = editor.inputText.split(REFERENCE_REGEX);
-  let inputTextLessRef = editor.inputText;
-  if (nv[nv.length - 1] !== '=' && nv[nv.length - 1].length !== 0) {
-    inputTextLessRef = inputTextLessRef.slice(0, -lastRef.length);
-  }
-  const {
-    sri, sci, eri, eci,
-  } = selector.range;
-  if (sri === eri && sci === eci) {
-    const reference = columnToLetter(sci + 1) + (sri + 1);
-    editor.setText(inputTextLessRef + reference);
-  } else {
-    const reference = `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(eci + 1)}${eri + 1}`;
-    editor.setText(inputTextLessRef + reference);
-  }
-}
-
 function sheetInitEvents() {
   const {
     selector,
@@ -648,21 +693,12 @@ function sheetInitEvents() {
       overlayerMousemove.call(this, evt);
     })
     .on('mousedown', (evt) => {
-      // const v = editor.inputText
-      // const start = v.lastIndexOf('=');
-      // if (start !== -1 && v.length >= 1) {
-      //   const nv = v.substring(start + 1).split(REFERENCE_REGEX)
-      //   const {
-      //     sri, sci, eri, eci,
-      //   } = selector.range;
-      //   if (sri === eri && sci === eci) {
-      //     var lastRef = columnToLetter(sci+1) + (sri+1)
-      //   } else {
-      //     var lastRef = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
-      //   }
-      // } else {
-      editor.clear();
-      // }
+      const { indexes } = selector;
+      const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
+      const cellRef = getCellRef.call(this);
+      if (!(isEditing || isCellValidFormula.call(this, previousCell, cellRef))) {
+        editor.clear();
+      }
       contextMenu.hide();
       contextMenuChart.hide();
 
@@ -699,12 +735,6 @@ function sheetInitEvents() {
           editorSet.call(this);
         } else {
           overlayerMousedown.call(this, evt);
-          // if (start !== -1 && v.length >= 1) {
-          //   const nv = v.substring(start + 1).split(REFERENCE_REGEX)
-          //   if (nv[nv.length-1].length === 0 || nv[nv.length-1] === lastRef) {
-          //     setCellTextReference.call(this, lastRef);
-          //   }
-          // }
         }
       }
     })

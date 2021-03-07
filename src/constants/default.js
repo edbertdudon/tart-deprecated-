@@ -1,4 +1,4 @@
-export const DEFAULT_INITIAL_SLIDES = [{
+const DEFAULT_INITIAL_SLIDES = [{
   autofilter: {},
   cols: {},
   freeze: 'A1',
@@ -10,3 +10,5 @@ export const DEFAULT_INITIAL_SLIDES = [{
   type: 'sheet',
   validations: [],
 }];
+
+export default DEFAULT_INITIAL_SLIDES;

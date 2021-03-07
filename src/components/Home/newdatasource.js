@@ -9,7 +9,7 @@ import { getMaxNumberCustomSheet } from '../../functions';
 
 import { withFirebase } from '../Firebase';
 import * as ROUTES from '../../constants/routes';
-import { DEFAULT_INITIAL_SLIDES } from '../../constants/default';
+import DEFAULT_INITIAL_SLIDES from '../../constants/default';
 
 const NewDataSource = ({
   firebase, authUser, worksheets, onSetWorksheetname,

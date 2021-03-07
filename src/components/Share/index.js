@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import withModal from '../Modal';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 import './index.less';
 

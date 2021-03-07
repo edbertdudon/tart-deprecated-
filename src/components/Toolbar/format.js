@@ -11,7 +11,7 @@ import { compose } from 'recompose';
 
 import Header from './header';
 import { fontSizes } from '../Spreadsheet/core/font';
-// import { OFF_COLOR } from '../../constants/off-color';
+// import OFF_COLOR from '../../constants/off-color';
 
 const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
   const FORMAT_DROPDOWN = [

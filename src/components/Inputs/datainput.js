@@ -13,7 +13,7 @@ import { mdiDotsHorizontal } from '@mdi/js';
 import { mdilFile } from '@mdi/light-js';
 
 import OptionWithDropdown from '../Home/option';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 import { withFirebase } from '../Firebase';
 
 const DATASOURCE_DROPDOWN = [

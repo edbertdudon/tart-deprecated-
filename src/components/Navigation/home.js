@@ -7,7 +7,7 @@ import {
 
 import SearchBar from './searchbar';
 import * as ROUTES from '../../constants/routes';
-import { OFF_COLOR } from '../../constants/off-color';
+import OFF_COLOR from '../../constants/off-color';
 
 const Item = ({
   pathname, route, color, icon, text,

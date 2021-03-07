@@ -9,7 +9,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Header from './header';
-// import { OFF_COLOR } from '../../constants/off-color';
+// import OFF_COLOR from '../../constants/off-color';
 
 export const TABLE_DROPDOWN = [
   { key: 'Insert Row', type: 'item' },
