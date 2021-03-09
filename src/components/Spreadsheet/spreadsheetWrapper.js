@@ -28,8 +28,8 @@ import { options } from './options';
 import { withFirebase } from '../Firebase';
 
 const SpreadsheetWrapper = ({
-  firebase, authUser, slides, worksheetname, setText, onSetSaving,
-  onSetSlides, onSetDataNames, onSetCurrent, onSetRightSidebar, onSetChartSelect,
+  firebase, authUser, slides, worksheetname, onSetSaving, onSetSlides, onSetDataNames,
+  onSetCurrent, onSetRightSidebar, onSetChartSelect, onSetFormula, onSetRange,
 }) => {
   const [pendingSave, setPendingSave] = useState({});
   const debouncePendingSave = useDebounce(pendingSave, 750);
@@ -40,14 +40,18 @@ const SpreadsheetWrapper = ({
       // options.style.offcolor = OFF_COLOR[color[authUser.uid]];
       const s = new Spreadsheet('#spreadsheet', options)
         .loadData(res)
-        .on('cell-edited', (text, ri, ci) => setText({ text, ri, ci }))
+        .on('cell-edited', (text, ri, ci) => onSetFormula({ text, ri, ci }))
         .on('cell-selected', (text, ri, ci) => {
-          if (text === null) {
-            setText({ text: '', ri, ci });
+          if (text === null || (text
+            && Object.keys(text).length === 0
+            && text.constructor === Object)
+          ) {
+            onSetFormula({ text: '', ri, ci });
           } else {
-            setText({ text: text.text, ri, ci });
+            onSetFormula({ text: text.text, ri, ci });
           }
         })
+        .on('cell-deselect', (range) => onSetRange(range))
         .on('show-editor', () => onSetRightSidebar('chart'))
         .on('chart-select', (chart) => onSetChartSelect(chart))
         .change((data) => setPendingSave(data));
@@ -92,6 +96,8 @@ const mapStateToProps = (state) => ({
   saving: (state.savingState.saving || false),
   rightSidebar: (state.rightSidebarState.rightSidebar || 'none'),
   chartSelect: (state.chartSelectState.chartSelect || null),
+  formula: (state.formulaState.formula || { text: '', ri: 0, ci: 0 }),
+  range: (state.rangeState.range || {}),
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -101,6 +107,8 @@ const mapDispatchToProps = (dispatch) => ({
   onSetSaving: (saving) => dispatch({ type: 'SAVING_SET', saving }),
   onSetRightSidebar: (rightSidebar) => dispatch({ type: 'RIGHTSIDEBAR_SET', rightSidebar }),
   onSetChartSelect: (chartSelect) => dispatch({ type: 'CHARTSELECT_SET', chartSelect }),
+  onSetFormula: (formula) => dispatch({ type: 'FORMULA_SET', formula }),
+  onSetRange: (range) => dispatch({ type: 'RANGE_SET', range }),
 });
 
 export default compose(

@@ -21,10 +21,10 @@ import Lconstraint from './lconstraint';
 import Variable from '../Statistics/core/variable';
 import Button from '../RightSidebar/button';
 import {
-  columnToLetter, spreadsheetToR, doOptimization, translateR,
+  spreadsheetToR, doOptimization, translateR,
 } from '../Spreadsheet/cloudr';
 import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, createFile,
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, createFile, asCell,
 } from '../../functions';
 import withLists from '../RightSidebar/withLists';
 import { withFirebase } from '../Firebase';
@@ -231,7 +231,7 @@ const Optimize = ({
   useEffect(() => {
     const { selector } = slides.sheet;
     const { sri, sci } = selector.range;
-    setObjective(columnToLetter(sci + 1) + (sri + 1));
+    setObjective(asCell(sri, sci));
   }, []);
 
   const handleMinimize = () => setMinMax(0);

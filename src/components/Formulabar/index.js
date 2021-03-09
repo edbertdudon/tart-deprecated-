@@ -10,16 +10,16 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import './index.less';
 
-const Formulabar = ({ slides, text }) => {
-  const [value, setValue] = useState(text.text);
+const Formulabar = ({ slides, formula }) => {
+  const [value, setValue] = useState(formula.text);
 
   useEffect(() => {
-    setValue(text.text);
-  }, [text]);
+    setValue(formula.text);
+  }, [formula]);
 
   const handleChange = (e) => {
     setValue(e.target.value);
-    slides.cellText(text.ri, text.ci, e.target.value).reRender();
+    slides.cellText(formula.ri, formula.ci, e.target.value).reRender();
   };
 
   return (
@@ -34,6 +34,7 @@ const Formulabar = ({ slides, text }) => {
 
 const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),
+  formula: (state.formulaState.formula || { text: '', ri: 0, ci: 0 }),
 });
 
 export default compose(

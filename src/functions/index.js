@@ -137,23 +137,71 @@ export function addCopyToName(files, prefix) {
   const names = files.map((file) => file.name);
   let newname = prefix;
   if (newname.endsWith(' copy')) {
-  	newname = `${newname} ${2}`;
+    newname = `${newname} ${2}`;
   }
   if (newname.match(/ copy [0-9]+/) == null) {
-  	newname += ' copy';
-  	if (names.includes(newname)) {
+    newname += ' copy';
+    if (names.includes(newname)) {
       newname = `${newname} ${2}`;
     }
   }
   const match = newname.match(/ copy [0-9]+/);
   if (match != null && match.length > 0 && newname.endsWith(match)) {
-  	let n = 2;
-  	let next = newname.replace(match, ` copy ${n}`);
+    let n = 2;
+    let next = newname.replace(match, ` copy ${n}`);
     while (names.includes(next)) {
-        	n++;
-      	next = newname.replace(match, ` copy ${n}`);
+      n++;
+      next = newname.replace(match, ` copy ${n}`);
     }
-    	newname = next;
+    newname = next;
   }
   return (newname);
+}
+
+// *** Cell Referencing ***
+
+export function columnToLetter(column) {
+  let temp; let
+    letter = '';
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
+
+export function letterToColumn(letter) {
+  let column = 0; const
+    { length } = letter;
+  for (let i = 0; i < length; i += 1) {
+    column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
+  }
+  return column;
+}
+
+export function asCell(ri, ci) {
+  return `${columnToLetter(ci + 1)}${ri + 1}`;
+}
+
+function asCellRange(sri, sci, eri, eci) {
+  return `${columnToLetter(sci + 1)}${sri + 1}:${columnToLetter(eci + 1)}${eri + 1}`;
+}
+
+function asFullRange(sci, eci) {
+  return `${columnToLetter(sci + 1)}:${columnToLetter(eci + 1)}`;
+}
+
+export function getRange(rangei, len) {
+  const {
+    sri, sci, eri, eci,
+  } = rangei;
+
+  if (sri === eri && sci === eci) {
+    return asCell(sri, sci);
+  }
+  if (len === eri + 1) {
+    return asFullRange(sci, eci);
+  }
+  return asCellRange(sri, sci, eri, eci);
 }

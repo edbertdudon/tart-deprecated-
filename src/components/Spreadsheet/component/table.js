@@ -1,8 +1,8 @@
 import { stringAt } from '../core/alphabet';
 import { getFontSizePxByPt } from '../core/font';
-// import _cell from '../core/cell';
+import _cell from '../core/cell';
 // import { formulam } from '../cloudr/formula';
-// import { formulam } from '../core/formula'
+import { formulam } from '../core/formula'
 import { formatm } from '../core/format';
 import { removeMatrix, rRender } from '../cloudr';
 import {
@@ -69,15 +69,11 @@ export async function renderCell(draw, data, datas, rindex, cindex, srindex, sci
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
 
-  // let cellText = rRender(cell.text || '', data, datas, rindex, cindex);
-  // let cellText = cell.text || '';
   let cellText = await rRender(cell.text || '', data, datas, rindex, cindex);
-  // if (typeof cellText === 'object' && cellText !== null) {
-  //   hasMatrix = cellText.hasMatrix
-  //   cellText = cellText.value
-  // }
   const yoffset = 25 - (srindex * 25);
   const xoffset = 30 - (scindex * 100);
+  // const yoffset = 0;
+  // const xoffset = 0;
 
   let frozen = false;
   if ('editable' in cell && cell.editable === false) {

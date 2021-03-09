@@ -23,7 +23,7 @@ const General = ({
     <CellReference
       cell={lhs}
       onSetCell={setLhs}
-      classname="rightsidebar-input-3part1"
+      part="3part1"
       placeholder="A1:A2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -31,7 +31,7 @@ const General = ({
     <CellReference
       cell={dir}
       onSetCell={setDir}
-      classname="rightsidebar-input-3part2"
+      part="3part2"
       placeholder="B1:B2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -39,7 +39,7 @@ const General = ({
     <CellReference
       cell={rhs}
       onSetCell={setRhs}
-      classname="rightsidebar-input-3part3"
+      part="3part3"
       placeholder="C1:C2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -57,7 +57,7 @@ const QuadraticLinear = ({
     <CellReference
       cell={li}
       onSetCell={setLi}
-      classname="rightsidebar-input-2part1"
+      part="2part1"
       placeholder="A1:A2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -65,7 +65,7 @@ const QuadraticLinear = ({
     <CellReference
       cell={lb}
       onSetCell={setLb}
-      classname="rightsidebar-input-2part2"
+      part="2part2"
       placeholder="B1:B2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -75,7 +75,7 @@ const QuadraticLinear = ({
     <CellReference
       cell={ui}
       onSetCell={setUi}
-      classname="rightsidebar-input-2part1"
+      part="2part1"
       placeholder="C1:C2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -83,7 +83,7 @@ const QuadraticLinear = ({
     <CellReference
       cell={ub}
       onSetCell={setUb}
-      classname="rightsidebar-input-2part2"
+      part="2part2"
       placeholder="D1:D2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -93,7 +93,7 @@ const QuadraticLinear = ({
     <CellReference
       cell={ld}
       onSetCell={setLd}
-      classname="rightsidebar-input-2part1"
+      part="2part1"
       placeholder="D1"
       onValidate={validateCell}
       onSetError={setError}
@@ -101,7 +101,7 @@ const QuadraticLinear = ({
     <CellReference
       cell={ud}
       onSetCell={setUd}
-      classname="rightsidebar-input-2part2"
+      part="2part2"
       placeholder="E1"
       onValidate={validateCell}
       onSetError={setError}

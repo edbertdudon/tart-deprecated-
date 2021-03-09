@@ -5,13 +5,13 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
-import React, { useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { letterToColumn, columnToLetter } from '../Spreadsheet/cloudr';
 import {
   LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, RANGE_REFERENCES,
   VALID_FORMULA_CELL_REFERENCES, VALID_RANGE_REFERENCES, useOutsideAlerter,
+  letterToColumn, columnToLetter, asCell, getRange,
 } from '../../functions';
 
 function getRangeIndex(range) {
@@ -57,22 +57,6 @@ function getCols(rows, range) {
     .map((t) => columnToLetter(parseInt(t) + 1));
 }
 
-function getRange(len, range) {
-  const {
-    sri, sci, eri, eci,
-  } = range;
-
-  const colStart = columnToLetter(sci + 1);
-  if (sri === eri && sci === eci) {
-    return `${colStart + (sri + 1)}`;
-  }
-  const colEnd = columnToLetter(eci + 1);
-  if (len === eri + 1) {
-    return (`${colStart}:${colEnd}`);
-  }
-  return (`${colStart + (sri + 1)}:${colEnd + (eri + 1)}`);
-}
-
 function getVarsAsColumns(rows, len, range) {
   const { sri, eri } = range;
   const cols = getCols(rows, range);
@@ -108,9 +92,23 @@ function validateCellorRange(v) {
 }
 
 const DataRange = ({
-  slides, firstRow, datarange, setVariables, setDatarange, error, setError,
+  slides, formula, range, firstRow, datarange, setVariables, setDatarange, error, setError,
 }) => {
+  const [hover, setHover] = useState(false);
+  const [edit, setEdit] = useState(false);
   const datarangeRef = useRef(null);
+
+  useEffect(() => {
+    if (edit) {
+      setDatarange(asCell(formula.ri, formula.ci));
+    }
+  }, [formula]);
+
+  useEffect(() => {
+    if (edit) {
+      setDatarange(getRange(range, slides.data.rows.len));
+    }
+  }, [range])
 
   const handleRange = () => {
     if (datarange.length > 0) {
@@ -136,19 +134,34 @@ const DataRange = ({
 
   useOutsideAlerter(datarangeRef, handleRange);
 
+  const handleHover = () => setHover(!hover)
+
   const handleChange = (e) => setDatarange(e.target.value);
+
+  const handleEdit = () => setEdit(!edit);
 
   return (
     <>
       <div className="rightsidebar-label">Data Range</div>
-      <input
-        type="text"
-        className="rightsidebar-input-1part1"
-        onChange={handleChange}
-        value={datarange}
-        placeholder="A1:A2"
-        ref={datarangeRef}
-      />
+      <div className="rightsidebar-inputcontainer-1part1" onMouseEnter={handleHover} onMouseLeave={handleHover}>
+        <input
+          type="text"
+          className="rightsidebar-input-1part1"
+          onChange={handleChange}
+          value={datarange}
+          placeholder="A1:A2"
+          ref={datarangeRef}
+        />
+        {(hover || edit) && (
+          <button
+            type="button"
+            className="rightsidebar-dropdown-cellreference-1part1"
+            onClick={handleEdit}
+          >
+            {edit ? 'Done' : 'Edit'}
+          </button>
+        )}
+      </div>
       <div className="rightsidebar-text">
         {error && <div className="rightsidebar-error">{error}</div>}
       </div>
@@ -158,6 +171,8 @@ const DataRange = ({
 
 const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),
+  formula: (state.formulaState.formula || { text: '', ri: 0, ci: 0 }),
+  range: (state.rangeState.range || {}),
 });
 
 export default compose(
@@ -170,7 +185,6 @@ export {
   getRangeIndex,
   getRownames,
   getCols,
-  getRange,
   getVarsAsColumns,
   // setVariablesRange,
 };

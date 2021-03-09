@@ -20,7 +20,6 @@ import { withAuthorization, withEmailVerification } from '../Session';
 
 const Worksheet = () => {
   const [readOnly, setReadOnly] = useState(true);
-  const [text, setText] = useState({ text: '', ri: 0, ci: 0 });
   const [navigator, setNavigator] = useState(true);
   const [statistic, setStatistic] = useState('statdesc');
 
@@ -34,10 +33,10 @@ const Worksheet = () => {
         setReadOnly={setReadOnly}
       />
       <Toggle setStatistic={setStatistic} />
-      <Formulabar text={text} />
+      <Formulabar />
       {navigator && <Navigator />}
       <RightSidebar statistic={statistic} />
-      <SpreadsheetWrapper setText={setText} />
+      <SpreadsheetWrapper />
     </div>
   );
 };

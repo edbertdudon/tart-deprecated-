@@ -21,7 +21,7 @@ const General = ({
       <CellReference
         cell={objective}
         onSetCell={setObjective}
-        classname="rightsidebar-input-2part1"
+        part="2part1"
         placeholder="A1"
         onValidate={validateCell}
         onSetError={setError}
@@ -29,7 +29,7 @@ const General = ({
       <CellReference
         cell={decision}
         onSetCell={setDecision}
-        classname="rightsidebar-input-2part2"
+        part="2part2"
         placeholder="B1:B2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -39,7 +39,7 @@ const General = ({
       <CellReference
         cell={gradient}
         onSetCell={setGradient}
-        classname="rightsidebar-input-2part1"
+        part="2part1"
         placeholder="C1"
         onValidate={validateCell}
         onSetError={setError}
@@ -47,7 +47,7 @@ const General = ({
       <CellReference
         cell={hessian}
         onSetCell={setHessian}
-        classname="rightsidebar-input-2part2"
+        part="2part2"
         placeholder="D1"
         onValidate={validateCell}
         onSetError={setError}

@@ -19,7 +19,7 @@ import { xtoast } from './message';
 import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula';
-import { columnToLetter } from '../cloudr';
+import { getRange } from '../../../functions';
 import { defaultSettings } from '../core/data_proxy';
 
 let isResize = false;
@@ -389,27 +389,18 @@ function toolbarChangePaintformatPaste() {
   }
 }
 
-function getCellRef() {
-  const {
-    sri, sci, eri, eci,
-  } = this.selector.range;
-  let cellRef;
-  if (sri === eri && sci === eci) {
-    cellRef = columnToLetter(sci+1) + (sri+1)
-  } else {
-    cellRef = columnToLetter(sci+1) + (sri+1) + ':' + columnToLetter(eci+1) + (eri+1)
-  }
-  return cellRef;
-}
-
 const REFERENCE_REGEX = /\=|\+|\-|\*|\/|\~|\,|\(/g;
 
+function hasEqualStart(cell) {
+  return cell && 'text' in cell && cell.text.lastIndexOf('=') !== -1;
+}
+
 function isCellValidFormula(cell, cellRef) {
-  if (!(cell && 'text' in cell && cell.text.lastIndexOf('=') !== -1)) {
+  if (!hasEqualStart(cell)) {
     return false;
   }
 
-  const v = this.editor.inputText
+  const v = this.editor.inputText;
   const start = v.lastIndexOf('=');
   // if (start !== -1 && v.length >= 1) {
   const nv = v.substring(start + 1).split(REFERENCE_REGEX);
@@ -420,21 +411,19 @@ function isCellValidFormula(cell, cellRef) {
 function setCellTextReference() {
   const { editor, selector } = this;
   let inputTextLessRef = editor.inputText;
+  // For when cell is no longer a formula. User backspaces '='.
+  if (inputTextLessRef.lastIndexOf('=') === -1) {
+    editor.clear();
+    isEditing = false;
+    return;
+  }
+
   const nv = inputTextLessRef.split(REFERENCE_REGEX);
   const lastnv = nv[nv.length - 1];
   if (lastnv !== '=' && lastnv.length !== 0) {
     inputTextLessRef = inputTextLessRef.slice(0, -lastnv.length);
   }
-  const {
-    sri, sci, eri, eci,
-  } = selector.range;
-  if (sri === eri && sci === eci) {
-    const reference = columnToLetter(sci + 1) + (sri + 1);
-    editor.setText(inputTextLessRef + reference);
-  } else {
-    const reference = `${columnToLetter(sci + 1) + (sri + 1)}:${columnToLetter(eci + 1)}${eri + 1}`;
-    editor.setText(inputTextLessRef + reference);
-  }
+  editor.setText(inputTextLessRef + getRange(selector.range, this.data.rows.len));
 }
 
 function overlayerMousedown(evt) {
@@ -487,21 +476,28 @@ function overlayerMousedown(evt) {
       }
       selector.hideAutofill();
       // toolbarChangePaintformatPaste.call(this);
-
-      const cellRef = getCellRef.call(this);
+      const cellRef = getRange(this.selector.range, data.rows.len)
       // console.log(isEditing, isCellValidFormula.call(this, previousCell, cellRef))
       if (this.editor.el.css('display') === 'block'
         && (isEditing || isCellValidFormula.call(this, previousCell, cellRef))
       ) {
-        console.log(indexes)
-        setCellTextReference.call(this);
-        this.data.setPrev(indexes[0], indexes[1]);
+        // Should not change when not
+        if (!isEditing) {
+          this.data.setPrev(indexes[0], indexes[1]);
+        }
         isEditing = true;
+        setCellTextReference.call(this);
       } else {
         // console.log(ri, ci)
         this.data.setPrev(ri, ci);
         isEditing = false;
       }
+      const {
+        sri, sci, eri, eci,
+      } = selector.range;
+      this.trigger('cell-deselect', {
+        sri, sci, eri, eci,
+      });
     });
   }
 
@@ -694,8 +690,9 @@ function sheetInitEvents() {
     })
     .on('mousedown', (evt) => {
       const { indexes } = selector;
-      const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
-      const cellRef = getCellRef.call(this);
+      const { rows } = this.data;
+      const previousCell = rows.getCell(indexes[0], indexes[1]);
+      const cellRef = getRange(this.selector.range, rows.len)
       if (!(isEditing || isCellValidFormula.call(this, previousCell, cellRef))) {
         editor.clear();
       }
@@ -731,7 +728,8 @@ function sheetInitEvents() {
       }
 
       if (!isChart) {
-        if (evt.detail === 2) {
+        // Prevent double click switch cell when cell referencing
+        if (evt.detail === 2 && !isEditing) {
           editorSet.call(this);
         } else {
           overlayerMousedown.call(this, evt);

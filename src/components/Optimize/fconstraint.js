@@ -35,7 +35,7 @@ const Fconstraint = ({
       <CellReference
         cell={lhs}
         onSetCell={setLhs}
-        classname="rightsidebar-input-3part1"
+        part="3part1"
         placeholder="A1:A2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -43,7 +43,7 @@ const Fconstraint = ({
       <CellReference
         cell={dir}
         onSetCell={setDir}
-        classname="rightsidebar-input-3part2"
+        part="3part2"
         placeholder="B1:B2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -51,7 +51,7 @@ const Fconstraint = ({
       <CellReference
         cell={rhs}
         onSetCell={setRhs}
-        classname="rightsidebar-input-3part3"
+        part="3part3"
         placeholder="C1:C2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -60,7 +60,7 @@ const Fconstraint = ({
       <CellReference
         cell={jacobian}
         onSetCell={setJacobian}
-        classname="rightsidebar-input-1part1"
+        part="1part1"
         placeholder="D1"
         onValidate={validateCell}
         onSetError={setError}

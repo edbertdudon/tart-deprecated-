@@ -31,7 +31,7 @@ const Cconstraint = ({
       <CellReference
         cell={lhs}
         onSetCell={setLhs}
-        classname="rightsidebar-input-3part1"
+        part="3part1"
         placeholder="A1:A2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -39,7 +39,7 @@ const Cconstraint = ({
       <CellReference
         cell={cone}
         onSetCell={setCone}
-        classname="rightsidebar-input-3part2"
+        part="3part2"
         placeholder="B1"
         onValidate={validateCellorNumeric}
         onSetError={setError}
@@ -47,7 +47,7 @@ const Cconstraint = ({
       <CellReference
         cell={rhs}
         onSetCell={setRhs}
-        classname="rightsidebar-input-3part3"
+        part="3part3"
         placeholder="C1:C2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}

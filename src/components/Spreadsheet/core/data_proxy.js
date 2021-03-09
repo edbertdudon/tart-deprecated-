@@ -20,10 +20,11 @@ import {
 } from '../canvas/chart';
 import charts from '../../Chart/chartsR';
 import {
-  translateR, columnToLetter, spreadsheetToR, doChart,
+  translateR, spreadsheetToR, doChart,
 } from '../cloudr';
+import { columnToLetter, getRange } from '../../../functions';
 import {
-  getRownames, getVarsAsColumns, getRange, getRangeIndex,
+  getRownames, getVarsAsColumns, getRangeIndex,
 } from '../../RightSidebar/datarange';
 
 // private methods
@@ -1189,7 +1190,7 @@ export default class DataProxy {
   addChart(type, datas, sheet) {
     const { range } = sheet.selector;
     const c = new ChartBox();
-    c.range = getRange(this.rows.len, range);
+    c.range = getRange(range, this.rows.len);
     c.types = [type];
     const navigatorWidth = defaultSettings.showNavigator ? 125 : 0;
     c.x = (this.viewWidth() - defaultSettings.col.indexWidth - navigatorWidth - INITIAL_WIDTH) / 2;
@@ -1274,13 +1275,13 @@ export default class DataProxy {
       types: JSON.stringify(c.types.map(((type) => charts[type].type))),
       variablex: c.firstrow
         ? rowNames[c.variablex]
-        : `${columnToLetter(sci + c.variablex + 1) + (sri + 1)}:${columnToLetter(sci + c.variablex + 1)}${eri + 1}`,
+        : `${columnToLetter(sci + c.variablex + 1)}${sri + 1}:${columnToLetter(sci + c.variablex + 1)}${eri + 1}`,
     };
 
     if (c.variabley) {
       data.variabley = c.firstrow
         ? rowNames[c.variabley]
-        : `${columnToLetter(sci + c.variabley + 1) + (sri + 1)}:${columnToLetter(sci + c.variabley + 1)}${eri + 1}`;
+        : `${columnToLetter(sci + c.variabley + 1)}${sri + 1}:${columnToLetter(sci + c.variabley + 1)}${eri + 1}`;
     }
 
     return doChart(data).then((uri) => {

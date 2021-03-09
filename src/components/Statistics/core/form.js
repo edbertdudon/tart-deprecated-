@@ -13,10 +13,10 @@ import { mdiLoading, mdiClose } from '@mdi/js';
 import statistics from './statisticsR';
 import { translateR, spreadsheetToR } from '../../Spreadsheet/cloudr';
 import DataRange, {
-  getRangeIndex, getRownames, getRange, getVarsAsColumns,
+  getRangeIndex, getRownames, getVarsAsColumns,
 } from '../../RightSidebar/datarange';
 import Checkbox from '../../RightSidebar/checkbox';
-import { createFile } from '../../../functions';
+import { createFile, getRange } from '../../../functions';
 import { withFirebase } from '../../Firebase';
 
 export const ALTERNATIVES = ['Two-sided', 'Greater', 'Less'];
@@ -45,7 +45,7 @@ const Form = ({
     const { range } = sheet.selector;
     const rowNames = getRownames(rows._, range);
 
-    setDatarange(getRange(rows.len, range));
+    setDatarange(getRange(range, rows.len));
 
     if (type === 'sheet') {
       if (rowNames.some((n) => Number.isNaN(parseFloat(n)))) {

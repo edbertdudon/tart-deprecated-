@@ -40,29 +40,9 @@
 import _cell from '../core/cell';
 import { formulam, rFormulas } from './formula';
 import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, createEmptyMatrix,
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, createEmptyMatrix, letterToColumn,
 } from '../../../functions';
 import { CellRange } from '../core/cell_range';
-
-function columnToLetter(column) {
-  let temp; let
-    letter = '';
-  while (column > 0) {
-    temp = (column - 1) % 26;
-    letter = String.fromCharCode(temp + 65) + letter;
-    column = (column - temp - 1) / 26;
-  }
-  return letter;
-}
-
-function letterToColumn(letter) {
-  let column = 0; const
-    { length } = letter;
-  for (let i = 0; i < length; i += 1) {
-    column += (letter.charCodeAt(i) - 64) * Math.pow(26, length - i - 1);
-  }
-  return column;
-}
 
 const optionsFilterAdd = rFormulas
   .filter((formula) => 'addStart' in formula || 'addEnd' in formula);
@@ -327,8 +307,6 @@ function rRender(src, data, datas, ri, ci) {
 }
 
 export {
-  columnToLetter,
-  letterToColumn,
   translateR,
   spreadsheetToR,
   removeMatrix,

@@ -13,6 +13,8 @@ import jobsReducer from './jobs';
 import isJobsActiveReducer from './isJobsActive';
 import searchReducer from './search';
 import notificationsReducer from './notifications';
+import formulaReducer from './formula';
+import rangeReducer from './range';
 
 const rootReducer = combineReducers({
   sessionState: sessionReducer,
@@ -29,6 +31,8 @@ const rootReducer = combineReducers({
   isJobsActiveState: isJobsActiveReducer,
   searchState: searchReducer,
   notificationsState: notificationsReducer,
+  formulaState: formulaReducer,
+  rangeState: rangeReducer,
 });
 
 export default rootReducer;

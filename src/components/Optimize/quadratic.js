@@ -20,7 +20,7 @@ const Quadratic = ({
       <CellReference
         cell={quadratic}
         onSetCell={setQuadratic}
-        classname="rightsidebar-input-2part1"
+        part="2part1"
         placeholder="A1:A2"
         onValidate={validateRangeNotOne}
         onSetError={setError}
@@ -28,7 +28,7 @@ const Quadratic = ({
       <CellReference
         cell={linear}
         onSetCell={setLinear}
-        classname="rightsidebar-input-2part2"
+        part="2part2"
         placeholder="B1:B2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}

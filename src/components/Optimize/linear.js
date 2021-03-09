@@ -19,7 +19,7 @@ const Linear = ({
       <CellReference
         cell={linear}
         onSetCell={setLinear}
-        classname="rightsidebar-input-1part1"
+        part="1part1"
         placeholder="A1:A2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}

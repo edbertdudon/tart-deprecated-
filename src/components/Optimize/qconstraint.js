@@ -34,7 +34,7 @@ const Qconstraint = ({
       <CellReference
         cell={quadratic}
         onSetCell={setQuadratic}
-        classname="rightsidebar-input-2part1"
+        part="2part1"
         placeholder="A1:A2"
         onValidate={validateRangeNotOne}
         onSetError={setError}
@@ -42,7 +42,7 @@ const Qconstraint = ({
       <CellReference
         cell={linear}
         onSetCell={setLinear}
-        classname="rightsidebar-input-2part2"
+        part="2part2"
         placeholder="B1:B2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -52,7 +52,7 @@ const Qconstraint = ({
       <CellReference
         cell={dir}
         onSetCell={setDir}
-        classname="rightsidebar-input-2part1"
+        part="2part1"
         placeholder="C1:C2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
@@ -60,7 +60,7 @@ const Qconstraint = ({
       <CellReference
         cell={rhs}
         onSetCell={setRhs}
-        classname="rightsidebar-input-2part2"
+        part="2part2"
         placeholder="D1:D2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
