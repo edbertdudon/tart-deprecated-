@@ -99,6 +99,20 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
   // }, 1000);
 }
 
+function selectorSetGroup(sri, sci, eri, eci) {
+  if (sri === -1 && sci === -1) return;
+  const {
+    table, selector, toolbar, data,
+    contextMenu,
+  } = this;
+  contextMenu.setMode((sri === -1 || sci === -1) ? 'row-col' : 'range');
+  const cell = data.getCell(sri, sci);
+  selector.setGroup(sri, sci, eri, eci);
+  this.trigger('cells-selected', cell, selector.range);
+  toolbar.reset();
+  table.render();
+}
+
 // multiple: boolean
 // direction: left | right | up | down | row-first | row-last | col-first | col-last
 export function selectorMove(multiple, direction) {
@@ -434,6 +448,10 @@ function overlayerMousedown(evt) {
   } = this;
   const { offsetX, offsetY } = evt;
   const isAutofillEl = evt.target.className === `${cssPrefix}-selector-corner`;
+  const isBorderEl = evt.target.className === `${cssPrefix}-selector-border-top`
+    || evt.target.className === `${cssPrefix}-selector-border-bottom`
+    || evt.target.className === `${cssPrefix}-selector-border-left`
+    || evt.target.className === `${cssPrefix}-selector-border-right`;
   const cellRect = data.getCellRectByXY(offsetX, offsetY);
   const {
     left, top, width, height,
@@ -452,21 +470,28 @@ function overlayerMousedown(evt) {
   // console.log('ri:', ri, ', ci:', ci);
   if (!evt.shiftKey) {
     // console.log('selectorSetStart:::');
-    const { indexes } = selector;
+    const { indexes, range } = selector;
     const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
     if (isAutofillEl) {
       selector.showAutofill(ri, ci);
-    } else {
+    } else if (!isBorderEl) {
       selectorSet.call(this, false, ri, ci);
     }
     // mouse move up
     mouseMoveUp(window, (e) => {
       // console.log('mouseMoveUp::::');
       ({ ri, ci } = data.getCellRectByXY(e.offsetX, e.offsetY));
-      if (isAutofillEl) {
-        selector.showAutofill(ri, ci);
-      } else if (e.buttons === 1 && !e.shiftKey) {
-        selectorSet.call(this, true, ri, ci, true, true);
+      if (ri !== -1 && ci !== -1) {
+        if (isAutofillEl) {
+          selector.showAutofill(ri, ci);
+        } else if (isBorderEl) {
+          const {
+            sri, sci, eri, eci,
+          } = selector.range;
+          selectorSetGroup.call(this, sri, sci, eri, eci)
+        } else if (e.buttons === 1 && !e.shiftKey) {
+          selectorSet.call(this, true, ri, ci, true, true);
+        }
       }
     }, () => {
       if (isAutofillEl && selector.arange && data.settings.mode !== 'read') {
@@ -475,6 +500,13 @@ function overlayerMousedown(evt) {
         }
       }
       selector.hideAutofill();
+
+      if (isBorderEl && ri !== -1 && ci !== -1) {
+        selectorSet.call(this, false, ri, ci);
+        this.data.moveCell(range);
+        sheetReset.call(this);
+      }
+
       // toolbarChangePaintformatPaste.call(this);
       const cellRef = getRange(this.selector.range, data.rows.len)
       // console.log(isEditing, isCellValidFormula.call(this, previousCell, cellRef))
@@ -865,6 +897,7 @@ function sheetInitEvents() {
         moveChartOut();
         break;
       }
+      default:
     }
   };
 

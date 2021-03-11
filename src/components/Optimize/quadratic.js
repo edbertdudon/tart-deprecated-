@@ -11,33 +11,29 @@ import { validateRangeNotOne, validateCellorSingleRange } from './validate';
 
 const Quadratic = ({
   quadratic, linear, error, setQuadratic, setLinear, setError,
-}) => {
-  return (
-    <>
-      <div className="rightsidebar-label">Quadratic objective</div>
-      <div className="rightsidebar-input-text-2part1">Quadratic</div>
-      <div className="rightsidebar-input-text-2part2">Linear</div>
-      <CellReference
-        cell={quadratic}
-        onSetCell={setQuadratic}
-        part="2part1"
-        placeholder="A1:A2"
-        onValidate={validateRangeNotOne}
-        onSetError={setError}
-      />
-      <CellReference
-        cell={linear}
-        onSetCell={setLinear}
-        part="2part2"
-        placeholder="B1:B2"
-        onValidate={validateCellorSingleRange}
-        onSetError={setError}
-      />
-      <div className="rightsidebar-text">
-        {error && <div className="rightsidebar-error">{error}</div>}
-      </div>
-    </>
-  );
-};
+}) => (
+  <>
+    <div className="rightsidebar-label">Quadratic objective</div>
+    <CellReference
+      text="Quadratic:"
+      cell={quadratic}
+      onSetCell={setQuadratic}
+      placeholder="A1:A2"
+      onValidate={validateRangeNotOne}
+      onSetError={setError}
+    />
+    <CellReference
+      text="Linear (optional):"
+      cell={linear}
+      onSetCell={setLinear}
+      placeholder="B1:B2"
+      onValidate={validateCellorSingleRange}
+      onSetError={setError}
+    />
+    <div className="rightsidebar-text">
+      {error && <div className="rightsidebar-error">{error}</div>}
+    </div>
+  </>
+);
 
 export default Quadratic;

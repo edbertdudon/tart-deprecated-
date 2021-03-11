@@ -22,32 +22,29 @@ const Cconstraint = ({
   return (
     <>
       <div className="rightsidebar-label">{type}</div>
-      <button className="rightsidebar-label-close" onClick={onClose}>
+      <button type="button" className="rightsidebar-label-close" onClick={onClose}>
         <Icon path={mdiClose} size={0.8} />
       </button>
-      <div className="rightsidebar-input-text-3part1">Linear</div>
-      <div className="rightsidebar-input-text-3part2">Cone</div>
-      <div className="rightsidebar-input-text-3part3">Numeric</div>
       <CellReference
+        text="Linear:"
         cell={lhs}
         onSetCell={setLhs}
-        part="3part1"
         placeholder="A1:A2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
       />
       <CellReference
+        text="Cone:"
         cell={cone}
         onSetCell={setCone}
-        part="3part2"
         placeholder="B1"
         onValidate={validateCellorNumeric}
         onSetError={setError}
       />
       <CellReference
+        text="Numeric:"
         cell={rhs}
         onSetCell={setRhs}
-        part="3part3"
         placeholder="C1:C2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}

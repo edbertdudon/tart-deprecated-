@@ -10,8 +10,13 @@ class SelectorElement {
     this.useHideInput = useHideInput;
     this.inputChange = () => {};
     this.cornerEl = h('div', `${cssPrefix}-selector-corner`);
+    this.borderTopEl = h('div', `${cssPrefix}-selector-border-top`);
+    this.borderBottomEl = h('div', `${cssPrefix}-selector-border-bottom`);
+    this.borderLeftEl = h('div', `${cssPrefix}-selector-border-left`);
+    this.borderRightEl = h('div', `${cssPrefix}-selector-border-right`);
     this.areaEl = h('div', `${cssPrefix}-selector-area`)
-      .child(this.cornerEl).hide();
+      .children(this.cornerEl, this.borderTopEl, this.borderBottomEl, this.borderLeftEl, this.borderRightEl)
+      .hide();
     this.clipboardEl = h('div', `${cssPrefix}-selector-clipboard`).hide();
     this.autofillEl = h('div', `${cssPrefix}-selector-autofill`).hide();
     this.el = h('div', `${cssPrefix}-selector`)
@@ -43,13 +48,41 @@ class SelectorElement {
     const {
       left, top, width, height,
     } = v;
+    const ofwidth = width - selectorHeightBorderWidth + 0.8;
+    const ofheight = height - selectorHeightBorderWidth + 0.8;
     const of = {
-      width: width - selectorHeightBorderWidth + 0.8,
-      height: height - selectorHeightBorderWidth + 0.8,
+      width: ofwidth,
+      height: ofheight,
       left: left - 0.8,
       top: top - 0.8,
     };
+
     this.areaEl.offset(of).show();
+
+    this.borderTopEl.offset({
+      width: ofwidth,
+      height: selectorHeightBorderWidth + 2,
+      top: -selectorHeightBorderWidth,
+    }).show();
+
+    this.borderBottomEl.offset({
+      width: ofwidth - 3,
+      height: selectorHeightBorderWidth + 2,
+      top: ofheight - selectorHeightBorderWidth + 0.8,
+    }).show();
+
+    this.borderLeftEl.offset({
+      width: selectorHeightBorderWidth + 2,
+      height: ofheight,
+      left: -selectorHeightBorderWidth - 0.8,
+    }).show();
+
+    this.borderRightEl.offset({
+      width: selectorHeightBorderWidth + 2,
+      height: ofheight - 3,
+      left: ofwidth - selectorHeightBorderWidth + 1,
+    }).show();
+
     if (this.useHideInput) {
       this.hideInputDiv.offset(of);
       this.hideInput.val('').focus();
@@ -294,6 +327,26 @@ export default class Selector {
       data.selector.setIndexes(cri, cci);
       this.indexes = [cri, cci];
     }
+
+    this.moveIndexes = [sri, sci];
+    // this.sIndexes = sIndexes;
+    // this.eIndexes = eIndexes;
+    this.range = cellRange;
+    this.resetAreaOffset();
+    this.el.show();
+  }
+
+  setGroup(ri, ci, eri, eci) {
+    const { data } = this;
+    const cellRange = data.calSelectedRangeByStartGroup(ri, ci, eri, eci);
+    const { sri, sci } = cellRange;
+    // if (indexesUpdated) {
+      let [cri, cci] = [ri, ci];
+      if (ri < 0) cri = 0;
+      if (ci < 0) cci = 0;
+      data.selector.setIndexes(cri, cci);
+      this.indexes = [cri, cci];
+    // }
 
     this.moveIndexes = [sri, sci];
     // this.sIndexes = sIndexes;

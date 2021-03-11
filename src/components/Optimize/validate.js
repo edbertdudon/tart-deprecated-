@@ -99,3 +99,73 @@ export function validateRangeNotOne(v) {
   }
   return (null);
 }
+
+export function validateLhsRhs(lhs, rhs) {
+  const mnl = lhs.match(NUMBERS_REFERENCE);
+  const mnr = rhs.match(NUMBERS_REFERENCE);
+  let mll = lhs.match(LETTERS_REFERENCE);
+  let mlr = rhs.match(LETTERS_REFERENCE);
+
+  if (mnl === null || mnr === null || mll === null || mlr === null) {
+    return false;
+  }
+  mll = mll.map((ref) => letterToColumn(ref));
+  mlr = mlr.map((ref) => letterToColumn(ref));
+
+  const lrows = mnl[1] - mnl[0];
+  const rrows = mnr[1] - mnr[0];
+  const lcols = mll[1] - mll[0];
+  const rcols = mlr[1] - mlr[0];
+  console.log(lrows, rrows, lcols, rcols)
+
+  if (lrows === 0) {
+    if ((rrows === 0 && lcols === rcols)
+      || (rcols === 0 && lcols === rrows)) {
+      return true;
+    }
+  } else {
+    if ((rrows === 0 && lrows === rcols)
+      || (rcols === 0 && lrows === rrows)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function checkErrors(hasContstraint, errorConstraint, lhs, dir, rhs) {
+  if (!hasContstraint) {
+    return false;
+  }
+  if (errorConstraint !== null) {
+    return true;
+  }
+  if (lhs.length === 0 && dir.length === 0 && rhs.length === 0) {
+    return false;
+  }
+  if (lhs.length > 0 && dir.length > 0 && rhs.length > 0) {
+    // if both are valid, return no error
+    if (validateLhsRhs(lhs, rhs) && validateLhsRhs(lhs, dir)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export function checkConeErrors(hasCone, errorCone, lhs, rhs) {
+  if (!hasCone) {
+    return false;
+  }
+  if (errorCone !== null) {
+    return true;
+  }
+  if (lhs.length === 0 && rhs.length === 0) {
+    return false;
+  }
+  if (lhs.length > 0 && rhs.length > 0) {
+    // if valid, return no error
+    if (validateLhsRhs(lhs, rhs)) {
+      return false;
+    }
+  }
+  return true;
+}

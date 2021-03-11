@@ -536,6 +536,28 @@ export default class DataProxy {
     return cellRange;
   }
 
+  calSelectedRangeByStartGroup(ri, ci, eri, eci) {
+    const {
+      selector, rows, cols, merges,
+    } = this;
+    let cellRange = merges.getFirstIncludes(ri, ci);
+    // console.log('cellRange:', cellRange, ri, ci, merges);
+    if (cellRange === null) {
+      cellRange = new CellRange(ri, ci, eri, eci);
+      if (ri === -1) {
+        cellRange.sri = 0;
+        cellRange.eri = rows.len - 1;
+      }
+      if (ci === -1) {
+        cellRange.sci = 0;
+        cellRange.eci = cols.len - 1;
+      }
+    }
+    selector.range = cellRange;
+    console.log(cellRange)
+    return cellRange;
+  }
+
   setSelectedCellAttr(property, value) {
     this.changeData(() => {
       const { selector, styles, rows } = this;
@@ -843,6 +865,17 @@ export default class DataProxy {
       this.rows.deleteCells(selector.range, what);
       if (what === 'all' || what === 'format') {
         this.merges.deleteWithin(selector.range);
+      }
+    });
+  }
+
+  moveCell(range, what = 'all') {
+    const { selector } = this;
+    this.changeData(() => {
+      copyPaste.call(this, range, selector.range, what);
+      this.rows.deleteCells(range, what);
+      if (what === 'all' || what === 'format') {
+        this.merges.deleteWithin(range);
       }
     });
   }

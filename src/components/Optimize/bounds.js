@@ -6,40 +6,35 @@
 //  Copyright © 2019 Project Tart. All rights reserved.
 //
 import React from 'react';
-import { connect } from 'react-redux';
-import { compose } from 'recompose';
 import Icon from '@mdi/react';
-import { mdiClose, mdiLessThanOrEqual } from '@mdi/js';
+import { mdiClose } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
 import { validateCell, validateCellorSingleRange } from './validate';
 
 const General = ({
-  lhs, dir, rhs, setLhs, setDir, setRhs, setError
+  lhs, dir, rhs, setLhs, setDir, setRhs, setError,
 }) => (
   <>
-    <div className="rightsidebar-input-text-3part1">Cell</div>
-    <div className="rightsidebar-input-text-3part2">Direction</div>
-    <div className="rightsidebar-input-text-3part3">Numeric</div>
     <CellReference
+      text="Cell:"
       cell={lhs}
       onSetCell={setLhs}
-      part="3part1"
       placeholder="A1:A2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
     />
     <CellReference
+      text="Direction:"
       cell={dir}
       onSetCell={setDir}
-      part="3part2"
       placeholder="B1:B2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
     />
     <CellReference
+      text="Numeric:"
       cell={rhs}
       onSetCell={setRhs}
-      part="3part3"
       placeholder="C1:C2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
@@ -49,48 +44,43 @@ const General = ({
 
 const QuadraticLinear = ({
   li, lb, ui, ub, ld, ud, setLi, setLb,
-  setUi, setUb, setLd, setUd, setError
+  setUi, setUb, setLd, setUd, setError,
 }) => (
   <>
-    <div className="rightsidebar-input-text-2part1">Lower index (optional)</div>
-    <div className="rightsidebar-input-text-2part2">Lower bound (optional)</div>
     <CellReference
+      text="Lower index (optional):"
       cell={li}
       onSetCell={setLi}
-      part="2part1"
       placeholder="A1:A2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
     />
     <CellReference
+      text="Lower bound (optional):"
       cell={lb}
       onSetCell={setLb}
-      part="2part2"
       placeholder="B1:B2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
     />
-    <div className="rightsidebar-input-text-2part1">Upper index (optional)</div>
-    <div className="rightsidebar-input-text-2part2">Upper bound (optional)</div>
     <CellReference
+      text="Upper index (optional):"
       cell={ui}
       onSetCell={setUi}
-      part="2part1"
       placeholder="C1:C2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
     />
     <CellReference
+      text="Upper bound (optional):"
       cell={ub}
       onSetCell={setUb}
-      part="2part2"
       placeholder="D1:D2"
       onValidate={validateCellorSingleRange}
       onSetError={setError}
     />
-    <div className="rightsidebar-input-text-2part1">Lower limit (optional)</div>
-    <div className="rightsidebar-input-text-2part2">Upper limit (optional)</div>
     <CellReference
+      text="Lower limit (optional):"
       cell={ld}
       onSetCell={setLd}
       part="2part1"
@@ -99,6 +89,7 @@ const QuadraticLinear = ({
       onSetError={setError}
     />
     <CellReference
+      text="Upper limit (optional):"
       cell={ud}
       onSetCell={setUd}
       part="2part2"
@@ -110,7 +101,7 @@ const QuadraticLinear = ({
 );
 
 const Bounds = ({
-  slides, isActive, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
+  isActive, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
   setLhs, setDir, setRhs, setLi, setLb, setUi, setUb, setLd, setUd, setError, onClose,
 }) => {
   const handleClose = () => onClose(1);
@@ -122,36 +113,36 @@ const Bounds = ({
   return (
     <>
       <div className="rightsidebar-label">Bounds</div>
-      <button className="rightsidebar-label-close" onClick={handleClose}>
+      <button type="button" className="rightsidebar-label-close" onClick={handleClose}>
         <Icon path={mdiClose} size={0.8} />
       </button>
-      {objectiveClass === 0
-        ? <General
-            lhs={lhs}
-            dir={dir}
-            rhs={rhs}
-            setLhs={setLhs}
-            setDir={setDir}
-            setRhs={setRhs}
-            setError={setError}
-          />
-        : (
-          <QuadraticLinear
-            li={li}
-            lb={lb}
-            ui={ui}
-            ub={ub}
-            ld={ld}
-            ud={ud}
-            setLi={setLi}
-            setLb={setLb}
-            setUi={setUi}
-            setUb={setUb}
-            setLd={setLd}
-            setUd={setUd}
-            setError={setError}
-          />
-        )}
+      {objectiveClass === 0 ? (
+        <General
+          lhs={lhs}
+          dir={dir}
+          rhs={rhs}
+          setLhs={setLhs}
+          setDir={setDir}
+          setRhs={setRhs}
+          setError={setError}
+        />
+      ) : (
+        <QuadraticLinear
+          li={li}
+          lb={lb}
+          ui={ui}
+          ub={ub}
+          ld={ld}
+          ud={ud}
+          setLi={setLi}
+          setLb={setLb}
+          setUi={setUi}
+          setUb={setUb}
+          setLd={setLd}
+          setUd={setUd}
+          setError={setError}
+        />
+      )}
       <div className="rightsidebar-subtext">
         Use -Inf or Inf for infinity.
       </div>
@@ -162,12 +153,4 @@ const Bounds = ({
   );
 };
 
-const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
-});
-
-export default compose(
-  connect(
-    mapStateToProps,
-  ),
-)(Bounds);
+export default Bounds;

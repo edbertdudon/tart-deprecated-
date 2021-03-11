@@ -437,8 +437,17 @@ body {
     width: 5px;
     right: -5px;
     bottom: -5px;
-    border: 2px solid rgb(255, 255, 255);
+    border: 1px solid rgb(255, 255, 255);
     background: rgb(75, 137, 255);
+  }
+  .@{css-prefix}-selector-border-top,
+  .@{css-prefix}-selector-border-bottom,
+  .@{css-prefix}-selector-border-left,
+  .@{css-prefix}-selector-border-right, {
+    pointer-events: auto;
+    position: absolute;
+    cursor: grab;
+    font-size: 0;
   }
 }
 .@{css-prefix}-editor {

@@ -14,7 +14,7 @@ import CellReference from '../RightSidebar/cellreference';
 import { validateRangeNotOne, validateCellorSingleRange } from './validate';
 
 const Qconstraint = ({
-  slides, isActive, quadratic, linear, dir, rhs, error,
+  isActive, quadratic, linear, dir, rhs, error,
   setQuadratic, setLinear, setDir, setRhs, setError, onClose,
 }) => {
   const handleClose = () => onClose(3);
@@ -26,41 +26,37 @@ const Qconstraint = ({
   return (
     <>
       <div className="rightsidebar-label">Quadratic constraints</div>
-      <button className="rightsidebar-label-close" onClick={handleClose}>
+      <button type="button" className="rightsidebar-label-close" onClick={handleClose}>
         <Icon path={mdiClose} size={0.8} />
       </button>
-      <div className="rightsidebar-input-text-2part1">Quadratic</div>
-      <div className="rightsidebar-input-text-2part2">Linear (optional)</div>
       <CellReference
+        text="Quadratic:"
         cell={quadratic}
         onSetCell={setQuadratic}
-        part="2part1"
         placeholder="A1:A2"
         onValidate={validateRangeNotOne}
         onSetError={setError}
       />
       <CellReference
+        text="Linear (optional):"
         cell={linear}
         onSetCell={setLinear}
-        part="2part2"
         placeholder="B1:B2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
       />
-      <div className="rightsidebar-input-text-2part1">Direction</div>
-      <div className="rightsidebar-input-text-2part2">Numeric</div>
       <CellReference
+        text="Direction:"
         cell={dir}
         onSetCell={setDir}
-        part="2part1"
         placeholder="C1:C2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}
       />
       <CellReference
+        text="Numeric:"
         cell={rhs}
         onSetCell={setRhs}
-        part="2part2"
         placeholder="D1:D2"
         onValidate={validateCellorSingleRange}
         onSetError={setError}

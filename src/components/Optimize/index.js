@@ -26,6 +26,7 @@ import {
 import {
   LETTERS_REFERENCE, NUMBERS_REFERENCE, createFile, asCell,
 } from '../../functions';
+import { checkErrors, checkConeErrors, validateLhsRhs } from './validate';
 import withLists from '../RightSidebar/withLists';
 import { withFirebase } from '../Firebase';
 
@@ -85,62 +86,6 @@ const OPTIMX_METHODS = [
   'Nelder-mead', 'L-BFGS-B', 'BFGS', 'CG', 'nlm', 'nlminb', 'spg',
   'ucminf', 'newuoa', 'bobyqa', 'nmkb', 'hjkb', 'Rcgmin', 'Rvmmin',
 ];
-
-function complete(lhs, dir, rhs) {
-  if ((lhs.length === 0 && dir.length === 0 && rhs.length === 0)
-    || (lhs.length > 0 && dir.length > 0 && rhs.length > 0)) {
-    return true;
-  }
-  return false;
-}
-
-function completeCone(lhs, rhs) {
-  if ((lhs.length === 0 && rhs.length === 0)
-    || (lhs.length > 0 && rhs.length > 0)) {
-    return true;
-  }
-  return false;
-}
-
-// what if its column?
-// function isValidRowLength(lhs, rhs) {
-//   const mnl = lhs.match(NUMBERS_REFERENCE)
-//   const mnr = rhs.match(NUMBERS_REFERENCE)
-//
-//   if (mnl !== null
-//     && mnr !== null
-//     && (mnl[1] - mnl[0] === mnr[1] - mnr[0])
-//   ) {
-//     return true;
-//   }
-//   return false;
-// }
-//
-// function isValidColLength(lhs, rhs) {
-//   let mll = v.match(LETTERS_REFERENCE)
-//   let mlr = v.match(LETTERS_REFERENCE)
-//
-//   if (mll === null || mlr === null) {
-//     return false;
-//   }
-//
-//   mll = mll.map((ref) => letterToColumn(ref));
-//   mlr = mlr.map((ref) => letterToColumn(ref));
-//
-//   if (mll[1] - mll[0] ==== mlr[1] - mlr[0]) {
-//     return true;
-//   }
-//
-//   return false;
-// }
-//
-// // what if its a combination of columns and row for lhs, dir, rhs
-// function isValid(lhs, dir, rhs) {
-//   if (isValidRowLength(lhs, dir) && isValidRowLength(dir, rhs)) {
-//     return true;
-//   }
-//   return false;
-// }
 
 const Optimize = ({
   firebase, authUser, worksheetname, slides, current, color,
@@ -239,7 +184,7 @@ const Optimize = ({
   const handleMaximize = () => setMinMax(1);
 
   const handleAddConstraint = (i) => setConstraints(
-    constraints.filter((constraint) => constraint !== constraints[i])
+    constraints.filter((constraint) => constraint !== constraints[i]),
   );
 
   const handleRemoveConstraint = (index) => setConstraints(
@@ -504,25 +449,21 @@ const Optimize = ({
   };
 
   const isError = isEmptyObjective[objectiveClass]
-    || (hasGConstraint && (errorGconstraint !== null || !complete(flhs, fdir, frhs)))
-    || (hasBounds && (
-      (errorBounds !== null
-        || (objectiveClass === 0 && !complete(blhs, bdir, brhs))
-      )
-    ))
-    || (hasLConstraint && (errorLconstraint !== null || !complete(llin, ldir, lrhs)))
-    || (hasQConstraint && (errorQconstraint !== null || !complete(qquad, qdir, qrhs)))
-    || (hasC0cone && (error0cone !== null || !completeCone(c0lhs, c0rhs)))
-    || (hasLcone && (errorLcone !== null || !completeCone(cllhs, clrhs)))
-    || (hasSocone && (errorSocone !== null || !completeCone(csolhs, csorhs)))
-    || (hasEcone && (errorEcone !== null || !completeCone(cexlhs, cexrhs)))
-    || (has3cone && (error3cone !== null || !completeCone(cpplhs, cpprhs)))
-    || (has2cone && (error2cone !== null || !completeCone(cpdlhs, cpdrhs)))
-    || (hasPsdcone && (errorPsdcone !== null || !completeCone(cpsdlhs, cpsdrhs)));
+    || checkErrors(hasGConstraint, errorGconstraint, flhs, fdir, frhs)
+    || checkErrors(hasBounds, errorBounds, blhs, bdir, brhs)
+    || checkErrors(hasLConstraint, errorLconstraint, llin, ldir, lrhs)
+    || checkErrors(hasQConstraint, errorQconstraint, qquad, qdir, qrhs)
+    || checkConeErrors(hasC0cone, error0cone, c0lhs, c0rhs)
+    || checkConeErrors(hasLcone, errorLcone, cllhs, clrhs)
+    || checkConeErrors(hasSocone, errorSocone, csolhs, csorhs)
+    || checkConeErrors(hasEcone, errorEcone, cexlhs, cexrhs)
+    || checkConeErrors(has3cone, error3cone, cpplhs, cpprhs)
+    || checkConeErrors(has2cone, error2cone, cpdlhs, cpdrhs)
+    || checkConeErrors(hasPsdcone, errorPsdcone, cpsdlhs, cpsdrhs);
 
   return (
     <>
-      <button className="rightsidebar-close" onClick={handleClose}>
+      <button type="button" className="rightsidebar-close" onClick={handleClose}>
         <Icon path={mdiClose} size={1} />
       </button>
       <div className="rightsidebar-heading">Optimize</div>
