@@ -10,14 +10,14 @@ import * as ROLES from '../../constants/roles';
 const Footer = () => (
   <div className="footer">
     <Link to={ROUTES.HOME}>App</Link>
-    <p>Copyright © 2020 Tart. All rights reserved.</p>
+    <p>Copyright © 2020 Sciepp. All rights reserved.</p>
   </div>
 );
 
 const SignUpPage = () => (
   <div className="signin-page">
     <div className="signup-main">
-      <h1 className="signin-title">Create Tart ID</h1>
+      <h1 className="signin-title">Create Sciepp ID</h1>
       <SignUpForm />
     </div>
     <Footer />
@@ -252,7 +252,7 @@ class SignUpFormBase extends Component {
 
 const SignUpLink = () => (
   <p className="signup-link">
-    <Link to={ROUTES.SIGN_UP}>Create Tart ID</Link>
+    <Link to={ROUTES.SIGN_UP}>Create Sciepp ID</Link>
   </p>
 );
 

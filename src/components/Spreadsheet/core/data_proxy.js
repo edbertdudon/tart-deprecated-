@@ -141,6 +141,7 @@ function canPaste(src, dst, error = () => {}) {
   }
   return true;
 }
+
 function copyPaste(srcCellRange, dstCellRange, what, autofill = false) {
   const { rows, merges } = this;
   // delete dest merge
@@ -149,6 +150,7 @@ function copyPaste(srcCellRange, dstCellRange, what, autofill = false) {
     merges.deleteWithin(dstCellRange);
   }
   rows.copyPaste(srcCellRange, dstCellRange, what, autofill, (ri, ci, cell) => {
+    console.log(ri, ci, cell)
     if (cell && cell.merge) {
       // console.log('cell:', ri, ci, cell);
       const [rn, cn] = cell.merge;
@@ -554,7 +556,6 @@ export default class DataProxy {
       }
     }
     selector.range = cellRange;
-    console.log(cellRange)
     return cellRange;
   }
 

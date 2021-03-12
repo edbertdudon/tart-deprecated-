@@ -1,9 +1,9 @@
 //
 //  Statistics
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
 import StatisticDescription from './component/statisticdescription';
@@ -23,6 +23,7 @@ import LinearRegression from './component/linreg';
 import ConfidenceInterval from './component/confidenceinterval';
 import AkaikeInformationCriterion from './component/aic';
 import SimpleLinearRegression from './component/simplelinreg';
+import GeneralLinearRegression from './component/generallinreg';
 // import LogisticRegression from './component/binomreg'
 // import GammaRegression from './component/gammareg'
 // import InverseGammaRegression from './component/inversegammareg'
@@ -78,11 +79,11 @@ const Statistics = ({ statistic }) => (
         cor: <Correlation statistic={statistic} />,
         cov: <Correlation statistic={statistic} />,
         cortest: <CorrelationSignificance statistic={statistic} />,
-  	    onettest: <OneSampleTTest statistic={statistic} />,
+        onettest: <OneSampleTTest statistic={statistic} />,
         pairedttest: <TwoSampleTTest statistic={statistic} />,
         independentttest: <TwoSampleTTest statistic={statistic} />,
-        // 	pairwisettest: <PairwiseTTest statistic={statistic} />,
-        // 	proptest: <ProportionsTest statistic={statistic} />,
+        // pairwisettest: <PairwiseTTest statistic={statistic} />,
+        // proptest: <ProportionsTest statistic={statistic} />,
         wilcoxtest: <WilcoxTest statistic={statistic} />,
         pairedwilcoxtest: <WilcoxTest statistic={statistic} />,
         //   pairwisewilcoxtext: <PairwiseWilcoxtest statistic={statistic} />,
@@ -97,14 +98,14 @@ const Statistics = ({ statistic }) => (
         predict: <LinearRegression statistic={statistic} />,
         simplelinreg: <SimpleLinearRegression statistic={statistic} />,
         linreg: <LinearRegression statistic={statistic} />,
-        //   binomreg: <LogisticRegression statistic={statistic} />,
-        // // 	gaussianreg: <GaussianRegression statistic={statistic} />,
-        // 	gammareg: <GammaRegression statistic={statistic} />,
-        //   inversegammareg: <InverseGammaRegression statistic={statistic} />,
-        //   poissonreg: <PoissonRegression statistic={statistic} />,
-        //   quasireg: <QuasiRegression statistic={statistic} />,
-        //   quasibinomreg: <QuasiBinomRegression statistic={statistic} />,
-        //   quasipoissonreg: <QuasiPoissonRegression statistic={statistic} />,
+        binomreg: <GeneralLinearRegression statistic={statistic} family="binomial" />,
+        gaussianreg: <GeneralLinearRegression statistic={statistic} family="gaussian" />,
+        gammareg: <GeneralLinearRegression statistic={statistic} family="gamma" />,
+        // inversegaussianreg: <GeneralLinearRegression statistic={statistic} />,
+        poissonreg: <GeneralLinearRegression statistic={statistic} family="poisson" />,
+        // quasireg: <GeneralLinearRegression statistic={statistic} />,
+        // quasibinomreg: <GeneralLinearRegression statistic={statistic} />,
+        // quasipoissonreg: <GeneralLinearRegression statistic={statistic} />,
         durbinwatson: <DurbinWatsonTest statistic={statistic} />,
         ncvtest: <LinearRegression statistic={statistic} />,
         outliertest: <OutlierTest statistic={statistic} />,
@@ -136,20 +137,20 @@ const Statistics = ({ statistic }) => (
         // hovtest: <SimpleLinearRegression statistic={statistic} />,
       //   binomtest: <BinomTest statistic={statistic} />,
       //   ansaritest: <AnsariBradleyTest statistic={statistic} />,
-      // // 	Boxtest: <BoxTest statistic={statistic} />,
-      // // 	kstest: <KolmogorovTest statistic={statistic} />,
-      // // 	mauchlytest: <MauchlyTest statistic={statistic} />,
-      // // 	mcnemartest: <McnemarTest statistic={statistic} />,
-      // 	moodtest: <MoodTest statistic={statistic} />,
+      // // Boxtest: <BoxTest statistic={statistic} />,
+      // // kstest: <KolmogorovTest statistic={statistic} />,
+      // // mauchlytest: <MauchlyTest statistic={statistic} />,
+      // // mcnemartest: <McnemarTest statistic={statistic} />,
+      // moodtest: <MoodTest statistic={statistic} />,
       //   onewaytest: <OneWayTest statistic={statistic} />,
-      // // 	bartletttest: "Pairwise comparisons for proportions",
-      // // 	poissontest: <ExactPoissonTest statistic={statistic} />,
-      // // 	poweranovatest: <PowerAnovaTest statistic={statistic} />,
-      // // 	powerttest: <PowerTTest statistic={statistic} />,
-      // // 	PPtest: <PhillipsPerronTest statistic={statistic} />,
-      // // 	printhtest: <PrintHypothesisTest statistic={statistic} />,
-      // 	quadetest: <QuadeTest statistic={statistic} />,
-      // // 	shapirotest: <ShapiroTest statistic={statistic} />,
+      // // bartletttest: "Pairwise comparisons for proportions",
+      // // poissontest: <ExactPoissonTest statistic={statistic} />,
+      // // poweranovatest: <PowerAnovaTest statistic={statistic} />,
+      // // powerttest: <PowerTTest statistic={statistic} />,
+      // // PPtest: <PhillipsPerronTest statistic={statistic} />,
+      // // printhtest: <PrintHypothesisTest statistic={statistic} />,
+      // quadetest: <QuadeTest statistic={statistic} />,
+      // // shapirotest: <ShapiroTest statistic={statistic} />,
       }[statistic]
     }
   </div>

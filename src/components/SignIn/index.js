@@ -10,21 +10,21 @@ import * as ROUTES from '../../constants/routes';
 
 const SignUpLink = () => (
   <p className="signup-link">
-    <Link to={ROUTES.SIGN_UP}>Create Tart ID</Link>
+    <Link to={ROUTES.SIGN_UP}>Create Sciepp ID</Link>
   </p>
 );
 
 const Footer = () => (
   <div className="footer">
     <Link to={ROUTES.HOME}>App</Link>
-    <p>Copyright © 2020 Tart. All rights reserved.</p>
+    <p>Copyright © 2020 Sciepp. All rights reserved.</p>
   </div>
 );
 
 const SignInPage = () => (
   <div className="signin-page">
     <div className="signin-main">
-      <p className="signin-title">Sign in to Tart</p>
+      <p className="signin-title">Sign in to Sciepp</p>
       <SignInForm />
       <PasswordForgetLink />
       <SignUpLink />
@@ -77,7 +77,7 @@ class SignInFormBase extends Component {
             value={email}
             onChange={this.onChange}
             type="text"
-            placeholder="Tart ID"
+            placeholder="Sciepp ID"
           />
           <hr className="signin-form-hr" />
           <input

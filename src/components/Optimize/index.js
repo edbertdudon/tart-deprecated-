@@ -1,9 +1,9 @@
 //
 //  Optimize
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
@@ -18,7 +18,7 @@ import Fconstraint from './fconstraint';
 import Cconstraint from './cconstraint';
 import Qconstraint from './qconstraint';
 import Lconstraint from './lconstraint';
-import Variable from '../Statistics/core/variable';
+import Variable from '../RightSidebar/variable';
 import Button from '../RightSidebar/button';
 import {
   spreadsheetToR, doOptimization, translateR,
@@ -61,7 +61,7 @@ const SOLVER_CONSTRAINTS = [
   // General
   ['nloptr.lbfgs'],
   // Bound
-  ['optimx'],
+  ['optimx', 'nloptr.lbfgs', 'lpsolve', 'glpk', 'ecos', 'quadprog', 'qpoases'],
   // Linear
   ['lpsolve', 'glpk', 'quadprog', 'qpoases', 'ecos'],
   // Qudaratic
@@ -183,6 +183,48 @@ const Optimize = ({
 
   const handleMaximize = () => setMinMax(1);
 
+  const handleChangeObjective = (i) => {
+    switch (i) {
+      case 0: {
+        if (objectiveClass === 1 && linear.length > 0) {
+          setObjective(linear);
+        }
+        if (objectiveClass === 2 && quadratic.length > 0) {
+          setObjective(quadratic);
+          if (linear.length > 0) {
+            setDecision(linear);
+          }
+        }
+        break;
+      }
+      case 1: {
+        if (objectiveClass === 0 && objective.length > 0) {
+          setLinear(objective);
+        }
+        if (objectiveClass === 2 && quadratic.length > 0) {
+          setLinear(quadratic);
+        }
+        break;
+      }
+      case 2: {
+        if (objectiveClass === 0 && objective.length > 0) {
+          setQuadratic(objective);
+          if (decision.length > 0) {
+            setLinear(decision);
+          } else {
+            setLinear('');
+          }
+        }
+        if (objectiveClass === 1 && linear.length > 0) {
+          setQuadratic(linear);
+          setLinear('');
+        }
+        break;
+      }
+      default:
+    }
+  };
+
   const handleAddConstraint = (i) => setConstraints(
     constraints.filter((constraint) => constraint !== constraints[i]),
   );
@@ -194,22 +236,17 @@ const Optimize = ({
       .map((c) => CONSTRAINTS_TYPE[c]),
   );
 
-  const filteredOptions = SOLVER_STATES[objectiveClass].filter((option) => {
-    if (constraints === CONSTRAINTS_TYPE) {
-      return option;
-    }
+  const fConstraint = CONSTRAINTS_TYPE.filter((c) => !constraints.includes(c))
+    .map((c) => SOLVER_CONSTRAINTS[CONSTRAINTS_TYPE.indexOf(c)]) || [];
 
-    const list = CONSTRAINTS_TYPE
-      .filter((c) => !constraints.includes(c))
-      .map((c) => CONSTRAINTS_TYPE.indexOf(c));
+  let sConstraint = fConstraint[0] || [];
+  for (let i = 1; i < fConstraint.length; i += 1) {
+    sConstraint = sConstraint.filter((f) => fConstraint[i].includes(f));
+  }
 
-    for (let i = 0; i < list.length; i += 1) {
-      if (SOLVER_CONSTRAINTS[list[i]].includes(option)) {
-        return option;
-      }
-    }
-    return [];
-  });
+  const filteredOptions = constraints === CONSTRAINTS_TYPE
+    ? SOLVER_STATES[objectiveClass]
+    : SOLVER_STATES[objectiveClass].filter((i) => sConstraint.includes(i));
 
   const hasGConstraint = !constraints.includes(CONSTRAINTS_TYPE[0]);
   const hasBounds = !constraints.includes(CONSTRAINTS_TYPE[1]);
@@ -367,45 +404,45 @@ const Optimize = ({
       }
       data.cpsdrhs = translateR(cpsdrhs, name);
     }
-
-    doOptimization(data)
-      .then((r) => {
-        if ('error' in r) {
-          setError(r.error);
-          setLoading(false);
-          return;
-        }
-
-        const { res, sparkdata } = r;
-
-        res.type = 'optimize';
-        res.optimization = { ...sparkdata, solver: data.solver, sample: true };
-        let prefix;
-        if (objectiveClass === 0) {
-          prefix = objective;
-        } else if (objectiveClass === 1) {
-          prefix = linear;
-        } else {
-          prefix = quadratic;
-        }
-
-        const sheetname = `optimization ${prefix}`;
-        const isEmpty = slides.insertData(current, res, sheetname, 'read');
-
-        onSetDataNames(slides.datas.map((it) => it.name));
-        if (!isEmpty) {
-          onSetCurrent(current + 1);
-        }
-        onSetRightSidebar('none');
-        setLoading(false);
-
-        onSetSaving(true);
-        firebase.doUploadWorksheet(
-          authUser.uid,
-          worksheetname,
-          createFile(slides, worksheetname),
-        ).then(() => onSetSaving(false));
-      });
+    console.log({ ...data, sample: true });
+    // doOptimization(data)
+    //   .then((r) => {
+    //     if ('error' in r) {
+    //       setError(r.error);
+    //       setLoading(false);
+    //       return;
+    //     }
+    //
+    //     const { res, sparkdata } = r;
+    //
+    //     res.type = 'optimize';
+    //     res.optimization = { ...sparkdata, solver: data.solver, sample: true };
+    //     let prefix;
+    //     if (objectiveClass === 0) {
+    //       prefix = objective;
+    //     } else if (objectiveClass === 1) {
+    //       prefix = linear;
+    //     } else {
+    //       prefix = quadratic;
+    //     }
+    //
+    //     const sheetname = `optimization ${prefix}`;
+    //     const isEmpty = slides.insertData(current, res, sheetname, 'read');
+    //
+    //     onSetDataNames(slides.datas.map((it) => it.name));
+    //     if (!isEmpty) {
+    //       onSetCurrent(current + 1);
+    //     }
+    //     onSetRightSidebar('none');
+    //     setLoading(false);
+    //
+    //     onSetSaving(true);
+    //     firebase.doUploadWorksheet(
+    //       authUser.uid,
+    //       worksheetname,
+    //       createFile(slides, worksheetname),
+    //     ).then(() => onSetSaving(false));
+    //   });
   };
 
   const handleClose = () => {
@@ -474,6 +511,7 @@ const Optimize = ({
         setSelected={setObjectiveClass}
         options={OBJECTIVE_CLASS}
         name={OBJECTIVE_CLASS[objectiveClass]}
+        onSelect={handleChangeObjective}
       />
       <Button onClick={handleMinimize} condition={minMax === 0} text="Minimum" />
       <Button onClick={handleMaximize} condition={minMax === 1} text="Maximum" />

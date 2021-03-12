@@ -17,8 +17,8 @@ export const config = {
 };
 
 function fetchG(idToken, func, data) {
-  return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
-  // return fetch(process.env.CLOUD_FUNCTIONS_URL, {
+  // return fetch(process.env.CLOUD_FUNCTIONS_URL + func, {
+  return fetch(process.env.CLOUD_FUNCTIONS_URL, {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {

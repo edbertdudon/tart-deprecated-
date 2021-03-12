@@ -7,7 +7,7 @@ const NonAuth = () => (
   <div className="navigation-header">
     <div className="navigation-header-container">
       <div className="navigation-header-left">
-        <Link to={ROUTES.HOME}>Tart</Link>
+        <Link to={ROUTES.HOME}>Sciepp</Link>
       </div>
     </div>
   </div>

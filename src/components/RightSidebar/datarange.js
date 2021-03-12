@@ -1,9 +1,9 @@
 //
 //  Data Range
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
@@ -108,7 +108,7 @@ const DataRange = ({
     if (edit) {
       setDatarange(getRange(range, slides.data.rows.len));
     }
-  }, [range])
+  }, [range]);
 
   const handleRange = () => {
     if (datarange.length > 0) {

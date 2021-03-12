@@ -19,7 +19,9 @@ const Share = ({
   const handleChange = (e) => setEmail(e.target.value);
 
   const handleShare = () => {
-    firebase.doShareFile(authUser.uid, worksheetname, emails);
+    firebase.doShareFile(authUser.uid, worksheetname, emails).then(() => {
+
+    });
   };
 
   const isValidEmail = () => {

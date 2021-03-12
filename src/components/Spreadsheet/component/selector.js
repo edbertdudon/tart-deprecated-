@@ -336,24 +336,20 @@ export default class Selector {
     this.el.show();
   }
 
-  setGroup(ri, ci, eri, eci) {
+  setGroup(ri, ci, rilength, cilength) {
     const { data } = this;
-    const cellRange = data.calSelectedRangeByStartGroup(ri, ci, eri, eci);
-    const { sri, sci } = cellRange;
-    // if (indexesUpdated) {
-      let [cri, cci] = [ri, ci];
-      if (ri < 0) cri = 0;
-      if (ci < 0) cci = 0;
-      data.selector.setIndexes(cri, cci);
-      this.indexes = [cri, cci];
-    // }
-
+    const cellRange = data.calSelectedRangeByStartGroup(ri, ci, ri + rilength, ci + cilength);
+    const { sri, sci, eri, eci } = cellRange;
+    let [cri, cci] = [ri, ci];
+    if (ri < 0) cri = 0;
+    if (ci < 0) cci = 0;
+    data.selector.setIndexes(cri, cci);
+    this.indexes = [cri, cci];
+    this.lastri = eri;
+    this.lastci = eci;
     this.moveIndexes = [sri, sci];
-    // this.sIndexes = sIndexes;
-    // this.eIndexes = eIndexes;
     this.range = cellRange;
-    this.resetAreaOffset();
-    this.el.show();
+    setAllAreaOffset.call(this, this.data.getSelectedRect());
   }
 
   setEnd(ri, ci, moving = true) {

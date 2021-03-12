@@ -1,17 +1,20 @@
 //
 //  Variable
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
-import withLists from '../../RightSidebar/withLists';
+import withLists from './withLists';
 
 const Variable = ({
-  label, setSelected, options, name,
+  label, setSelected, options, name, onSelect,
 }) => {
-  const handleSelect = (i) => setSelected(i);
+  const handleSelect = (i) => {
+    setSelected(i);
+    onSelect(i);
+  };
 
   return (
     <>

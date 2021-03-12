@@ -99,16 +99,19 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
   // }, 1000);
 }
 
-function selectorSetGroup(sri, sci, eri, eci) {
-  if (sri === -1 && sci === -1) return;
+function selectorSetGroup(ri, ci) {
+  if (ri === -1 && ci === -1) return;
   const {
     table, selector, toolbar, data,
     contextMenu,
   } = this;
-  contextMenu.setMode((sri === -1 || sci === -1) ? 'row-col' : 'range');
-  const cell = data.getCell(sri, sci);
-  selector.setGroup(sri, sci, eri, eci);
-  this.trigger('cells-selected', cell, selector.range);
+  contextMenu.setMode((ri === -1 || ci === -1) ? 'row-col' : 'range');
+  const cell = data.getCell(ri, ci);
+  const {
+    sri, sci, eri, eci,
+  } = selector.range;
+  selector.setGroup(ri, ci, eri - sri, eci - sci);
+  this.trigger('cell-selected', cell, ri, ci);
   toolbar.reset();
   table.render();
 }
@@ -485,10 +488,7 @@ function overlayerMousedown(evt) {
         if (isAutofillEl) {
           selector.showAutofill(ri, ci);
         } else if (isBorderEl) {
-          const {
-            sri, sci, eri, eci,
-          } = selector.range;
-          selectorSetGroup.call(this, sri, sci, eri, eci)
+          selectorSetGroup.call(this, ri, ci)
         } else if (e.buttons === 1 && !e.shiftKey) {
           selectorSet.call(this, true, ri, ci, true, true);
         }
@@ -502,7 +502,7 @@ function overlayerMousedown(evt) {
       selector.hideAutofill();
 
       if (isBorderEl && ri !== -1 && ci !== -1) {
-        selectorSet.call(this, false, ri, ci);
+        selectorSetGroup.call(this, ri, ci)
         this.data.moveCell(range);
         sheetReset.call(this);
       }
@@ -604,6 +604,7 @@ function dataSetCellText(text, state = 'finished') {
   const { data, table } = this;
   // const [ri, ci] = selector.indexes;
   if (data.settings.mode === 'read') return;
+  console.log(text)
   data.setSelectedCellText(text, state);
   const { ri, ci } = data.selector;
   if (state === 'finished') {

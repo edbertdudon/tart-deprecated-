@@ -1,16 +1,16 @@
 //
 //  RobustOneWayManova
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React, { useState, useEffect } from 'react';
 import Form, { WILKS_METHOD } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
-import Variable from '../core/variable';
+import Variable from '../../RightSidebar/variable';
 import Matrix from '../core/matrix';
 import WilksMethod from '../core/wilksmethod';
 import WilksApproximation from '../core/wilksapprox';

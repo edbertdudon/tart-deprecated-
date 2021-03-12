@@ -1,8 +1,8 @@
 //  DataConnection
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 // Known Issues:
 // Download button produces json link instead of a file pdf, excel, txt, csv, etc.

@@ -1,9 +1,9 @@
 //
 //  EditableInput
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 // Known Issues:
 // Alert users when they make an illegal change ie. same name headers, spaces within name

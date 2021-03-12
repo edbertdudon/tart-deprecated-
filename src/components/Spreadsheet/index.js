@@ -7,6 +7,7 @@ import Clipboard from './core/clipboard';
 import { cssPrefix } from './config';
 import { locale } from './locale/locale';
 import { getMaxNumberCustomSheet } from '../../functions';
+import reservedKeywords from '../../constants/reservedkeywords'
 import './index.less';
 
 class Spreadsheet {
@@ -153,10 +154,13 @@ class Spreadsheet {
     const d = new DataProxy('temp', opt);
     d.setData(o);
     const names = datas.map((it) => it.name);
-    const n = getMaxNumberCustomSheet(names, name);
     let newName = name;
+    if (reservedKeywords.includes(newName)) {
+      newName = `${newName} sheet`
+    }
+    const n = getMaxNumberCustomSheet(names, newName);
     if (n !== 1) {
-      newName = `${name} ${n}`;
+      newName = `${newName} ${n}`;
     }
     d.name = newName;
 
@@ -191,12 +195,9 @@ class Spreadsheet {
           this.sheet.resetData(nd, this.datas, false);
         }
       }
-      // this.sheet.resetData(this.datas[0], this.datas);
-      // ds.forEach((nd) => {
-      //   if ('charts' in nd) {
-      //     this.data.loadChart(nd.charts, this.datas);
-      //   }
-      // });
+      const names = ds.filter(({ name }) => name.match(/^Sheet[0-9]+$/g))
+        .map((d) => d.name.match(/[0-9]+/g)[0])
+      this.sheetIndex = Math.max(...names) + 1
     }
 
     return this;

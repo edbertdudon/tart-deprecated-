@@ -1,9 +1,9 @@
 //
 //  Conic Constraints
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
 import Icon from '@mdi/react';

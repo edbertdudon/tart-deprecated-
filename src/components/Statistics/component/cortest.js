@@ -1,16 +1,16 @@
 //
 //  CorrelationSignificance
-//  Tart
+//  Sciepp
 //
 //  Created by Edbert Dudon on 7/8/19.
-//  Copyright © 2019 Project Tart. All rights reserved.
+//  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React, { useState } from 'react';
 import Form, { CORRELATION_METHOD, ALTERNATIVES } from '../core/form';
 import statistics from '../core/statisticsR';
 import { doRegress } from '../../Spreadsheet/cloudr';
 
-import Variable from '../core/variable';
+import Variable from '../../RightSidebar/variable';
 import Alternative from '../core/alternative';
 import Number from '../../RightSidebar/number';
 import AlternativeMethod from '../core/alternativecorrelation';

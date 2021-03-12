@@ -1,12 +1,26 @@
-import React, { useState, useRef } from 'react';
-import { useOutsideAlerter } from '../../functions';
+import React, { useState, useEffect, useRef } from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
+import { useOutsideAlerter, asCell, getRange } from '../../functions';
 
 const CellReference = ({
-  text, cell, placeholder, onValidate, onSetCell, onSetError,
+  slides, formula, range, text, cell, placeholder, onValidate, onSetCell, onSetError,
 }) => {
   const [hover, setHover] = useState(false);
   const [edit, setEdit] = useState(false);
   const cellRef = useRef(null);
+
+  useEffect(() => {
+    if (edit) {
+      onSetCell(asCell(formula.ri, formula.ci));
+    }
+  }, [formula]);
+
+  useEffect(() => {
+    if (edit) {
+      onSetCell(getRange(range, slides.data.rows.len));
+    }
+  }, [range]);
 
   const handleChange = (e) => onSetCell(e.target.value);
 
@@ -46,4 +60,14 @@ const CellReference = ({
   );
 };
 
-export default CellReference;
+const mapStateToProps = (state) => ({
+  slides: (state.slidesState.slides || {}),
+  formula: (state.formulaState.formula || { text: '', ri: 0, ci: 0 }),
+  range: (state.rangeState.range || {}),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(CellReference);
