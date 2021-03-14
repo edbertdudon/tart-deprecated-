@@ -217,7 +217,7 @@ const mapStateToProps = (state) => ({
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   worksheets: (state.worksheetsState.worksheets || []),
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
   current: (state.currentState.current || 0),
   saving: (state.savingState.saving || false),
 });

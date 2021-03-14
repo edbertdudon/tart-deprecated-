@@ -1,14 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { useOutsideAlerter, asCell, getRange } from '../../functions';
+import {
+  useOutsideAlerter, asCell, getRange,
+} from '../../functions';
+
+const ONLY_CELL_REFERENCE = /^\$?[A-Z]+\$?[0-9]*$/g;
+const ONLY_RANGE_REFERENCE = /^\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*$/g;
 
 const CellReference = ({
-  slides, formula, range, text, cell, placeholder, onValidate, onSetCell, onSetError,
+  slides, current, formula, range, text, cell, placeholder, onValidate, onSetCell, onSetError,
 }) => {
-  const [hover, setHover] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [hover, setHover] = useState(false);
+  const [name, setName] = useState(slides.data.name);
   const cellRef = useRef(null);
+
+  useEffect(() => {
+    if (cell.match(ONLY_CELL_REFERENCE) || cell.match(ONLY_RANGE_REFERENCE)) {
+      onSetCell(`'${name}'!${cell}`);
+    }
+    setName(slides.data.name);
+  }, [current]);
 
   useEffect(() => {
     if (edit) {
@@ -62,6 +75,7 @@ const CellReference = ({
 
 const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),
+  current: (state.currentState.current || 0),
   formula: (state.formulaState.formula || { text: '', ri: 0, ci: 0 }),
   range: (state.rangeState.range || {}),
 });

@@ -14,7 +14,7 @@ import CellReference from '../RightSidebar/cellreference';
 import { validateCellorSingleRange } from './validate';
 
 const Lconstraint = ({
-  isActive, lhs, dir, rhs, error, setLhs, setDir, setRhs, setError, onClose,
+  dataNames, isActive, lhs, dir, rhs, error, setLhs, setDir, setRhs, setError, onClose,
 }) => {
   const handleClose = () => onClose(2);
 
@@ -33,7 +33,7 @@ const Lconstraint = ({
         cell={lhs}
         onSetCell={setLhs}
         placeholder="A1:A2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -41,7 +41,7 @@ const Lconstraint = ({
         cell={dir}
         onSetCell={setDir}
         placeholder="B1:B2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -49,7 +49,7 @@ const Lconstraint = ({
         cell={rhs}
         onSetCell={setRhs}
         placeholder="C1:C2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <div className="rightsidebar-text">
@@ -60,7 +60,7 @@ const Lconstraint = ({
 };
 
 const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
 });
 
 export default compose(

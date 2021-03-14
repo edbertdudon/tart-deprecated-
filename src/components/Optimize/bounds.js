@@ -6,13 +6,15 @@
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
 import { validateCell, validateCellorSingleRange } from './validate';
 
 const General = ({
-  lhs, dir, rhs, setLhs, setDir, setRhs, setError,
+  dataNames, lhs, dir, rhs, setLhs, setDir, setRhs, setError,
 }) => (
   <>
     <CellReference
@@ -20,7 +22,7 @@ const General = ({
       cell={lhs}
       onSetCell={setLhs}
       placeholder="A1:A2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -28,7 +30,7 @@ const General = ({
       cell={dir}
       onSetCell={setDir}
       placeholder="B1:B2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -36,14 +38,14 @@ const General = ({
       cell={rhs}
       onSetCell={setRhs}
       placeholder="C1:C2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
   </>
 );
 
 const QuadraticLinear = ({
-  li, lb, ui, ub, ld, ud, setLi, setLb,
+  dataNames, li, lb, ui, ub, ld, ud, setLi, setLb,
   setUi, setUb, setLd, setUd, setError,
 }) => (
   <>
@@ -52,7 +54,7 @@ const QuadraticLinear = ({
       cell={li}
       onSetCell={setLi}
       placeholder="A1:A2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -60,7 +62,7 @@ const QuadraticLinear = ({
       cell={lb}
       onSetCell={setLb}
       placeholder="B1:B2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -68,7 +70,7 @@ const QuadraticLinear = ({
       cell={ui}
       onSetCell={setUi}
       placeholder="C1:C2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -76,7 +78,7 @@ const QuadraticLinear = ({
       cell={ub}
       onSetCell={setUb}
       placeholder="D1:D2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -85,7 +87,7 @@ const QuadraticLinear = ({
       onSetCell={setLd}
       part="2part1"
       placeholder="D1"
-      onValidate={validateCell}
+      onValidate={(v) => validateCell(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -94,14 +96,14 @@ const QuadraticLinear = ({
       onSetCell={setUd}
       part="2part2"
       placeholder="E1"
-      onValidate={validateCell}
+      onValidate={(v) => validateCell(dataNames, v)}
       onSetError={setError}
     />
   </>
 );
 
 const Bounds = ({
-  isActive, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
+  dataNames, isActive, objectiveClass, lhs, dir, rhs, li, lb, ui, ub, ld, ud, error,
   setLhs, setDir, setRhs, setLi, setLb, setUi, setUb, setLd, setUd, setError, onClose,
 }) => {
   const handleClose = () => onClose(1);
@@ -118,6 +120,7 @@ const Bounds = ({
       </button>
       {objectiveClass === 0 ? (
         <General
+          dataNames={dataNames}
           lhs={lhs}
           dir={dir}
           rhs={rhs}
@@ -128,6 +131,7 @@ const Bounds = ({
         />
       ) : (
         <QuadraticLinear
+          dataNames={dataNames}
           li={li}
           lb={lb}
           ui={ui}
@@ -153,4 +157,12 @@ const Bounds = ({
   );
 };
 
-export default Bounds;
+const mapStateToProps = (state) => ({
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(Bounds);

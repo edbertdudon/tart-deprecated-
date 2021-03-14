@@ -14,7 +14,7 @@ import CellReference from '../RightSidebar/cellreference';
 import { validateRangeNotOne, validateCellorSingleRange } from './validate';
 
 const Qconstraint = ({
-  isActive, quadratic, linear, dir, rhs, error,
+  dataNames, isActive, quadratic, linear, dir, rhs, error,
   setQuadratic, setLinear, setDir, setRhs, setError, onClose,
 }) => {
   const handleClose = () => onClose(3);
@@ -34,7 +34,7 @@ const Qconstraint = ({
         cell={quadratic}
         onSetCell={setQuadratic}
         placeholder="A1:A2"
-        onValidate={validateRangeNotOne}
+        onValidate={(v) => validateRangeNotOne(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -42,7 +42,7 @@ const Qconstraint = ({
         cell={linear}
         onSetCell={setLinear}
         placeholder="B1:B2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -50,7 +50,7 @@ const Qconstraint = ({
         cell={dir}
         onSetCell={setDir}
         placeholder="C1:C2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -58,7 +58,7 @@ const Qconstraint = ({
         cell={rhs}
         onSetCell={setRhs}
         placeholder="D1:D2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <div className="rightsidebar-text">
@@ -69,7 +69,7 @@ const Qconstraint = ({
 };
 
 const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
 });
 
 export default compose(

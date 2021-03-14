@@ -14,7 +14,7 @@ import CellReference from '../RightSidebar/cellreference';
 import { validateCellorSingleRange, validateCell } from './validate';
 
 const Fconstraint = ({
-  isActive, lhs, dir, rhs, jacobian, error,
+  dataNames, isActive, lhs, dir, rhs, jacobian, error,
   setLhs, setDir, setRhs, setJacobian, setError, onClose,
 }) => {
   const handleClose = () => onClose(0);
@@ -34,7 +34,7 @@ const Fconstraint = ({
         cell={lhs}
         onSetCell={setLhs}
         placeholder="A1:A2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -42,7 +42,7 @@ const Fconstraint = ({
         cell={dir}
         onSetCell={setDir}
         placeholder="B1:B2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -50,7 +50,7 @@ const Fconstraint = ({
         cell={rhs}
         onSetCell={setRhs}
         placeholder="C1:C2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -58,7 +58,7 @@ const Fconstraint = ({
         cell={jacobian}
         onSetCell={setJacobian}
         placeholder="D1"
-        onValidate={validateCell}
+        onValidate={(v) => validateCell(dataNames, v)}
         onSetError={setError}
       />
       <div className="rightsidebar-text-margin">
@@ -69,7 +69,7 @@ const Fconstraint = ({
 };
 
 const mapStateToProps = (state) => ({
-  slides: (state.slidesState.slides || {}),
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
 });
 
 export default compose(

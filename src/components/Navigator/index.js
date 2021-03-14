@@ -88,7 +88,7 @@ const Navigator = ({
 
 const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
   current: (state.currentState.current || 0),
 });
 

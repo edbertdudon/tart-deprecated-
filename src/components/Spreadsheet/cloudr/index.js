@@ -40,7 +40,7 @@
 import _cell from '../core/cell';
 import { formulam, rFormulas } from './formula';
 import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, createEmptyMatrix, letterToColumn,
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, CELL_REFERENCE, createEmptyMatrix, letterToColumn,
 } from '../../../functions';
 import { CellRange } from '../core/cell_range';
 
@@ -64,7 +64,7 @@ function addPrefixToFunction(cell) {
 }
 
 function translateR(cell, name) {
-  const match = cell.match(FORMULA_CELL_REFERENCES);
+  const match = cell.match(CELL_REFERENCE);
   if (match === null) return cell.replace(/'/g, '`');
   // replaces 'Sheet 1' with `Sheet 1`
   let coordinates = cell.replace(/'/g, '`');
@@ -255,18 +255,6 @@ function doRegress(data, type) {
     });
 }
 
-// function doRegression(data) {
-//   return fetchR(data, 'regression')
-//     .then((res) => res.json())
-//     .then((res) => {
-//       if (typeof JSON.parse(res[0])[0] === 'string'
-//         || JSON.parse(res[0])[0] instanceof String) {
-//         return (res);
-//       }
-//       return rToSpreadsheet(res);
-//     });
-// }
-
 function doOptimization(data) {
   return fetchR(data, 'optimization')
     .then((res) => {
@@ -280,14 +268,15 @@ function doOptimization(data) {
       if ('error' in slide) {
         return slide;
       }
-      const optimizeData = slide[1];
-      let aoa = optimizeData.map((row) => Object.values(row));
-      aoa = [Object.keys(optimizeData[0]), ...aoa];
-
-      return {
-        sparkdata: slide[0],
-        res: rToSpreadsheet(aoa),
-      };
+      // const optimizeData = slide[0];
+      // const optimizeData = slide[1];
+      let aoa = slide.map((row) => Object.values(row));
+      aoa = [Object.keys(slide[0]), ...aoa];
+      return rToSpreadsheet(aoa);
+      // return {
+      //   sparkdata: slide[0],
+      //   res: rToSpreadsheet(aoa),
+      // };
     });
 }
 

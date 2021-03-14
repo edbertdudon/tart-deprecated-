@@ -6,11 +6,13 @@
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import CellReference from '../RightSidebar/cellreference';
 import { validateCellorSingleRange } from './validate';
 
 const Linear = ({
-  linear, error, setLinear, setError,
+  dataNames, linear, error, setLinear, setError,
 }) => (
   <>
     <div className="rightsidebar-label">Linear objective</div>
@@ -19,7 +21,7 @@ const Linear = ({
       cell={linear}
       onSetCell={setLinear}
       placeholder="A1:A2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <div className="rightsidebar-text">
@@ -28,4 +30,12 @@ const Linear = ({
   </>
 );
 
-export default Linear;
+const mapStateToProps = (state) => ({
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(Linear);

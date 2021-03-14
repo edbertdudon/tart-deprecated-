@@ -6,11 +6,13 @@
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import CellReference from '../RightSidebar/cellreference';
 import { validateRangeNotOne, validateCellorSingleRange } from './validate';
 
 const Quadratic = ({
-  quadratic, linear, error, setQuadratic, setLinear, setError,
+  dataNames, quadratic, linear, error, setQuadratic, setLinear, setError,
 }) => (
   <>
     <div className="rightsidebar-label">Quadratic objective</div>
@@ -19,7 +21,7 @@ const Quadratic = ({
       cell={quadratic}
       onSetCell={setQuadratic}
       placeholder="A1:A2"
-      onValidate={validateRangeNotOne}
+      onValidate={(v) => validateRangeNotOne(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -27,7 +29,7 @@ const Quadratic = ({
       cell={linear}
       onSetCell={setLinear}
       placeholder="B1:B2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <div className="rightsidebar-text">
@@ -36,4 +38,12 @@ const Quadratic = ({
   </>
 );
 
-export default Quadratic;
+const mapStateToProps = (state) => ({
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(Quadratic);

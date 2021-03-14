@@ -6,11 +6,13 @@
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import CellReference from '../RightSidebar/cellreference';
 import { validateCellorSingleRange, validateCell } from './validate';
 
 const General = ({
-  objective, decision, gradient, hessian, error,
+  dataNames, objective, decision, gradient, hessian, error,
   setObjective, setDecision, setGradient, setHessian, setError,
 }) => (
   <>
@@ -20,7 +22,7 @@ const General = ({
       cell={objective}
       onSetCell={setObjective}
       placeholder="A1"
-      onValidate={validateCell}
+      onValidate={(v) => validateCell(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -28,7 +30,7 @@ const General = ({
       cell={decision}
       onSetCell={setDecision}
       placeholder="B1:B2"
-      onValidate={validateCellorSingleRange}
+      onValidate={(v) => validateCellorSingleRange(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -36,7 +38,7 @@ const General = ({
       cell={gradient}
       onSetCell={setGradient}
       placeholder="C1"
-      onValidate={validateCell}
+      onValidate={(v) => validateCell(dataNames, v)}
       onSetError={setError}
     />
     <CellReference
@@ -44,7 +46,7 @@ const General = ({
       cell={hessian}
       onSetCell={setHessian}
       placeholder="D1"
-      onValidate={validateCell}
+      onValidate={(v) => validateCell(dataNames, v)}
       onSetError={setError}
     />
     <div className="rightsidebar-text">
@@ -53,4 +55,12 @@ const General = ({
   </>
 );
 
-export default General;
+const mapStateToProps = (state) => ({
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(General);

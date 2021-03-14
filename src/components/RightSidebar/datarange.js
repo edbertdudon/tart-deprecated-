@@ -9,10 +9,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, FORMULA_CELL_REFERENCES, RANGE_REFERENCES,
-  VALID_FORMULA_CELL_REFERENCES, VALID_RANGE_REFERENCES, useOutsideAlerter,
+  LETTERS_REFERENCE, NUMBERS_REFERENCE, useOutsideAlerter,
   letterToColumn, columnToLetter, asCell, getRange,
 } from '../../functions';
+import { validateCellorRange } from '../Optimize/validate';
 
 function getRangeIndex(range) {
   let mn = range.match(NUMBERS_REFERENCE);
@@ -64,31 +64,6 @@ function getVarsAsColumns(rows, len, range) {
     return cols.map((col) => `${col}:${col}`);
   }
   return cols.map((col) => `${col + (sri + 1)}:${col + (eri + 1)}`);
-}
-
-function validateCellorRange(v) {
-  if (!(VALID_FORMULA_CELL_REFERENCES.test(v) || VALID_RANGE_REFERENCES.test(v))) {
-    return ('Invalid cell reference.');
-  }
-  const mc = v.match(FORMULA_CELL_REFERENCES);
-  if (mc === null) {
-    return ('Invalid cell.');
-  }
-  const mr = v.match(RANGE_REFERENCES);
-  if (mr !== null) {
-    const ml = v.match(LETTERS_REFERENCE).map((ref) => letterToColumn(ref) - 1);
-    if (ml[1] < ml[0] || ml.length > 2) {
-      return ('Invalid range.');
-    }
-    const mn = v.match(NUMBERS_REFERENCE);
-    if (mn !== null) {
-      mn.map((ref) => parseInt(ref));
-      if (mn[1] < mn[0] || mn.length > 2) {
-        return ('Invalid range.');
-      }
-    }
-  }
-  return (null);
 }
 
 const DataRange = ({

@@ -6,13 +6,15 @@
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
 import React from 'react';
+import { connect } from 'react-redux';
+import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdiClose } from '@mdi/js';
 import CellReference from '../RightSidebar/cellreference';
 import { validateCellorSingleRange, validateCellorNumeric } from './validate';
 
 const Cconstraint = ({
-  isActive, lhs, cone, rhs, type, error,
+  dataNames, isActive, lhs, cone, rhs, type, error,
   onClose, setLhs, setCone, setRhs, setError,
 }) => {
   if (!isActive) {
@@ -30,7 +32,7 @@ const Cconstraint = ({
         cell={lhs}
         onSetCell={setLhs}
         placeholder="A1:A2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -38,7 +40,7 @@ const Cconstraint = ({
         cell={cone}
         onSetCell={setCone}
         placeholder="B1"
-        onValidate={validateCellorNumeric}
+        onValidate={(v) => validateCellorNumeric(dataNames, v)}
         onSetError={setError}
       />
       <CellReference
@@ -46,7 +48,7 @@ const Cconstraint = ({
         cell={rhs}
         onSetCell={setRhs}
         placeholder="C1:C2"
-        onValidate={validateCellorSingleRange}
+        onValidate={(v) => validateCellorSingleRange(dataNames, v)}
         onSetError={setError}
       />
       <div className="rightsidebar-text">
@@ -56,4 +58,12 @@ const Cconstraint = ({
   );
 };
 
-export default Cconstraint;
+const mapStateToProps = (state) => ({
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
+});
+
+export default compose(
+  connect(
+    mapStateToProps,
+  ),
+)(Cconstraint);

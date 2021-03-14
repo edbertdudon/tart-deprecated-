@@ -20,13 +20,9 @@ import Qconstraint from './qconstraint';
 import Lconstraint from './lconstraint';
 import Variable from '../RightSidebar/variable';
 import Button from '../RightSidebar/button';
-import {
-  spreadsheetToR, doOptimization, translateR,
-} from '../Spreadsheet/cloudr';
-import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, createFile, asCell,
-} from '../../functions';
-import { checkErrors, checkConeErrors, validateLhsRhs } from './validate';
+import { spreadsheetToR, doOptimization, translateR } from '../Spreadsheet/cloudr';
+import { createFile, asCell } from '../../functions';
+import { checkErrors, checkConeErrors } from './validate';
 import withLists from '../RightSidebar/withLists';
 import { withFirebase } from '../Firebase';
 
@@ -289,12 +285,12 @@ const Optimize = ({
       }
     }
 
-    if (objectiveClass === 2) {
-      data.quadratic = translateR(quadratic, name);
+    if (objectiveClass === 1 || (objectiveClass === 2 && linear.length > 0)) {
+      data.linear = translateR(linear, name);
     }
 
-    if (linear.length > 0) {
-      data.linear = translateR(linear, name);
+    if (objectiveClass === 2) {
+      data.quadratic = translateR(quadratic, name);
     }
 
     if (hasGConstraint) {
@@ -404,45 +400,45 @@ const Optimize = ({
       }
       data.cpsdrhs = translateR(cpsdrhs, name);
     }
-    console.log({ ...data, sample: true });
-    // doOptimization(data)
-    //   .then((r) => {
-    //     if ('error' in r) {
-    //       setError(r.error);
-    //       setLoading(false);
-    //       return;
-    //     }
-    //
-    //     const { res, sparkdata } = r;
-    //
-    //     res.type = 'optimize';
-    //     res.optimization = { ...sparkdata, solver: data.solver, sample: true };
-    //     let prefix;
-    //     if (objectiveClass === 0) {
-    //       prefix = objective;
-    //     } else if (objectiveClass === 1) {
-    //       prefix = linear;
-    //     } else {
-    //       prefix = quadratic;
-    //     }
-    //
-    //     const sheetname = `optimization ${prefix}`;
-    //     const isEmpty = slides.insertData(current, res, sheetname, 'read');
-    //
-    //     onSetDataNames(slides.datas.map((it) => it.name));
-    //     if (!isEmpty) {
-    //       onSetCurrent(current + 1);
-    //     }
-    //     onSetRightSidebar('none');
-    //     setLoading(false);
-    //
-    //     onSetSaving(true);
-    //     firebase.doUploadWorksheet(
-    //       authUser.uid,
-    //       worksheetname,
-    //       createFile(slides, worksheetname),
-    //     ).then(() => onSetSaving(false));
-    //   });
+
+    doOptimization(data)
+      .then((res) => {
+        if ('error' in res) {
+          setError(res.error);
+          setLoading(false);
+          return;
+        }
+
+        // const { res } = r;
+        res.type = 'optimize';
+        // res.optimization = { ...sparkdata, solver: data.solver, sample: true };
+        res.optimization = { ...data, sample: true };
+        let prefix;
+        if (objectiveClass === 0) {
+          prefix = objective;
+        } else if (objectiveClass === 1) {
+          prefix = linear;
+        } else {
+          prefix = quadratic;
+        }
+
+        const sheetname = `optimization ${prefix}`;
+        const isEmpty = slides.insertData(current, res, sheetname, 'read');
+
+        onSetDataNames(slides.datas.map((it) => it.name));
+        if (!isEmpty) {
+          onSetCurrent(current + 1);
+        }
+        onSetRightSidebar('none');
+        setLoading(false);
+
+        onSetSaving(true);
+        firebase.doUploadWorksheet(
+          authUser.uid,
+          worksheetname,
+          createFile(slides, worksheetname),
+        ).then(() => onSetSaving(false));
+      });
   };
 
   const handleClose = () => {
@@ -725,7 +721,7 @@ const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
-  dataNames: (state.dataNamesState.dataNames || ['sheet1']),
+  dataNames: (state.dataNamesState.dataNames || ['Sheet1']),
   current: (state.currentState.current || 0),
   saving: (state.savingState.saving || false),
   color: (state.colorState.colors || {}),
