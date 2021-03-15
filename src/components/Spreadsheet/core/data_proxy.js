@@ -628,11 +628,13 @@ export default class DataProxy {
     }
     const oldCell = rows.getCell(nri, ci);
     const oldText = oldCell ? oldCell.text : '';
+    // console.log(text, this.prev, nri, ci)
     // Accomodate cell referencing onMousedown
-    if (this.prev.ri === nri && this.prev.ci === ci) {
-      this.setCellText(nri, ci, text, state);
-    } else {
+    // console.log(text, this.prev, nri, ci)
+    if (text.startsWith('=') && (this.prev.ri !== nri || this.prev.ci !== ci)) {
       this.setCellText(this.prev.ri, this.prev.ci, text, state);
+    } else {
+      this.setCellText(nri, ci, text, state);
     }
     // replace filter.value
     if (autoFilter.active()) {

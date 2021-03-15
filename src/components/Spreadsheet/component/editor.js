@@ -46,7 +46,7 @@ function insertText({ target }, itxt) {
   resetTextareaSize.call(this);
 }
 
-const OPERATORS_REGEX = /\+|\-|%\*%|\*|\/|\~/g;
+const OPERATORS_ONLY_REGEX = /\+|-|(%\*%)|\*|\/|~/g;
 
 function keydownEventHandler(evt) {
   const { keyCode, altKey } = evt;
@@ -59,7 +59,7 @@ function keydownEventHandler(evt) {
     const v = evt.target.value;
     const start = v.lastIndexOf('=');
     if (start !== -1 && v.length > 1) {
-      const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+      const nv = v.substring(start + 1).split(OPERATORS_ONLY_REGEX);
       const begin = nv[nv.length - 1].lastIndexOf('(');
       const end = nv[nv.length - 1].lastIndexOf(')');
       if (end === -1 && begin !== -1) {
@@ -87,7 +87,7 @@ function inputEventHandler(evt) {
       } else {
         const start = v.lastIndexOf('=');
         if (start !== -1 && v.length > 1) {
-          const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+          const nv = v.substring(start + 1).split(OPERATORS_ONLY_REGEX);
           const lastnv = nv[nv.length - 1];
           if (lastnv.length > 0) {
             suggest.search(lastnv);
@@ -116,7 +116,7 @@ function inputEventHandler(evt) {
     } else {
       const start = v.lastIndexOf('=');
       if (start !== -1 && v.length > 1) {
-        const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+        const nv = v.substring(start + 1).split(OPERATORS_ONLY_REGEX);
         suggest.search(nv[nv.length - 1]);
         // suggest.search(v.substring(start + 1));
       } else {
@@ -157,7 +157,7 @@ function suggestItemClick(it) {
     const start = inputText.lastIndexOf('=');
     const sit = inputText.substring(0, start + 1);
     let eit = inputText.substring(start + 1);
-    const nv = eit.split(OPERATORS_REGEX);
+    const nv = eit.split(OPERATORS_ONLY_REGEX);
     const [l] = nv.slice(nv.length - 1);
     eit = l;
     if (eit.length < 1) {

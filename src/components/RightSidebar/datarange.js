@@ -9,29 +9,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import {
-  LETTERS_REFERENCE, NUMBERS_REFERENCE, useOutsideAlerter,
-  letterToColumn, columnToLetter, asCell, getRange,
+  useOutsideAlerter, columnToLetter, asCell, getRange, getRangeIndex,
 } from '../../functions';
 import { validateCellorRange } from '../Optimize/validate';
-
-function getRangeIndex(range) {
-  let mn = range.match(NUMBERS_REFERENCE);
-  let ml = range.match(LETTERS_REFERENCE);
-
-  if (mn === null || ml === null) {
-    return null;
-  }
-
-  mn = mn.map((ref) => parseInt(ref) - 1);
-  ml = ml.map((ref) => letterToColumn(ref) - 1);
-
-  return {
-    sri: mn[0],
-    sci: ml[0],
-    eri: mn[1] || mn[0],
-    eci: ml[1] || ml[0],
-  };
-}
 
 function getRownames(rows, range) {
   if (!(range.sri in rows)) {

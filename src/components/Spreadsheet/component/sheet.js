@@ -19,11 +19,12 @@ import { xtoast } from './message';
 import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula';
-import { getRange } from '../../../functions';
+import { getRange, getRangeIndex } from '../../../functions';
 import { defaultSettings } from '../core/data_proxy';
 
 let isResize = false;
-let isEditing = false;
+let addingCellRef = false;
+// let addedCellRef = false;
 
 /**
  * @desc throttle fn
@@ -99,21 +100,29 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
   // }, 1000);
 }
 
+function setGroup(cell, ri, ci, nrows, ncols) {
+  const { selector, toolbar, table } = this;
+  selector.setGroup(ri, ci, nrows, ncols);
+  this.trigger('cell-selected', cell, ri, ci);
+  toolbar.reset();
+  table.render();
+}
+
 function selectorSetGroup(ri, ci) {
   if (ri === -1 && ci === -1) return;
   const {
-    table, selector, toolbar, data,
-    contextMenu,
+    selector, data, contextMenu,
   } = this;
   contextMenu.setMode((ri === -1 || ci === -1) ? 'row-col' : 'range');
   const cell = data.getCell(ri, ci);
   const {
     sri, sci, eri, eci,
   } = selector.range;
-  selector.setGroup(ri, ci, eri - sri, eci - sci);
-  this.trigger('cell-selected', cell, ri, ci);
-  toolbar.reset();
-  table.render();
+  setGroup.call(this, cell, ri, ci, eri - sri, eci - sci);
+  // selector.setGroup(ri, ci, eri - sri, eci - sci);
+  // this.trigger('cell-selected', cell, ri, ci);
+  // toolbar.reset();
+  // table.render();
 }
 
 // multiple: boolean
@@ -122,12 +131,57 @@ export function selectorMove(multiple, direction) {
   const {
     selector, data,
   } = this;
-  const { rows, cols } = data;
+  const { rows, cols, prev } = data;
   let [ri, ci] = selector.indexes;
+  if (addingCellRef && (prev.ri !== ri || prev.ci !== ci)) {
+    ri = prev.ri;
+    ci = prev.ci;
+    // addedCellRef = true;
+  }
   const { eri, eci } = selector.range;
   if (multiple) {
     [ri, ci] = selector.moveIndexes;
   }
+  // console.log('selector.move:', ri, ci);
+  if (direction === 'left') {
+    if (ci > 0) ci -= 1;
+  } else if (direction === 'right') {
+    if (eci !== ci && !addingCellRef) ci = eci;
+    if (ci < cols.len - 1) ci += 1;
+  } else if (direction === 'up') {
+    if (ri > 0) ri -= 1;
+  } else if (direction === 'down') {
+    if (eri !== ri && !addingCellRef) ri = eri;
+    if (ri < rows.len - 1) ri += 1;
+  } else if (direction === 'row-first') {
+    ci = 0;
+  } else if (direction === 'row-last') {
+    ci = cols.len - 1;
+  } else if (direction === 'col-first') {
+    ri = 0;
+  } else if (direction === 'col-last') {
+    ri = rows.len - 1;
+  }
+  if (multiple) {
+    selector.moveIndexes = [ri, ci];
+  }
+  selectorSet.call(this, multiple, ri, ci);
+  scrollbarMove.call(this);
+  addingCellRef = false;
+}
+
+export function selectorMoveSelected(multiple, direction, nri, nci) {
+  const {
+    selector, data,
+  } = this;
+  const { rows, cols } = data;
+  let ri = nri;
+  let ci = nci;
+  // let [ri, ci] = selector.indexes;
+  const { eri, eci } = selector.range;
+  // if (multiple) {
+  //   [ri, ci] = selector.moveIndexes;
+  // }
   // console.log('selector.move:', ri, ci);
   if (direction === 'left') {
     if (ci > 0) ci -= 1;
@@ -148,9 +202,9 @@ export function selectorMove(multiple, direction) {
   } else if (direction === 'col-last') {
     ri = rows.len - 1;
   }
-  if (multiple) {
-    selector.moveIndexes = [ri, ci];
-  }
+  // if (multiple) {
+  //   selector.moveIndexes = [ri, ci];
+  // }
   selectorSet.call(this, multiple, ri, ci);
   scrollbarMove.call(this);
 }
@@ -406,21 +460,22 @@ function toolbarChangePaintformatPaste() {
   }
 }
 
-const REFERENCE_REGEX = /\=|\+|\-|\*|\/|\~|\,|\(/g;
+const OPERATORS_REGEX = /=|(%\*%)|\+|-|\*|\/|~|,|\(/g;
 
-function hasEqualStart(cell) {
-  return cell && 'text' in cell && cell.text.lastIndexOf('=') !== -1;
-}
+// function hasEqualStart(cell) {
+//   return cell && 'text' in cell && cell.text.startsWith('=');
+// }
 
-function isCellValidFormula(cell, cellRef) {
-  if (!hasEqualStart(cell)) {
+function canAddCellRef(cell, cellRef) {
+  // if (!hasEqualStart(cell)) {
+  if (!(cell && 'text' in cell && cell.text.startsWith('='))) {
     return false;
   }
 
   const v = this.editor.inputText;
   const start = v.lastIndexOf('=');
   // if (start !== -1 && v.length >= 1) {
-  const nv = v.substring(start + 1).split(REFERENCE_REGEX);
+  const nv = v.substring(start + 1).split(OPERATORS_REGEX);
   const lastnv = nv[nv.length - 1];
   return lastnv.length === 0 || lastnv === cellRef;
 }
@@ -429,13 +484,13 @@ function setCellTextReference() {
   const { editor, selector } = this;
   let inputTextLessRef = editor.inputText;
   // For when cell is no longer a formula. User backspaces '='.
-  if (inputTextLessRef.lastIndexOf('=') === -1) {
+  if (!inputTextLessRef.startsWith('=')) {
     editor.clear();
-    isEditing = false;
+    addingCellRef = false;
     return;
   }
 
-  const nv = inputTextLessRef.split(REFERENCE_REGEX);
+  const nv = inputTextLessRef.split(OPERATORS_REGEX);
   const lastnv = nv[nv.length - 1];
   if (lastnv !== '=' && lastnv.length !== 0) {
     inputTextLessRef = inputTextLessRef.slice(0, -lastnv.length);
@@ -502,27 +557,28 @@ function overlayerMousedown(evt) {
       selector.hideAutofill();
 
       if (isBorderEl && ri !== -1 && ci !== -1) {
-        selectorSetGroup.call(this, ri, ci)
+        selectorSetGroup.call(this, ri, ci);
         this.data.moveCell(range);
         sheetReset.call(this);
       }
-
       // toolbarChangePaintformatPaste.call(this);
-      const cellRef = getRange(this.selector.range, data.rows.len)
-      // console.log(isEditing, isCellValidFormula.call(this, previousCell, cellRef))
+
+      // When editor has '=', mousedown adds cell reference ie. A1
+      // addingCellRef is true on 2nd mousedown when !canAddCellRef ie. '=A1' to '=B2'
+      const cellRef = getRange(this.selector.range, data.rows.len);
       if (this.editor.el.css('display') === 'block'
-        && (isEditing || isCellValidFormula.call(this, previousCell, cellRef))
+        && (addingCellRef || canAddCellRef.call(this, previousCell, cellRef))
       ) {
         // Should not change when not
-        if (!isEditing) {
+        if (!addingCellRef) {
           this.data.setPrev(indexes[0], indexes[1]);
         }
-        isEditing = true;
+        addingCellRef = true;
         setCellTextReference.call(this);
       } else {
         // console.log(ri, ci)
         this.data.setPrev(ri, ci);
-        isEditing = false;
+        addingCellRef = false;
       }
       const {
         sri, sci, eri, eci,
@@ -558,6 +614,14 @@ export function editorSet() {
   if (data.settings.mode === 'read') return;
   editorSetOffset.call(this);
   editor.setCell(data.getSelectedCell(), data.getSelectedValidator());
+  clearClipboard.call(this);
+}
+
+function editorSetSelector(text, validator) {
+  const { editor, data } = this;
+  if (data.settings.mode === 'read') return;
+  // editorSetOffset.call(this);
+  editor.setCell({ text }, validator);
   clearClipboard.call(this);
 }
 
@@ -600,13 +664,50 @@ function colResizerFinished(cRect, distance) {
   editorSetOffset.call(this);
 }
 
+// No sheet name prefix, Not more than one, No A:A,
+const CELL_REFERENCE = /^\$?[A-Z]+\$?[0-9]+$/;
+const RANGE_REFERENCE = /^\$?[A-Z]+\$?[0-9]+:{1}\$?[A-Z]+\$?[0-9]+$/;
+
 function dataSetCellText(text, state = 'finished') {
+  console.log(text);
   const { data, table } = this;
+  const { ri, ci } = data.selector;
+  const { prev } = data;
   // const [ri, ci] = selector.indexes;
   if (data.settings.mode === 'read') return;
-  console.log(text)
+  // Actively move selector when typing cell reference
+  if (text.startsWith('=')) {
+    const nv = text.split(OPERATORS_REGEX);
+    const lastnv = nv[nv.length - 1];
+    const isCell = CELL_REFERENCE.test(lastnv);
+    const isRange = RANGE_REFERENCE.test(lastnv);
+    const validator = data.getSelectedValidator();
+    if (lastnv !== '=' && lastnv.length !== 0 && (isCell || isRange)) {
+      const {
+        sri, sci, eri, eci,
+      } = getRangeIndex(lastnv);
+      const lrows = data.rows.len;
+      const lcols = data.cols.len;
+      if (sri < lrows && sci < lcols && eri < lrows && eci < lcols) {
+        if (isCell) {
+          selectorSet.call(this, false, sri, sci);
+        }
+        if (isRange) {
+          setGroup.call(this, lastnv, sri, sci, eri - sri, eci - sci);
+        }
+        this.editor.setCell({ text }, validator);
+        addingCellRef = true;
+      }
+    } else if (addingCellRef && (prev.ri !== ri || prev.ci !== ci)) {
+      selectorSet.call(this, false, prev.ri, prev.ci);
+      this.editor.setCell({ text }, validator);
+      // editorSetSelector.call(this, text, validator);
+      addingCellRef = false;
+    } else {
+      data.setPrev(ri, ci);
+    }
+  }
   data.setSelectedCellText(text, state);
-  const { ri, ci } = data.selector;
   if (state === 'finished') {
     table.render();
   } else {
@@ -722,11 +823,11 @@ function sheetInitEvents() {
       overlayerMousemove.call(this, evt);
     })
     .on('mousedown', (evt) => {
-      const { indexes } = selector;
+      const [ri, ci] = selector.indexes;
       const { rows } = this.data;
-      const previousCell = rows.getCell(indexes[0], indexes[1]);
-      const cellRef = getRange(this.selector.range, rows.len)
-      if (!(isEditing || isCellValidFormula.call(this, previousCell, cellRef))) {
+      const previousCell = rows.getCell(ri, ci);
+      const cellRef = getRange(this.selector.range, rows.len);
+      if (!(addingCellRef || canAddCellRef.call(this, previousCell, cellRef))) {
         editor.clear();
       }
       contextMenu.hide();
@@ -762,7 +863,7 @@ function sheetInitEvents() {
 
       if (!isChart) {
         // Prevent double click switch cell when cell referencing
-        if (evt.detail === 2 && !isEditing) {
+        if (evt.detail === 2 && !addingCellRef) {
           editorSet.call(this);
         } else {
           overlayerMousedown.call(this, evt);
@@ -1033,6 +1134,7 @@ function sheetInitEvents() {
           evt.preventDefault();
           break;
         case 13: // enter
+          // Add selectorSet to above/below editor instead when cell referencing
           editor.clear();
           // shift + enter => move up
           // enter => move down

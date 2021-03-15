@@ -203,3 +203,22 @@ export function getRange(rangei, len) {
   }
   return asCellRange(sri, sci, eri, eci);
 }
+
+export function getRangeIndex(r) {
+  let mn = r.match(NUMBERS_REFERENCE);
+  let ml = r.match(LETTERS_REFERENCE);
+
+  if (mn === null || ml === null) {
+    return null;
+  }
+
+  mn = mn.map((ref) => parseInt(ref) - 1);
+  ml = ml.map((ref) => letterToColumn(ref) - 1);
+
+  return {
+    sri: mn[0],
+    sci: ml[0],
+    eri: mn[1] || mn[0],
+    eci: ml[1] || ml[0],
+  };
+}
