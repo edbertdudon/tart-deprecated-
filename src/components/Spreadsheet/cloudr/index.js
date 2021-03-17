@@ -44,39 +44,50 @@ import {
 } from '../../../functions';
 import { CellRange } from '../core/cell_range';
 
-const optionsFilterAdd = rFormulas
+const optionsFiltered = rFormulas
   .filter((formula) => 'addStart' in formula || 'addEnd' in formula);
 
 function addPrefixToFunction(cell) {
-  const optionsInCell = [];
-  for (let i = 0; i < optionsFilterAdd.length; i += 1) {
-    if (cell.includes(`${optionsFilterAdd[i].key}(`)) {
-      optionsInCell.push(optionsFilterAdd[i]);
+  let newCell = cell;
+  const options = optionsFiltered.filter((o) => cell.includes(`${o.key}(`));
+
+  options.forEach((o) => {
+    if ('addStart' in o) {
+      const prefix = new RegExp(`${o.key}\\(`);
+      const match = cell.match(prefix);
+      const replacement = `${o.key}(${o.addStart},`;
+      const prefixPlusStart = new RegExp(`${o.key}\\(${o.addStart}`);
+      // rnorm() -> rnorm(1,) but rnorm(1) remains
+      if (!prefixPlusStart.test(cell)) {
+        newCell = cell.replace(match, replacement);
+      }
     }
-  }
-  for (let j = 0; j < optionsInCell.length; j += 1) {
-    if ('addStart' in optionsInCell[j]) {
-      const match = cell.match(new RegExp(`${optionsInCell[j].key.slice(1, -1)}\\(`));
-      cell = cell.replace(match, optionsInCell[j].key.slice(1) + optionsInCell[j].addStart);
-    }
-  }
-  return cell;
+    // addEnd
+  });
+  return newCell;
 }
 
 function translateR(cell, name) {
-  const match = cell.match(CELL_REFERENCE);
-  if (match === null) return cell.replace(/'/g, '`');
   // replaces 'Sheet 1' with `Sheet 1`
-  let coordinates = cell.replace(/'/g, '`');
+  let coordinates = addPrefixToFunction(cell.replace(/'/g, '`'));
+  let match = coordinates.match(CELL_REFERENCE);
+
+  if (match === null) return coordinates;
+
+  const matchNo$ = match.map((c) => c.replace(/\$/g, ''));
+  match = match.map((c) => c.replace(/\$/g, '\\$'));
+
   for (let i = 0; i < match.length; i += 1) {
     // R reads 1:1 as first number in row and column
-    const column = letterToColumn(match[i].match(LETTERS_REFERENCE)[0]);
-    let row = match[i].match(NUMBERS_REFERENCE);
+    const column = letterToColumn(matchNo$[i].match(LETTERS_REFERENCE)[0]);
+    let row = matchNo$[i].match(NUMBERS_REFERENCE);
+
     // if (row != null) {row = row[0] - 1} else {row = NaN}
     if (row != null) { row = row[0]; } else { row = NaN; }
     if (i !== match.length - 1) {
-      const column2 = letterToColumn(match[i + 1].match(LETTERS_REFERENCE)[0]);
-      let row2 = match[i + 1].match(NUMBERS_REFERENCE);
+      const column2 = letterToColumn(matchNo$[i + 1].match(LETTERS_REFERENCE)[0]);
+      let row2 = matchNo$[i + 1].match(NUMBERS_REFERENCE);
+
       // if (row2 != null) {row2 = row2[0] - 1} else {row2 = NaN}
       if (row2 != null) { row2 = row2[0]; } else { row2 = NaN; }
       if (!/\d/.test(match[i])) {
@@ -84,15 +95,18 @@ function translateR(cell, name) {
         const ref5 = `[,${column}:${column2}]`;
         const prefix5 = new RegExp(`!${match[i]}:${match[i + 1]}`, 'g');
         coordinates = coordinates.replace(prefix5, ref5);
+
         // Check for B:B and replace with Sheet1[,2:2]
         const ref6 = `\`${name}\`[,${column}:${column2}]`;
         const prefix6 = new RegExp(`${match[i]}:${match[i + 1]}`, 'g');
         coordinates = coordinates.replace(prefix6, ref6);
       }
+
       // replaces Sheet1!B2:C2 with Sheet1[1:1, 2:3] (Letters as Y, Numbers as X)
       const ref4 = `[${row}:${row2},${column}:${column2}]`;
       const prefix4 = new RegExp(`!${match[i]}:${match[i + 1]}`, 'g');
       coordinates = coordinates.replace(prefix4, ref4);
+
       // replaces B2:C2 with Sheet1[1:1, 2:3] (Letters as Y, Numbers as X)
       const ref3 = `\`${name}\`[${row}:${row2},${column}:${column2}]`;
       const prefix3 = new RegExp(`${match[i]}:${match[i + 1]}`, 'g');
@@ -103,6 +117,7 @@ function translateR(cell, name) {
       const ref = `[${row},${column}]`;
       const prefix = new RegExp(`!${match[i]}`, 'g');
       coordinates = coordinates.replace(prefix, ref);
+
       // replaces B2 with Sheet1[1,2]
       const ref2 = `\`${name}\`[${row},${column}]`;
       const prefix2 = new RegExp(match[i], 'g');

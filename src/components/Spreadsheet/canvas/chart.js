@@ -431,6 +431,24 @@ function chartScrollHorizontal(left) {
   }
 }
 
+function chartScrollSetTop(top, data) {
+  const l = data.charts.length;
+  for (let i = l - 1; i >= 0; i -= 1) {
+    data.setChartY(i, top);
+    // ch[i].y = top;
+    invalidate();
+  }
+}
+
+function chartScrollSetLeft(left, data) {
+  const l = data.charts.length;
+  for (let i = l - 1; i >= 0; i -= 1) {
+    data.setChartX(i, left);
+    // ch[i].x = left;
+    invalidate();
+  }
+}
+
 export {
   INITIAL_WIDTH,
   INITIAL_HEIGHT,
@@ -449,4 +467,6 @@ export {
   chartMousemove,
   chartScrollVertical,
   chartScrollHorizontal,
+  chartScrollSetTop,
+  chartScrollSetLeft,
 };

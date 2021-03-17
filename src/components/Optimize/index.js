@@ -400,7 +400,7 @@ const Optimize = ({
       }
       data.cpsdrhs = translateR(cpsdrhs, name);
     }
-
+    console.log(data);
     doOptimization(data)
       .then((res) => {
         if ('error' in res) {
@@ -411,6 +411,8 @@ const Optimize = ({
 
         // const { res } = r;
         res.type = 'optimize';
+        delete data.slides;
+        delete data.names;
         // res.optimization = { ...sparkdata, solver: data.solver, sample: true };
         res.optimization = { ...data, sample: true };
         let prefix;

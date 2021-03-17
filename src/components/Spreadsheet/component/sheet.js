@@ -55,23 +55,23 @@ function scrollbarMove() {
   const tableOffset = this.getTableOffset();
   // console.log(',l:', l, ', left:', left, ', tOffset.left:', tableOffset.width);
   if (Math.abs(left) + width > tableOffset.width) {
-    chartScrollHorizontal.call(this, -25);
+    chartScrollHorizontal.call(this, -width);
     horizontalScrollbar.move({ left: l + width - tableOffset.width });
   } else {
     const fsw = data.freezeTotalWidth();
     if (left < fsw) {
-      chartScrollHorizontal.call(this, 25);
+      chartScrollHorizontal.call(this, width);
       horizontalScrollbar.move({ left: l - 1 - fsw });
     }
   }
   // console.log('top:', top, ', height:', height, ', tof.height:', tableOffset.height);
   if (Math.abs(top) + height > tableOffset.height) {
-    chartScrollVertical.call(this, 25);
+    chartScrollVertical.call(this, height);
     verticalScrollbar.move({ top: t + height - tableOffset.height - 1 });
   } else {
     const fsh = data.freezeTotalHeight();
     if (top < fsh) {
-      chartScrollVertical.call(this, -25);
+      chartScrollVertical.call(this, -height);
       verticalScrollbar.move({ top: t - 1 - fsh });
     }
   }
@@ -256,13 +256,14 @@ function overlayerMousemove(evt) {
   }
 }
 
-// let scrollThreshold = 15;
-let scrollThreshold = 0;
+let scrollThreshold = 3;
+// let scrollThreshold = 0;
 function overlayerMousescroll(evt) {
-  scrollThreshold -= 1;
+  // scrollThreshold -= 1;
+  scrollThreshold -= 1 + (0.01 * Math.abs(evt.deltaY));
   if (scrollThreshold > 0) return;
-  // scrollThreshold = 15;
-  scrollThreshold = 0;
+  scrollThreshold = 3;
+  // scrollThreshold = 0;
 
   const { verticalScrollbar, horizontalScrollbar, data } = this;
   const { top } = verticalScrollbar.scroll();
@@ -340,8 +341,10 @@ function overlayerTouch(direction, distance) {
   const { left } = horizontalScrollbar.scroll();
 
   if (direction === 'left' || direction === 'right') {
+    chartScrollHorizontal.call(this, distance);
     horizontalScrollbar.move({ left: left - distance });
   } else if (direction === 'up' || direction === 'down') {
+    chartScrollVertical.call(this, -distance);
     verticalScrollbar.move({ top: top - distance });
   }
 }
@@ -832,7 +835,6 @@ function sheetInitEvents() {
       }
       contextMenu.hide();
       contextMenuChart.hide();
-
       // charts
       const isChart = chartMousedown.call(this, evt);
       // For switching between charts in chart editor
@@ -928,6 +930,7 @@ function sheetInitEvents() {
   };
   // scrollbar move callback
   verticalScrollbar.moveFn = (distance, evt) => {
+    // console.log(evt)
     verticalScrollbarMove.call(this, distance, evt);
   };
   horizontalScrollbar.moveFn = (distance, evt) => {

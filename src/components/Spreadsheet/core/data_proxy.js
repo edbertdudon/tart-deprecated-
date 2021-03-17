@@ -1327,6 +1327,15 @@ export default class DataProxy {
     });
   }
 
+  setChartY(i, top) {
+    console.log(top)
+    this.charts[i].y = -top;
+  }
+
+  setChartX(i, left) {
+    this.charts[i].x = left;
+  }
+
   changeData(cb) {
     this.history.add(this.getData());
     cb();

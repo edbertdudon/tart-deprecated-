@@ -15,7 +15,11 @@ export default class Scrollbar {
           this.moveFn(this.vertical ? scrollTop : scrollLeft, evt);
         }
         // console.log('evt:::', evt);
-      });
+        this.scrollTop = scrollTop;
+        this.scrollLeft = scrollLeft;
+      })
+      // .on('mousedown', () => {
+      // });
   }
 
   move(v) {

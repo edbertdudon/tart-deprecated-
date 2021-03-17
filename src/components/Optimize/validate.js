@@ -148,6 +148,10 @@ export function validateLhsRhs(lhs, rhs) {
   mll = mll.map((ref) => letterToColumn(ref));
   mlr = mlr.map((ref) => letterToColumn(ref));
 
+  if (mnl.length < 2 && mnr.length < 2 && mll.length < 2 && mlr.length < 2) {
+    return true;
+  }
+
   const lrows = mnl[1] - mnl[0];
   const rrows = mnr[1] - mnr[0];
   const lcols = mll[1] - mll[0];
@@ -169,16 +173,15 @@ export function checkErrors(hasContstraint, errorConstraint, lhs, dir, rhs) {
   if (!hasContstraint) {
     return false;
   }
-  if (errorConstraint !== null) {
-    return true;
-  }
-  if (lhs.length === 0 && dir.length === 0 && rhs.length === 0) {
-    return false;
-  }
-  if (lhs.length > 0 && dir.length > 0 && rhs.length > 0) {
-    // if both are valid, return no error
-    if (validateLhsRhs(lhs, rhs) && validateLhsRhs(lhs, dir)) {
+  if (errorConstraint === null) {
+    if (lhs.length === 0 && dir.length === 0 && rhs.length === 0) {
       return false;
+    }
+    if (lhs.length > 0 && dir.length > 0 && rhs.length > 0) {
+      // if both are valid, return no error
+      if (validateLhsRhs(lhs, rhs) && validateLhsRhs(lhs, dir)) {
+        return false;
+      }
     }
   }
   return true;
@@ -188,16 +191,15 @@ export function checkConeErrors(hasCone, errorCone, lhs, rhs) {
   if (!hasCone) {
     return false;
   }
-  if (errorCone !== null) {
-    return true;
-  }
-  if (lhs.length === 0 && rhs.length === 0) {
-    return false;
-  }
-  if (lhs.length > 0 && rhs.length > 0) {
-    // if valid, return no error
-    if (validateLhsRhs(lhs, rhs)) {
+  if (errorCone === null) {
+    if (lhs.length === 0 && rhs.length === 0) {
       return false;
+    }
+    if (lhs.length > 0 && rhs.length > 0) {
+      // if valid, return no error
+      if (validateLhsRhs(lhs, rhs)) {
+        return false;
+      }
     }
   }
   return true;

@@ -498,7 +498,7 @@ const rFormulas = [
     title: tf('formula.rnorm'),
     syntax: 'rnorm(mean, sd)',
     description: 'Random generation for the normal distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -527,7 +527,7 @@ const rFormulas = [
     title: tf('formula.rexp'),
     syntax: 'rexp(rate)',
     description: 'Random generation for the exponential distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -556,7 +556,7 @@ const rFormulas = [
     title: tf('formula.rgamma'),
     syntax: 'rgamma(shape, scale)',
     description: 'Random generation for the Gamma distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -585,7 +585,7 @@ const rFormulas = [
     title: tf('formula.rpois'),
     syntax: 'rpois(lambda)',
     description: 'Random generation for the Poisson distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -614,7 +614,7 @@ const rFormulas = [
     title: tf('formula.rweibull'),
     syntax: 'rweibull(shape, scale)',
     description: 'Random generation for the Weibull distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -643,7 +643,7 @@ const rFormulas = [
     title: tf('formula.rcauchy'),
     syntax: 'rcauchy(location, scale)',
     description: 'Random generation for the Cauchy distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -672,7 +672,7 @@ const rFormulas = [
     title: tf('formula.rbeta'),
     syntax: 'rbeta(shape1, shape2, [non-centrality])',
     description: 'Random generation for the Beta distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -701,7 +701,7 @@ const rFormulas = [
     title: tf('formula.rt'),
     syntax: 'rt(degrees of freedom, [non-centrality])',
     description: 'Random generation for the t distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -730,7 +730,7 @@ const rFormulas = [
     title: tf('formula.rf'),
     syntax: 'rf(degrees of freedom1, degrees of freedom2, [non-centrality])',
     description: 'Random generation for the F distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -759,7 +759,7 @@ const rFormulas = [
     title: tf('formula.rbinom'),
     syntax: 'rbinom(number of trials, probability of success)',
     description: 'Random generation for the binomial distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -788,7 +788,7 @@ const rFormulas = [
     title: tf('formula.rgeom'),
     syntax: 'rgeom(probability of success)',
     description: 'Random generation for the geometric distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -817,7 +817,7 @@ const rFormulas = [
     title: tf('formula.rhyper'),
     syntax: 'rhyper(white balls, black balls, balls drawn)',
     description: 'Random generation for the hypergeometric distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -846,7 +846,7 @@ const rFormulas = [
     title: tf('formula.rlogis'),
     syntax: 'rlogis(location, scale)',
     description: 'Random generation for the logistic distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -875,7 +875,7 @@ const rFormulas = [
     title: tf('formula.rlnorm'),
     syntax: 'rlnorm(mean log, standard deviation log)',
     description: 'Random generation for the log normal distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -904,7 +904,7 @@ const rFormulas = [
     title: tf('formula.rnbinom'),
     syntax: 'rnbinom(number of trials, probability of success)',
     description: 'Random generation for the negative binomial distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -933,7 +933,7 @@ const rFormulas = [
     title: tf('formula.runif'),
     syntax: 'runif(min, max)',
     description: 'Random generation for the uniform distribution',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   {
@@ -962,7 +962,7 @@ const rFormulas = [
     title: tf('formula.rwilcox'),
     syntax: 'runif(number of observations 1, number of observations 2)',
     description: 'Random generation for the distribution of the Wilcoxon rank sum statistic',
-    addStart: '1,',
+    addStart: '1',
     category: 2,
   },
   // Data
