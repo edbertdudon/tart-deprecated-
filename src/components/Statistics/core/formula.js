@@ -18,7 +18,7 @@ const Formula = ({
   formulaText, variables, onSetFormula, formulaError,
 }) => (
   <div className="rightsidebar-formula">
-    <div className="rightsidebar-label">Linear model</div>
+    <div className="rightsidebar-label-formula">Linear model</div>
     <div>{readableFormula(formulaText)}</div>
     <OptionsWithFormula
       options={variables}

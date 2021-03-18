@@ -5,7 +5,7 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Icon from '@mdi/react';
@@ -400,53 +400,52 @@ const Optimize = ({
       }
       data.cpsdrhs = translateR(cpsdrhs, name);
     }
-    console.log(data);
-    doOptimization(data)
-      .then((res) => {
-        if ('error' in res) {
-          setError(res.error);
-          setLoading(false);
-          return;
-        }
 
-        // const { res } = r;
-        res.type = 'optimize';
-        delete data.slides;
-        delete data.names;
-        // res.optimization = { ...sparkdata, solver: data.solver, sample: true };
-        res.optimization = { ...data, sample: true };
-        let prefix;
-        if (objectiveClass === 0) {
-          prefix = objective;
-        } else if (objectiveClass === 1) {
-          prefix = linear;
-        } else {
-          prefix = quadratic;
-        }
-
-        const sheetname = `optimization ${prefix}`;
-        const isEmpty = slides.insertData(current, res, sheetname, 'read');
-
-        onSetDataNames(slides.datas.map((it) => it.name));
-        if (!isEmpty) {
-          onSetCurrent(current + 1);
-        }
-        onSetRightSidebar('none');
+    doOptimization(data).then((res) => {
+      if ('error' in res) {
+        setError(res.error);
         setLoading(false);
+        return;
+      }
 
-        onSetSaving(true);
-        firebase.doUploadWorksheet(
-          authUser.uid,
-          worksheetname,
-          createFile(slides, worksheetname),
-        ).then(() => onSetSaving(false));
-      });
+      // const { res } = r;
+      res.type = 'optimize';
+      delete data.slides;
+      delete data.names;
+      // res.optimization = { ...sparkdata, solver: data.solver, sample: true };
+      res.optimization = { ...data, sample: true };
+      let prefix;
+      if (objectiveClass === 0) {
+        prefix = objective;
+      } else if (objectiveClass === 1) {
+        prefix = linear;
+      } else {
+        prefix = quadratic;
+      }
+
+      const sheetname = `optimization ${prefix}`;
+      const isEmpty = slides.insertData(current, res, sheetname, 'read');
+
+      onSetDataNames(slides.datas.map((it) => it.name));
+      if (!isEmpty) {
+        onSetCurrent(current + 1);
+      }
+      onSetRightSidebar('none');
+      setLoading(false);
+
+      onSetSaving(true);
+      firebase.doUploadWorksheet(
+        authUser.uid,
+        worksheetname,
+        createFile(slides, worksheetname),
+      ).then(() => onSetSaving(false));
+    });
   };
 
-  const handleClose = () => {
-    onSetRightSidebar('none');
-    setLoading(false);
-  };
+  // const handleClose = () => {
+  //   onSetRightSidebar('none');
+  //   setLoading(false);
+  // };
 
   const OBJECTIVE_STATES = {
     0: <General
@@ -498,10 +497,6 @@ const Optimize = ({
 
   return (
     <>
-      <button type="button" className="rightsidebar-close" onClick={handleClose}>
-        <Icon path={mdiClose} size={1} />
-      </button>
-      <div className="rightsidebar-heading">Optimize</div>
       <div className="rightsidebar-label-header">Objective</div>
       {OBJECTIVE_STATES[objectiveClass]}
       <Variable

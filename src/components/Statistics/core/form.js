@@ -9,7 +9,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Icon from '@mdi/react';
-import { mdiLoading, mdiClose } from '@mdi/js';
+import { mdiLoading } from '@mdi/js';
 import statistics from './statisticsR';
 import { translateR, spreadsheetToR } from '../../Spreadsheet/cloudr';
 import DataRange, {
@@ -132,12 +132,6 @@ const Form = ({
 
   return (
     <>
-      <button className="rightsidebar-close" onClick={handleClose}>
-        <Icon path={mdiClose} size={1} />
-      </button>
-      <div className="rightsidebar-heading">
-        {statistics.find((e) => e.key === statistic).title}
-      </div>
       <DataRange
         firstRow={firstRow}
         datarange={datarange}

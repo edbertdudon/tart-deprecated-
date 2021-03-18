@@ -40,11 +40,11 @@ const withListsDropdown = (Component) => (props) => {
   const toggleHover = (index) => setActiveOption(index);
 
   return (
-    <div ref={listdropdownRef}>
+    <div className="rightsidebar-container" ref={listdropdownRef}>
       <ContextMenuTrigger id="withlistsdropdown-rightclick">
         <div className="rightsidebar-dropdown" onClick={toggleComponent}>
           {props.name}
-          <button className="rightsidebar-dropdown-close" onClick={handleDelete}>
+          <button type="button" className="rightsidebar-dropdown-close" onClick={handleDelete}>
             <Icon path={mdiClose} size={0.8} />
           </button>
         </div>

@@ -21,7 +21,7 @@ const withLists = (Component) => (props) => {
   const toggleHover = (index) => setActiveOption(index);
 
   return (
-    <div ref={listsRef}>
+    <div className="rightsidebar-container" ref={listsRef}>
       <div className="rightsidebar-dropdown" onClick={toggleComponent} style={props.styles}>
         {props.name}
       </div>

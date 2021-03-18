@@ -138,7 +138,7 @@ const Chart = ({
           ? <div className="rightsidebar-none">Cannot edit chart plotted in 'Run'</div>
           : (
             <>
-              <div className="rightsidebar-label">Chart Type</div>
+              <div className="rightsidebar-label-top">Chart Type</div>
               {types.map((selected, index) => (
                 <ChartsWithListsDropdown
                   onChange={handleUpdateChart}
