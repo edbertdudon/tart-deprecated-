@@ -1048,6 +1048,9 @@ rFormulas.forEach((f) => {
 const formulan = formulas
   .map((f) => f.key);
 
+// add to R
+// console.log(formulan.map((f) => `${f}\\\\(`).join('|'))
+
 export default rFormulas;
 
 export {
