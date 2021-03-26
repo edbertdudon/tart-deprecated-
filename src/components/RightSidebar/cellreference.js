@@ -17,7 +17,9 @@ const CellReference = ({
   const cellRef = useRef(null);
 
   useEffect(() => {
-    if (cell.match(ONLY_CELL_REFERENCE) || cell.match(ONLY_RANGE_REFERENCE)) {
+    if ((typeof cell === 'string' || cell instanceof String)
+      && (cell.match(ONLY_CELL_REFERENCE) || cell.match(ONLY_RANGE_REFERENCE))
+    ) {
       onSetCell(`'${name}'!${cell}`);
     }
     setName(slides.data.name);

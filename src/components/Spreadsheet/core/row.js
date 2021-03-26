@@ -1,5 +1,6 @@
 import helper from './helper';
 import { expr2expr } from './alphabet';
+import { createEmptyMatrix } from '../../../functions';
 
 class Rows {
   constructor({ len, height }) {
@@ -109,6 +110,36 @@ class Rows {
     cell.text = text;
   }
 
+  getRange(range) {
+    const {
+      sri, sci, eri, eci,
+    } = range;
+    const rows = eri + 1;
+    const cols = eci + 1;
+    const aoa = createEmptyMatrix(rows - sri, cols - sci);
+    for (let i = sri; i < eri + 1; i += 1) {
+      for (let j = sci; j < eci + 1; j += 1) {
+        let text = this.getCell(i, j);
+        if (text) {
+          text = text.text;
+        }
+        aoa[i - sri][j - sci] = text;
+      }
+    }
+    return aoa;
+  }
+
+  setRange(ri, ci, aoa) {
+    const rows = this;
+    let row;
+    aoa.forEach((r, i) => {
+      row = rows.getOrNew(ri + i);
+      r.forEach((c, j) => {
+        row.cells[ci + j] = { text: c.toString() };
+      });
+    });
+  }
+
   setMatrix(ri, ci, aoa) {
     const rows = this;
     let row;
@@ -116,11 +147,7 @@ class Rows {
       row = rows.getOrNew(ri + i);
       r.forEach((c, j) => {
         if (!(i === 0 && j === 0)) {
-          // if (c === 0) {
-            row.cells[ci + j] = { text: c.toString() };
-          // } else {
-          //   row.cells[ci + j] = { text: c };
-          // }
+          row.cells[ci + j] = { text: c.toString() };
         }
       });
     });

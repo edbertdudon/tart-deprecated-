@@ -44,7 +44,7 @@ const Chart = ({
       setMessage(null);
       setDatarangeError(null);
     } else {
-      const range = getRangeIndex(chartSelect.range);
+      const range = getRangeIndex(chartSelect.range, slides.data.rows.len);
       const rowNames = getRownames(rows._, range);
       if (rowNames.some((n) => Number.isNaN(parseFloat(n)))) {
         setVariables(rowNames);
@@ -105,7 +105,7 @@ const Chart = ({
     const { data } = slides;
     const { type, rows } = data;
     if (type !== 'input') {
-      const range = getRangeIndex(datarange);
+      const range = getRangeIndex(datarange, slides.data.rows.len);
       setFirstRow(!firstRow);
 
       // Flipped compared to datarange because firstrow changes
@@ -182,6 +182,9 @@ const Chart = ({
                 </>
                 )}
               <Checkbox onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+              <div className="rightsidebar-subtext">
+                Population charts require first row as header.
+              </div>
               <div className="rightsidebar-text">
                 {message && <div className="rightsidebar-error">{message}</div>}
               </div>

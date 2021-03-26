@@ -97,11 +97,11 @@ class Element {
     this.el.removeChild(el);
   }
 
-  /*
+  // /*
   first() {
     return this.el.firstChild;
   }
-
+  /*
   last() {
     return this.el.lastChild;
   }

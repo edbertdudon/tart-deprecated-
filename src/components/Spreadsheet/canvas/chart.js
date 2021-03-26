@@ -264,7 +264,6 @@ function chartMousemove(e) {
     const oldy = chartSelect.y;
     switch (expectResize) {
       case 0: {
-        // Still Wrong
         chartSelect.x = mx;
         chartSelect.y = my;
         // chartSelect.x -= my;
@@ -418,9 +417,10 @@ function chartMouseup() {
 function chartScrollVertical(top) {
   const l = this.data.charts.length;
   for (let i = l - 1; i >= 0; i -= 1) {
-    this.data.charts[i].y = charts[i].y - top;
+    this.data.charts[i].y = charts[i].y + top;
     invalidate();
   }
+  console.log(this.data.charts)
 }
 
 function chartScrollHorizontal(left) {

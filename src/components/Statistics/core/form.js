@@ -73,7 +73,7 @@ const Form = ({
     const { type, rows } = slides.data;
 
     if (type !== 'input') {
-      const range = getRangeIndex(datarange);
+      const range = getRangeIndex(datarange, slides.data.rows.len);
       setFirstRow(!firstRow);
 
       // Flipped compared to datarange because firstrow changes
@@ -142,6 +142,9 @@ const Form = ({
       />
       {children}
       <Checkbox onClick={handleFirstrow} condition={firstRow} text="First row as header" />
+      <div className="rightsidebar-subtext">
+        Population calculations require first row as header.
+      </div>
       <div className="rightsidebar-text">
         {/* <p>{statistics.find((e) => e.key === statistic).description}</p> */}
         {message && <div className="rightsidebar-error">{message}</div>}

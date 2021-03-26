@@ -46,6 +46,7 @@ function throttle(func, wait) {
 }
 
 function scrollbarMove() {
+  console.log('moved')
   const {
     data, verticalScrollbar, horizontalScrollbar,
   } = this;
@@ -55,23 +56,23 @@ function scrollbarMove() {
   const tableOffset = this.getTableOffset();
   // console.log(',l:', l, ', left:', left, ', tOffset.left:', tableOffset.width);
   if (Math.abs(left) + width > tableOffset.width) {
-    chartScrollHorizontal.call(this, -width);
+    // chartScrollHorizontal.call(this, -width);
     horizontalScrollbar.move({ left: l + width - tableOffset.width });
   } else {
     const fsw = data.freezeTotalWidth();
     if (left < fsw) {
-      chartScrollHorizontal.call(this, width);
+      // chartScrollHorizontal.call(this, width);
       horizontalScrollbar.move({ left: l - 1 - fsw });
     }
   }
   // console.log('top:', top, ', height:', height, ', tof.height:', tableOffset.height);
   if (Math.abs(top) + height > tableOffset.height) {
-    chartScrollVertical.call(this, height);
+    // chartScrollVertical.call(this, height);
     verticalScrollbar.move({ top: t + height - tableOffset.height - 1 });
   } else {
     const fsh = data.freezeTotalHeight();
     if (top < fsh) {
-      chartScrollVertical.call(this, -height);
+      // chartScrollVertical.call(this, -height);
       verticalScrollbar.move({ top: t - 1 - fsh });
     }
   }
@@ -83,6 +84,7 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
     table, selector, toolbar, data,
     contextMenu,
   } = this;
+  selector.removeCellRefs();
   contextMenu.setMode((ri === -1 || ci === -1) ? 'row-col' : 'range');
   const cell = data.getCell(ri, ci);
   if (multiple) {
@@ -256,13 +258,21 @@ function overlayerMousemove(evt) {
   }
 }
 
-let scrollThreshold = 3;
+let scrollThreshold = 10;
 // let scrollThreshold = 0;
 function overlayerMousescroll(evt) {
-  // scrollThreshold -= 1;
-  scrollThreshold -= 1 + (0.01 * Math.abs(evt.deltaY));
+  const { deltaY, deltaX } = evt;
+  const tempY = Math.abs(deltaY);
+  const tempX = Math.abs(deltaX);
+  if (tempY > 20) {
+    scrollThreshold -= tempY;
+  } if (tempX > 20) {
+    scrollThreshold -= tempX;
+  } else {
+    scrollThreshold -= 1;
+  }
   if (scrollThreshold > 0) return;
-  scrollThreshold = 3;
+  scrollThreshold = 10;
   // scrollThreshold = 0;
 
   const { verticalScrollbar, horizontalScrollbar, data } = this;
@@ -273,7 +283,7 @@ function overlayerMousescroll(evt) {
   const { rows, cols } = data;
 
   // deltaY for vertical delta
-  const { deltaY, deltaX } = evt;
+  // const { deltaY, deltaX } = evt;
   const loopValue = (ii, vFunc) => {
     let i = ii;
     let v = 0;
@@ -291,7 +301,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri + 1;
       if (ri < rows.len) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
-        chartScrollVertical.call(this, rh);
+        // chartScrollVertical.call(this, rh);
         verticalScrollbar.move({ top: top + rh - 1 });
       }
     } else {
@@ -299,7 +309,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri - 1;
       if (ri >= 0) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
-        chartScrollVertical.call(this, -rh);
+        // chartScrollVertical.call(this, -rh);
         verticalScrollbar.move({ top: ri === 0 ? 0 : top - rh });
       }
     }
@@ -312,7 +322,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci + 1;
       if (ci < cols.len) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
-        chartScrollHorizontal.call(this, -cw);
+        // chartScrollHorizontal.call(this, -cw);
         horizontalScrollbar.move({ left: left + cw - 1 });
       }
     } else {
@@ -320,13 +330,13 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci - 1;
       if (ci >= 0) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
-        chartScrollHorizontal.call(this, cw);
+        // chartScrollHorizontal.call(this, cw);
         horizontalScrollbar.move({ left: ci === 0 ? 0 : left - cw });
       }
     }
   };
-  const tempY = Math.abs(deltaY);
-  const tempX = Math.abs(deltaX);
+  // const tempY = Math.abs(deltaY);
+  // const tempX = Math.abs(deltaX);
   const temp = Math.max(tempY, tempX);
   // console.log('event:', evt);
   // detail for windows/mac firefox vertical scroll
@@ -341,10 +351,10 @@ function overlayerTouch(direction, distance) {
   const { left } = horizontalScrollbar.scroll();
 
   if (direction === 'left' || direction === 'right') {
-    chartScrollHorizontal.call(this, distance);
+    // chartScrollHorizontal.call(this, distance);
     horizontalScrollbar.move({ left: left - distance });
   } else if (direction === 'up' || direction === 'down') {
-    chartScrollVertical.call(this, -distance);
+    // chartScrollVertical.call(this, -distance);
     verticalScrollbar.move({ top: top - distance });
   }
 }
@@ -465,12 +475,7 @@ function toolbarChangePaintformatPaste() {
 
 const OPERATORS_REGEX = /=|(%\*%)|\+|-|\*|\/|~|,|\(/g;
 
-// function hasEqualStart(cell) {
-//   return cell && 'text' in cell && cell.text.startsWith('=');
-// }
-
 function canAddCellRef(cell, cellRef) {
-  // if (!hasEqualStart(cell)) {
   if (!(cell && 'text' in cell && cell.text.startsWith('='))) {
     return false;
   }
@@ -533,9 +538,13 @@ function overlayerMousedown(evt) {
     // console.log('selectorSetStart:::');
     const { indexes, range } = selector;
     const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
+    let cells;
     if (isAutofillEl) {
       selector.showAutofill(ri, ci);
-    } else if (!isBorderEl) {
+    } else if (isBorderEl) {
+      cells = data.getRange(range);
+      this.data.deleteRange(range);
+    } else {
       selectorSet.call(this, false, ri, ci);
     }
     // mouse move up
@@ -546,7 +555,14 @@ function overlayerMousedown(evt) {
         if (isAutofillEl) {
           selector.showAutofill(ri, ci);
         } else if (isBorderEl) {
-          selectorSetGroup.call(this, ri, ci)
+          selectorSetGroup.call(this, ri, ci);
+          // have moveCell follow cursor
+          // const {
+          //   sri, sci, eri, eci,
+          // } = range;
+          // const temp = data.getRange({
+          //   sri: ri, sci: ci, eri: ri + eri - sri, eci: ci + eci - sci,
+          // });
         } else if (e.buttons === 1 && !e.shiftKey) {
           selectorSet.call(this, true, ri, ci, true, true);
         }
@@ -561,8 +577,9 @@ function overlayerMousedown(evt) {
 
       if (isBorderEl && ri !== -1 && ci !== -1) {
         selectorSetGroup.call(this, ri, ci);
-        this.data.moveCell(range);
+        this.data.moveCell(ri, ci, cells);
         sheetReset.call(this);
+        this.trigger('save')
       }
       // toolbarChangePaintformatPaste.call(this);
 
@@ -592,12 +609,12 @@ function overlayerMousedown(evt) {
     });
   }
 
-  if (!isAutofillEl && evt.buttons === 1) {
-    if (evt.shiftKey) {
-      // console.log('shiftKey::::');
-      selectorSet.call(this, true, ri, ci);
-    }
-  }
+  // if (!isAutofillEl && evt.buttons === 1) {
+  //   if (evt.shiftKey) {
+  //     // console.log('shiftKey::::');
+  //     selectorSet.call(this, true, ri, ci);
+  //   }
+  // }
 }
 
 function editorSetOffset() {
@@ -612,12 +629,28 @@ function editorSetOffset() {
   editor.setOffset(sOffset, sPosition);
 }
 
+const CELL_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]+/g;
+const RANGE_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
+
+function getRangeIndexes(text, len) {
+  const cellRefs = text.match(CELL_REFERENCE) || [];
+  const rangeRefs = text.match(RANGE_REFERENCE) || [];
+
+  return cellRefs.concat(rangeRefs).map((r) =>
+    getRangeIndex(r.replace(OPERATORS_REGEX, ''), len));
+}
+
 export function editorSet() {
-  const { editor, data } = this;
+  const { editor, data, selector } = this;
   if (data.settings.mode === 'read') return;
   editorSetOffset.call(this);
-  editor.setCell(data.getSelectedCell(), data.getSelectedValidator());
+  const cellText = data.getSelectedCell();
+  editor.setCell(cellText, data.getSelectedValidator());
   clearClipboard.call(this);
+  const { text } = cellText;
+  if (text.startsWith('=')) {
+    selector.addCellRefs(getRangeIndexes(text, data.rows.len));
+  }
 }
 
 function editorSetSelector(text, validator) {
@@ -668,49 +701,57 @@ function colResizerFinished(cRect, distance) {
 }
 
 // No sheet name prefix, Not more than one, No A:A,
-const CELL_REFERENCE = /^\$?[A-Z]+\$?[0-9]+$/;
-const RANGE_REFERENCE = /^\$?[A-Z]+\$?[0-9]+:{1}\$?[A-Z]+\$?[0-9]+$/;
+const CELL_ONLY_REFERENCE = /^\$?[A-Z]+\$?[0-9]+$/;
+const RANGE_ONLY_REFERENCE = /^\$?[A-Z]+\$?[0-9]+:{1}\$?[A-Z]+\$?[0-9]+$/;
 
 function dataSetCellText(text, state = 'finished') {
-  console.log(text);
-  const { data, table } = this;
+  // console.log(text);
+  const { data, table, selector } = this;
   const { ri, ci } = data.selector;
   const { prev } = data;
   // const [ri, ci] = selector.indexes;
   if (data.settings.mode === 'read') return;
-  // Actively move selector when typing cell reference
+
+  // Actively set visuals when typing cell reference
+  selector.removeCellRefs();
   if (text.startsWith('=')) {
+    selector.addCellRefs(getRangeIndexes(text, data.rows.len));
+
     const nv = text.split(OPERATORS_REGEX);
     const lastnv = nv[nv.length - 1];
-    const isCell = CELL_REFERENCE.test(lastnv);
-    const isRange = RANGE_REFERENCE.test(lastnv);
+    const isCell = CELL_ONLY_REFERENCE.test(lastnv);
+    const isRange = RANGE_ONLY_REFERENCE.test(lastnv);
     const validator = data.getSelectedValidator();
     if (lastnv !== '=' && lastnv.length !== 0 && (isCell || isRange)) {
+      const range = getRangeIndex(lastnv, data.rows.len)
       const {
         sri, sci, eri, eci,
-      } = getRangeIndex(lastnv);
+      } = range;
       const lrows = data.rows.len;
       const lcols = data.cols.len;
       if (sri < lrows && sci < lcols && eri < lrows && eci < lcols) {
-        if (isCell) {
-          selectorSet.call(this, false, sri, sci);
-        }
-        if (isRange) {
-          setGroup.call(this, lastnv, sri, sci, eri - sri, eci - sci);
-        }
-        this.editor.setCell({ text }, validator);
+        // if (isCell) {
+        //   selectorSet.call(this, false, sri, sci);
+        // }
+        // if (isRange) {
+        //   setGroup.call(this, lastnv, sri, sci, eri - sri, eci - sci);
+        // }
+        // this.editor.setCell({ text }, validator);
+        // editorSetSelector.call(this, text, validator);
         addingCellRef = true;
       }
     } else if (addingCellRef && (prev.ri !== ri || prev.ci !== ci)) {
       selectorSet.call(this, false, prev.ri, prev.ci);
-      this.editor.setCell({ text }, validator);
-      // editorSetSelector.call(this, text, validator);
+      // this.editor.setCell({ text }, validator);
+      editorSetSelector.call(this, text, validator);
       addingCellRef = false;
     } else {
       data.setPrev(ri, ci);
     }
   }
+
   data.setSelectedCellText(text, state);
+  // const { ri, ci } = data.selector;
   if (state === 'finished') {
     table.render();
   } else {
@@ -931,6 +972,7 @@ function sheetInitEvents() {
   // scrollbar move callback
   verticalScrollbar.moveFn = (distance, evt) => {
     // console.log(evt)
+    chartScrollVertical.call(this, distance);
     verticalScrollbarMove.call(this, distance, evt);
   };
   horizontalScrollbar.moveFn = (distance, evt) => {
@@ -1101,6 +1143,7 @@ function sheetInitEvents() {
       }
     } else {
       // console.log('evt.keyCode:', evt.keyCode);
+      // const v = this.editor.inputText;
       switch (keyCode) {
         case 32:
           if (shiftKey) {
@@ -1142,6 +1185,9 @@ function sheetInitEvents() {
           // shift + enter => move up
           // enter => move down
           selectorMove.call(this, false, shiftKey ? 'up' : 'down');
+          // if (v.startsWith('=') && v.includes('%*%')) {
+          //   sheetReset.call(this);
+          // }
           evt.preventDefault();
           break;
         case 8: // backspace

@@ -28,12 +28,18 @@ import { options } from './options';
 import { withFirebase } from '../Firebase';
 
 const SpreadsheetWrapper = ({
-  firebase, authUser, slides, worksheetname, onSetSaving, onSetSlides, onSetDataNames,
+  firebase, authUser, slides, worksheetname, saving, onSetSaving, onSetSlides, onSetDataNames,
   onSetCurrent, onSetRightSidebar, onSetChartSelect, onSetFormula, onSetRange,
 }) => {
   const [pendingSave, setPendingSave] = useState({});
   const debouncePendingSave = useDebounce(pendingSave, 750);
   const firstUpdate = useRef(true);
+
+  function save() {
+    onSetSaving(true);
+    firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
+      .then(() => onSetSaving(false));
+  }
 
   useLayoutEffect(() => {
     const unsubscribe = firebase.doDownloadWorksheet(authUser.uid, worksheetname).then((res) => {
@@ -54,12 +60,14 @@ const SpreadsheetWrapper = ({
         .on('cell-deselect', (range) => onSetRange(range))
         .on('show-editor', () => onSetRightSidebar('chart'))
         .on('chart-select', (chart) => onSetChartSelect(chart))
+        .on('save', () => { if (!saving) save(); })
         .change((data) => setPendingSave(data));
 
       s.validate();
       s.data = s.datas[0];
       onSetDataNames([...s.datas.map((data) => data.name)]);
       onSetCurrent(0);
+      onSetFormula({ ...s.cell(0, 0), ri: 0, ci: 0 });
       onSetSlides(s);
       console.log(s);
       if (firstUpdate.current) {
@@ -72,12 +80,7 @@ const SpreadsheetWrapper = ({
 
   useEffect(() => {
     if (debouncePendingSave && firstUpdate.current === false) {
-      onSetSaving(true);
-      firebase.doUploadWorksheet(
-        authUser.uid,
-        worksheetname,
-        createFile(slides, worksheetname),
-      ).then(() => onSetSaving(false));
+      save();
     }
   }, [debouncePendingSave]);
 

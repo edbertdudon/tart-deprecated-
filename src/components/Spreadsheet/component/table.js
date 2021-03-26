@@ -4,7 +4,7 @@ import _cell from '../core/cell';
 // import { formulam } from '../cloudr/formula';
 import { formulam } from '../core/formula'
 import { formatm } from '../core/format';
-import { removeMatrix, rRender } from '../cloudr';
+import { rRender } from '../cloudr';
 import {
   Draw, DrawBox, thinLineWidth, npx,
 } from '../canvas/draw';

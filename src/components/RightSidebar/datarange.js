@@ -72,7 +72,7 @@ const DataRange = ({
 
     if (datarangeRef.current === document.activeElement) {
       const { rows } = slides.data;
-      const range = getRangeIndex(datarange);
+      const range = getRangeIndex(datarange, slides.data.rows.len);
 
       if (!range) {
         return;

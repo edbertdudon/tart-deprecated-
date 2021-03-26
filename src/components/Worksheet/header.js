@@ -24,7 +24,9 @@ const User = ({
     onMouseLeave={onHover}
     style={{ color: (hover || isOpen) && color }}
     role="banner"
-  >{text}</div>
+  >
+    {text}
+  </div>
 );
 
 const UserWithDropdown = withDropdown(User);

@@ -1,6 +1,7 @@
 import { h } from './element';
 import { cssPrefix } from '../config';
 import { CellRange } from '../core/cell_range';
+import { CELL_REF_COLORS } from '../../../constants/off-color';
 
 const selectorHeightBorderWidth = 2 * 2 - 1;
 let startZIndex = 10;
@@ -19,9 +20,10 @@ class SelectorElement {
       .hide();
     this.clipboardEl = h('div', `${cssPrefix}-selector-clipboard`).hide();
     this.autofillEl = h('div', `${cssPrefix}-selector-autofill`).hide();
+    this.cellRefEl = h('div', `${cssPrefix}-selector-cellRef`);
     this.el = h('div', `${cssPrefix}-selector`)
       .css('z-index', `${startZIndex}`)
-      .children(this.areaEl, this.clipboardEl, this.autofillEl)
+      .children(this.areaEl, this.clipboardEl, this.autofillEl, this.cellRefEl)
       .hide();
     if (useHideInput) {
       this.hideInput = h('input', '')
@@ -123,6 +125,29 @@ class SelectorElement {
 
   hideClipboard() {
     this.clipboardEl.hide();
+  }
+
+  addCellRefs(refs) {
+    this.cellRefEl.children(...refs.map((v, i) => {
+      const {
+        left, top, width, height,
+      } = v;
+      const color = CELL_REF_COLORS[i % CELL_REF_COLORS.length];
+      return this.cellRef = h('div', 'cellref')
+        .offset({
+          left,
+          top,
+          width: width - 5,
+          height: height - 5,
+        })
+        .css('border', `2px dashed ${color}`);
+    }));
+  }
+
+  removeCellRefs() {
+    while (this.cellRefEl.first()) {
+      this.cellRefEl.removeChild(this.cellRefEl.first());
+    }
   }
 }
 
@@ -451,6 +476,21 @@ export default class Selector {
   hideClipboard() {
     ['br', 'l', 't', 'tl'].forEach((property) => {
       this[property].hideClipboard();
+    });
+  }
+
+  addCellRefs(refs) {
+    if (refs.length > 0) {
+      const croffsets = refs.map((range) => this.data.getRect(range));
+      ['br', 'l', 't', 'tl'].forEach((property) => {
+        this[property].addCellRefs(croffsets);
+      });
+    }
+  }
+
+  removeCellRefs() {
+    ['br', 'l', 't', 'tl'].forEach((property) => {
+      this[property].removeCellRefs();
     });
   }
 }

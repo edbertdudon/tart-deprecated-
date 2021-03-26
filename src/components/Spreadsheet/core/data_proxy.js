@@ -150,7 +150,6 @@ function copyPaste(srcCellRange, dstCellRange, what, autofill = false) {
     merges.deleteWithin(dstCellRange);
   }
   rows.copyPaste(srcCellRange, dstCellRange, what, autofill, (ri, ci, cell) => {
-    console.log(ri, ci, cell)
     if (cell && cell.merge) {
       // console.log('cell:', ri, ci, cell);
       const [rn, cn] = cell.merge;
@@ -802,18 +801,6 @@ export default class DataProxy {
     });
   }
 
-  addMatrix(cellRange, aoa) {
-    const { sri, sci } = cellRange;
-    this.matrices.add(cellRange);
-    // this.rows.deleteCells(cr)
-    this.rows.setMatrix(sri, sci, aoa);
-  }
-
-  removeMatrix(cellRange) {
-    this.rows.deleteCellsExceptFirst(cellRange);
-    this.matrices.deleteWithin(cellRange);
-  }
-
   canAutofilter() {
     return !this.autoFilter.active();
   }
@@ -872,15 +859,17 @@ export default class DataProxy {
     });
   }
 
-  moveCell(range, what = 'all') {
-    const { selector } = this;
+  deleteRange(range, what = 'all') {
     this.changeData(() => {
-      copyPaste.call(this, range, selector.range, what);
       this.rows.deleteCells(range, what);
       if (what === 'all' || what === 'format') {
         this.merges.deleteWithin(range);
       }
     });
+  }
+
+  moveCell(ri, ci, aoa) {
+    this.rows.setRange(ri, ci, aoa);
   }
 
   // type: row | column
@@ -1141,6 +1130,22 @@ export default class DataProxy {
     return new CellRange(ri, ci, eri, eci, x, y);
   }
 
+  getRange(range) {
+    return this.rows.getRange(range);
+  }
+
+  addMatrix(cellRange, aoa) {
+    const { sri, sci } = cellRange;
+    this.matrices.add(cellRange);
+    // this.rows.deleteCells(cr)
+    this.rows.setMatrix(sri, sci, aoa);
+  }
+
+  removeMatrix(cellRange) {
+    this.rows.deleteCellsExceptFirst(cellRange);
+    this.matrices.deleteWithin(cellRange);
+  }
+
   eachMergesInView(viewRange, cb) {
     this.merges.filterIntersects(viewRange)
       .forEach((it) => cb(it));
@@ -1257,7 +1262,7 @@ export default class DataProxy {
         c.image.attr('src', c.sparkuri);
         if (shouldDraw) addRect(c);
       } else {
-        this.setChart(c, datas, getRangeIndex(c.range)).then((chart) => {
+        this.setChart(c, datas, getRangeIndex(c.range, this.rows.len)).then((chart) => {
           if (shouldDraw) addRect(chart);
         });
       }

@@ -3,7 +3,7 @@ import XLSX from 'xlsx';
 
 export const LETTERS_REFERENCE = /\$?[A-Z]+/g;
 export const NUMBERS_REFERENCE = /\$?[0-9]+/g;
-export const CELL_REFERENCE = /\$?[A-Z]+\$?[0-9]*/g;
+export const CELL_REFERENCE = /\$?[A-Z]+\$?[0-9]+/g;
 export const RANGE_REFERENCE = /\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
 
 // *** General Functions ***
@@ -204,9 +204,23 @@ export function getRange(rangei, len) {
   return asCellRange(sri, sci, eri, eci);
 }
 
-export function getRangeIndex(r) {
+export function getRangeIndex(r, len) {
   let mn = r.match(NUMBERS_REFERENCE);
   let ml = r.match(LETTERS_REFERENCE);
+
+  // A:A, A1:A, A:A2
+  if (ml !== null && (mn === null || mn.length < 2) && ml.length === 2) {
+    if (mn) {
+      mn = mn.map((ref) => parseInt(ref) - 1);
+    }
+    ml = ml.map((ref) => letterToColumn(ref) - 1);
+    return {
+      sri: mn ? mn[0] : 0,
+      sci: ml[0],
+      eri: len - 1,
+      eci: ml[1],
+    }
+  }
 
   if (mn === null || ml === null) {
     return null;

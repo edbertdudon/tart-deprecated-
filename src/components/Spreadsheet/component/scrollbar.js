@@ -1,5 +1,8 @@
 import { h } from './element';
 import { cssPrefix } from '../config';
+import {
+  chartScrollVertical, chartScrollHorizontal,
+} from '../canvas/chart';
 
 export default class Scrollbar {
   constructor(vertical) {
@@ -14,12 +17,11 @@ export default class Scrollbar {
         if (this.moveFn) {
           this.moveFn(this.vertical ? scrollTop : scrollLeft, evt);
         }
+        // if (this.vertical) {
+        //   chartScrollVertical.call(this, scrollTop);
+        // }
         // console.log('evt:::', evt);
-        this.scrollTop = scrollTop;
-        this.scrollLeft = scrollLeft;
-      })
-      // .on('mousedown', () => {
-      // });
+      });
   }
 
   move(v) {
