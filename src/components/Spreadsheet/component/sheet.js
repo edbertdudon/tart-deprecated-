@@ -19,9 +19,12 @@ import { xtoast } from './message';
 import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula';
-import { getRange, getRangeIndex } from '../../../functions';
+import {
+  OPERATORS_REGEX, getRange, getRangeIndex, getRangeIndexes
+} from '../../../functions';
 import { defaultSettings } from '../core/data_proxy';
 
+const INTERVAL_WAIT = 100;
 let isResize = false;
 let addingCellRef = false;
 // let addedCellRef = false;
@@ -56,23 +59,23 @@ function scrollbarMove() {
   const tableOffset = this.getTableOffset();
   // console.log(',l:', l, ', left:', left, ', tOffset.left:', tableOffset.width);
   if (Math.abs(left) + width > tableOffset.width) {
-    // chartScrollHorizontal.call(this, -width);
+    chartScrollHorizontal.call(this, -width);
     horizontalScrollbar.move({ left: l + width - tableOffset.width });
   } else {
     const fsw = data.freezeTotalWidth();
     if (left < fsw) {
-      // chartScrollHorizontal.call(this, width);
+      chartScrollHorizontal.call(this, width);
       horizontalScrollbar.move({ left: l - 1 - fsw });
     }
   }
   // console.log('top:', top, ', height:', height, ', tof.height:', tableOffset.height);
   if (Math.abs(top) + height > tableOffset.height) {
-    // chartScrollVertical.call(this, height);
+    chartScrollVertical.call(this, height);
     verticalScrollbar.move({ top: t + height - tableOffset.height - 1 });
   } else {
     const fsh = data.freezeTotalHeight();
     if (top < fsh) {
-      // chartScrollVertical.call(this, -height);
+      chartScrollVertical.call(this, -height);
       verticalScrollbar.move({ top: t - 1 - fsh });
     }
   }
@@ -301,7 +304,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri + 1;
       if (ri < rows.len) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
-        // chartScrollVertical.call(this, rh);
+        chartScrollVertical.call(this, rh);
         verticalScrollbar.move({ top: top + rh - 1 });
       }
     } else {
@@ -309,7 +312,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri - 1;
       if (ri >= 0) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
-        // chartScrollVertical.call(this, -rh);
+        chartScrollVertical.call(this, -rh);
         verticalScrollbar.move({ top: ri === 0 ? 0 : top - rh });
       }
     }
@@ -322,7 +325,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci + 1;
       if (ci < cols.len) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
-        // chartScrollHorizontal.call(this, -cw);
+        chartScrollHorizontal.call(this, -cw);
         horizontalScrollbar.move({ left: left + cw - 1 });
       }
     } else {
@@ -330,7 +333,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci - 1;
       if (ci >= 0) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
-        // chartScrollHorizontal.call(this, cw);
+        chartScrollHorizontal.call(this, cw);
         horizontalScrollbar.move({ left: ci === 0 ? 0 : left - cw });
       }
     }
@@ -351,10 +354,10 @@ function overlayerTouch(direction, distance) {
   const { left } = horizontalScrollbar.scroll();
 
   if (direction === 'left' || direction === 'right') {
-    // chartScrollHorizontal.call(this, distance);
+    chartScrollHorizontal.call(this, distance);
     horizontalScrollbar.move({ left: left - distance });
   } else if (direction === 'up' || direction === 'down') {
-    // chartScrollVertical.call(this, -distance);
+    chartScrollVertical.call(this, -distance);
     verticalScrollbar.move({ top: top - distance });
   }
 }
@@ -473,8 +476,6 @@ function toolbarChangePaintformatPaste() {
   }
 }
 
-const OPERATORS_REGEX = /=|(%\*%)|\+|-|\*|\/|~|,|\(/g;
-
 function canAddCellRef(cell, cellRef) {
   if (!(cell && 'text' in cell && cell.text.startsWith('='))) {
     return false;
@@ -510,7 +511,7 @@ function overlayerMousedown(evt) {
   // console.log(':::::overlayer.mousedown:', evt.detail, evt.button, evt.buttons, evt.shiftKey);
   // console.log('evt.target.className:', evt.target.className);
   const {
-    selector, data, table, sortFilter,
+    selector, data, table, sortFilter, overlayerEl
   } = this;
   const { offsetX, offsetY } = evt;
   const isAutofillEl = evt.target.className === `${cssPrefix}-selector-corner`;
@@ -547,6 +548,13 @@ function overlayerMousedown(evt) {
     } else {
       selectorSet.call(this, false, ri, ci);
     }
+    let isMovingX = false;
+    let isMovingY = false;
+    let movingIntervalX;
+    let movingIntervalY;
+    let scrollx = this.data.scroll.x;
+    let scrolly = this.data.scroll.y;
+    const { width, height } = overlayerEl.offset();
     // mouse move up
     mouseMoveUp(window, (e) => {
       // console.log('mouseMoveUp::::');
@@ -556,18 +564,68 @@ function overlayerMousedown(evt) {
           selector.showAutofill(ri, ci);
         } else if (isBorderEl) {
           selectorSetGroup.call(this, ri, ci);
-          // have moveCell follow cursor
-          // const {
-          //   sri, sci, eri, eci,
-          // } = range;
-          // const temp = data.getRange({
-          //   sri: ri, sci: ci, eri: ri + eri - sri, eci: ci + eci - sci,
-          // });
+          // console.log(data.selector.ri, data.cols.len)
+          const left = e.offsetX < 60;
+          const right = e.offsetX > width;
+          if (!isMovingX) {
+            if (left) {
+              isMovingX = true;
+              movingIntervalX = setInterval(() => {
+                scrollx = scrollx - 100;
+                horizontalScrollbarMove.call(this, scrollx, e);
+              }, INTERVAL_WAIT)
+            }
+            if (right) {
+              isMovingX = true;
+              movingIntervalX = setInterval(() => {
+                scrollx = scrollx + 100;
+                horizontalScrollbarMove.call(this, scrollx, e);
+              }, INTERVAL_WAIT)
+            }
+          } else {
+            if (!left && !right) {
+              clearInterval(movingIntervalX);
+              isMovingX = false;
+            }
+          }
+
+          const up = e.offsetY < 45;
+          const down = e.offsetY > height - 20;
+          if (!isMovingY) {
+            if (up) {
+              isMovingY = true;
+              movingIntervalY = setInterval(() => {
+                scrolly = scrolly - 25;
+                verticalScrollbarMove.call(this, scrolly, e);
+              }, INTERVAL_WAIT)
+            }
+            if (down) {
+              isMovingY = true;
+              movingIntervalY = setInterval(() => {
+                scrolly = scrolly + 25;
+                verticalScrollbarMove.call(this, scrolly, e);
+              }, INTERVAL_WAIT)
+            }
+          } else {
+            if (!up && !down) {
+              clearInterval(movingIntervalY);
+              isMovingY = false;
+            }
+          }
         } else if (e.buttons === 1 && !e.shiftKey) {
           selectorSet.call(this, true, ri, ci, true, true);
         }
       }
-    }, () => {
+    }, (e) => {
+      if (isMovingX) {
+        clearInterval(movingIntervalX);
+        isMovingX = false;
+      }
+      if (isMovingY) {
+        clearInterval(movingIntervalY);
+        isMovingY = false;
+      }
+
       if (isAutofillEl && selector.arange && data.settings.mode !== 'read') {
         if (data.autofill(selector.arange, 'all', (msg) => xtoast('Tip', msg))) {
           table.render();
@@ -627,17 +685,6 @@ function editorSetOffset() {
     sPosition = 'bottom';
   }
   editor.setOffset(sOffset, sPosition);
-}
-
-const CELL_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]+/g;
-const RANGE_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
-
-function getRangeIndexes(text, len) {
-  const cellRefs = text.match(CELL_REFERENCE) || [];
-  const rangeRefs = text.match(RANGE_REFERENCE) || [];
-
-  return cellRefs.concat(rangeRefs).map((r) =>
-    getRangeIndex(r.replace(OPERATORS_REGEX, ''), len));
 }
 
 export function editorSet() {
@@ -972,7 +1019,7 @@ function sheetInitEvents() {
   // scrollbar move callback
   verticalScrollbar.moveFn = (distance, evt) => {
     // console.log(evt)
-    chartScrollVertical.call(this, distance);
+    // chartScrollVertical.call(this, distance);
     verticalScrollbarMove.call(this, distance, evt);
   };
   horizontalScrollbar.moveFn = (distance, evt) => {

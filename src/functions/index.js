@@ -5,6 +5,7 @@ export const LETTERS_REFERENCE = /\$?[A-Z]+/g;
 export const NUMBERS_REFERENCE = /\$?[0-9]+/g;
 export const CELL_REFERENCE = /\$?[A-Z]+\$?[0-9]+/g;
 export const RANGE_REFERENCE = /\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
+export const OPERATORS_REGEX = /=|(%\*%)|\+|-|\*|\/|~|,|\(/g;
 
 // *** General Functions ***
 
@@ -235,4 +236,24 @@ export function getRangeIndex(r, len) {
     eri: mn[1] || mn[0],
     eci: ml[1] || ml[0],
   };
+}
+
+// Don't merge regex. +A will be captured not just A:A.
+const CELL_OPERATOR_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]+/g;
+const RANGE_OPERATOR_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
+
+export function getRangeIndexes(text, len) {
+  const cellRefs = text.match(CELL_OPERATOR_REFERENCE) || [];
+  const rangeRefs = text.match(RANGE_OPERATOR_REFERENCE) || [];
+
+  return cellRefs.concat(rangeRefs)
+    .map((r) => getRangeIndex(r.replace(OPERATORS_REGEX, ''), len));
+}
+
+export function getRangeRefs(text) {
+  const cellRefs = text.match(CELL_OPERATOR_REFERENCE) || [];
+  const rangeRefs = text.match(RANGE_OPERATOR_REFERENCE) || [];
+
+  return cellRefs.concat(rangeRefs)
+    .map((r) => r.replace(OPERATORS_REGEX, ''));
 }

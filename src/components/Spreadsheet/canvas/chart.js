@@ -420,7 +420,6 @@ function chartScrollVertical(top) {
     this.data.charts[i].y = charts[i].y + top;
     invalidate();
   }
-  console.log(this.data.charts)
 }
 
 function chartScrollHorizontal(left) {

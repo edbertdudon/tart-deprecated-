@@ -4,6 +4,9 @@ import { mouseMoveUp } from './event';
 import { cssPrefix } from '../config';
 import { options } from '../options';
 
+// let clicks = 0;
+// let timeout;
+
 export default class Resizer {
   constructor(vertical = false, minDistance) {
     this.moving = false;
@@ -75,6 +78,20 @@ export default class Resizer {
   mousedblclickHandler() {
     if (this.unhideIndex) this.unhideFn(this.unhideIndex);
   }
+
+  // mouseSingleDoubleClick(evt) {
+  //   clicks += 1;
+  //   if (clicks === 1) {
+  //     timeout = setTimeout(() => {
+  //       this.mousedownHandler(evt);
+  //       clicks = 0;
+  //     }, 300);
+  //   } else {
+  //     clearTimeout(timeout);
+  //     console.log('passed there');
+  //     clicks = 0;
+  //   }
+  // }
 
   mousedownHandler(evt) {
     let startEvt = evt;

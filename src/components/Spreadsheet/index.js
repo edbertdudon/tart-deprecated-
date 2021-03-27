@@ -197,7 +197,12 @@ class Spreadsheet {
       }
       const names = ds.filter(({ name }) => name.match(/^Sheet[0-9]+$/g))
         .map((d) => d.name.match(/[0-9]+/g)[0])
-      this.sheetIndex = Math.max(...names) + 1
+
+      if (names.length < 1) {
+        this.sheetIndex = 1
+      } else {
+        this.sheetIndex = Math.max(...names) + 1
+      }
     }
 
     return this;
