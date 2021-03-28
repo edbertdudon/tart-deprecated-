@@ -90,10 +90,10 @@ class Rows {
     return row.cells[ci];
   }
 
-  // what: all | text | format
+  // what: all | text | format | transposed
   setCell(ri, ci, cell, what = 'all') {
     const row = this.getOrNew(ri);
-    if (what === 'all') {
+    if (what === 'all' || what === 'transposed') {
       row.cells[ci] = cell;
     } else if (what === 'text') {
       row.cells[ci] = row.cells[ci] || {};
@@ -178,8 +178,15 @@ class Rows {
           if (this._[i].cells && this._[i].cells[j]) {
             for (let ii = dsri; ii <= deri; ii += rn) {
               for (let jj = dsci; jj <= deci; jj += cn) {
-                const nri = ii + (i - sri);
-                const nci = jj + (j - sci);
+                let nri;
+                let nci;
+                if (what === 'transposed') {
+                  nri = ii + (j - sci);
+                  nci = jj + (i - sri);
+                } else {
+                  nri = ii + (i - sri);
+                  nci = jj + (j - sci);
+                }
                 const ncell = helper.cloneDeep(this._[i].cells[j]);
                 // ncell.text
                 if (autofill && ncell && ncell.text && ncell.text.length > 0) {

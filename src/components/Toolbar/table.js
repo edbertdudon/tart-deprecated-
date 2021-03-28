@@ -11,6 +11,15 @@ import { compose } from 'recompose';
 import Header from './header';
 // import OFF_COLOR from '../../constants/off-color';
 
+const fontSizes = [
+  { pt: 0 },
+  { pt: 1 },
+  { pt: 2 },
+  { pt: 3 },
+  { pt: 4 },
+  { pt: 5 },
+];
+
 export const TABLE_DROPDOWN = [
   { key: 'Insert Row', type: 'item' },
   { key: 'Insert Column', type: 'item' },
@@ -21,14 +30,20 @@ export const TABLE_DROPDOWN = [
   { key: 'Merge Cells', type: 'item' },
   { key: 'Unmerge Cells', type: 'item' },
   { type: 'divider' },
-  { key: 'Freeze Cells', type: 'item' },
-  { key: 'Unfreeze Cells', type: 'item' },
+  {
+    key: 'Freeze Rows', type: 'secondarymenu', options: fontSizes, style: { width: '40px' },
+  },
+  { key: 'Freeze Header Row', type: 'item' },
+  {
+    key: 'Freeze Columns', type: 'secondarymenu', options: fontSizes, style: { width: '40px' },
+  },
+  { key: 'Freeze Header Column', type: 'item' },
   { type: 'divider' },
   { key: 'Filter Cell', type: 'item' },
 ];
 
 const Table = ({ slides }) => {
-  const handleTable = (key) => {
+  const handleTable = (key, second) => {
     const { data } = slides;
     switch (key) {
       case TABLE_DROPDOWN[0].key: {
@@ -56,15 +71,22 @@ const Table = ({ slides }) => {
         break;
       }
       case TABLE_DROPDOWN[9].key: {
-        const { ri, ci } = data.selector;
-        data.setFreeze(ri, ci);
+        data.setFreeze(second, data.freeze[1]);
         break;
       }
       case TABLE_DROPDOWN[10].key: {
-        data.setFreeze(0, 0);
+        data.setFreeze(1, data.freeze[1]);
+        break;
+      }
+      case TABLE_DROPDOWN[11].key: {
+        data.setFreeze(data.freeze[0], second);
         break;
       }
       case TABLE_DROPDOWN[12].key: {
+        data.setFreeze(data.freeze[0], 1);
+        break;
+      }
+      case TABLE_DROPDOWN[14].key: {
         data.autofilter();
         break;
       }
@@ -80,6 +102,7 @@ const Table = ({ slides }) => {
       text="Table"
       items={TABLE_DROPDOWN}
       onSelect={handleTable}
+      index={3}
       // color={OFF_COLOR[color[authUser.uid]]}
     />
   );

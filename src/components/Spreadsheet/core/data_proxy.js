@@ -145,7 +145,7 @@ function canPaste(src, dst, error = () => {}) {
 function copyPaste(srcCellRange, dstCellRange, what, autofill = false) {
   const { rows, merges } = this;
   // delete dest merge
-  if (what === 'all' || what === 'format') {
+  if (what === 'all' || what === 'format' || what === 'transposed') {
     rows.deleteCells(dstCellRange, what);
     merges.deleteWithin(dstCellRange);
   }
@@ -453,7 +453,7 @@ export default class DataProxy {
     this.clipboard.cut(this.selector.range);
   }
 
-  // what: all | text | format
+  // what: all | text | format | transposed
   paste(what = 'all', error = () => {}) {
     // console.log('sIndexes:', sIndexes);
     const { clipboard, selector } = this;
@@ -1103,14 +1103,19 @@ export default class DataProxy {
     return exceptRowTH;
   }
 
-  viewRange() {
+  viewRange(header = false) {
     const {
       scroll, rows, cols, freeze, exceptRowSet,
     } = this;
     // console.log('scroll:', scroll, ', freeze:', freeze)
     let { ri, ci } = scroll;
-    if (ri <= 0) [ri] = freeze;
-    if (ci <= 0) [, ci] = freeze;
+    if (header) {
+      if (ri <= 0) [ri] = freeze;
+      if (ci <= 0) [, ci] = freeze;
+    } else {
+      if (ri <= 0) ri = 0;
+      if (ci <= 0) ci = 0;
+    }
 
     let [x, y] = [0, 0];
     let [eri, eci] = [rows.len, cols.len];

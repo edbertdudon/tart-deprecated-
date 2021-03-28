@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiChevronRight } from '@mdi/js';
@@ -149,6 +149,7 @@ const withDropdown = (Component) => (props) => {
     <div className="dropdown" ref={wrapperRef}>
       <Component
         text={props.text}
+        index={props.index}
         hover={hover}
         onHover={handleHover}
         isOpen={isOpen}

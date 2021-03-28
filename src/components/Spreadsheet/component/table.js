@@ -155,6 +155,7 @@ function renderContent(viewRange, fw, fh, tx, ty) {
   draw.save();
   draw.translate(0, -exceptRowTotalHeight);
   const { sri, sci } = viewRange;
+
   viewRange.each((ri, ci) => {
     renderCell(draw, data, datas, ri, ci, sri, sci);
   }, (ri) => filteredTranslateFunc(ri));
@@ -339,6 +340,7 @@ class Table {
     this.clear();
 
     const viewRange = data.viewRange();
+    const viewRangeHeader = data.viewRange(true);
     // renderAll.call(this, viewRange, data.scroll);
     const tx = data.freezeTotalWidth();
     const ty = data.freezeTotalHeight();
@@ -346,7 +348,7 @@ class Table {
     // 1
     renderContentGrid.call(this, viewRange, fw, fh, tx, ty);
     renderContent.call(this, viewRange, fw, fh, -x, -y);
-    renderFixedHeaders.call(this, 'all', viewRange, fw, fh, tx, ty);
+    renderFixedHeaders.call(this, 'all', viewRangeHeader, fw, fh, tx, ty);
     renderFixedLeftTopCell.call(this, fw, fh);
     const [fri, fci] = data.freeze;
     if (fri > 0 || fci > 0) {
@@ -356,9 +358,13 @@ class Table {
         vr.sri = 0;
         vr.eri = fri - 1;
         vr.h = ty;
+        const vrh = viewRangeHeader.clone();
+        vrh.sri = 0;
+        vrh.eri = fri - 1;
+        vrh.h = ty;
         renderContentGrid.call(this, vr, fw, fh, tx, 0);
         renderContent.call(this, vr, fw, fh, -x, 0);
-        renderFixedHeaders.call(this, 'top', vr, fw, fh, tx, 0);
+        renderFixedHeaders.call(this, 'top', vrh, fw, fh, tx, 0);
       }
       // 3
       if (fci > 0) {
@@ -366,8 +372,12 @@ class Table {
         vr.sci = 0;
         vr.eci = fci - 1;
         vr.w = tx;
+        const vrh = viewRangeHeader.clone();
+        vr.sci = 0;
+        vr.eci = fci - 1;
+        vr.w = tx;
         renderContentGrid.call(this, vr, fw, fh, 0, ty);
-        renderFixedHeaders.call(this, 'left', vr, fw, fh, 0, ty);
+        renderFixedHeaders.call(this, 'left', vrh, fw, fh, 0, ty);
         renderContent.call(this, vr, fw, fh, 0, -y);
       }
       // 4

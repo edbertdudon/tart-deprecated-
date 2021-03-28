@@ -49,7 +49,6 @@ function throttle(func, wait) {
 }
 
 function scrollbarMove() {
-  console.log('moved')
   const {
     data, verticalScrollbar, horizontalScrollbar,
   } = this;
@@ -1065,8 +1064,20 @@ function sheetInitEvents() {
         paste.call(this, 'format');
         break;
       }
+      case 'paste-transposed': {
+        paste.call(this, 'transposed');
+        break;
+      }
       case 'hide': {
         hideRowsOrCols.call(this);
+        break;
+      }
+      case 'freeze-header-row': {
+        this.freeze(1, this.data.freeze[1]);
+        break;
+      }
+      case 'freeze-header-column': {
+        this.freeze(this.data.freeze[0], 1);
         break;
       }
       default: {

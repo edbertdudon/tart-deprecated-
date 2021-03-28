@@ -71,6 +71,7 @@ const Insert = ({
       text="Insert"
       items={INSERT_DROPDOWN}
       onSelect={handleInsert}
+      index={2}
       // color={OFF_COLOR[color[authUser.uid]]}
     />
   );

@@ -74,6 +74,7 @@ const Run = ({
       text="Run"
       items={RUN_DROPDOWN}
       onSelect={handleRun}
+      index={7}
       // color={OFF_COLOR[color[authUser.uid]]}
     />
   );

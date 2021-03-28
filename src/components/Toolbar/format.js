@@ -112,6 +112,7 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
       text="Format"
       items={FORMAT_DROPDOWN}
       onSelect={handleFormat}
+      index={4}
       // color={OFF_COLOR[color[authUser.uid]]}
     />
   );

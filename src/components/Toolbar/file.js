@@ -194,6 +194,7 @@ const Files = ({
         text="File"
         items={FILE_DROPDOWN}
         onSelect={handleFile}
+        index={0}
         // color={OFF_COLOR[color[authUser.uid]]}
       />
       <Share

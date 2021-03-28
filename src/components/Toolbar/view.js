@@ -62,6 +62,7 @@ const View = ({
       text="View"
       items={VIEW_DROPDOWN}
       onSelect={handleView}
+      index={5}
       // color={OFF_COLOR[color[authUser.uid]]}
     />
   );

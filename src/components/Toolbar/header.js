@@ -9,15 +9,26 @@ import React from 'react';
 import withDropdown from '../Dropdown';
 
 const Header = ({
-  text, hover, onHover, isOpen, onOpen,
-}) => (
-  <div
-    className="worksheet-toolbar-dropdown"
-    onClick={onOpen}
-    onMouseEnter={onHover}
-    onMouseLeave={onHover}
-    style={{ backgroundColor: (hover || isOpen) && 'rgba(0, 0, 0, 0.05)' }}
-  >{text}</div>
-);
+  text, index, hover, onHover, isOpen, onOpen,
+}) => {
+  const handleKeyDown = () => {
+    // if (e.keyCode === 13) onOpen()
+  };
+
+  return (
+    <div
+      className="worksheet-toolbar-dropdown"
+      onClick={onOpen}
+      onMouseEnter={onHover}
+      onMouseLeave={onHover}
+      onKeyDown={handleKeyDown}
+      style={{ backgroundColor: (hover || isOpen) && 'rgba(0, 0, 0, 0.05)' }}
+      // role="button"
+      // tabIndex={index}
+    >
+      {text}
+    </div>
+  );
+};
 
 export default withDropdown(Header);

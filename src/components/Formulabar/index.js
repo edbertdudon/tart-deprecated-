@@ -21,9 +21,9 @@ const Formulabar = ({ slides, formula }) => {
   }, [formula]);
 
   // const onInput = (e) => {
-    // console.log(e.target.textContent);
-    // setValue(e.target.textContent);
-    // slides.cellText(formula.ri, formula.ci, e.target.textContent).reRender();
+  //   console.log(e.target.textContent);
+  //   setValue(e.target.textContent);
+  //   slides.cellText(formula.ri, formula.ci, e.target.textContent).reRender();
   // };
 
   // useEffect(() => {

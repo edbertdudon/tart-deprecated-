@@ -76,6 +76,7 @@ const Edit = ({ slides }) => {
       text="Edit"
       items={EDIT_DROPDOWN}
       onSelect={handleEdit}
+      index={1}
       // color={OFF_COLOR[color[authUser.uid]]}
     />
   );

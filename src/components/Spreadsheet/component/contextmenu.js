@@ -5,11 +5,12 @@ import { tf } from '../locale/locale';
 import { options } from '../options';
 
 const menuItems = [
-  { key: 'copy', title: tf('contextmenu.copy'), /* label: 'Ctrl+C' */ },
-  { key: 'cut', title: tf('contextmenu.cut'), /* label: 'Ctrl+X' */ },
-  { key: 'paste', title: tf('contextmenu.paste'), /* label: 'Ctrl+V' */ },
-  { key: 'paste-value', title: tf('contextmenu.pasteValue'), /* label: 'Ctrl+Shift+V' */ },
-  { key: 'paste-format', title: tf('contextmenu.pasteFormat'), /* label: 'Ctrl+Alt+V' */ },
+  { key: 'copy', title: tf('contextmenu.copy')/* , label: 'Ctrl+C' */ },
+  { key: 'cut', title: tf('contextmenu.cut')/* , label: 'Ctrl+X' */ },
+  { key: 'paste', title: tf('contextmenu.paste')/* , label: 'Ctrl+V' */ },
+  { key: 'paste-value', title: tf('contextmenu.pasteValue')/* , label: 'Ctrl+Shift+V' */ },
+  { key: 'paste-format', title: tf('contextmenu.pasteFormat')/* , label: 'Ctrl+Alt+V' */ },
+  { key: 'paste-transposed', title: tf('contextmenu.pasteTransposed') },
   { key: 'divider' },
   { key: 'insert-row', title: tf('contextmenu.insertRow') },
   { key: 'insert-column', title: tf('contextmenu.insertColumn') },

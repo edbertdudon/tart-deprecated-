@@ -45,6 +45,7 @@ const Connect = () => {
         text="Connect"
         items={CONNECT_DROPDOWN}
         onSelect={handleConnect}
+        index={6}
         // color={OFF_COLOR[color[authUser.uid]]}
       />
       <ImportDatabase
