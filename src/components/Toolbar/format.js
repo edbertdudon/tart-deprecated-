@@ -23,7 +23,7 @@ const Format = ({ slides, rightSidebar, onSetRightSidebar }) => {
     { key: 'Edit Chart Data...', type: 'item' },
     { type: 'divider' },
     {
-      key: 'Font size', type: 'secondarymenu', options: fontSizes, style: { width: '55px' },
+      key: 'Font size', type: 'secondarymenu', options: fontSizes, style: { width: '55px' }, name: 'font',
     },
     { type: 'divider' },
     { key: 'Horizontal Align Left', type: 'item' },

@@ -4,9 +4,6 @@ import { mouseMoveUp } from './event';
 import { cssPrefix } from '../config';
 import { options } from '../options';
 
-// let clicks = 0;
-// let timeout;
-
 export default class Resizer {
   constructor(vertical = false, minDistance) {
     this.moving = false;
@@ -24,6 +21,7 @@ export default class Resizer {
     this.finishedFn = null;
     this.minDistance = minDistance;
     this.unhideFn = () => {};
+    this.setWidthFn = null;
   }
 
   showUnhide(index) {
@@ -79,25 +77,16 @@ export default class Resizer {
     if (this.unhideIndex) this.unhideFn(this.unhideIndex);
   }
 
-  // mouseSingleDoubleClick(evt) {
-  //   clicks += 1;
-  //   if (clicks === 1) {
-  //     timeout = setTimeout(() => {
-  //       this.mousedownHandler(evt);
-  //       clicks = 0;
-  //     }, 300);
-  //   } else {
-  //     clearTimeout(timeout);
-  //     console.log('passed there');
-  //     clicks = 0;
-  //   }
-  // }
-
   mousedownHandler(evt) {
     let startEvt = evt;
     const {
       el, lineEl, cRect, vertical, minDistance,
     } = this;
+    console.log(evt.detail, cRect);
+    if (evt.detail === 2) {
+      this.setWidthFn(cRect, minDistance);
+      return;
+    }
     let distance = vertical ? cRect.width : cRect.height;
     // console.log('distance:', distance);
     lineEl.show();

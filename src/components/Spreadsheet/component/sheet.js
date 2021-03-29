@@ -19,8 +19,10 @@ import { xtoast } from './message';
 import { cssPrefix } from '../config';
 // import { formulas } from '../core/formula';
 import { formulas } from '../cloudr/formula';
+import { options } from '../options';
 import {
-  OPERATORS_REGEX, getRange, getRangeIndex, getRangeIndexes
+  OPERATORS_REGEX, getRange, getRangeIndex, getRangeIndexes,
+  getTextWidth, getTextHeight, getTextsFromColumn, getTextsFromRows,
 } from '../../../functions';
 import { defaultSettings } from '../core/data_proxy';
 
@@ -460,6 +462,60 @@ function unhideRowsOrCols(type, index) {
   sheetReset.call(this);
 }
 
+function createFontText(c = {}, width) {
+  let {
+    size, name, bold, italic,
+  } = options.style.font;
+  if (c.style) {
+    const style = this.data.styles[c.style].font;
+    if (style) {
+      if (style.size) size = style.size;
+      if (style.name) name = style.name;
+      if (style.bold) bold = style.bold;
+      if (style.italic) italic = style.italic;
+    }
+  }
+  const fonttext = `${bold ? 'bold' : ''} ${italic ? 'italic' : ''} ${size}px ${name}`;
+  return fonttext;
+}
+
+function rowSetWidth(cRect, minDistance) {
+  if (cRect.ci !== -1) return;
+
+  const { data } = this;
+  const texts = getTextsFromRows(data.rows, cRect.ri)
+    .map((c) => getTextHeight(c.text, createFontText.call(c)));
+  const length = Math.max(...texts);
+  if (Number.isFinite(length)) {
+    if (length > minDistance) {
+      data.rows._[cRect.ri].height = length;
+    } else {
+      data.rows._[cRect.ri].height = minDistance;
+    }
+    sheetReset.call(this);
+    this.trigger('save');
+  }
+}
+
+function colSetWidth(cRect, minDistance) {
+  if (cRect.ri !== -1) return;
+
+  const { data } = this;
+  const texts = getTextsFromColumn(data.rows, cRect.ci)
+    .map((c) => getTextWidth(c.text, createFontText.call(c)));
+
+  const length = Math.max(...texts);
+  if (Number.isFinite(length)) {
+    if (length > minDistance) {
+      data.cols._[cRect.ci].width = length;
+    } else {
+      data.cols._[cRect.ci].width = minDistance;
+    }
+    sheetReset.call(this);
+    this.trigger('save');
+  }
+}
+
 function autofilter() {
   const { data } = this;
   data.autofilter();
@@ -694,7 +750,7 @@ export function editorSet() {
   editor.setCell(cellText, data.getSelectedValidator());
   clearClipboard.call(this);
   const { text } = cellText;
-  if (text.startsWith('=')) {
+  if (text && text.startsWith('=')) {
     selector.addCellRefs(getRangeIndexes(text, data.rows.len));
   }
 }
@@ -914,7 +970,7 @@ function sheetInitEvents() {
     })
     .on('mousedown', (evt) => {
       const [ri, ci] = selector.indexes;
-      const { rows } = this.data;
+      const { rows, cols } = this.data;
       const previousCell = rows.getCell(ri, ci);
       const cellRef = getRange(this.selector.range, rows.len);
       if (!(addingCellRef || canAddCellRef.call(this, previousCell, cellRef))) {
@@ -952,7 +1008,11 @@ function sheetInitEvents() {
 
       if (!isChart) {
         // Prevent double click switch cell when cell referencing
-        if (evt.detail === 2 && !addingCellRef) {
+        if (evt.detail === 2
+          && evt.offsetX > cols.indexWidth
+          && evt.offsetY > rows.height
+          && !addingCellRef
+        ) {
           editorSet.call(this);
         } else {
           overlayerMousedown.call(this, evt);
@@ -1014,6 +1074,13 @@ function sheetInitEvents() {
   };
   colResizer.unhideFn = (index) => {
     unhideRowsOrCols.call(this, 'col', index);
+  };
+  // resizer setWidth callback
+  rowResizer.setWidthFn = (cRect, minDistance) => {
+    rowSetWidth.call(this, cRect, minDistance);
+  };
+  colResizer.setWidthFn = (cRect, minDistance) => {
+    colSetWidth.call(this, cRect, minDistance);
   };
   // scrollbar move callback
   verticalScrollbar.moveFn = (distance, evt) => {
@@ -1295,8 +1362,8 @@ export default class Sheet {
     // table
     this.tableEl = h('canvas', `${cssPrefix}-table`);
     // resizer
-    this.rowResizer = new Resizer(false, data.rows.height);
-    this.colResizer = new Resizer(true, data.cols.minWidth);
+    this.rowResizer = new Resizer(false, data.rows.height, data);
+    this.colResizer = new Resizer(true, data.cols.minWidth, data);
     // scrollbar
     this.verticalScrollbar = new Scrollbar(true);
     this.horizontalScrollbar = new Scrollbar(false);
@@ -1373,7 +1440,6 @@ export default class Sheet {
     // this.print.resetData(data);
     this.selector.resetData(data);
     this.table.resetData(data, datas);
-
     if (isLoaded) {
       this.data.resetCharts();
     }

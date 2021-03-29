@@ -68,13 +68,33 @@ export function useOutsideClick(ref, setIsOpen) {
   });
 }
 
-export function getTextWidth(text, font) {
+export function getTextsFromColumn(rows, ci) {
+  return Object.keys(rows._)
+    .map((r) => rows._[r].cells.[ci])
+    .filter((c) => c !== undefined);
+}
+
+export function getTextsFromRows(rows, ri) {
+  return Object.values(rows._[ri].cells);
+}
+
+function getTextMetrics(text, font) {
   // re-use canvas object for better performance
   const canvas = getTextWidth.canvas || (getTextWidth.canvas = document.createElement('canvas'));
   const context = canvas.getContext('2d');
   context.font = font;
-  const metrics = context.measureText(text);
-  return metrics.width;
+  return context.measureText(text);
+}
+
+export function getTextWidth(text, font) {
+  return getTextMetrics(text, font).width;
+}
+
+export function getTextHeight(text, font) {
+  const metrics = getTextMetrics(text, font);
+  const fontHeight = metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent;
+  // const actualHeight = metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent;
+  return fontHeight;
 }
 
 // *** File Organization ***

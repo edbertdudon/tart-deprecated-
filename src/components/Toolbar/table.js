@@ -9,6 +9,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Header from './header';
+import { sheetReset } from '../Spreadsheet/component/sheet';
 // import OFF_COLOR from '../../constants/off-color';
 
 const fontSizes = [
@@ -20,29 +21,33 @@ const fontSizes = [
   { pt: 5 },
 ];
 
-export const TABLE_DROPDOWN = [
-  { key: 'Insert Row', type: 'item' },
-  { key: 'Insert Column', type: 'item' },
-  { type: 'divider' },
-  { key: 'Delete Row', type: 'item' },
-  { key: 'Delete Column', type: 'item' },
-  { type: 'divider' },
-  { key: 'Merge Cells', type: 'item' },
-  { key: 'Unmerge Cells', type: 'item' },
-  { type: 'divider' },
-  {
-    key: 'Freeze Rows', type: 'secondarymenu', options: fontSizes, style: { width: '40px' },
-  },
-  { key: 'Freeze Header Row', type: 'item' },
-  {
-    key: 'Freeze Columns', type: 'secondarymenu', options: fontSizes, style: { width: '40px' },
-  },
-  { key: 'Freeze Header Column', type: 'item' },
-  { type: 'divider' },
-  { key: 'Filter Cell', type: 'item' },
-];
-
 const Table = ({ slides }) => {
+  const TABLE_DROPDOWN = [
+    { key: 'Insert Row', type: 'item' },
+    { key: 'Insert Column', type: 'item' },
+    { type: 'divider' },
+    { key: 'Delete Row', type: 'item' },
+    { key: 'Delete Column', type: 'item' },
+    { type: 'divider' },
+    { key: 'Merge Cells', type: 'item' },
+    { key: 'Unmerge Cells', type: 'item' },
+    { type: 'divider' },
+    {
+      key: 'Freeze Rows', type: 'secondarymenu', options: fontSizes, style: { width: '40px' }, name: 'freezerows',
+    },
+    {
+      key: 'Freeze Header Row', secondarytext: 'Unfreeze Header Row', type: 'freezeheaderrow',
+    },
+    {
+      key: 'Freeze Columns', type: 'secondarymenu', options: fontSizes, style: { width: '40px' }, name: 'freezecolumns',
+    },
+    {
+      key: 'Freeze Header Column', secondarytext: 'Unfreeze Header Column', type: 'freezeheadercolumn',
+    },
+    { type: 'divider' },
+    { key: 'Filter Cell', type: 'item' },
+  ];
+
   const handleTable = (key, second) => {
     const { data } = slides;
     switch (key) {
@@ -72,18 +77,30 @@ const Table = ({ slides }) => {
       }
       case TABLE_DROPDOWN[9].key: {
         data.setFreeze(second, data.freeze[1]);
+        sheetReset.call(slides.sheet);
         break;
       }
       case TABLE_DROPDOWN[10].key: {
-        data.setFreeze(1, data.freeze[1]);
+        if (second) {
+          data.setFreeze(0, data.freeze[1]);
+        } else {
+          data.setFreeze(1, data.freeze[1]);
+        }
+        sheetReset.call(slides.sheet);
         break;
       }
       case TABLE_DROPDOWN[11].key: {
         data.setFreeze(data.freeze[0], second);
+        sheetReset.call(slides.sheet);
         break;
       }
       case TABLE_DROPDOWN[12].key: {
-        data.setFreeze(data.freeze[0], 1);
+        if (second) {
+          data.setFreeze(data.freeze[0], 0);
+        } else {
+          data.setFreeze(data.freeze[0], 1);
+        }
+        sheetReset.call(slides.sheet);
         break;
       }
       case TABLE_DROPDOWN[14].key: {

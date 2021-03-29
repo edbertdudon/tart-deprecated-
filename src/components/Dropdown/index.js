@@ -2,10 +2,13 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '@mdi/react';
 import { mdiChevronRight } from '@mdi/js';
+import FreezeHeader from './freezeheader-item'
 import { useOutsideClick } from '../../functions';
 import './index.less';
 
-const Item = ({ text, onSelect }) => {
+const Item = ({
+  text, onSelect,
+}) => {
   const [hover, setHover] = useState(false);
 
   const handleHover = () => setHover(!hover);
@@ -62,7 +65,7 @@ const Toggle = ({
 };
 
 const SecondaryMenu = ({
-  text, items, style, onSelect, color,
+  text, items, style, name, onSelect, color,
 }) => {
   const [hover, setHover] = useState(false);
   const [hoverFirst, setHoverFirst] = useState(false);
@@ -83,7 +86,7 @@ const SecondaryMenu = ({
         // }}
       >
         {text}
-        <div className="dropdown-item-arrow">
+        <div className={`dropdown-item-arrow-${name}`}>
           <Icon path={mdiChevronRight} size={0.9} />
         </div>
       </div>
@@ -105,7 +108,14 @@ const SecondaryMenu = ({
 };
 
 const getDropdownStates = (item, i, onSelect, color, component, isOpen) => ({
-  item: <Item text={item.key} onSelect={onSelect} key={item.key} color={color} />,
+  item: <Item
+    text={item.key}
+    secondarytext={item.secondarytext}
+    isClicked={item.isClicked}
+    onSelect={onSelect}
+    key={item.key}
+    color={color}
+  />,
   link: <Redirect text={item.key} path={item.path} key={item.key} color={color} />,
   toggle: <Toggle
     text={item.key}
@@ -118,15 +128,34 @@ const getDropdownStates = (item, i, onSelect, color, component, isOpen) => ({
     text={item.key}
     items={item.options}
     style={item.style}
+    name={item.name}
     onSelect={onSelect}
     color={color}
     key={item.key}
+  />,
+  freezeheaderrow: <FreezeHeader
+    text={item.key}
+    secondarytext={item.secondarytext}
+    onSelect={onSelect}
+    key={item.key}
+    color={color}
+    isRow
+  />,
+  freezeheadercolumn: <FreezeHeader
+    text={item.key}
+    secondarytext={item.secondarytext}
+    onSelect={onSelect}
+    key={item.key}
+    color={color}
+    isRow={false}
   />,
   component: <div key={item.key}>{component}</div>,
   divider: <hr key={i} />,
 });
 
-const withDropdown = (Component) => (props) => {
+const withDropdown = (Component) => ({
+  text, index, color, style, classname, items, onSelect,
+}) => {
   const [hover, setHover] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
@@ -140,7 +169,7 @@ const withDropdown = (Component) => (props) => {
 
   const handleSelect = (selection, second) => {
     setIsOpen(!isOpen);
-    props.onSelect(selection, second);
+    onSelect(selection, second);
   };
 
   const rect = wrapperRef.current && wrapperRef.current.getBoundingClientRect();
@@ -148,31 +177,31 @@ const withDropdown = (Component) => (props) => {
   return (
     <div className="dropdown" ref={wrapperRef}>
       <Component
-        text={props.text}
-        index={props.index}
+        text={text}
+        index={index}
         hover={hover}
         onHover={handleHover}
         isOpen={isOpen}
         setIsOpen={setIsOpen}
         onOpen={handleOpen}
-        color={props.color}
-        style={props.style}
+        color={color}
+        style={style}
       />
       {isOpen
         && (
         <div
-          className={props.classname}
+          className={classname}
           style={{
             left: (wrapperRef.current && (rect.right + rect.width) > window.innerWidth)
               && '45px',
             top: (wrapperRef.current
-              && (rect.bottom + (props.items.length * 32)) > window.innerHeight)
-              && `-${props.items.length * 32 - 40}px`,
+              && (rect.bottom + (items.length * 32)) > window.innerHeight)
+              && `-${items.length * 32 - 40}px`,
           }}
           ref={contentRef}
         >
-          {props.items.map((item, i) => getDropdownStates(
-            item, i, handleSelect, props.color, item.component, item.visibility,
+          {items.map((item, i) => getDropdownStates(
+            item, i, handleSelect, color, item.component, item.visibility,
           )[item.type])}
         </div>
         )}
