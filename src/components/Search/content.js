@@ -13,10 +13,14 @@ const SearchContent = ({
   firebase, authUser, search, jobs, isJobsActive,
   onSetJobs, onSetIsJobsActive, onSetWorksheets,
 }) => {
-  // console.log(search)
   useEffect(() => {
+    // onSetJobs([{ status: 'failed list jobs' }]);
     firebase.doListJobs(authUser.uid)
-      .then((res) => onSetJobs(res))
+      .then((res) => {
+        if (!('error' in res)) {
+          onSetJobs(res);
+        }
+      })
       .then(() => onSetIsJobsActive(
         shouldReloadTimer(jobs),
       ));
@@ -36,7 +40,11 @@ const SearchContent = ({
         }
         return res;
       })
-      .then((res) => onSetJobs(res))
+      .then((res) => {
+        if (!('error' in res)) {
+          onSetJobs(res);
+        }
+      })
       .then(() => onSetIsJobsActive(
         shouldReloadTimer(jobs),
       ));
@@ -44,15 +52,11 @@ const SearchContent = ({
 
   const handleJobSubmit = (filename) => {
     onSetIsJobsActive(true);
-    onSetJobs(
-      submitJob(filename, jobs),
-    );
+    onSetJobs(submitJob(filename, jobs));
   };
 
   const handleJobCancel = (runId) => {
-    onSetJobs(
-      cancelJob(runId, jobs),
-    );
+    onSetJobs(cancelJob(runId, jobs));
   };
 
   return (
@@ -64,26 +68,23 @@ const SearchContent = ({
             <div className="home-content-search">
               {`No results found for "${search.input}"`}
             </div>
-          )
-          : (
+          ) : (
             <div>
               {[...search.ws, ...search.is, ...search.cs].map((file, index) => (
                 search.is.includes(file)
                   ? <SearchSource filename={file} key={index} />
           			  : (
-            <DataSourceSearch
-              filename={file}
-              connections={search.cs}
-              runId={getJobId(file.replace(/\s/g, '').toLowerCase(), jobs)}
-              onJobSubmit={handleJobSubmit}
-              onJobCancel={handleJobCancel}
-              key={index}
-            />
-                  )
-              ))}
+                    <DataSourceSearch
+                      filename={file}
+                      connections={search.cs}
+                      runId={getJobId(file.replace(/\s/g, '').toLowerCase(), jobs)}
+                      onJobSubmit={handleJobSubmit}
+                      onJobCancel={handleJobCancel}
+                      key={index}
+                    />
+              )))}
             </div>
-          )
-        )}
+        ))}
     </div>
   );
 };

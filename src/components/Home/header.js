@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Icon from '@mdi/react';
-import { mdiClockTimeNine } from '@mdi/js';
+import { mdiBell } from '@mdi/js';
 
 import withDropdown from '../Dropdown';
 import withNotification from '../Notification';
@@ -61,8 +61,9 @@ const Notification = ({
     onMouseEnter={onHover}
     onMouseLeave={onHover}
     style={{ color: (hover || isOpen) && color }}
+    type="button"
   >
-    <Icon path={mdiClockTimeNine} size={1} />
+    <Icon path={mdiBell} size={0.9} />
   </button>
 );
 

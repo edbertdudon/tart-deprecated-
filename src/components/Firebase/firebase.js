@@ -147,6 +147,7 @@ class Firebase {
   doListJobs = (authUser) => fetchG('listjobs', {
     authuser: authUser.toLowerCase(),
   }).then((res) => res.json())
+    .catch(() => [{ status: 'failed list jobs' }])
 
   // *** Database Connector API ***
 

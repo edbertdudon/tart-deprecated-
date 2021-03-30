@@ -27,7 +27,11 @@ const JobsContentRunning = ({
     });
 
     firebase.doListJobs(authUser.uid)
-      .then((res) => onSetJobs(res))
+      .then((res) => {
+        if (!('error' in res)) {
+          onSetJobs(res);
+        }
+      })
       .then(() => onSetIsJobsActive(shouldReloadTimer(jobs)));
   }, []);
 
@@ -45,7 +49,11 @@ const JobsContentRunning = ({
         }
         return res;
       })
-      .then((res) => onSetJobs(res))
+      .then((res) => {
+        if (!('error' in res)) {
+          onSetJobs(res);
+        }
+      })
       .then(() => onSetIsJobsActive(shouldReloadTimer(jobs)));
   }, 60000);
 
@@ -54,7 +62,9 @@ const JobsContentRunning = ({
     onSetJobs(submitJob(filename, jobs));
   };
 
-  const handleJobCancel = (runId) => onSetJobs(cancelJob(runId, jobs));
+  const handleJobCancel = (runId) => {
+    onSetJobs(cancelJob(runId, jobs));
+  };
 
   return (
     <div>
@@ -66,6 +76,7 @@ const JobsContentRunning = ({
             return worksheet;
           }
         }
+        return [];
       }).map((worksheet) => (
         <DataSourceJobs
           filename={worksheet.name}

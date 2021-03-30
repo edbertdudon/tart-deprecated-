@@ -21,7 +21,7 @@ export function shouldReloadTimer(jobs) {
 }
 
 export function getJobId(worksheetname, jobs) {
-  if (jobs[0].status !== 'failed list jobs') {
+  if (jobs[0].status && jobs[0].status !== 'failed list jobs') {
     for (let i = 0; i < jobs.length; i += 1) {
       if (worksheetname === jobs[i].labels.worksheet
         && queueStates.has(jobs[i].status.state)) {

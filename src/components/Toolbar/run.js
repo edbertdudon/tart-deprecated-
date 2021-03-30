@@ -29,9 +29,7 @@ const Run = ({
     switch (key) {
       case RUN_DROPDOWN[0].key: {
         onSetIsJobsActive(true);
-        onSetJobs(
-          submitJob(worksheetname, jobs),
-        );
+        onSetJobs(submitJob(worksheetname, jobs));
         onSetNotifications(
           notifications.concat({ key: `Job started: ${worksheetname}`, type: 'notification' }),
         );
@@ -43,10 +41,7 @@ const Run = ({
         ).then((jobResp) => {
           if (jobResp === 'failed job') {
             const runId = getJobId(worksheetname.replace(/\s/g, '').toLowerCase(), jobs);
-
-            onSetJobs(
-              cancelJob(runId, jobs),
-            );
+            onSetJobs(cancelJob(runId, jobs));
             onSetNotifications(
               notifications.concat({ key: `Job cancelled: ${worksheetname}`, type: 'notification' }),
             );

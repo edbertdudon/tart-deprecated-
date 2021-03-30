@@ -92,7 +92,7 @@ import { withFirebase } from '../Firebase';
 
 const Content = ({
   firebase, authUser, worksheets, jobs, notifications, onSetWorksheets,
-  onSetJobs, isJobsActive, onSetIsJobsActive, onSetNotifications,
+  onSetJobs, isJobsActive, onSetIsJobsActive, onSetNotifications, onSetScroll,
 }) => {
   const [loading, setLoading] = useState(false);
 
@@ -102,7 +102,7 @@ const Content = ({
       onSetWorksheets(res.items);
       setLoading(false);
     });
-
+    // onSetJobs([{ status: 'failed list jobs' }]);
     firebase.doListJobs(authUser.uid)
       .then((res) => {
         if (!('error' in res)) {
@@ -128,7 +128,11 @@ const Content = ({
       }
       return res;
     })
-      .then((res) => onSetJobs(res))
+      .then((res) => {
+        if (!('error' in res)) {
+          onSetJobs(res);
+        }
+      })
       .then(() => onSetIsJobsActive(
         shouldReloadTimer(jobs),
       ));
@@ -136,11 +140,7 @@ const Content = ({
 
   const handleJobSubmit = (worksheetname) => {
     onSetIsJobsActive(true);
-
-    onSetJobs(
-      submitJob(worksheetname, jobs),
-    );
-
+    onSetJobs(submitJob(worksheetname, jobs));
     onSetNotifications(
       notifications.concat({
         key: `Job started: ${worksheetname}`,
@@ -150,10 +150,7 @@ const Content = ({
   };
 
   const handleJobCancel = (runId, worksheetname) => {
-    onSetJobs(
-      cancelJob(runId, jobs),
-    );
-
+    onSetJobs(cancelJob(runId, jobs));
     onSetNotifications(
       notifications.concat({
         key: `Job started: ${worksheetname}`,
@@ -165,7 +162,7 @@ const Content = ({
   const wsnames = worksheets.map((ws) => ws.name);
 
   return (
-    <div className="home-content">
+    <div className="home-content" onScroll={onSetScroll}>
       {loading
         ? <LoadingDataSource />
         : (

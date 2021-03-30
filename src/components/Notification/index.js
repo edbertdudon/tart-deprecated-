@@ -6,7 +6,9 @@ const getNotificationStates = (item) => ({
   notification: <div className="notification-item" key={item.key}>{item.key}</div>,
 });
 
-const withNotification = (Component) => (props) => {
+const withNotification = (Component) => ({
+  color, style, header, items, onSetNotifications,
+}) => {
   const [hover, setHover] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
@@ -16,7 +18,7 @@ const withNotification = (Component) => (props) => {
   const handleOpen = () => setIsOpen(!isOpen);
   const handleHover = () => setHover(!hover);
 
-  const handleClear = () => props.onSetNotifications([]);
+  // const handleClear = () => onSetNotifications([]);
 
   return (
     <div className="notification" ref={wrapperRef}>
@@ -25,20 +27,27 @@ const withNotification = (Component) => (props) => {
         onHover={handleHover}
         isOpen={isOpen}
         onOpen={handleOpen}
-        color={props.color}
+        color={color}
       />
       {isOpen
         && (
-        <div className="notification-content" style={props.style}>
+        <div className="notification-content" style={style}>
           <div className="notification-header">
-            {props.header}
-            <div className="notification-clear" onClick={handleClear} style={{ color: props.color }}>clear</div>
+            {header}
           </div>
-          {props.items.map((item, i) => getNotificationStates(item, i)[item.type])}
+          {items.map((item, i) => getNotificationStates(item, i)[item.type])}
         </div>
         )}
     </div>
   );
 };
+
+// <div
+//   className="notification-clear"
+//   onClick={handleClear}
+//   style={{ color: props.color }}
+// >
+//   clear
+// </div>
 
 export default withNotification;

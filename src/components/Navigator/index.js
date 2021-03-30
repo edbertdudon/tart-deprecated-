@@ -50,14 +50,15 @@ const Navigator = ({
     }
 
     return slides.datas.map((data, index) => {
-      const name = data.name;
-
+      const { name } = data;
       return (
         <div key={`navigator-item-${index}`}>
           <Draggable key={`draggable-${index}`} draggableId={`draggable-${index}`} index={index}>
             {(provided) => (
               <div
-                ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
                 className="navigator-slidewrapper"
               >
                 {slides.datas[index].type === 'input'
