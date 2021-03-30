@@ -4,6 +4,9 @@ import { mouseMoveUp } from './event';
 import { cssPrefix } from '../config';
 import { options } from '../options';
 
+let clicks = 0;
+const delay = 400;
+
 export default class Resizer {
   constructor(vertical = false, minDistance) {
     this.moving = false;
@@ -78,13 +81,20 @@ export default class Resizer {
   }
 
   mousedownHandler(evt) {
+    // evt.preventDefault();
+    clicks += 1;
+
+    setTimeout(() => {
+      clicks = 0;
+    }, delay);
+
     let startEvt = evt;
     const {
       el, lineEl, cRect, vertical, minDistance,
     } = this;
-    console.log(evt.detail, cRect);
-    if (evt.detail === 2) {
+    if (clicks === 2) {
       this.setWidthFn(cRect, minDistance);
+      clicks = 0;
       return;
     }
     let distance = vertical ? cRect.width : cRect.height;
@@ -111,7 +121,7 @@ export default class Resizer {
       startEvt = null;
       lineEl.hide();
       this.moving = false;
-      this.hide();
+      // this.hide();
       if (this.finishedFn) {
         if (distance < minDistance) distance = minDistance;
         this.finishedFn(cRect, distance);
