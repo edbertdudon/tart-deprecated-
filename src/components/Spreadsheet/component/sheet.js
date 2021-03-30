@@ -268,13 +268,20 @@ function overlayerMousescroll(evt) {
   const { deltaY, deltaX } = evt;
   const tempY = Math.abs(deltaY);
   const tempX = Math.abs(deltaX);
+  // console.log(tempY, tempX)
+  // if (tempY > 40) {
+  //   scrollThreshold -= tempY * 2;
+  // } else
   if (tempY > 20) {
     scrollThreshold -= tempY;
-  } if (tempX > 20) {
+  } else if (tempX > 40) {
     scrollThreshold -= tempX;
+  } else if (tempX > 20) {
+    scrollThreshold -= tempX / 2;
   } else {
     scrollThreshold -= 1;
   }
+
   if (scrollThreshold > 0) return;
   scrollThreshold = 10;
   // scrollThreshold = 0;

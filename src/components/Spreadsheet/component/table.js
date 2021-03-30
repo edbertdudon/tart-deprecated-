@@ -70,8 +70,13 @@ export async function renderCell(draw, data, datas, rindex, cindex, srindex, sci
   if (cell === null) return;
 
   let cellText = await rRender(cell.text || '', data, datas, rindex, cindex);
-  const yoffset = 25 - (srindex * 25);
-  const xoffset = 30 - (scindex * 100);
+  // Cell shifts due to Promise
+  const yoffset = (scindex > 0)
+    ? 25 - (srindex * 25) - 1
+    : 25 - (srindex * 25);
+  const xoffset = (scindex > 0)
+    ? 30 - (scindex * 100) + 55
+    : 30 - (scindex * 100);
   // const yoffset = 0;
   // const xoffset = 0;
 
