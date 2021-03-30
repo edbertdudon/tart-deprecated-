@@ -462,7 +462,7 @@ function unhideRowsOrCols(type, index) {
   sheetReset.call(this);
 }
 
-function createFontText(c = {}, width) {
+function createFontText(c = {}) {
   let {
     size, name, bold, italic,
   } = options.style.font;
@@ -566,7 +566,7 @@ function overlayerMousedown(evt) {
   // console.log(':::::overlayer.mousedown:', evt.detail, evt.button, evt.buttons, evt.shiftKey);
   // console.log('evt.target.className:', evt.target.className);
   const {
-    selector, data, table, sortFilter, overlayerEl
+    selector, data, table, sortFilter, overlayerEl,
   } = this;
   const { offsetX, offsetY } = evt;
   const isAutofillEl = evt.target.className === `${cssPrefix}-selector-corner`;
@@ -603,13 +603,24 @@ function overlayerMousedown(evt) {
     } else {
       selectorSet.call(this, false, ri, ci);
     }
+
+    // Drag and Drop move cell
     let isMovingX = false;
     let isMovingY = false;
     let movingIntervalX;
     let movingIntervalY;
     let scrollx = this.data.scroll.x;
     let scrolly = this.data.scroll.y;
-    const { width, height } = overlayerEl.offset();
+    const viewRange = data.viewRange();
+    const diffWidths = Object.keys(data.cols._).map((c) => data.cols._[c].width);
+    const maxScrollX = (data.cols.len - diffWidths.length - (viewRange.eci - viewRange.sci))
+      * data.cols.width + diffWidths.reduce((a, c) => a + c);
+    const diffHeights = Object.values(data.rows._)
+      .map((r) => r.height)
+      .filter((c) => c !== undefined);
+    const maxScrollY = (data.rows.len - diffHeights.length - (viewRange.eri - viewRange.sri))
+      * data.rows.height + diffHeights.reduce((a, c) => a + c);
+    const offset = overlayerEl.offset();
     // mouse move up
     mouseMoveUp(window, (e) => {
       // console.log('mouseMoveUp::::');
@@ -620,58 +631,61 @@ function overlayerMousedown(evt) {
         } else if (isBorderEl) {
           selectorSetGroup.call(this, ri, ci);
           // console.log(data.selector.ri, data.cols.len)
-          const left = e.offsetX < 60;
-          const right = e.offsetX > width;
+          // Drag and Drop move cell
+          const mleft = e.offsetX < 60;
+          const mright = options.showNavigator
+            ? e.offsetX > offset.width - 125 - 40
+            : e.offsetX > offset.width - 40;
           if (!isMovingX) {
-            if (left) {
+            if (mleft) {
               isMovingX = true;
               movingIntervalX = setInterval(() => {
-                scrollx = scrollx - 100;
+                scrollx -= 100;
                 horizontalScrollbarMove.call(this, scrollx, e);
-              }, INTERVAL_WAIT)
+              }, INTERVAL_WAIT);
             }
-            if (right) {
+            if (mright) {
               isMovingX = true;
               movingIntervalX = setInterval(() => {
-                scrollx = scrollx + 100;
-                horizontalScrollbarMove.call(this, scrollx, e);
-              }, INTERVAL_WAIT)
+                if (scrollx < maxScrollX) {
+                  scrollx += 100;
+                  horizontalScrollbarMove.call(this, scrollx, e);
+                }
+              }, INTERVAL_WAIT);
             }
-          } else {
-            if (!left && !right) {
-              clearInterval(movingIntervalX);
-              isMovingX = false;
-            }
+          } else if (!mleft && !mright) {
+            clearInterval(movingIntervalX);
+            isMovingX = false;
           }
 
           const up = e.offsetY < 45;
-          const down = e.offsetY > height - 20;
+          const down = e.offsetY > offset.height - 20;
           if (!isMovingY) {
             if (up) {
               isMovingY = true;
               movingIntervalY = setInterval(() => {
-                scrolly = scrolly - 25;
+                scrolly -= 25;
                 verticalScrollbarMove.call(this, scrolly, e);
-              }, INTERVAL_WAIT)
+              }, INTERVAL_WAIT);
             }
             if (down) {
               isMovingY = true;
               movingIntervalY = setInterval(() => {
-                scrolly = scrolly + 25;
-                verticalScrollbarMove.call(this, scrolly, e);
-              }, INTERVAL_WAIT)
+                if (scrolly < maxScrollY) {
+                  scrolly += 25;
+                  verticalScrollbarMove.call(this, scrolly, e);
+                }
+              }, INTERVAL_WAIT);
             }
-          } else {
-            if (!up && !down) {
-              clearInterval(movingIntervalY);
-              isMovingY = false;
-            }
+          } else if (!up && !down) {
+            clearInterval(movingIntervalY);
+            isMovingY = false;
           }
         } else if (e.buttons === 1 && !e.shiftKey) {
           selectorSet.call(this, true, ri, ci, true, true);
         }
       }
-    }, (e) => {
+    }, () => {
       if (isMovingX) {
         clearInterval(movingIntervalX);
         isMovingX = false;
@@ -692,7 +706,7 @@ function overlayerMousedown(evt) {
         selectorSetGroup.call(this, ri, ci);
         this.data.moveCell(ri, ci, cells);
         sheetReset.call(this);
-        this.trigger('save')
+        this.trigger('save');
       }
       // toolbarChangePaintformatPaste.call(this);
 
@@ -825,7 +839,7 @@ function dataSetCellText(text, state = 'finished') {
     const isRange = RANGE_ONLY_REFERENCE.test(lastnv);
     const validator = data.getSelectedValidator();
     if (lastnv !== '=' && lastnv.length !== 0 && (isCell || isRange)) {
-      const range = getRangeIndex(lastnv, data.rows.len)
+      const range = getRangeIndex(lastnv, data.rows.len);
       const {
         sri, sci, eri, eci,
       } = range;

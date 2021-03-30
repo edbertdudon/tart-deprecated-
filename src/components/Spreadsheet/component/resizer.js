@@ -121,6 +121,7 @@ export default class Resizer {
       startEvt = null;
       lineEl.hide();
       this.moving = false;
+      // if hidden, won't fire as fast when constant clicks
       // this.hide();
       if (this.finishedFn) {
         if (distance < minDistance) distance = minDistance;
