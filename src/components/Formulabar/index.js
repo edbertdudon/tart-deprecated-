@@ -30,7 +30,7 @@ const Formulabar = ({ slides, formula }) => {
   //   setValue(formula.text);
   //   formulaRef.current.addEventListener('input', onInput);
   // }, []);
-  const cellRefs = getRangeRefs(value, slides.data.rows.len);
+  const cellRefs = getRangeRefs(value);
   const colors = cellRefs.map((r, i) => ({ [r]: CELL_REF_COLORS[i % CELL_REF_COLORS.length], id: `${i}${r}` }));
   const valueArray = value.split(new RegExp(cellRefs.map((r) => `(${r})`).join('|')))
     .filter((r) => r !== undefined);

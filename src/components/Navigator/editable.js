@@ -5,16 +5,13 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
-import { ContextMenu, ContextMenuTrigger } from 'react-contextmenu';
+import { ContextMenu } from 'react-contextmenu';
+import Slide from './slide';
 import Item from './item';
-import Message from './message';
-import { formulan } from '../Spreadsheet/cloudr/formula';
-import reservedKeywords from '../../constants/reservedkeywords';
-import { useOutsideAlerter, createFile } from '../../functions';
-import OFF_COLOR from '../../constants/off-color';
+import { createFile } from '../../functions';
 import { withFirebase } from '../Firebase';
 
 const NAVIGATOR_DROPDOWN = [
@@ -28,7 +25,7 @@ const NAVIGATOR_DROPDOWN = [
   { key: 'Duplicate', type: 'item' },
 ];
 
-const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
+const EditableDropdown = ({ slide, onDropdown, color }) => (
   <ContextMenu id={`right-click${slide}`}>
     <Item text={NAVIGATOR_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
     <Item text={NAVIGATOR_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
@@ -43,55 +40,18 @@ const ContextMenuDropdown = ({ slide, onDropdown, color }) => (
 
 const Editable = ({
   firebase, authUser, worksheetname, slides, dataNames, current,
-  color, value, index, onSetDataNames, onSetCurrent, onSetSaving,
+  value, index, onSetDataNames, onSetCurrent, onSetSaving,
 }) => {
   const [text, setText] = useState(value);
   const [show, setShow] = useState(false);
   const [error, setError] = useState(false);
   const [errortext, setErrorText] = useState('');
-  const wrapperRef = useRef(null);
 
   function save() {
     onSetSaving(true);
     firebase.doUploadWorksheet(authUser.uid, worksheetname, createFile(slides, worksheetname))
       .then(() => onSetSaving(false));
   }
-
-  const checkIllegalChange = () => {
-    if (show === true) {
-      setShow(false);
-
-      let doesExist = false;
-      for (let i = 0; i < dataNames.length; i += 1) {
-        if (dataNames[i].name === text) {
-          doesExist = true;
-          break;
-        }
-      }
-      if (formulan.some((formula) => formula === text)
-        || reservedKeywords.some((word) => word === text)) {
-        doesExist = true;
-      }
-
-      if (!doesExist) {
-        slides.datas[index].name = text;
-        onSetDataNames(dataNames.map((item, i) => {
-          if (i === index) {
-            return text;
-          }
-          return item;
-        }));
-
-        save();
-      } else {
-        setText(value);
-        setError(true);
-        setErrorText(text);
-      }
-    }
-  };
-
-  useOutsideAlerter(wrapperRef, checkIllegalChange);
 
   const deleteSheet = () => {
     if (dataNames.length > 1) {
@@ -162,76 +122,40 @@ const Editable = ({
 
   const handleChange = (e) => setText(e.target.value);
 
-  const handleSelect = () => {
-    if (current !== index) {
-      slides.selectSheet(index);
-      onSetCurrent(index);
-    }
-  };
-
-  const backgroundColor = () => ({ backgroundColor: current === index && 'rgb(0,0,0,0.05)' });
-  // const backgroundColor = () => ({
-  //   backgroundColor: current === index && OFF_COLOR[color[authUser.uid]]
-  // });
-
-  // const whiteText = () => ({ color: current === index && '#fff' });
-
-  const handleClose = () => setErrorText('');
-
   return (
-    <>
-      <ContextMenuTrigger id={`right-click${text}`}>
-        <div
-          className="navigator-slide"
-          onClick={handleSelect}
-          style={backgroundColor()}
-          ref={wrapperRef}
-        >
-          <div
-            className="navigator-number"
-            // style={whiteText()}
-          >
-            {index + 1}
-          </div>
-          {show
-            ? (
-              <input
-                type="text"
-                onChange={handleChange}
-                className="navigator-input"
-                value={text}
-                autoFocus
-              />
-            ) : (
-              <div
-                className="navigator-text"
-                // style={{ ...backgroundColor(index), ...whiteText(index) }}
-                onDoubleClick={handleShow}
-              >
-                {text}
-              </div>
-            )}
+    <Slide
+      value={value}
+      index={index}
+      text={text}
+      setText={setText}
+      show={show}
+      setShow={setShow}
+      Dropdown={EditableDropdown}
+      errortext={errortext}
+      setErrorText={setErrorText}
+      error={error}
+      setError={setError}
+      onDropdown={handleDropdown}
+    >
+      {show ? (
+        <input
+          type="text"
+          onChange={handleChange}
+          className="navigator-input"
+          value={text}
+          autoFocus
+        />
+      ) : (
+        <div className="navigator-text" onDoubleClick={handleShow}>
+          {text}
         </div>
-      </ContextMenuTrigger>
-      <ContextMenuDropdown
-        slide={text}
-        onDropdown={handleDropdown}
-        color={OFF_COLOR[color[authUser.uid]]}
-      />
-      <Message
-        classname="modal"
-        text={errortext}
-        isOpen={error}
-        setIsOpen={setError}
-        onSelect={handleClose}
-      />
-    </>
+      )}
+    </Slide>
   );
 };
 
 const mapStateToProps = (state) => ({
   authUser: state.sessionState.authUser,
-  color: (state.colorState.colors || {}),
   worksheetname: (state.worksheetnameState.worksheetname || ''),
   slides: (state.slidesState.slides || {}),
   dataNames: (state.dataNamesState.dataNames || ['Sheet1']),

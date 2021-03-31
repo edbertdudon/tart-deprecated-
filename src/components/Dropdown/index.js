@@ -81,7 +81,7 @@ const SecondaryMenu = ({
         onMouseEnter={handleHoverFirst}
         onMouseLeave={handleHoverFirst}
         // style={{
-        //   backgroundColor: hover && (hoverFirst ? color : 'rgba(0, 0, 0, 0.05)'),
+        //   backgroundColor: hover && (hoverFirst ? color : 'rgb(234, 234, 234)'),
         //   color: hoverFirst ? '#fff' : '#000000'
         // }}
       >

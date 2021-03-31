@@ -22,7 +22,7 @@ const Header = ({
       onMouseEnter={onHover}
       onMouseLeave={onHover}
       onKeyDown={handleKeyDown}
-      style={{ backgroundColor: (hover || isOpen) && 'rgba(0, 0, 0, 0.05)' }}
+      style={{ backgroundColor: (hover || isOpen) && 'rgb(234, 234, 234)' }}
       // role="button"
       // tabIndex={index}
     >
