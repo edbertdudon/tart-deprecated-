@@ -16,33 +16,17 @@ const Colors = ({
 
   return (
     <div className="home-content-settings-text">
-      <button
-        style={{
-          backgroundColor: COLORS_APP[0],
-          'box-shadow': (COLORS_APP[0] === color[authUser.uid]) ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: (COLORS_APP[0] === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
-        }}
-        onClick={() => handleColor(COLORS_APP[0])}
-        type="button"
-      />
-      <button
-        style={{
-          backgroundColor: COLORS_APP[1],
-          'box-shadow': (COLORS_APP[1] === color[authUser.uid]) ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: (COLORS_APP[1] === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
-        }}
-        onClick={() => handleColor(COLORS_APP[1])}
-        type="button"
-      />
-      <button
-        style={{
-          backgroundColor: COLORS_APP[2],
-          'box-shadow': (COLORS_APP[2] === color[authUser.uid]) ? 'inset 0px 0px 0px 3px #fff' : 'none',
-          border: (COLORS_APP[2] === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
-        }}
-        onClick={() => handleColor(COLORS_APP[2])}
-        type="button"
-      />
+      {COLORS_APP.map((color) => (
+        <button
+          style={{
+            backgroundColor: color,
+            'box-shadow': (color === color[authUser.uid]) ? 'inset 0px 0px 0px 3px #fff' : 'none',
+            border: (color === color[authUser.uid]) ? `1px solid ${color[authUser.uid]}` : 'none',
+          }}
+          onClick={() => handleColor(color)}
+          type="button"
+        />
+      ))}
     </div>
   );
 };

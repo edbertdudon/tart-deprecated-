@@ -3,6 +3,7 @@ import { h } from './element';
 import Suggest from './suggest';
 import Datepicker from './datepicker';
 import { cssPrefix } from '../config';
+import { getTextWidth, getFormulaColors, setCaretPosition } from '../../../functions';
 // import { selectorMove } from './sheet';
 // import { mouseMoveUp } from '../event';
 
@@ -48,7 +49,7 @@ function insertText({ target }, itxt) {
 
 const OPERATORS_ONLY_REGEX = /\+|-|(%\*%)|\*|\/|~/g;
 
-function keydownEventHandler(evt) {
+function keydownEventHandler(evt, val, i, formulaColors) {
   const { keyCode, altKey } = evt;
   if (keyCode !== 13 && keyCode !== 9) evt.stopPropagation();
   if (keyCode === 13 && altKey) {
@@ -68,6 +69,23 @@ function keydownEventHandler(evt) {
     }
     evt.preventDefault();
   }
+  // const caret = evt.target.selectionStart;
+  // // left
+  // if (keyCode === 37 && caret === 0 && i > 0) {
+  //   const prevText = formulaColors[i - 1].text;
+  //   const elem = this.areaEl.children()[i - 1];
+  //   elem.focus();
+  //   elem.setSelectionRange(prevText.length, prevText.length);
+  // }
+  // // right
+  // if (keyCode === 39
+  //   && caret === val.text.length
+  //   && formulaColors.length > 1
+  //   && i < formulaColors.length - 1
+  // ) {
+  //   const elem = this.areaEl.children()[i + 1];
+  //   elem.focus();
+  // }
 }
 
 function inputEventHandler(evt) {
@@ -210,7 +228,8 @@ export default class Editor {
     });
     this.areaEl = h('div', `${cssPrefix}-editor-area`)
       .children(
-        this.textEl = h('textarea', '')
+        this.textEl = h('input', 'editor-cellreference')
+          .attr({ type: 'text', id: '0' })
           .on('input', (evt) => inputEventHandler.call(this, evt))
           .on('paste.stop', () => {})
           .on('keydown', (evt) => keydownEventHandler.call(this, evt)),
@@ -286,7 +305,9 @@ export default class Editor {
 
   setCell(cell, validator) {
     // console.log('::', validator);
-    const { el, datepicker, suggest } = this;
+    const {
+      el, datepicker, suggest, rowHeight, textlineEl, areaOffset,
+    } = this;
     el.show();
     this.cell = cell;
     const text = (cell && cell.text) || '';
@@ -306,6 +327,47 @@ export default class Editor {
         suggest.search('');
       }
     }
+    // const childs = this.areaEl.children();
+    // console.log(childs);
+    // for (let i = 0; i < childs.length; i += 1) {
+    //   console.log(childs[i]);
+    //   if (childs[i].className === 'editor-cellreference') {
+    //     this.areaEl.removeChild(childs[i]);
+    //   }
+    // }
+    // this.areaEl.removeChildren();
+    //
+    // const inputText = cell && cell.text ? cell.text : '';
+    // let tlineWidth = 0;
+    // if (inputText.length > 0) {
+    //   const txts = inputText.split('\n');
+    //   const maxTxtSize = Math.max(...txts.map((it) => it.length));
+    //   const tlOffset = textlineEl.offset();
+    //   const fontWidth = tlOffset.width / inputText.length;
+    //   tlineWidth = (maxTxtSize + 1) * fontWidth + 5;
+    // }
+    // const formulaColors = cell && cell.text ? getFormulaColors(cell.text) : [{ text: '', id: '0' }];
+    // this.areaEl.children(...formulaColors.map((v, i) => h('input', 'editor-cellreference')
+    //   .attr({
+    //     type: 'text', value: v.text, key: v.id, id: v.id,
+    //   })
+    //   .css('width', (i === formulaColors.length - 1 && tlineWidth < areaOffset.width)
+    //     ? `${areaOffset.width - 8.2
+    //       - getTextWidth(inputText.slice(0, inputText.lastIndexOf(v.text)), '13px Helvetica')}px`
+    //     : `${getTextWidth(v.text, '13px Helvetica')}px`)
+    //   .css('height', `${rowHeight - 2.2}px`)
+    //   .css('color', ('color' in v) && v.color)
+    //   .on('input', (evt) => inputEventHandler.call(this, evt))
+    //   .on('paste.stop', () => {})
+    //   .on('keydown', (evt) => keydownEventHandler.call(this, evt, v, i, formulaColors))));
+    //
+    // const lastInput = this.areaEl.last();
+    // this.areaEl.children(
+    //   this.textlineEl.el,
+    //   this.suggest.el,
+    //   this.datepicker.el,
+    // );
+    // setTimeout(() => lastInput.focus());
   }
 
   setText(text) {

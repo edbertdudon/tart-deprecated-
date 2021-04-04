@@ -97,15 +97,20 @@ class Element {
     this.el.removeChild(el);
   }
 
-  // /*
+  removeChildren() {
+    while (this.el.firstChild) {
+      this.removeChild(this.el.firstChild);
+    }
+  }
+
   first() {
     return this.el.firstChild;
   }
-  /*
+
   last() {
     return this.el.lastChild;
   }
-
+  /*
   remove(ele) {
     return this.el.removeChild(ele);
   }

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import XLSX from 'xlsx';
+import { CELL_REF_COLORS } from '../constants/off-color';
 
 export const LETTERS_REFERENCE = /\$?[A-Z]+/g;
 export const NUMBERS_REFERENCE = /\$?[0-9]+/g;
@@ -103,7 +104,7 @@ export function createFile(slides, worksheetname) {
   return new File(
     [JSON.stringify(slides.getData())],
     worksheetname,
-    { type: 'application/json' }
+    { type: 'application/json' },
   );
 }
 
@@ -226,9 +227,9 @@ export function getRange(rangei, len) {
 }
 
 export function getRangeIndex(r, len) {
-  let mn = r.match(NUMBERS_REFERENCE);
-  let ml = r.match(LETTERS_REFERENCE);
-
+  const cleansed = r.replace(/\$/g, '');
+  let mn = cleansed.match(NUMBERS_REFERENCE);
+  let ml = cleansed.match(LETTERS_REFERENCE);
   // A:A, A1:A, A:A2
   if (ml !== null && (mn === null || mn.length < 2) && ml.length === 2) {
     if (mn) {
@@ -240,7 +241,7 @@ export function getRangeIndex(r, len) {
       sci: ml[0],
       eri: len - 1,
       eci: ml[1],
-    }
+    };
   }
 
   if (mn === null || ml === null) {
@@ -276,4 +277,39 @@ export function getRangeRefs(text) {
 
   return cellRefs.concat(rangeRefs)
     .map((r) => r.replace(OPERATORS_REGEX, ''));
+}
+
+export function setCaretPosition(elemId, caretPos) {
+  const elem = document.getElementById(elemId);
+  if (elem != null) {
+    if (elem.createTextRange) {
+      const textRange = elem.createTextRange();
+      textRange.move('character', caretPos);
+      textRange.select();
+    } else if (elem.selectionStart) {
+      elem.focus();
+      elem.setSelectionRange(caretPos, caretPos);
+    } else {
+      elem.focus();
+    }
+  }
+}
+
+export function getFormulaColors(cell) {
+  let arr;
+  if (cell.startsWith('=')) {
+    const cellRefs = getRangeRefs(cell);
+    if (cellRefs.length > 0) {
+      arr = cell.split(new RegExp(cellRefs.map((r) => `(${r})`).join('|')))
+        .filter((r) => r !== undefined)
+        .map((r, i) => (cellRefs.includes(r)
+          ? ({ text: r, color: CELL_REF_COLORS[i % CELL_REF_COLORS.length], id: `${i}${r}` })
+          : ({ text: r, id: `${i}${r}` })));
+    } else {
+      arr = [{ text: cell, id: '0' }];
+    }
+  } else {
+    arr = [{ text: cell, id: '0' }];
+  }
+  return arr;
 }

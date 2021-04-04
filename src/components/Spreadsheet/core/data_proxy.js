@@ -22,7 +22,7 @@ import charts from '../../Chart/chartsR';
 import {
   translateR, spreadsheetToR, doChart,
 } from '../cloudr';
-import { columnToLetter, getRange } from '../../../functions';
+import { columnToLetter, getRange, getTextsFromRows } from '../../../functions';
 import {
   getRownames, getVarsAsColumns, getRangeIndex,
 } from '../../RightSidebar/datarange';
@@ -486,6 +486,56 @@ export default class DataProxy {
       copyPaste.call(this, srcRange, cellRange, what, true);
     });
     return true;
+  }
+
+  autofillFormula() {
+    let shouldFill = false;
+    const {
+      sri, sci, eri, eci,
+    } = this.selector.range;
+    if (sci === eci) {
+      for (let ri = sri; ri < eri + 1; ri += 1) {
+        const cell = this.getCell(ri, sci);
+        if (cell && 'text' in cell && cell.text.startsWith('=')) {
+          shouldFill = true;
+          break;
+        }
+      }
+    }
+    if (shouldFill) {
+      let tillRow = eri + 1;
+      let [texts] = this.rows.getRange({
+        sri: tillRow, sci: 0, eri: tillRow, eci: this.cols.len,
+      });
+      let current = this.getCell(tillRow, sci);
+      while (texts.some((tx) => tx !== undefined || tx !== null || tx !== '')
+        && (current === null || current.text === undefined)) {
+        tillRow += 1;
+        [texts] = this.rows.getRange({
+          sri: tillRow, sci: 0, eri: tillRow, eci: this.cols.len,
+        });
+        current = this.getCell(tillRow, sci);
+      }
+
+      this.changeData(() => {
+        const length = eri - sri + 1;
+        for (let ri = eri + 1; ri < tillRow; ri += length) {
+          if (ri + length > tillRow) {
+            copyPaste.call(this,
+              new CellRange(ri - length, sci, tillRow - 1 - length, eci),
+              new CellRange(ri, sci, tillRow - 1, eci),
+              'all', true);
+          } else {
+            copyPaste.call(this,
+              new CellRange(ri - length, sci, ri - 1, eci),
+              new CellRange(ri, sci, ri + length - 1, eci),
+              'all', true);
+          }
+        }
+      });
+      return true;
+    }
+    return false;
   }
 
   clearClipboard() {

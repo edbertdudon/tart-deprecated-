@@ -448,7 +448,7 @@ function cut() {
 }
 
 function paste(what, evt) {
-  const { data } = this;
+  const { data, selector } = this;
   if (data.settings.mode === 'read') return;
   if (data.paste(what, (msg) => xtoast('Tip', msg))) {
     sheetReset.call(this);
@@ -457,6 +457,8 @@ function paste(what, evt) {
     this.data.pasteFromText(cdata);
     sheetReset.call(this);
   }
+  const [ri, ci] = selector.indexes;
+  this.trigger('cell-edited', data.getCell(ri, ci).text, ri, ci);
 }
 
 function hideRowsOrCols() {
@@ -603,6 +605,9 @@ function overlayerMousedown(evt) {
     const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
     let cells;
     if (isAutofillEl) {
+      if (data.autofillFormula()) {
+        table.render();
+      }
       selector.showAutofill(ri, ci);
     } else if (isBorderEl) {
       cells = data.getRange(range);
@@ -770,9 +775,11 @@ export function editorSet() {
   const cellText = data.getSelectedCell();
   editor.setCell(cellText, data.getSelectedValidator());
   clearClipboard.call(this);
-  const { text } = cellText;
-  if (text && text.startsWith('=')) {
-    selector.addCellRefs(getRangeIndexes(text, data.rows.len));
+  if (cellText) {
+    const { text } = cellText;
+    if (text && text.startsWith('=')) {
+      selector.addCellRefs(getRangeIndexes(text, data.rows.len));
+    }
   }
 }
 
@@ -828,7 +835,6 @@ const CELL_ONLY_REFERENCE = /^\$?[A-Z]+\$?[0-9]+$/;
 const RANGE_ONLY_REFERENCE = /^\$?[A-Z]+\$?[0-9]+:{1}\$?[A-Z]+\$?[0-9]+$/;
 
 function dataSetCellText(text, state = 'finished') {
-  // console.log(text);
   const { data, table, selector } = this;
   const { ri, ci } = data.selector;
   const { prev } = data;

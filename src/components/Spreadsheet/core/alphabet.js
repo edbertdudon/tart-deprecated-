@@ -83,6 +83,11 @@ export function expr2expr(src, xn, yn, condition = () => true) {
   if (xn === 0 && yn === 0) return src;
   const [x, y] = expr2xy(src);
   if (!condition(x, y)) return src;
+  const row = x + xn;
+  const col = y + yn;
+  if (row < 0 || col < 0) {
+    return '#REF!';
+  }
   return xy2expr(x + xn, y + yn);
 }
 

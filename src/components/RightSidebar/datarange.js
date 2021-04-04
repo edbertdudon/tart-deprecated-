@@ -137,7 +137,7 @@ export default compose(
 )(DataRange);
 
 export {
-  getRangeIndex,
+  // getRangeIndex,
   getRownames,
   getCols,
   getVarsAsColumns,

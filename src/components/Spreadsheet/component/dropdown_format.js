@@ -2,7 +2,6 @@ import Dropdown from './dropdown';
 import { h } from './element';
 import { baseFormats } from '../core/format';
 import { cssPrefix } from '../config';
-import { options } from '../options';
 
 export default class DropdownFormat extends Dropdown {
   constructor() {
@@ -18,12 +17,6 @@ export default class DropdownFormat extends Dropdown {
           .on('click', () => {
             this.setTitle(it.title());
             this.change(it);
-          })
-          .on('mouseenter', (e) => {
-            e.target.style.background = options.style.offcolor;
-          })
-          .on('mouseleave', (e) => {
-            e.target.style.background = '';
           });
         if (it.label) item.child(h('div', 'label').html(it.label));
       }

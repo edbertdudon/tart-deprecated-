@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { compose } from 'recompose';
 import Icon from '@mdi/react';
 import { mdilChartHistogram } from '@mdi/light-js';
-import { mdiMagnify, mdiBrush, mdiMathIntegral } from '@mdi/js';
+import { mdiMagnify, mdiTuneVariant, mdiMathIntegral } from '@mdi/js';
 import { formulas } from '../Spreadsheet/cloudr/formula';
 import charts from '../Chart/chartsR';
 import statistics from '../Statistics/core/statisticsR';
@@ -59,7 +59,7 @@ const Button = ({
   <button
     className="worksheet-toggle-button"
     onClick={onToggle}
-    style={{ backgroundColor: isSelected && 'rgba(0, 0, 0, .05)' }}
+    style={{ backgroundColor: isSelected && 'rgb(234, 234, 234)' }}
     id={`${name}toggle`}
   >
     <Icon path={icon} size={0.8} />
@@ -138,7 +138,7 @@ const Toggle = ({
         <Button
           isSelected={rightSidebar === 'chart'}
           onToggle={() => handleToggle('chart')}
-          icon={mdiBrush}
+          icon={mdiTuneVariant}
           name="chart"
         />
       </div>
