@@ -7,7 +7,7 @@ import Clipboard from './core/clipboard';
 import { cssPrefix } from './config';
 import { locale } from './locale/locale';
 import { getMaxNumberCustomSheet } from '../../functions';
-import reservedKeywords from '../../constants/reservedkeywords'
+import reservedKeywords from '../../constants/reservedkeywords';
 import './index.less';
 
 class Spreadsheet {

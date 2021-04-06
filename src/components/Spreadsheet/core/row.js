@@ -216,7 +216,6 @@ class Rows {
                           yn = n - 1 + dsri - sri - 1;
                         }
                         if (/^\d+$/.test(word)) return word;
-                        if ()
                         return expr2expr(word, xn, yn);
                       });
                     } else if ((rn <= 1 && cn > 1 && (dsri > eri || deri < sri))

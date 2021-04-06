@@ -18,7 +18,11 @@ const SAMPLE_DROPDOWN = [
   { key: 'New sheet', type: 'item' },
   { key: 'Rename...', type: 'item' },
   { type: 'divider' },
+  { key: 'Cut', type: 'item' },
+  { key: 'Copy', type: 'item' },
+  { key: 'Paste', type: 'item' },
   { key: 'Delete', type: 'item' },
+  { key: 'Duplicate', type: 'item' },
 ];
 
 const SampleDropdown = ({ slide, onDropdown, color }) => (
@@ -27,6 +31,10 @@ const SampleDropdown = ({ slide, onDropdown, color }) => (
     <Item text={SAMPLE_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
     <hr />
     <Item text={SAMPLE_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[4].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[5].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[6].key} onSelect={onDropdown} color={color} />
+    <Item text={SAMPLE_DROPDOWN[7].key} onSelect={onDropdown} color={color} />
   </ContextMenu>
 );
 
@@ -92,6 +100,28 @@ const Sample = ({
       }
       case SAMPLE_DROPDOWN[3].key: {
         deleteSheet();
+        break;
+      }
+      case SAMPLE_DROPDOWN[4].key: {
+        slides.copySheet(index);
+        break;
+      }
+      case SAMPLE_DROPDOWN[5].key: {
+        const names = slides.pasteSheet(dataNames, index, false);
+        onSetDataNames(names);
+        onSetCurrent(index + 1);
+        save();
+        break;
+      }
+      case SAMPLE_DROPDOWN[6].key: {
+        deleteSheet();
+        break;
+      }
+      case SAMPLE_DROPDOWN[7].key: {
+        const names = slides.pasteSheet(dataNames, index, true);
+        onSetDataNames(names);
+        onSetCurrent(index + 1);
+        save();
         break;
       }
       default:

@@ -1,8 +1,8 @@
 import { stringAt } from '../core/alphabet';
 import { getFontSizePxByPt } from '../core/font';
-import _cell from '../core/cell';
+// import _cell from '../core/cell';
 // import { formulam } from '../cloudr/formula';
-import { formulam } from '../core/formula'
+// import { formulam } from '../core/formula'
 import { formatm } from '../core/format';
 import { rRender } from '../cloudr';
 import {
@@ -18,7 +18,6 @@ const tableGridStyle = {
   lineWidth: thinLineWidth,
   strokeStyle: '#e6e6e6',
 };
-
 // let hasMatrix = false;
 
 function tableFixedHeaderStyle() {

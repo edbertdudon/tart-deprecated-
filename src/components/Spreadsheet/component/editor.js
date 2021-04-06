@@ -9,6 +9,7 @@ import { getTextWidth, getFormulaColors, setCaretPosition } from '../../../funct
 
 function resetTextareaSize() {
   const { inputText } = this;
+  // this.textEl.el.innerHTML = inputText;
   if (!/^\s*$/.test(inputText)) {
     const {
       textlineEl, textEl, areaOffset,
@@ -229,7 +230,7 @@ export default class Editor {
     this.areaEl = h('div', `${cssPrefix}-editor-area`)
       .children(
         this.textEl = h('input', 'editor-cellreference')
-          .attr({ type: 'text', id: '0' })
+          // .attr({ contentEditable: 'true' })
           .on('input', (evt) => inputEventHandler.call(this, evt))
           .on('paste.stop', () => {})
           .on('keydown', (evt) => keydownEventHandler.call(this, evt)),

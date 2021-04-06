@@ -29,8 +29,8 @@ const EditableDropdown = ({ slide, onDropdown, color }) => (
   <ContextMenu id={`right-click${slide}`}>
     <Item text={NAVIGATOR_DROPDOWN[0].key} onSelect={onDropdown} color={color} />
     <Item text={NAVIGATOR_DROPDOWN[1].key} onSelect={onDropdown} color={color} />
-    <Item text={NAVIGATOR_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
     <hr />
+    <Item text={NAVIGATOR_DROPDOWN[3].key} onSelect={onDropdown} color={color} />
     <Item text={NAVIGATOR_DROPDOWN[4].key} onSelect={onDropdown} color={color} />
     <Item text={NAVIGATOR_DROPDOWN[5].key} onSelect={onDropdown} color={color} />
     <Item text={NAVIGATOR_DROPDOWN[6].key} onSelect={onDropdown} color={color} />

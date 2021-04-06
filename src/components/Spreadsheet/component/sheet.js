@@ -82,29 +82,91 @@ function scrollbarMove() {
   }
 }
 
+function canAddCellRef(cell, cellRef) {
+  if (!(cell && 'text' in cell && cell.text.startsWith('='))) {
+    return false;
+  }
+
+  const v = this.editor.inputText;
+  const start = v.lastIndexOf('=');
+  // if (start !== -1 && v.length >= 1) {
+  const nv = v.substring(start + 1).split(OPERATORS_REGEX);
+  const lastnv = nv[nv.length - 1];
+  return lastnv.length === 0 || lastnv === cellRef;
+}
+
+function createCellText(inputText, cellRef) {
+  let text = inputText;
+  const nv = text.split(OPERATORS_REGEX);
+  const lastnv = nv[nv.length - 1];
+  if (lastnv !== '=' && lastnv.length !== 0) {
+    text = text.slice(0, -lastnv.length);
+  }
+  return text + cellRef;
+}
+
 function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
   if (ri === -1 && ci === -1) return;
   const {
-    table, selector, toolbar, data,
-    contextMenu,
+    table, selector, toolbar, data, contextMenu, editor,
   } = this;
   selector.removeCellRefs();
   contextMenu.setMode((ri === -1 || ci === -1) ? 'row-col' : 'range');
   const cell = data.getCell(ri, ci);
+
+  const { prev } = data;
+  const previousCell = data.getCell(prev.ri, prev.ci);
+  const range = {
+    sri: ri, sci: ci, eri: ri, eci: ci,
+  };
+  const cellRef = getRange(range, data.rows.len);
+  const addingorWillAdd = this.editor.el.css('display') === 'block'
+    && (addingCellRef || canAddCellRef.call(this, previousCell, cellRef));
+
+  if (addingorWillAdd) {
+    this.addingFormula = true;
+  } else {
+    this.addingFormula = false;
+  }
+  const text = createCellText.call(this, editor.inputText, cellRef);
+
   if (multiple) {
     selector.setEnd(ri, ci, moving);
-    this.trigger('cells-selected', cell, selector.range);
+    if (addingorWillAdd) {
+      this.trigger('cells-selected', { text }, {
+        sri: prev.ri, sci: prev.ci, eri: prev.ri, eci: prev.ci,
+      });
+    } else {
+      this.trigger('cells-selected', cell, selector.range);
+    }
   } else {
     // trigger click event
     selector.set(ri, ci, indexesUpdated);
-    this.trigger('cell-selected', cell, ri, ci);
+    if (addingorWillAdd) {
+      this.trigger('cell-selected', { text }, prev.ri, prev.ci);
+    } else {
+      this.trigger('cell-selected', cell, ri, ci);
+    }
   }
   toolbar.reset();
   table.render();
-  // setTimeout(function () {
-  // table.render();
-  // }, 1000);
 }
+
+// function formulaSelectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
+//   if (ri === -1 && ci === -1) return;
+//   const {
+//     table, formulaSelector, toolbar,
+//   } = this;
+//   formulaSelector.removeCellRefs();
+//   if (multiple) {
+//     formulaSelector.setEnd(ri, ci, moving);
+//   } else {
+//     // trigger click event
+//     formulaSelector.set(ri, ci, indexesUpdated);
+//   }
+//   toolbar.reset();
+//   table.render();
+// }
 
 function setGroup(cell, ri, ci, nrows, ncols) {
   const { selector, toolbar, table } = this;
@@ -176,44 +238,44 @@ export function selectorMove(multiple, direction) {
   addingCellRef = false;
 }
 
-export function selectorMoveSelected(multiple, direction, nri, nci) {
-  const {
-    selector, data,
-  } = this;
-  const { rows, cols } = data;
-  let ri = nri;
-  let ci = nci;
-  // let [ri, ci] = selector.indexes;
-  const { eri, eci } = selector.range;
-  // if (multiple) {
-  //   [ri, ci] = selector.moveIndexes;
-  // }
-  // console.log('selector.move:', ri, ci);
-  if (direction === 'left') {
-    if (ci > 0) ci -= 1;
-  } else if (direction === 'right') {
-    if (eci !== ci) ci = eci;
-    if (ci < cols.len - 1) ci += 1;
-  } else if (direction === 'up') {
-    if (ri > 0) ri -= 1;
-  } else if (direction === 'down') {
-    if (eri !== ri) ri = eri;
-    if (ri < rows.len - 1) ri += 1;
-  } else if (direction === 'row-first') {
-    ci = 0;
-  } else if (direction === 'row-last') {
-    ci = cols.len - 1;
-  } else if (direction === 'col-first') {
-    ri = 0;
-  } else if (direction === 'col-last') {
-    ri = rows.len - 1;
-  }
-  // if (multiple) {
-  //   selector.moveIndexes = [ri, ci];
-  // }
-  selectorSet.call(this, multiple, ri, ci);
-  scrollbarMove.call(this);
-}
+// export function selectorMoveSelected(multiple, direction, nri, nci) {
+//   const {
+//     selector, data,
+//   } = this;
+//   const { rows, cols } = data;
+//   let ri = nri;
+//   let ci = nci;
+//   // let [ri, ci] = selector.indexes;
+//   const { eri, eci } = selector.range;
+//   // if (multiple) {
+//   //   [ri, ci] = selector.moveIndexes;
+//   // }
+//   // console.log('selector.move:', ri, ci);
+//   if (direction === 'left') {
+//     if (ci > 0) ci -= 1;
+//   } else if (direction === 'right') {
+//     if (eci !== ci) ci = eci;
+//     if (ci < cols.len - 1) ci += 1;
+//   } else if (direction === 'up') {
+//     if (ri > 0) ri -= 1;
+//   } else if (direction === 'down') {
+//     if (eri !== ri) ri = eri;
+//     if (ri < rows.len - 1) ri += 1;
+//   } else if (direction === 'row-first') {
+//     ci = 0;
+//   } else if (direction === 'row-last') {
+//     ci = cols.len - 1;
+//   } else if (direction === 'col-first') {
+//     ri = 0;
+//   } else if (direction === 'col-last') {
+//     ri = rows.len - 1;
+//   }
+//   // if (multiple) {
+//   //   selector.moveIndexes = [ri, ci];
+//   // }
+//   selectorSet.call(this, multiple, ri, ci);
+//   scrollbarMove.call(this);
+// }
 
 // private methods
 function overlayerMousemove(evt) {
@@ -540,38 +602,35 @@ function toolbarChangePaintformatPaste() {
   }
 }
 
-function canAddCellRef(cell, cellRef) {
-  if (!(cell && 'text' in cell && cell.text.startsWith('='))) {
-    return false;
-  }
-
-  const v = this.editor.inputText;
-  const start = v.lastIndexOf('=');
-  // if (start !== -1 && v.length >= 1) {
-  const nv = v.substring(start + 1).split(OPERATORS_REGEX);
-  const lastnv = nv[nv.length - 1];
-  return lastnv.length === 0 || lastnv === cellRef;
-}
-
 function setCellTextReference() {
-  const { editor, selector } = this;
-  let inputTextLessRef = editor.inputText;
+  const { editor, selector, data } = this;
+  const { inputText } = editor;
   // For when cell is no longer a formula. User backspaces '='.
-  if (!inputTextLessRef.startsWith('=')) {
+  if (!inputText.startsWith('=')) {
     editor.clear();
     addingCellRef = false;
     return;
   }
-
-  const nv = inputTextLessRef.split(OPERATORS_REGEX);
-  const lastnv = nv[nv.length - 1];
-  if (lastnv !== '=' && lastnv.length !== 0) {
-    inputTextLessRef = inputTextLessRef.slice(0, -lastnv.length);
-  }
-  editor.setText(inputTextLessRef + getRange(selector.range, this.data.rows.len));
+  const text = createCellText.call(this, inputText, getRange(selector.range, data.rows.len));
+  // const nv = inputTextLessRef.split(OPERATORS_REGEX);
+  // const lastnv = nv[nv.length - 1];
+  // if (lastnv !== '=' && lastnv.length !== 0) {
+  //   inputTextLessRef = inputTextLessRef.slice(0, -lastnv.length);
+  // }
+  // editor.setText(inputTextLessRef + getRange(selector.range, this.data.rows.len));
+  editor.setText(text);
 }
 
+let clicks = 0;
+const delay = 400;
+
 function overlayerMousedown(evt) {
+  clicks += 1;
+
+  setTimeout(() => {
+    clicks = 0;
+  }, delay);
+
   // console.log(':::::overlayer.mousedown:', evt.detail, evt.button, evt.buttons, evt.shiftKey);
   // console.log('evt.target.className:', evt.target.className);
   const {
@@ -603,15 +662,23 @@ function overlayerMousedown(evt) {
     // console.log('selectorSetStart:::');
     const { indexes, range } = selector;
     const previousCell = this.data.rows.getCell(indexes[0], indexes[1]);
+
     let cells;
     if (isAutofillEl) {
-      if (data.autofillFormula()) {
-        table.render();
+      if (clicks === 2) {
+        if (data.autofillFormula()) {
+          table.render();
+          clicks = 0;
+        }
       }
       selector.showAutofill(ri, ci);
     } else if (isBorderEl) {
       cells = data.getRange(range);
       this.data.deleteRange(range);
+    // } else if (this.editor.el.css('display') === 'block'
+    //   && (addingCellRef || canAddCellRef.call(this, previousCell, cellRef))
+    // ) {
+    //   formulaSelectorSet.call(this, false, ri, ci);
     } else {
       selectorSet.call(this, false, ri, ci);
     }
@@ -694,7 +761,11 @@ function overlayerMousedown(evt) {
             isMovingY = false;
           }
         } else if (e.buttons === 1 && !e.shiftKey) {
+          // if (addingCellRef) {
+          //   formulaSelectorSet.call(this, true, ri, ci, true, true);
+          // } else {
           selectorSet.call(this, true, ri, ci, true, true);
+          // }
         }
       }
     }, () => {
@@ -720,8 +791,8 @@ function overlayerMousedown(evt) {
         sheetReset.call(this);
         this.trigger('save');
       }
-      // toolbarChangePaintformatPaste.call(this);
 
+      // toolbarChangePaintformatPaste.call(this);
       // When editor has '=', mousedown adds cell reference ie. A1
       // addingCellRef is true on 2nd mousedown when !canAddCellRef ie. '=A1' to '=B2'
       const cellRef = getRange(this.selector.range, data.rows.len);
@@ -867,9 +938,9 @@ function dataSetCellText(text, state = 'finished') {
         // }
         // this.editor.setCell({ text }, validator);
         // editorSetSelector.call(this, text, validator);
-        addingCellRef = true;
       }
     } else if (addingCellRef && (prev.ri !== ri || prev.ci !== ci)) {
+      // formulaSelectorSet.call(this, false, prev.ri, prev.ci);
       selectorSet.call(this, false, prev.ri, prev.ci);
       // this.editor.setCell({ text }, validator);
       editorSetSelector.call(this, text, validator);
@@ -1408,6 +1479,8 @@ export default class Sheet {
     this.contextMenuChart = new ContextMenu('chart', () => this.getRect(), !showContextmenu);
     // selector
     this.selector = new Selector(data);
+    // formula selector
+    // this.formulaSelector = new Selector(data);
     // chart
     this.chartEl = h('canvas', `${cssPrefix}-chart`, `${cssPrefix}-chart`);
     // overlayer
@@ -1415,6 +1488,7 @@ export default class Sheet {
       .children(
         this.editor.el,
         this.selector.el,
+        // this.formulaSelector.el,
         this.chartEl,
       );
     this.overlayerEl = h('div', `${cssPrefix}-overlayer`)
@@ -1436,8 +1510,8 @@ export default class Sheet {
     );
     // table
     this.table = new Table(this.tableEl.el, data, datas);
-    // chart
-    // this.chart = new Charts(this.chartEl.el, this.getRect());
+    // cell reference
+    this.addingFormula = addingCellRef;
     sheetInitEvents.call(this);
     sheetReset.call(this);
     // init selector [0, 0]

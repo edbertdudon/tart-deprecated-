@@ -417,7 +417,7 @@ function chartMouseup() {
 function chartScrollVertical(top) {
   const l = this.data.charts.length;
   for (let i = l - 1; i >= 0; i -= 1) {
-    this.data.charts[i].y = charts[i].y + top;
+    this.data.charts[i].y = charts[i].y - top;
     invalidate();
   }
 }

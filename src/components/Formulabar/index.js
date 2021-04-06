@@ -5,120 +5,106 @@
 //  Created by Edbert Dudon on 7/8/19.
 //  Copyright © 2019 Project Sciepp. All rights reserved.
 //
-import React, { useState, useEffect, useRef } from 'react';
+import React, {
+  useState, useEffect, useMemo, useCallback,
+} from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'recompose';
+import { Text, createEditor } from 'slate';
+import { Slate, Editable, withReact } from 'slate-react';
 import { selectorMove } from '../Spreadsheet/component/sheet';
-import { getTextWidth, getFormulaColors, setCaretPosition } from '../../functions';
+import { CELL_REF_COLORS } from '../../constants/off-color';
+import { getRangeRefs } from '../../functions';
 import './index.less';
 
 const Formulabar = ({ slides, formula }) => {
-  const [cell, setCell] = useState(formula.text || '');
-  const [caretN, setCaretN] = useState(null);
-  const [caretId, setCaretId] = useState('');
-  const inputRef = useRef(null);
+  const [value, setValue] = useState([{
+    type: 'paragraph',
+    children: [{ text: formula.text || '' }],
+  }]);
+  const renderLeaf = useCallback((props) => <Leaf {...props} />, []);
+  const editor = useMemo(() => withReact(createEditor()), []);
+
+  const decorate = useCallback(
+    ([node, path]) => {
+      const ranges = [];
+      if (Text.isText(node)) {
+        const { text } = node;
+
+        if (text.startsWith('=')) {
+          const cellRefs = getRangeRefs(text);
+
+          if (cellRefs.length > 0) {
+            const colors = text
+              .split(new RegExp(cellRefs.map((r) => `(${r})`).join('|')))
+              .filter((r) => r !== undefined);
+
+            colors.forEach((r, i) => {
+              if (cellRefs.includes(r)) {
+                const prefix = colors.slice(0, i).join('').length;
+                ranges.push({
+                  anchor: { path, offset: prefix },
+                  focus: { path, offset: prefix + r.length },
+                  color: CELL_REF_COLORS[i % CELL_REF_COLORS.length],
+                });
+              }
+            });
+          }
+        }
+      }
+      return ranges;
+    }, [value]);
 
   useEffect(() => {
-    setCell(formula.text || '');
+    setValue([{
+      type: 'paragraph',
+      children: [{ text: formula.text || '' }],
+    }]);
   }, [formula]);
 
-  // useEffect(() => {
-  //   setCaretPosition(caretId, caretN);
-  // }, [caretId])
-  //
-  // const formulaColors = getFormulaColors(cell);
-  //
   const handleChange = (e) => {
-    setCell(e.target.value);
-    slides.cellText(formula.ri, formula.ci, e.target.value).reRender();
-    // const text = formulaColors;
-    // text[i].text = e.target.value;
-    // const fulltext = text.map((t) => t.text).join('');
-    // setCell(fulltext);
-    // slides.cellText(formula.ri, formula.ci, fulltext).reRender();
-    // setCaretId(`${i}${text[i].text}`);
-    // setCaretN(text[i].text.length);
+    setValue(e);
+    slides.cellText(formula.ri, formula.ci, e[0].children[0].text).reRender();
   };
-  //
-  // const handleKeyDown = (e, v, i) => {
-  //   const { keyCode, shiftKey } = e;
-  //   // tab
-  //   if (keyCode === 9) {
-  //     slides.sheet.editor.clear();
-  //     // shift + tab => move left
-  //     // tab => move right
-  //     selectorMove.call(slides.sheet, false, shiftKey ? 'left' : 'right');
-  //     e.preventDefault();
-  //   }
-  //   // enter
-  //   if (keyCode === 13) {
-  //     inputRef.current.blur();
-  //     slides.sheet.editor.clear();
-  //     // shift + enter => move up
-  //     // enter => move down
-  //     selectorMove.call(slides.sheet, false, e.shiftKey ? 'up' : 'down');
-  //     e.preventDefault();
-  //     return;
-  //   }
-  //   const caret = e.target.selectionStart;
-  //   // backspace
-  //   // At selection start backspace to previous text
-  //   if (keyCode === 8 && caret === 0 && i > 0) {
-  //     const prevText = formulaColors[i - 1].text;
-  //     const newText = formulaColors[i - 1].text.slice(0, prevText.length - 1);
-  //     const text = formulaColors;
-  //     text[i - 1].text = newText;
-  //     const fulltext = text.map((t) => t.text).join('');
-  //     setCell(fulltext);
-  //     slides.cellText(formula.ri, formula.ci, fulltext).reRender();
-  //   }
-  //   // left
-  //   if (keyCode === 37 && caret === 0 && i > 0) {
-  //     const prevText = formulaColors[i - 1].text;
-  //     setCaretPosition(`${i - 1}${prevText}`, prevText.length);
-  //   }
-  //   // right
-  //   if (keyCode === 39
-  //     && caret === v.text.length
-  //     && formulaColors.length > 1
-  //     && i < formulaColors.length - 1
-  //   ) {
-  //     const nextText = formulaColors[i + 1].text;
-  //     setCaretPosition(`${i + 1}${nextText}`, 0);
-  //   }
-  //   // console.log(caret, formulaColors, formulaColors[i].text.length);
-  // };
-  // console.log(formulaColors);
-  // const formulaText = '';
+
+  const handleKeyDown = (e) => {
+    const { keyCode, shiftKey } = e;
+    // tab
+    if (keyCode === 9) {
+      slides.sheet.editor.clear();
+      // shift + tab => move left
+      // tab => move right
+      selectorMove.call(slides.sheet, false, shiftKey ? 'left' : 'right');
+      e.preventDefault();
+    }
+    // enter
+    if (keyCode === 13) {
+      slides.sheet.editor.clear();
+      // shift + enter => move up
+      // enter => move down
+      selectorMove.call(slides.sheet, false, e.shiftKey ? 'up' : 'down');
+      e.preventDefault();
+    }
+  };
 
   return (
-    <input
-      type="text"
-      onChange={handleChange}
-      className="formulabar"
-      value={cell}
-    />
+    <Slate editor={editor} value={value} onChange={handleChange}>
+      <Editable
+        decorate={decorate}
+        className="formulabar"
+        style={{ position: 'absolute' }}
+        renderLeaf={renderLeaf}
+        onKeyDown={handleKeyDown}
+      />
+    </Slate>
   );
 };
 
-// {formulaColors.map((v, i) => (
-//   <input
-//     type="text"
-//     onChange={(e) => handleChange(e, i)}
-//     onKeyDown={(e) => handleKeyDown(e, v, i)}
-//     style={{
-//       width: (i === formulaColors.length - 1)
-//         ? `Calc(100% - 10px - ${getTextWidth(cell, '13px Helvetica')}px)`
-//         : `${getTextWidth(v.text, '13px Helvetica')}px`,
-//       color: ('color' in v) && v.color,
-//     }}
-//     className="formulabar-cellreference"
-//     value={v.text}
-//     key={v.id}
-//     id={v.id}
-//     ref={inputRef}
-//   />
-// ))}
+const Leaf = ({ attributes, children, leaf }) => (
+  <span {...attributes} style={{ color: leaf.color && leaf.color }}>
+    {children}
+  </span>
+);
 
 const mapStateToProps = (state) => ({
   slides: (state.slidesState.slides || {}),

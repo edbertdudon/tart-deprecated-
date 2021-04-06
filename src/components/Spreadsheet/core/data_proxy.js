@@ -22,9 +22,9 @@ import charts from '../../Chart/chartsR';
 import {
   translateR, spreadsheetToR, doChart,
 } from '../cloudr';
-import { columnToLetter, getRange, getTextsFromRows } from '../../../functions';
+import { columnToLetter, getRange, getRangeIndex } from '../../../functions';
 import {
-  getRownames, getVarsAsColumns, getRangeIndex,
+  getRownames, getVarsAsColumns,
 } from '../../RightSidebar/datarange';
 
 // private methods
