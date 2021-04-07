@@ -1082,6 +1082,14 @@ export default class DataProxy {
     validations.validate(ri, ci, text);
   }
 
+  setCellResult(ri, ci, result) {
+    this.rows.setCellResult(ri, ci, result);
+  }
+
+  removeCellResult(ri, ci) {
+    this.rows.removeCellResult(ri, ci);
+  }
+
   freezeIsActive() {
     const [ri, ci] = this.freeze;
     return ri > 0 || ci > 0;

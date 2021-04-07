@@ -9,7 +9,6 @@ export default class Scrollbar {
       .child(this.contentEl = h('div', ''))
       .on('mousemove.stop', () => {})
       .on('scroll.stop', (evt) => {
-        console.log(evt)
         const { scrollTop, scrollLeft } = evt.target;
         // console.log('scrollTop:', scrollTop);
         if (this.moveFn) {

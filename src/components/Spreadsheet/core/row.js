@@ -110,6 +110,16 @@ class Rows {
     cell.text = text;
   }
 
+  setCellResult(ri, ci, result) {
+    const cell = this.getCellOrNew(ri, ci);
+    cell.result = result;
+  }
+
+  removeCellResult(ri, ci) {
+    const cell = this.getCellOrNew(ri, ci);
+    delete cell.result;
+  }
+
   getRange(range) {
     const {
       sri, sci, eri, eci,

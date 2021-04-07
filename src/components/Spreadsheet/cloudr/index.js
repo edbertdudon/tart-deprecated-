@@ -295,19 +295,38 @@ function doOptimization(data) {
     });
 }
 
-function rRender(src, data, datas, ri, ci) {
+async function rRender(cell, data, datas, ri, ci, prevData) {
+  const src = cell.text || '';
+  // check for changes in data
+  if ('result' in cell
+    && ri in prevData
+    && 'cells' in prevData[ri]
+    && ci in prevData[ri].cells
+    && 'text' in prevData[ri].cells[ci]
+    && prevData[ri].cells[ci].text === src) {
+    return cell.result;
+  }
+
+  let result;
   if (src[0] === '=') {
     if (/[a-z]+/i.test(src)) {
-      return doParse({
+      result = await doParse({
         cell: translateR(src.slice(1), data.name),
         slides: JSON.stringify(spreadsheetToR(datas)),
         names: JSON.stringify(datas.map((d) => d.name)),
       }, data, ri, ci);
+      data.setCellResult(ri, ci, result);
+      return result;
     }
-    return _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+    result = _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+  }
+
+  if ('result' in cell) {
+    data.removeCellResult(ri, ci);
   }
   removeMatrix(data, ri, ci);
-  return src;
+  result = src;
+  return result;
 }
 
 export {

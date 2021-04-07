@@ -57,7 +57,7 @@ function renderCellBorders(bboxes, translateFunc) {
 */
 
 // default yoffset = 0 xoffset = 0
-export async function renderCell(draw, data, datas, rindex, cindex, srindex, scindex) {
+export async function renderCell(draw, data, datas, rindex, cindex, srindex, scindex, prevData) {
   const { sortedRowMap, rows, cols } = data;
   if (rows.isHide(rindex) || cols.isHide(cindex)) return;
   let nrindex = rindex;
@@ -67,8 +67,7 @@ export async function renderCell(draw, data, datas, rindex, cindex, srindex, sci
 
   const cell = data.getCell(nrindex, cindex);
   if (cell === null) return;
-
-  let cellText = await rRender(cell.text || '', data, datas, rindex, cindex);
+  let cellText = await rRender(cell, data, datas, rindex, cindex, prevData);
   // Cell shifts due to Promise
   const yoffset = (scindex > 0)
     ? 25 - (srindex * 25) - 1
@@ -161,7 +160,7 @@ function renderContent(viewRange, fw, fh, tx, ty) {
   const { sri, sci } = viewRange;
 
   viewRange.each((ri, ci) => {
-    renderCell(draw, data, datas, ri, ci, sri, sci);
+    renderCell(draw, data, datas, ri, ci, sri, sci, this.prevData);
   }, (ri) => filteredTranslateFunc(ri));
   draw.restore();
 
@@ -172,7 +171,7 @@ function renderContent(viewRange, fw, fh, tx, ty) {
   data.eachMergesInView(viewRange, ({ sri, sci, eri }) => {
     if (!exceptRowSet.has(sri)) {
       // renderCell(draw, data, datas, sri, sci);
-      renderCell(draw, data, datas, sri, sci, 0, 0);
+      renderCell(draw, data, datas, sri, sci, 0, 0, this.prevData);
     } else if (!rset.has(sri)) {
       rset.add(sri);
       const height = data.rows.sumHeight(sri, eri + 1);
@@ -323,6 +322,7 @@ class Table {
     this.draw = new Draw(el, data.viewWidth(), data.viewHeight());
     this.data = data;
     this.datas = datas;
+    this.prevData = null;
   }
 
   resetData(data, datas) {
@@ -392,6 +392,7 @@ class Table {
       // 5
       renderFreezeHighlightLine.call(this, fw, fh, tx, ty);
     }
+    this.prevData = { ...data.rows._ };
   }
 
   clear() {

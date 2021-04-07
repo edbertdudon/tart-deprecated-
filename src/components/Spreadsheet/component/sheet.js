@@ -128,8 +128,8 @@ function selectorSet(multiple, ri, ci, indexesUpdated = true, moving = false) {
   } else {
     this.addingFormula = false;
   }
-  const text = createCellText.call(this, editor.inputText, cellRef);
 
+  const text = createCellText.call(this, editor.inputText, cellRef);
   if (multiple) {
     selector.setEnd(ri, ci, moving);
     if (addingorWillAdd) {
