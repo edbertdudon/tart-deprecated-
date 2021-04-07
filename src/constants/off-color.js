@@ -5,6 +5,7 @@ const OFF_COLOR = {
   'rgb(221, 95, 105)': 'rgb(250, 124, 134)',
 };
 
+export const PRIMARY_COLORS = Object.keys(OFF_COLOR).slice(1);
 export const CELL_REF_COLORS = Object.values(OFF_COLOR).slice(1);
 
 export default OFF_COLOR;

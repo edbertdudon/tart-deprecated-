@@ -10,7 +10,7 @@ import ContextMenu from './contextmenu';
 import Table from './table';
 import {
   chartInitEvents, chartMousedown, chartMouseup, chartMousemove,
-  chartScrollVertical, chartScrollHorizontal, invalidate,
+  chartSetVertical, chartSetHorizontal, invalidate,
 } from '../canvas/chart';
 import Toolbar from './toolbar/index';
 import ModalValidation from './modal_validation';
@@ -60,23 +60,23 @@ function scrollbarMove() {
   const tableOffset = this.getTableOffset();
   // console.log(',l:', l, ', left:', left, ', tOffset.left:', tableOffset.width);
   if (Math.abs(left) + width > tableOffset.width) {
-    chartScrollHorizontal.call(this, -width);
+    // chartScrollHorizontal.call(this, -width);
     horizontalScrollbar.move({ left: l + width - tableOffset.width });
   } else {
     const fsw = data.freezeTotalWidth();
     if (left < fsw) {
-      chartScrollHorizontal.call(this, width);
+      // chartScrollHorizontal.call(this, width);
       horizontalScrollbar.move({ left: l - 1 - fsw });
     }
   }
   // console.log('top:', top, ', height:', height, ', tof.height:', tableOffset.height);
   if (Math.abs(top) + height > tableOffset.height) {
-    chartScrollVertical.call(this, height);
+    // chartScrollVertical.call(this, height);
     verticalScrollbar.move({ top: t + height - tableOffset.height - 1 });
   } else {
     const fsh = data.freezeTotalHeight();
     if (top < fsh) {
-      chartScrollVertical.call(this, -height);
+      // chartScrollVertical.call(this, -height);
       verticalScrollbar.move({ top: t - 1 - fsh });
     }
   }
@@ -374,7 +374,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri + 1;
       if (ri < rows.len) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
-        chartScrollVertical.call(this, rh);
+        // chartScrollVertical.call(this, rh);
         verticalScrollbar.move({ top: top + rh - 1 });
       }
     } else {
@@ -382,7 +382,7 @@ function overlayerMousescroll(evt) {
       const ri = data.scroll.ri - 1;
       if (ri >= 0) {
         const rh = loopValue(ri, (i) => rows.getHeight(i));
-        chartScrollVertical.call(this, -rh);
+        // chartScrollVertical.call(this, -rh);
         verticalScrollbar.move({ top: ri === 0 ? 0 : top - rh });
       }
     }
@@ -395,7 +395,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci + 1;
       if (ci < cols.len) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
-        chartScrollHorizontal.call(this, -cw);
+        // chartScrollHorizontal.call(this, -cw);
         horizontalScrollbar.move({ left: left + cw - 1 });
       }
     } else {
@@ -403,7 +403,7 @@ function overlayerMousescroll(evt) {
       const ci = data.scroll.ci - 1;
       if (ci >= 0) {
         const cw = loopValue(ci, (i) => cols.getWidth(i));
-        chartScrollHorizontal.call(this, cw);
+        // chartScrollHorizontal.call(this, cw);
         horizontalScrollbar.move({ left: ci === 0 ? 0 : left - cw });
       }
     }
@@ -424,10 +424,10 @@ function overlayerTouch(direction, distance) {
   const { left } = horizontalScrollbar.scroll();
 
   if (direction === 'left' || direction === 'right') {
-    chartScrollHorizontal.call(this, distance);
+    // chartScrollHorizontal.call(this, distance);
     horizontalScrollbar.move({ left: left - distance });
   } else if (direction === 'up' || direction === 'down') {
-    chartScrollVertical.call(this, -distance);
+    // chartScrollVertical.call(this, -distance);
     verticalScrollbar.move({ top: top - distance });
   }
 }
@@ -945,6 +945,7 @@ function dataSetCellText(text, state = 'finished') {
       // this.editor.setCell({ text }, validator);
       editorSetSelector.call(this, text, validator);
       addingCellRef = false;
+      this.addingFormula = false;
     } else {
       data.setPrev(ri, ci);
     }
@@ -1182,11 +1183,11 @@ function sheetInitEvents() {
   };
   // scrollbar move callback
   verticalScrollbar.moveFn = (distance, evt) => {
-    // console.log(evt)
-    // chartScrollVertical.call(this, distance);
+    chartSetVertical.call(this, distance);
     verticalScrollbarMove.call(this, distance, evt);
   };
   horizontalScrollbar.moveFn = (distance, evt) => {
+    chartSetHorizontal.call(this, distance);
     horizontalScrollbarMove.call(this, distance, evt);
   };
   // editor

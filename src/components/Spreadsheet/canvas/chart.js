@@ -40,6 +40,8 @@ let ghostcanvas;
 let gctx;
 let offsetx;
 let offsety;
+let scrollTop = 0;
+let scrollLeft = 0;
 let stylePaddingLeft;
 let stylePaddingTop;
 let styleBorderLeft;
@@ -430,6 +432,24 @@ function chartScrollHorizontal(left) {
   }
 }
 
+function chartSetVertical(top) {
+  const l = this.data.charts.length;
+  for (let i = l - 1; i >= 0; i -= 1) {
+    this.data.charts[i].y = charts[i].y + scrollTop - top;
+    invalidate();
+  }
+  scrollTop = top;
+}
+
+function chartSetHorizontal(left) {
+  const l = this.data.charts.length;
+  for (let i = l - 1; i >= 0; i -= 1) {
+    this.data.charts[i].x = charts[i].x + scrollLeft - left;
+    invalidate();
+  }
+  scrollLeft = left;
+}
+
 function chartScrollSetTop(top, data) {
   const l = data.charts.length;
   for (let i = l - 1; i >= 0; i -= 1) {
@@ -466,6 +486,8 @@ export {
   chartMousemove,
   chartScrollVertical,
   chartScrollHorizontal,
+  chartSetVertical,
+  chartSetHorizontal,
   chartScrollSetTop,
   chartScrollSetLeft,
 };

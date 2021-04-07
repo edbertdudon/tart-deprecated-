@@ -229,7 +229,7 @@ export default class Editor {
     });
     this.areaEl = h('div', `${cssPrefix}-editor-area`)
       .children(
-        this.textEl = h('input', 'editor-cellreference')
+        this.textEl = h('textarea', '')
           // .attr({ contentEditable: 'true' })
           .on('input', (evt) => inputEventHandler.call(this, evt))
           .on('paste.stop', () => {})
