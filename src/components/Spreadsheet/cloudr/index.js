@@ -143,6 +143,7 @@ function spreadsheetToR(datas) {
     const { rows } = data;
     const arows = Object.keys(rows._);
     if (arows.length < 1) return [];
+    console.log(arows, Math.max(...arows));
     const nrows = Math.max(...arows) + 1;
     let ncols = 0;
     arows.forEach((row) => {
@@ -152,6 +153,7 @@ function spreadsheetToR(datas) {
       }
     });
     ncols += 1;
+    console.log(nrows, ncols);
     let newData = createEmptyMatrix(nrows, ncols);
     newData = mapSpreadsheet(newData, (ri, ci) => {
       if (rows._.[ri] !== undefined && rows._.[ri].cells[ci] !== undefined) {
@@ -295,6 +297,13 @@ function doOptimization(data) {
     });
 }
 
+function removeResultAndMatrix(cell, data, ri, ci) {
+  if ('result' in cell) {
+    data.removeCellResult(ri, ci);
+  }
+  removeMatrix(data, ri, ci);
+}
+
 async function rRender(cell, data, datas, ri, ci, prevData) {
   const src = cell.text || '';
   // check for changes in data
@@ -318,15 +327,11 @@ async function rRender(cell, data, datas, ri, ci, prevData) {
       data.setCellResult(ri, ci, result);
       return result;
     }
-    result = _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
+    removeResultAndMatrix(cell, data, ri, ci);
+    return _cell.render(src, formulam, (y, x) => (data.getCellTextOrDefault(x, y)));
   }
-
-  if ('result' in cell) {
-    data.removeCellResult(ri, ci);
-  }
-  removeMatrix(data, ri, ci);
-  result = src;
-  return result;
+  removeResultAndMatrix(cell, data, ri, ci);
+  return src;
 }
 
 export {

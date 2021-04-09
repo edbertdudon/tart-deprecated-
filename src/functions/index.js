@@ -260,7 +260,7 @@ export function getRangeIndex(r, len) {
 }
 
 // Don't merge regex. +A will be captured not just A:A.
-const CELL_OPERATOR_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]+/g;
+const CELL_OPERATOR_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]+(?!:)/g;
 const RANGE_OPERATOR_REFERENCE = /(=|(%\*%)|\+|-|\*|\/|~|,|\()\$?[A-Z]+\$?[0-9]*:{1}\$?[A-Z]+\$?[0-9]*/g;
 
 export function getRangeIndexes(text, len) {

@@ -73,7 +73,7 @@ export async function renderCell(draw, data, datas, rindex, cindex, srindex, sci
     ? 25 - (srindex * 25) - 1
     : 25 - (srindex * 25);
   const xoffset = (scindex > 0)
-    ? 30 - (scindex * 100) + 55
+    ? 30 - (scindex * 100)/* - 55 */
     : 30 - (scindex * 100);
   // const yoffset = 0;
   // const xoffset = 0;

@@ -693,12 +693,12 @@ function overlayerMousedown(evt) {
     const viewRange = data.viewRange();
     const diffWidths = Object.keys(data.cols._).map((c) => data.cols._[c].width);
     const maxScrollX = (data.cols.len - diffWidths.length - (viewRange.eci - viewRange.sci))
-      * data.cols.width + diffWidths.reduce((a, c) => a + c);
+      * data.cols.width + (diffWidths.length > 0 && diffWidths.reduce((a, c) => a + c));
     const diffHeights = Object.values(data.rows._)
       .map((r) => r.height)
       .filter((c) => c !== undefined);
     const maxScrollY = (data.rows.len - diffHeights.length - (viewRange.eri - viewRange.sri))
-      * data.rows.height + diffHeights.reduce((a, c) => a + c);
+      * data.rows.height + (diffHeights.length > 0 && diffHeights.reduce((a, c) => a + c));
     const offset = overlayerEl.offset();
     // mouse move up
     mouseMoveUp(window, (e) => {
@@ -1404,14 +1404,10 @@ function sheetInitEvents() {
           evt.preventDefault();
           break;
         case 13: // enter
-          // Add selectorSet to above/below editor instead when cell referencing
           editor.clear();
           // shift + enter => move up
           // enter => move down
           selectorMove.call(this, false, shiftKey ? 'up' : 'down');
-          // if (v.startsWith('=') && v.includes('%*%')) {
-          //   sheetReset.call(this);
-          // }
           evt.preventDefault();
           break;
         case 8: // backspace
